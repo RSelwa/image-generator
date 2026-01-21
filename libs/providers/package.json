@@ -3,7 +3,9 @@
   "description": "Providers of services for the monorepo",
   "version": "0.0.0",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "types": "./dist/index.d.ts",
   "exports": {
     "./db-refs": {
@@ -13,16 +15,6 @@
     "./firebase": {
       "default": "./dist/firebase.js",
       "types": "./dist/firebase.js"
-    },
-    "./firebase-client": {
-      "default": "./dist/firebase-client.js",
-      "types": "./dist/firebase-client.js"
-    },
-    "./stripe": { "default": "./dist/stripe.js", "types": "./dist/stripe.js" },
-    "./config": { "default": "./dist/config.js", "types": "./dist/config.js" },
-    "./opensearch": {
-      "default": "./dist/opensearch.js",
-      "types": "./dist/opensearch.js"
     }
   },
   "scripts": {

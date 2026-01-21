@@ -15,6 +15,7 @@
     "?check-biome": "turbo check-biome --continue",
     "check-circular": "turbo check-circular --continue",
     "build": "turbo run build",
+    "build:libs": "turbo run build --filter=@repo/providers --filter=@repo/schemas --filter=@repo/common",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
     "test": "turbo run test",
