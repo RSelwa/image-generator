@@ -1,0 +1,2 @@
+# In the future maybe use lint-staged to only run format on staged files
+pnpm run lint

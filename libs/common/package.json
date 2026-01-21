@@ -1,0 +1,36 @@
+{
+  "name": "@repo/common",
+  "description": "Common code for both backend and frontend",
+  "version": "0.0.0",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsdown",
+    "compile": "tsc --noEmit",
+    "lint": "biome check",
+    "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
+    "test": "vitest run --coverage",
+    "clean": "del-cli dist isolate tsconfig.tsbuildinfo",
+    "coverage": "vitest run --coverage"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "firebase-admin": "^13.5.0"
+  },
+  "devDependencies": {
+    "@codecompose/typescript-config": "^2.2.0",
+    "del-cli": "^7.0.0",
+    "madge": "^8.0.0",
+    "tsdown": "^0.15.6",
+    "typescript": "^5.7.3",
+    "vite": "^7.1.7",
+    "vitest": "^3.2.4"
+  }
+}

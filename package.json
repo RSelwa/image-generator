@@ -1,0 +1,37 @@
+{
+  "name": "flim-monorepo",
+  "description": "Monorepo for flim",
+  "version": "1.0.0",
+  "files": [
+    "dist"
+  ],
+  "packageManager": "pnpm@10.26.1",
+  "main": "dist/index.js",
+  "scripts": {
+    "compile": "turbo compile --continue",
+    "lint:ci": "biome ci",
+    "lint": "biome check",
+    "format": "biome check --write",
+    "?check-biome": "turbo check-biome --continue",
+    "check-circular": "turbo check-circular --continue",
+    "build": "turbo run build",
+    "clean": "turbo run clean",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "watch": "turbo watch build --filter=@repo/providers --filter=./functions/*",
+    "deploy": "firebase deploy"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.4",
+    "@clack/prompts": "^0.11.0",
+    "@types/node": "^22.10.10",
+    "consola": "^3.4.2",
+    "firebase-tools-with-isolate": "14.16.0",
+    "husky": "^9.1.7",
+    "tsx": "^4.20.6",
+    "turbo": "^2.5.8",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7",
+    "vitest": "^3.2.4"
+  }
+}

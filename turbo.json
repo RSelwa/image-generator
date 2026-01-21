@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env", "**/.env.*local", ".env.local"],
+  "globalEnv": ["PORT", "NODE_ENV"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "outputLogs": "new-only",
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.pusher-292200", ".env.local"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "inputs": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "coverage": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "inputs": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "check-circular": { "dependsOn": ["^build"] },
+    "lint:ci": { "dependsOn": ["^build"] },
+    "lint": { "dependsOn": [] },
+    "compile": { "dependsOn": ["^build"] },
+    "clean": { "dependsOn": [] },
+    "start": { "cache": false, "persistent": true },
+    "dev": { "cache": false, "persistent": true, "dependsOn": ["^build"] }
+  }
+}

@@ -1,0 +1,37 @@
+# dependencies
+node_modules
+
+# build
+dist
+.vercel
+.turbo
+
+# debug
+*.log
+
+# testing
+coverage
+**/firestore-coverage.json
+
+# misc
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+.env*
+!/.env.test
+!/**/*/.env.example
+env.txt
+
+# typescript
+*.tsbuildinfo
+
+# firebase / gcloud
+/credentials
+.runtimeconfig.*
+
+# isolate-package output
+isolate
+
+**.secret.local
