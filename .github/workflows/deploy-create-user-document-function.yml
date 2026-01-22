@@ -1,0 +1,105 @@
+name: 🚀 Deploy createUserDocument function
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/deploy-create-user-document-function.yml
+      - functions/create-user-document/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    name: ⚙️ Initialize Node.js Environment
+    if: github.event_name != 'release'
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+  lint:
+    needs: init
+    name: 🚨 Lint code
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: 🚨 Lint code
+        run: pnpm run lint:ci
+
+  format:
+    needs: init
+    name: 🎨 Format code
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: 🎨 Format code
+        run: pnpm run format
+
+  test:
+    runs-on: ubuntu-latest
+    needs: init
+    name: 🧪 Test
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: ⚙️ Install Firebase tools
+        run: pnpm install -g firebase-tools
+
+      - name: 🔒 Create .env file
+        run: |
+          touch functions/create-user-document/.env
+          echo FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 >> functions/create-user-document/.env
+
+      - name: ✨ Build project
+        run: pnpm build --filter=@repo/create-user-document
+
+      - name: 🧪 Run tests
+        run: firebase emulators:exec --token "$FIREBASE_TOKEN" --project
+          "$GCLOUD_PROJECT" 'pnpm test --filter=@repo/create-user-document'
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GCLOUD_PROJECT: ${{ vars.PROJECT_ID }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [init, lint, format, test]
+    name: 🚀 Deploy createUserDocument function
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: ⚙️ Install Firebase tools
+        run: pnpm install -g firebase-tools
+
+      - name: 🔒 Create .env file
+        run: |
+          touch functions/create-user-document/.env
+
+      - name: 🚀 Deploy to Firebase
+        run: npx firebase deploy --project "$PROJECT_ID" --only
+          functions:create-user-document --token "$FIREBASE_TOKEN"

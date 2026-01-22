@@ -1,4 +1,10 @@
-import type { QueryDocumentSnapshot } from "firebase-admin/firestore"
+import { TABLES } from "@repo/common"
+import type { UserDoc } from "@repo/schemas"
+import type {
+  CollectionReference,
+  QueryDocumentSnapshot,
+} from "firebase-admin/firestore"
+import { db } from "~/firebase"
 
 type WithId<T> = T & { id: string }
 
@@ -14,4 +20,9 @@ export const createFirestoreConverter = <T = unknown>() => ({
   },
 })
 
-export const refs = {}
+export const refs = {
+  [TABLES.USERS]: db.collection(TABLES.USERS) as CollectionReference<
+    UserDoc,
+    UserDoc
+  >,
+}

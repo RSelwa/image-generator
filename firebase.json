@@ -8,88 +8,11 @@
       "codebase": "http-base"
     },
     {
-      "source": "functions/create-checkout-session-stripe",
-      "runtime": "nodejs22",
-      "isolate": true,
-      "predeploy": ["pnpm build:create-checkout-session-stripe"],
-      "codebase": "create-checkout-session-stripe"
-    },
-    {
-      "source": "functions/create-customer-portal-session",
-      "runtime": "nodejs20",
-      "isolate": true,
-      "predeploy": ["pnpm build:create-customer-portal-session"],
-      "codebase": "create-customer-portal-session"
-    },
-    {
       "source": "functions/create-user-document",
       "runtime": "nodejs22",
       "isolate": true,
       "predeploy": ["pnpm build:create-user-document"],
       "codebase": "create-user-document"
-    },
-    {
-      "source": "functions/verify-cancel-discount-coupon",
-      "runtime": "nodejs22",
-      "isolate": true,
-      "predeploy": ["pnpm build:verify-cancel-discount-coupon"],
-      "codebase": "verify-cancel-discount-coupon"
-    },
-    {
-      "source": "functions/apply-cancel-discount-coupon",
-      "runtime": "nodejs22",
-      "isolate": true,
-      "predeploy": ["pnpm build:apply-cancel-discount-coupon"],
-      "codebase": "apply-cancel-discount-coupon"
-    },
-    {
-      "source": "functions/scheduled-function-zoom-click-reset",
-      "runtime": "nodejs22",
-      "isolate": true,
-      "predeploy": ["pnpm build:scheduled-function-zoom-click-reset"],
-      "codebase": "scheduled-function-zoom-click-reset"
-    },
-    {
-      "source": "functions/stripe-subscription-created-event",
-      "runtime": "nodejs22",
-      "isolate": true,
-      "predeploy": ["pnpm build:stripe-subscription-created-event"],
-      "codebase": "stripe-subscription-created-event"
-    },
-    {
-      "source": "functions/stripe-subscriptions-listener",
-      "runtime": "nodejs20",
-      "isolate": true,
-      "predeploy": ["pnpm build:stripe-subscriptions-listener"],
-      "codebase": "stripe-subscriptions-listener"
-    },
-    {
-      "source": "functions/delete-board-by-id",
-      "runtime": "nodejs22",
-      "isolate": true,
-      "predeploy": ["pnpm build:delete-board-by-id"],
-      "codebase": "delete-board-by-id"
-    },
-    {
-      "source": "functions/get-user-invoices",
-      "runtime": "nodejs22",
-      "isolate": true,
-      "predeploy": ["pnpm build:get-user-invoices"],
-      "codebase": "get-user-invoices"
-    },
-    {
-      "source": "functions/listen-user-generation-to-opensearch",
-      "runtime": "nodejs22",
-      "isolate": true,
-      "predeploy": ["pnpm build:listen-user-generation-to-opensearch"],
-      "codebase": "listen-user-generation-to-opensearch"
-    },
-    {
-      "source": "functions/token-exchange",
-      "runtime": "nodejs22",
-      "isolate": true,
-      "predeploy": ["pnpm build:token-exchange"],
-      "codebase": "token-exchange"
     }
   ],
   "emulators": {

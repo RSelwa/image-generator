@@ -4,12 +4,10 @@ import { getAuth } from "firebase/auth"
 import { getFunctions } from "firebase/functions"
 import { getStorage } from "firebase/storage"
 
-const apiKey = process.env.NEXT_PUBLIC_FBASE_API_KEY
-const projectId = process.env.NEXT_PUBLIC_FBASE_PROJECT_ID || ""
-const messagingSenderId = process.env.NEXT_PUBLIC_FBASE_MESSAGING_SENDER_ID
-const appId = process.env.NEXT_PUBLIC_FBASE_APP_ID
-const measurementId = process.env.NEXT_PUBLIC_FBASE_MEASUREMENT_ID
-export const isProd = process.env.NEXT_PUBLIC_FBASE_PROJECT_ID === "flim-prod"
+const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
+const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || ""
+const messagingSenderId = process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 
 export const firebaseConfig = {
   apiKey,
@@ -19,7 +17,6 @@ export const firebaseConfig = {
   storageBucket: `${projectId}.appspot.com`,
   messagingSenderId,
   appId,
-  measurementId,
 }
 
 export const app = initializeApp(firebaseConfig)

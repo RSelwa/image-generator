@@ -1,6 +1,12 @@
 import { auth } from "@/constants/db"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { onAuthStateChanged, type Unsubscribe } from "firebase/auth"
+import {
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  type Unsubscribe,
+} from "firebase/auth"
+import { toast } from "sonner"
+import { z } from "zod"
 
 type User = {
   id: string
@@ -22,6 +28,8 @@ export const defaultAuth: AuthState = {
 
 export type ResultListenAuth = AuthState
 export type QueryArgsListenAuth = void
+
+const sendPasswordResetEmailSchema = z.email()
 
 export const authApi = createApi({
   reducerPath: "auth",
@@ -66,7 +74,47 @@ export const authApi = createApi({
         unsubscribe && unsubscribe()
       },
     }),
+    sendPasswordResetEmail: builder.mutation<
+      null,
+      z.infer<typeof sendPasswordResetEmailSchema>
+    >({
+      async queryFn(email) {
+        try {
+          const { data, error } = z.safeParse(
+            sendPasswordResetEmailSchema,
+            email,
+          )
+          if (!data || error) {
+            console.error("Invalid email address for password reset:", email)
+
+            toast.error("Invalid email address")
+
+            return {
+              error: {
+                status: "CUSTOM_ERROR",
+                data: "Invalid email address",
+              },
+            }
+          }
+
+          await sendPasswordResetEmail(auth, email)
+
+          toast.success("Password reset email sent! Please check your inbox.")
+
+          return { data: null }
+        } catch (error) {
+          console.error("Error sending password reset email:", error)
+
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              data: "Failed to send password reset email",
+            },
+          }
+        }
+      },
+    }),
   }),
 })
 
-export const { useListenAuthQuery } = authApi
+export const { useListenAuthQuery, useSendPasswordResetEmailMutation } = authApi

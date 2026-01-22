@@ -1,0 +1,31 @@
+name: ⚙️ Initialize Node.js Environment
+description:
+  Initialize the Node.js environment for the project by setting up pnpm and
+  Node.js, and installing dependencies with pnpm
+
+runs:
+  using: "composite"
+  steps:
+    - name: ✨ Checkout
+      uses: actions/checkout@v4
+
+    - name: ⚙️ Change Java version to 25
+      shell: bash
+      run: |
+        export JAVA_HOME=$JAVA_HOME_25_X64
+        export PATH="$JAVA_HOME/bin:$PATH"
+        echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+        echo "$JAVA_HOME/bin" >> $GITHUB_PATH
+
+    - name: ⚙️ Setup pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: ⚙️ Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: "pnpm"
+
+    - name: 🚚 Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile

@@ -1,4 +1,5 @@
 import { pokemonApi } from "@/redux/api"
+import { authApi } from "@/redux/api/auth"
 import { configureStore } from "@reduxjs/toolkit"
 import { useDispatch, useSelector, useStore } from "react-redux"
 
@@ -6,9 +7,12 @@ export const makeStore = () => {
   return configureStore({
     reducer: {
       [pokemonApi.reducerPath]: pokemonApi.reducer,
+      [authApi.reducerPath]: authApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(pokemonApi.middleware),
+      getDefaultMiddleware()
+        .concat(pokemonApi.middleware)
+        .concat(authApi.middleware),
   })
 }
 
