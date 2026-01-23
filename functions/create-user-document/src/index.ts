@@ -1,31 +1,32 @@
 import { refs } from "@repo/providers/db-refs"
 import { userDocSchema } from "@repo/schemas"
 import { logger } from "firebase-functions"
-import { HttpsError } from "firebase-functions/https"
-import { beforeUserCreated } from "firebase-functions/identity"
-export const createUserDocument = beforeUserCreated(async (event) => {
-  if (!event.data) {
-    throw new HttpsError("invalid-argument", "Event data is required")
-  }
+import { beforeUserCreated, HttpsError } from "firebase-functions/identity"
 
-  const user = event.data
+export const createUserDocument: ReturnType<typeof beforeUserCreated> =
+  beforeUserCreated(async (event) => {
+    if (!event.data) {
+      throw new HttpsError("invalid-argument", "Event data is required")
+    }
 
-  if (!user.email) {
-    logger.error("User email is required")
-    throw new HttpsError("invalid-argument", "User email is required")
-  }
+    const user = event.data
 
-  logger.info(
-    `Creating user document for uid: ${user.uid} email: ${user.email}`,
-  )
+    if (!user.email) {
+      logger.error("User email is required")
+      throw new HttpsError("invalid-argument", "User email is required")
+    }
 
-  const userDoc = userDocSchema.parse({ email: user.email })
+    logger.info(
+      `Creating user document for uid: ${user.uid} email: ${user.email}`,
+    )
 
-  try {
-    await refs.users.doc(user.uid).set(userDoc)
-  } catch (error) {
-    logger.error("Error creating user document:", error)
+    const userDoc = userDocSchema.parse({ email: user.email })
 
-    throw new HttpsError("internal", "Failed to create user document")
-  }
-})
+    try {
+      await refs.users.doc(user.uid).set(userDoc)
+    } catch (error) {
+      logger.error("Error creating user document:", error)
+
+      throw new HttpsError("internal", "Failed to create user document")
+    }
+  })

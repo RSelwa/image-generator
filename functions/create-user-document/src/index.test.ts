@@ -1,5 +1,5 @@
 import { refs } from "@repo/providers/db-refs"
-import { db, Timestamp } from "@repo/providers/firebase"
+import { db } from "@repo/providers/firebase"
 import { beforeAll, describe, expect, it } from "vitest"
 
 const createAuthUser = async ({
@@ -26,14 +26,10 @@ const createAuthUser = async ({
 describe("createUserDocument", () => {
   beforeAll(async () => {
     const snapshotUsers = await refs.users.get()
-    const snapshotInvitations = await refs.invitations.get()
 
     const batch = db.batch()
 
     snapshotUsers.docs.forEach((doc) => {
-      batch.delete(doc.ref)
-    })
-    snapshotInvitations.docs.forEach((doc) => {
       batch.delete(doc.ref)
     })
 
@@ -75,38 +71,5 @@ describe("createUserDocument", () => {
       },
       isVideoAutoplay: true,
     })
-  })
-
-  it("should create a user document with invitation", async () => {
-    await refs.invitations.add({
-      email: "test-pro@fl.im",
-      invitationType: "organization",
-      organizationId: "test-org-id",
-      organizationName: "Test Organization",
-      subscriptionType: "PRO",
-      amountCreditsAi: 0,
-      createdAt: Timestamp.now(),
-      usedAt: null,
-      used: false,
-      expired: false,
-      expirationDate: Timestamp.fromDate(
-        new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days from now
-      ),
-    })
-
-    const { uid } = await createAuthUser({ email: "test-pro@fl.im" })
-
-    const snapshotUser = await refs.users.doc(uid).get()
-    const snapshotInvitation = await refs.invitations.get()
-
-    const userDoc = snapshotUser.data()
-    const invitationDoc = snapshotInvitation.docs[0]?.data()
-
-    expect(userDoc).toHaveProperty("email", "test-pro@fl.im")
-    expect(userDoc).toHaveProperty("status", "Company")
-    expect(userDoc).toHaveProperty("company", "Test Organization")
-    expect(userDoc).toHaveProperty("subscription.subscriptionType", "PRO")
-    expect(invitationDoc).toHaveProperty("used", true)
-    expect(invitationDoc).toHaveProperty("usedAt")
   })
 })

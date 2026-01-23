@@ -1,7 +1,7 @@
-import { pokemonApi } from "@/redux/api"
-import { authApi } from "@/redux/api/auth"
 import { configureStore } from "@reduxjs/toolkit"
 import { useDispatch, useSelector, useStore } from "react-redux"
+import { pokemonApi } from "@/redux/api"
+import { authApi } from "@/redux/api/auth"
 
 export const makeStore = () => {
   return configureStore({

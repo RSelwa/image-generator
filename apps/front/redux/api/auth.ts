@@ -1,4 +1,3 @@
-import { auth } from "@/constants/db"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import {
   onAuthStateChanged,
@@ -7,6 +6,7 @@ import {
 } from "firebase/auth"
 import { toast } from "sonner"
 import { z } from "zod"
+import { auth } from "@/constants/db"
 
 type User = {
   id: string

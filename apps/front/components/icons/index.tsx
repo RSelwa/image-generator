@@ -1,3 +1,3 @@
-import GoogleIcon from './google';
+import GoogleIcon from "./google"
 
-export { GoogleIcon };
+export { GoogleIcon }
