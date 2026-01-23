@@ -18,7 +18,8 @@
     "dev": "turbo run dev",
     "test": "turbo run test",
     "watch": "turbo watch build --filter=@repo/providers --filter=./functions/*",
-    "deploy": "firebase deploy"
+    "deploy": "firebase deploy",
+    "build:create-user-document": "turbo run build --filter=@repo/create-user-document"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",

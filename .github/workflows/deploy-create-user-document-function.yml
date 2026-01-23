@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/deploy-create-user-document-function.yml
       - functions/create-user-document/**
+      - libs/schemas/src/firestore/user
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -85,7 +86,7 @@ jobs:
     needs: [init, lint, format, test]
     name: 🚀 Deploy createUserDocument function
     if: github.ref_name == 'main' || github.ref_name == 'develop'
-    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    environment: prod
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
@@ -103,3 +104,6 @@ jobs:
       - name: 🚀 Deploy to Firebase
         run: npx firebase deploy --project "$PROJECT_ID" --only
           functions:create-user-document --token "$FIREBASE_TOKEN"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}

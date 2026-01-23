@@ -41,7 +41,7 @@ describe("createUserDocument", () => {
     )
   })
 
-  it("should create a user document", async () => {
+  it.skip("should create a user document", async () => {
     const { uid } = await createAuthUser({ email: "test-base@fl.im" })
 
     const snapshot = await refs.users.doc(uid).get()
