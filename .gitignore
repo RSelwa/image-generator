@@ -29,6 +29,7 @@ env.txt
 
 # firebase / gcloud
 /credentials
+service-account.json
 .runtimeconfig.*
 
 # isolate-package output

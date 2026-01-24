@@ -22,7 +22,8 @@
     "test": "turbo run test",
     "watch": "turbo watch build --filter=@repo/providers --filter=./functions/*",
     "deploy": "firebase deploy",
-    "build:create-user-document": "turbo run build --filter=@repo/create-user-document"
+    "build:create-user-document": "turbo run build --filter=@repo/create-user-document",
+    "script": "deno run --allow-all --env=./scripts/.env --config scripts/deno.json"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",

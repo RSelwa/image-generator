@@ -1,5 +1,5 @@
 import { TABLES } from "@repo/common"
-import type { UserDoc } from "@repo/schemas"
+import type { GameDoc, MapDoc, UserDoc } from "@repo/schemas"
 import type {
   CollectionReference,
   QueryDocumentSnapshot,
@@ -7,6 +7,8 @@ import type {
 import { db } from "~/firebase"
 
 type WithId<T> = T & { id: string }
+
+export type CustomJson = Record<string, unknown>
 
 const toFirestoreConverter = <T = unknown>({ id: _, ...item }: WithId<T>) =>
   item
@@ -24,5 +26,13 @@ export const refs = {
   [TABLES.USERS]: db.collection(TABLES.USERS) as CollectionReference<
     UserDoc,
     UserDoc
+  >,
+  [TABLES.GAMES]: db.collection(TABLES.GAMES) as CollectionReference<
+    GameDoc,
+    GameDoc
+  >,
+  [TABLES.MAPS]: db.collection(TABLES.MAPS) as CollectionReference<
+    MapDoc,
+    MapDoc
   >,
 }

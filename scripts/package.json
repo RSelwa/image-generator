@@ -1,0 +1,19 @@
+{
+  "name": "@repo/scripts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "run": "deno run --allow-all"
+  },
+  "dependencies": {
+    "@repo/common": "workspace:*",
+    "@repo/providers": "workspace:*",
+    "@repo/schemas": "workspace:*",
+    "acorn": "^8.15.0",
+    "acorn-walk": "^8.3.4",
+    "dotenv": "^17.2.3",
+    "firebase-admin": "^12.6.0",
+    "jsdom": "^27.4.0"
+  }
+}

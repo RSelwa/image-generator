@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsx:*)",
+      "Bash(deno --version:*)",
+      "Bash(deno run:*)"
+    ]
+  }
+}

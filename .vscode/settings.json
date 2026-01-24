@@ -1,4 +1,6 @@
 {
   "cSpell.words": ["firestore"],
-  "json.validate.enable": false
+  "json.validate.enable": false,
+  "deno.enablePaths": ["./scripts"],
+  "deno.lint": true
 }

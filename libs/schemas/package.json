@@ -3,7 +3,9 @@
   "description": "Schemas used across the repo",
   "version": "1.0.0",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -21,9 +23,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "firebase-admin": "^13.5.0",
-    "zod": "^4.1.12",
-    "@repo/common": "workspace:*"
+    "@repo/common": "workspace:*",
+    "firebase-admin": "^13.6.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@codecompose/typescript-config": "^2.2.0",
