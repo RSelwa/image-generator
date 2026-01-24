@@ -67,7 +67,7 @@ export const authApi = createApi({
 
           return { data: null }
         } catch (error) {
-          console.log(error)
+          console.error(error)
           toast.error("Failed to Signup. Please check your credentials.")
 
           return { error: error as unknown }
@@ -94,7 +94,7 @@ export const authApi = createApi({
       providesTags: () => ["auth"],
       onCacheEntryAdded: async (
         _,
-        { cacheDataLoaded, cacheEntryRemoved, dispatch, getState },
+        { cacheDataLoaded, cacheEntryRemoved, dispatch },
       ) => {
         let unsubscribe: Unsubscribe | undefined
 
@@ -127,7 +127,7 @@ export const authApi = createApi({
 
         await cacheEntryRemoved
 
-        unsubscribe && unsubscribe()
+        unsubscribe?.()
       },
     }),
     login: builder.mutation<null, { email: string; password: string }>({
@@ -257,10 +257,12 @@ export const authApi = createApi({
             },
           )
         } catch (error) {
+          console.error("Error in user document listener:", error)
+
           throw new Error(`Something went wrong with ${ref.path}`)
         }
         await cacheEntryRemoved
-        unsubscribe && unsubscribe()
+        unsubscribe?.()
       },
     }),
     sendPasswordResetEmail: builder.mutation<

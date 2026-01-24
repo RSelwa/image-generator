@@ -19,7 +19,7 @@
         "noUnknownAtRules": "off", // required for tailwind?
         "noConfusingVoidType": "off",
         "noConsole": {
-          "level": "on",
+          "level": "warn",
           "options": {
             "allow": ["error", "info"],
           },
