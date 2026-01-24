@@ -1,9 +1,10 @@
+import { APP_NAME } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import Link from "next/link"
 
 const Footer = () => {
   return (
-    <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-8 border-t border-zinc-200 dark:border-zinc-800">
+    <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 mt-8 border-t border-zinc-200 dark:border-zinc-800">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex gap-8 text-sm text-zinc-600 dark:text-zinc-400">
           <Link
@@ -20,7 +21,7 @@ const Footer = () => {
           </Link>
         </div>
         <p className="text-sm text-zinc-500 dark:text-zinc-500">
-          © 2026 AutoPost. All rights reserved.
+          © 2026 {APP_NAME}. All rights reserved.
         </p>
       </div>
     </footer>

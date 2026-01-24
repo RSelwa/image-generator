@@ -1,3 +1,4 @@
+import type { SignupSchema } from "@/components/signup-form"
 import { auth } from "@/constants/db"
 import { getUserRef } from "@/constants/db-refs"
 import { SESSION_STATUS } from "@/constants/mapping"
@@ -13,8 +14,12 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { isEqual } from "@repo/common"
 import type { UserDoc } from "@repo/schemas"
 import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup,
   type Unsubscribe,
 } from "firebase/auth"
 import { toast } from "sonner"
@@ -43,24 +48,53 @@ export type QueryArgsListenAuth = void
 
 const sendPasswordResetEmailSchema = z.email()
 
+const googleProvider = new GoogleAuthProvider()
+googleProvider.addScope("https://www.googleapis.com/auth/userinfo.profile")
+
 export const authApi = createApi({
   reducerPath: "auth",
   baseQuery: fakeBaseQuery(),
   tagTypes: ["auth"],
   endpoints: (builder) => ({
+    createUserAuth: builder.mutation<null, SignupSchema>({
+      queryFn: async (data) => {
+        try {
+          await createUserWithEmailAndPassword(
+            auth,
+            data.email.toLowerCase(),
+            data.password,
+          )
+
+          return { data: null }
+        } catch (error) {
+          console.log(error)
+          toast.error("Failed to Signup. Please check your credentials.")
+
+          return { error: error as unknown }
+        }
+      },
+    }),
+    loginWithGoogle: builder.mutation<null, void>({
+      queryFn: async () => {
+        try {
+          await signInWithPopup(auth, googleProvider)
+
+          return { data: null }
+        } catch (error) {
+          console.error(error)
+          toast.error("Failed to login with Google.")
+
+          return { error: error as unknown }
+        }
+      },
+    }),
     listenAuth: builder.query<ResultListenAuth, QueryArgsListenAuth>({
       keepUnusedDataFor: 10,
       queryFn: () => ({ data: defaultAuth }),
       providesTags: () => ["auth"],
       onCacheEntryAdded: async (
         _,
-        {
-          updateCachedData,
-          cacheDataLoaded,
-          cacheEntryRemoved,
-          dispatch,
-          getState,
-        },
+        { cacheDataLoaded, cacheEntryRemoved, dispatch, getState },
       ) => {
         let unsubscribe: Unsubscribe | undefined
 
@@ -69,16 +103,55 @@ export const authApi = createApi({
           dispatch(updateSessionStatus(SESSION_STATUS.LOADING))
 
           unsubscribe = onAuthStateChanged(auth, async (user) => {
-            const sessionState = (getState() as RootState).session
-            const token = (await auth.currentUser?.getIdToken()) || ""
+            const isSignedIn = !!user
+
+            if (!user)
+              await dispatch(
+                updateSession({
+                  authUser: null,
+                  user: null,
+                  status: SESSION_STATUS.SUCCESS,
+                }),
+              )
+
+            if (isSignedIn) {
+              await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+            }
           })
         } catch (error) {
           dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
           console.error(error)
+
           throw new Error("Something went wrong with auth listener")
         }
+
         await cacheEntryRemoved
+
         unsubscribe && unsubscribe()
+      },
+    }),
+    login: builder.mutation<null, { email: string; password: string }>({
+      queryFn: async (data) => {
+        try {
+          await signInWithEmailAndPassword(auth, data.email, data.password)
+
+          return { data: null }
+        } catch (error) {
+          toast.error("Failed to login. Please check your credentials.")
+
+          return { error: error as unknown }
+        }
+      },
+    }),
+    logout: builder.mutation<null, void>({
+      queryFn: async () => {
+        try {
+          await auth.signOut()
+
+          return { data: null }
+        } catch (error) {
+          return { error: error as unknown }
+        }
       },
     }),
     updateAuth: builder.mutation<null, void>({
@@ -233,4 +306,11 @@ export const authApi = createApi({
   }),
 })
 
-export const { useListenAuthQuery, useSendPasswordResetEmailMutation } = authApi
+export const {
+  useListenAuthQuery,
+  useSendPasswordResetEmailMutation,
+  useCreateUserAuthMutation,
+  useLogoutMutation,
+  useLoginMutation,
+  useLoginWithGoogleMutation,
+} = authApi

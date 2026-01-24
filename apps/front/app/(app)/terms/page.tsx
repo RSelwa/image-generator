@@ -1,3 +1,5 @@
+import { APP_NAME, CONTACT_EMAIL } from "@/constants/mapping"
+
 export default function TermsOfService() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -16,7 +18,7 @@ export default function TermsOfService() {
               1. Acceptance of Terms
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              By accessing and using AutoPost (the "Service"), you accept and
+              By accessing and using {APP_NAME} (the "Service"), you accept and
               agree to be bound by the terms and provision of this agreement. If
               you do not agree to these Terms of Service, please do not use the
               Service.
@@ -28,7 +30,7 @@ export default function TermsOfService() {
               2. Description of Service
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              AutoPost provides a web-based platform that allows users to
+              {APP_NAME} provides a web-based platform that allows users to
               schedule and automatically publish content to Instagram. The
               Service includes features such as post scheduling, content
               calendar management, and analytics.
@@ -99,7 +101,7 @@ export default function TermsOfService() {
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
               Our Service integrates with Instagram through official APIs. By
-              using AutoPost, you acknowledge that:
+              using {APP_NAME}, you acknowledge that:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
               <li>
@@ -154,7 +156,7 @@ export default function TermsOfService() {
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
               The Service and its original content, features, and functionality
-              are owned by AutoPost and are protected by international
+              are owned by {APP_NAME} and are protected by international
               copyright, trademark, and other intellectual property laws. You
               retain ownership of content you post through the Service.
             </p>
@@ -178,7 +180,7 @@ export default function TermsOfService() {
               9. Limitation of Liability
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              To the maximum extent permitted by law, AutoPost shall not be
+              To the maximum extent permitted by law, {APP_NAME} shall not be
               liable for any indirect, incidental, special, consequential, or
               punitive damages, or any loss of profits or revenues, whether
               incurred directly or indirectly, or any loss of data, use,
@@ -217,7 +219,7 @@ export default function TermsOfService() {
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
               These Terms shall be governed by and construed in accordance with
-              the laws of the jurisdiction in which AutoPost operates, without
+              the laws of the jurisdiction in which {APP_NAME} operates, without
               regard to its conflict of law provisions.
             </p>
           </section>
@@ -231,7 +233,7 @@ export default function TermsOfService() {
               contact us at:
             </p>
             <p className="text-zinc-700 dark:text-zinc-300">
-              Email: legal@autopost.com
+              Email: {CONTACT_EMAIL}
               <br />
               Address: [Your Company Address]
             </p>

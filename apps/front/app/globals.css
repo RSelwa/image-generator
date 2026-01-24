@@ -46,6 +46,50 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+@theme {
+  --header-height: 76px;
+  --footer-height: 85px;
+  --spacing-full-height: calc(
+    100svh - var(--header-height) - var(--footer-height)
+  );
+
+  @keyframes loadingColors {
+    0%,
+    12.4% {
+      fill: var(--color-gray-200);
+    }
+    12.5%,
+    24.9% {
+      fill: var(--color-gray-300);
+    }
+    25%,
+    37.4% {
+      fill: var(--color-gray-400);
+    }
+    37.5%,
+    49.9% {
+      fill: var(--color-gray-500);
+    }
+    50%,
+    62.4% {
+      fill: var(--color-gray-600);
+    }
+    62.5%,
+    74.9% {
+      fill: var(--color-gray-700);
+    }
+    75%,
+    87.4% {
+      fill: var(--color-gray-800);
+    }
+    87.5%,
+    99.9% {
+      fill: var(--color-gray-900);
+    }
+  }
+  --animate-loading-colors: loadingColors 1s infinite;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

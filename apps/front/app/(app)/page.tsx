@@ -1,6 +1,6 @@
 const Page = () => {
   return (
-    <main className="min-h-[calc(100svh-76px-149px)]">
+    <main className="min-h-full-height">
       <section className="container mx-auto px-4 py-20 flex flex-col items-center justify-center text-center space-y-8">
         <div className="space-y-4 max-w-3xl">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">

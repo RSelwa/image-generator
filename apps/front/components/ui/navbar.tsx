@@ -2,6 +2,7 @@
 
 import { LogoIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
+import { NavUser } from "@/components/ui/nav-user"
 import { PAGES } from "@/constants/pages"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -22,14 +23,17 @@ const Navbar = () => {
           </span>
         </Link>
       </section>
-      <article className="flex items-center gap-3">
-        <Button variant="outline">
-          <Link href={PAGES.LOGIN}>Login</Link>
-        </Button>
-        <Button variant="default">
-          <Link href={PAGES.SIGNUP}>Join</Link>
-        </Button>
-      </article>
+      {user && <NavUser />}
+      {!user && (
+        <article className="flex items-center gap-3">
+          <Button variant="outline">
+            <Link href={PAGES.LOGIN}>Login</Link>
+          </Button>
+          <Button variant="default">
+            <Link href={PAGES.SIGNUP}>Join</Link>
+          </Button>
+        </article>
+      )}
     </nav>
   )
 }

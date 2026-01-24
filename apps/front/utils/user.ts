@@ -10,12 +10,13 @@ export const formatSessionFromFirebaseUser = ({
   authUser: User
 }): SessionUser => {
   const { uid, photoURL } = authUser
-  const { email } = user
+  const { email, rights } = user
 
   const sessionUser: SessionUser = {
     id: uid,
     email: email,
-    photoUrl: photoURL,
+    photoUrl: photoURL || "",
+    rights,
   }
 
   return sessionUser

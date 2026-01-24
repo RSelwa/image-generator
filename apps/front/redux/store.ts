@@ -12,7 +12,7 @@ export const makeStore = () => {
       [sessionSlice.name]: sessionSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware()
+      getDefaultMiddleware({ serializableCheck: false })
         .concat(pokemonApi.middleware)
         .concat(authApi.middleware),
   })

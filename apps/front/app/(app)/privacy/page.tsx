@@ -1,3 +1,5 @@
+import { APP_NAME, CONTACT_EMAIL } from "@/constants/mapping"
+
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -16,7 +18,7 @@ export default function PrivacyPolicy() {
               1. Introduction
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              AutoPost ("we", "our", or "us") is committed to protecting your
+              {APP_NAME} ("we", "our", or "us") is committed to protecting your
               privacy. This Privacy Policy explains how we collect, use,
               disclose, and safeguard your information when you use our Service.
               Please read this privacy policy carefully.
@@ -208,7 +210,7 @@ export default function PrivacyPolicy() {
             </ul>
             <p className="text-zinc-700 dark:text-zinc-300 mt-4">
               To exercise these rights, please contact us at
-              privacy@autopost.com.
+              {CONTACT_EMAIL}.
             </p>
           </section>
 
@@ -288,7 +290,7 @@ export default function PrivacyPolicy() {
               practices, please contact us:
             </p>
             <div className="text-zinc-700 dark:text-zinc-300">
-              <p>Email: privacy@autopost.com</p>
+              <p>Email: {CONTACT_EMAIL}</p>
               <p>Address: [Your Company Address]</p>
             </div>
           </section>

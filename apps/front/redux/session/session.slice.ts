@@ -6,7 +6,7 @@ import { createSlice } from "@reduxjs/toolkit"
 const initialState: Session = {
   disconnected: false,
   token: null,
-  status: SESSION_STATUS.IDLE,
+  status: SESSION_STATUS.LOADING,
   authUser: null,
   user: null,
 }

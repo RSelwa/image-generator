@@ -1,6 +1,7 @@
 "use client"
 
 import { GoogleIcon } from "@/components/icons"
+import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -13,15 +14,20 @@ import {
 import { Input } from "@/components/ui/input"
 import { PAGES } from "@/constants/pages"
 import { cn } from "@/lib/utils"
-import { useSendPasswordResetEmailMutation } from "@/redux/api/auth"
+import {
+  useLoginMutation,
+  useLoginWithGoogleMutation,
+  useSendPasswordResetEmailMutation,
+} from "@/redux/api/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import z from "zod"
 
 const loginSchema = z.object({
   email: z.email(),
-  password: z.string().min(8),
+  password: z.string(),
 })
 type LoginSchema = z.infer<typeof loginSchema>
 
@@ -29,14 +35,34 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [sendPasswordResetEmail] = useSendPasswordResetEmailMutation()
+  const router = useRouter()
 
-  const { formState, register, getValues, handleSubmit } = useForm({
+  const [sendPasswordResetEmail] = useSendPasswordResetEmailMutation()
+  const [login, { isLoading }] = useLoginMutation()
+  const [loginWithGoogle, { isLoading: isLoadingGoogle }] =
+    useLoginWithGoogleMutation()
+
+  const { register, getValues, handleSubmit, reset } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {},
   })
 
-  const onSubmit: SubmitHandler<LoginSchema> = async (data) => {}
+  const onSubmit: SubmitHandler<LoginSchema> = async (data) => {
+    const { error } = await login(data)
+    if (error) return
+
+    reset()
+    router.push(PAGES.HOME)
+  }
+
+  const onLoginWithGoogle = async () => {
+    const { error } = await loginWithGoogle()
+
+    if (error) return
+
+    reset()
+    router.push(PAGES.HOME)
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -78,15 +104,22 @@ export function LoginForm({
                 />
               </Field>
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit" disabled={isLoading}>
+                  Login {isLoading && <Loader />}
+                </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
               </FieldSeparator>
               <Field className="grid grid-cols-1 gap-4">
-                <Button variant="outline" type="button">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={onLoginWithGoogle}
+                >
                   <GoogleIcon />
                   <span className="sr-only">Sign up with Google</span>
+                  {isLoadingGoogle && <Loader />}
                 </Button>
               </Field>
               <FieldDescription className="text-center">

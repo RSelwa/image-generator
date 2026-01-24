@@ -1,7 +1,8 @@
 export const SESSION_STATUS = {
   LOADING: "loading",
-  IDLE: "idle",
   SUCCESS: "success",
   ERROR: "error",
-  SIGNIN: "signin",
 } as const
+
+export const APP_NAME = "Geo gamer"
+export const CONTACT_EMAIL = "selwa.raphael@gmail.com"

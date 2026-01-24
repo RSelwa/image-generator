@@ -1,11 +1,13 @@
 import { SESSION_STATUS } from "@/constants/mapping"
+import { USERS_RIGHTS } from "@repo/common"
 import type { User } from "firebase/auth"
 import { z } from "zod"
 
 export const sessionUserSchema = z.object({
   id: z.string(),
   email: z.email(),
-  photoUrl: z.string().nullable(),
+  photoUrl: z.string(),
+  rights: z.array(z.enum(USERS_RIGHTS)).default([]),
 })
 
 const authUserSchema = z.custom<User>()
