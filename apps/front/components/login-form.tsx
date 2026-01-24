@@ -1,9 +1,5 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import Link from "next/link"
-import { type SubmitHandler, useForm } from "react-hook-form"
-import z from "zod"
 import { GoogleIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -15,8 +11,13 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { PAGES } from "@/constants/pages"
 import { cn } from "@/lib/utils"
 import { useSendPasswordResetEmailMutation } from "@/redux/api/auth"
+import { zodResolver } from "@hookform/resolvers/zod"
+import Link from "next/link"
+import { type SubmitHandler, useForm } from "react-hook-form"
+import z from "zod"
 
 const loginSchema = z.object({
   email: z.email(),
@@ -89,7 +90,8 @@ export function LoginForm({
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                Don&apos;t have an account? <Link href="/signup">Sign up</Link>
+                Don&apos;t have an account?{" "}
+                <Link href={PAGES.SIGNUP}>Sign up</Link>
               </FieldDescription>
             </FieldGroup>
           </form>
@@ -104,8 +106,8 @@ export function LoginForm({
       </Card>
       <FieldDescription className="px-6 text-center">
         By clicking continue, you agree to our{" "}
-        <Link href="/terms">Terms of Service</Link> and{" "}
-        <Link href="/privacy">Privacy Policy</Link>.
+        <Link href={PAGES.TERMS}>Terms of Service</Link> and{" "}
+        <Link href={PAGES.PRIVACY}>Privacy Policy</Link>.
       </FieldDescription>
     </div>
   )

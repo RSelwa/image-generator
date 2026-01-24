@@ -2,9 +2,7 @@
   "name": "flim-monorepo",
   "description": "Monorepo for flim",
   "version": "1.0.0",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "packageManager": "pnpm@10.26.1",
   "main": "dist/index.js",
   "scripts": {

@@ -1,26 +1,6 @@
-import Link from "next/link"
-
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      {/* Header */}
-      <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
-          >
-            AutoPost
-          </Link>
-          <Link
-            href="/"
-            className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-          >
-            Back to Home
-          </Link>
-        </nav>
-      </header>
-
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
         <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">
@@ -359,32 +339,6 @@ export default function PrivacyPolicy() {
           </section>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-20 border-t border-zinc-200 dark:border-zinc-800">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            AutoPost
-          </div>
-          <div className="flex gap-8 text-sm text-zinc-600 dark:text-zinc-400">
-            <Link
-              href="/terms"
-              className="hover:text-zinc-900 dark:hover:text-zinc-100"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="/privacy"
-              className="hover:text-zinc-900 dark:hover:text-zinc-100"
-            >
-              Privacy Policy
-            </Link>
-          </div>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500">
-            © 2026 AutoPost. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }

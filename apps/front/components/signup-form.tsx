@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { GoogleIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -10,7 +9,9 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { PAGES } from "@/constants/pages"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 export function SignupForm({
   className,
@@ -71,7 +72,7 @@ export function SignupForm({
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                Already have an account? <Link href="/login">Sign in</Link>
+                Already have an account? <Link href={PAGES.LOGIN}>Sign in</Link>
               </FieldDescription>
             </FieldGroup>
           </form>
@@ -86,8 +87,8 @@ export function SignupForm({
       </Card>
       <FieldDescription className="px-6 text-center">
         By clicking continue, you agree to our{" "}
-        <Link href="/terms">Terms of Service</Link> and{" "}
-        <Link href="/privacy">Privacy Policy</Link>.
+        <Link href={PAGES.TERMS}>Terms of Service</Link> and{" "}
+        <Link href={PAGES.PRIVACY}>Privacy Policy</Link>.
       </FieldDescription>
     </div>
   )

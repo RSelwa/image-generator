@@ -8,10 +8,10 @@ import {
 } from "@/redux/session/session.actions"
 import type { RootState } from "@/redux/store"
 import { formatSessionFromFirebaseUser } from "@/utils/user"
-import { DocumentReference, getDoc, onSnapshot } from "@firebase/firestore"
+import { type DocumentReference, getDoc, onSnapshot } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { isEqual } from "@repo/common"
-import { UserDoc } from "@repo/schemas"
+import type { UserDoc } from "@repo/schemas"
 import {
   onAuthStateChanged,
   sendPasswordResetEmail,

@@ -1,3 +1,3 @@
-import { RootState } from "@/redux/store"
+import type { RootState } from "@/redux/store"
 
-export const selectUser = ({ session }: RootState) => session
+export const selectUser = ({ session }: RootState) => session.user
