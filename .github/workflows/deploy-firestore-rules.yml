@@ -1,0 +1,47 @@
+name: 🔥 Deploy Firestore Rules
+
+on:
+  push:
+    paths:
+      - ".github/workflows/deploy-firestore-rules.yml"
+      - "rules/**"
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    name: ⚙️ Initialize Node.js Environment
+    if: github.event_name != 'release'
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+  deploy:
+    needs: init
+    runs-on: ubuntu-latest
+    name: 🔥 Deploy Firestore Rules
+    environment: prod
+
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: ⚙️ Install Firebase tools
+        run: pnpm install -g firebase-tools
+
+      - name: 🧪 Test Security Rules
+        run: npx firebase emulators:exec --only firestore "pnpm --filter
+          @repo/rules test"
+
+      - name: 🔥 Deploy Firestore Rules
+        if: github.ref_name == 'main' || github.ref_name == 'develop'
+        run: npx firebase deploy --project "$PROJECT_ID" --only
+          firestore:$PROJECT_ID --token "$FIREBASE_TOKEN"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
