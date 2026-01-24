@@ -1,3 +1,4 @@
+import type { DocumentReference } from "firebase-admin/firestore"
 import z from "zod"
 
 export const gameDocSchema = z.object({
@@ -7,3 +8,5 @@ export const gameDocSchema = z.object({
 })
 
 export type GameDoc = z.infer<typeof gameDocSchema>
+
+export type GameRef = DocumentReference<GameDoc, GameDoc>

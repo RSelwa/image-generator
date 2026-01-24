@@ -1,6 +1,7 @@
 import { parse } from "acorn"
 import * as walk from "acorn-walk"
 import { JSDOM } from "jsdom"
+import z from "zod"
 
 const allowedNames = [
   "games",
@@ -56,14 +57,35 @@ export const getVariables = async () => {
   return found
 }
 
+const scrapVariable = z.object({
+  games: z.string().min(1),
+  id_games: z.string().min(1),
+  gamesSrc: z.string().min(1),
+  mid_name: z.string(),
+  alternate_name: z.string(),
+  jacket: z.string().min(1),
+})
+
 try {
   const vars = await getVariables()
 
   const games = vars.games
 
   games.forEach((game, index) => {
-    console.log(`Image URL: ${getImageUrl(vars.gamesSrc[index])}`)
-    console.log("---------------------------")
+    const scrap = scrapVariable.safeParse({
+      games: game,
+      id_games: vars.id_games[index],
+      gamesSrc: vars.gamesSrc[index],
+      mid_name: vars.mid_name[index],
+      alternate_name: vars.alternate_name[index],
+      jacket: vars.jacket[index],
+    })
+
+    if (scrap.error) return
+
+    const { data } = scrap
+
+    console.log(data.games)
   })
 } catch (error) {
   console.error("Error fetching variables:", error)

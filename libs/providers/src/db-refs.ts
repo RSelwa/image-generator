@@ -1,5 +1,5 @@
 import { TABLES } from "@repo/common"
-import type { GameDoc, MapDoc, UserDoc } from "@repo/schemas"
+import type { GameDoc, MapDoc, SphericalDoc, UserDoc } from "@repo/schemas"
 import type {
   CollectionReference,
   QueryDocumentSnapshot,
@@ -34,5 +34,9 @@ export const refs = {
   [TABLES.MAPS]: db.collection(TABLES.MAPS) as CollectionReference<
     MapDoc,
     MapDoc
+  >,
+  [TABLES.SPHERICAL]: db.collection(TABLES.SPHERICAL) as CollectionReference<
+    SphericalDoc,
+    SphericalDoc
   >,
 }
