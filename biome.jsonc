@@ -77,7 +77,7 @@
     "actions": {
       "source": {
         "recommended": true,
-        "organizeImports": "on"
+        "organizeImports": "off"
       }
     }
   }

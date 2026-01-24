@@ -62,6 +62,12 @@ importers:
       '@reduxjs/toolkit':
         specifier: ^2.11.2
         version: 2.11.2(react-redux@9.2.0(@types/react@19.2.9)(react@19.2.3)(redux@5.0.1))(react@19.2.3)
+      '@repo/common':
+        specifier: workspace:*
+        version: link:../../libs/common
+      '@repo/schemas':
+        specifier: workspace:*
+        version: link:../../libs/schemas
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

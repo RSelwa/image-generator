@@ -1,4 +1,17 @@
+import { auth } from "@/constants/db"
+import { getUserRef } from "@/constants/db-refs"
+import { SESSION_STATUS } from "@/constants/mapping"
+import {
+  updateSession,
+  updateSessionAuthUser,
+  updateSessionStatus,
+} from "@/redux/session/session.actions"
+import type { RootState } from "@/redux/store"
+import { formatSessionFromFirebaseUser } from "@/utils/user"
+import { DocumentReference, getDoc, onSnapshot } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
+import { isEqual } from "@repo/common"
+import { UserDoc } from "@repo/schemas"
 import {
   onAuthStateChanged,
   sendPasswordResetEmail,
@@ -6,7 +19,6 @@ import {
 } from "firebase/auth"
 import { toast } from "sonner"
 import { z } from "zod"
-import { auth } from "@/constants/db"
 
 type User = {
   id: string
@@ -54,21 +66,125 @@ export const authApi = createApi({
 
         try {
           await cacheDataLoaded
-          // dispatch(updateSessionStatus(SESSION_STATUS.LOADING))
+          dispatch(updateSessionStatus(SESSION_STATUS.LOADING))
+
           unsubscribe = onAuthStateChanged(auth, async (user) => {
-            // const sessionState = (getState() as RootState)
-            // const token = (await auth.currentUser?.getIdToken()) || ""
-            // dispatch(updateSessionStatus(status))
-            // dispatch(populateAuthUser({ user, token }))
-            // if (isSignedIn) {
-            //   await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
-            // }
-            // updateCachedData(() => ({ user, isSignedIn, pending: false }))
+            const sessionState = (getState() as RootState).session
+            const token = (await auth.currentUser?.getIdToken()) || ""
           })
         } catch (error) {
-          // dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
+          dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
           console.error(error)
           throw new Error("Something went wrong with auth listener")
+        }
+        await cacheEntryRemoved
+        unsubscribe && unsubscribe()
+      },
+    }),
+    updateAuth: builder.mutation<null, void>({
+      queryFn: async (_, { dispatch }) => {
+        try {
+          const user = auth.currentUser
+
+          if (!user) throw new Error("No user found")
+
+          const token = await user.getIdToken()
+
+          dispatch(updateSessionAuthUser(user))
+
+          const payload = { ref: getUserRef(user.uid), token }
+
+          await dispatch(authApi.endpoints.listenToUserDoc.initiate(payload))
+
+          return { data: null }
+        } catch (error) {
+          return { error: error }
+        }
+      },
+    }),
+    listenToUserDoc: builder.query<
+      UserDoc | null,
+      { ref: DocumentReference<UserDoc> }
+    >({
+      queryFn: async ({ ref }, { dispatch, getState }) => {
+        try {
+          const authUser = (getState() as RootState)?.session.authUser
+
+          if (!authUser) throw new Error("No authenticated user found")
+
+          const promiseGetDoc = await getDoc(ref)
+          if (!promiseGetDoc.exists()) throw new Error("Document not found")
+
+          const userDocument = promiseGetDoc.data()
+
+          const user = formatSessionFromFirebaseUser({
+            user: userDocument,
+            authUser,
+          })
+
+          dispatch(updateSession({ user, status: SESSION_STATUS.SUCCESS }))
+
+          return { data: userDocument }
+        } catch (error) {
+          console.error("Error fetching user document:", error)
+
+          return { data: null }
+        }
+      },
+      onCacheEntryAdded: async (
+        { ref }: { ref: DocumentReference<UserDoc> },
+        {
+          updateCachedData,
+          cacheDataLoaded,
+          cacheEntryRemoved,
+          dispatch,
+          getState,
+        },
+      ) => {
+        let unsubscribe: Unsubscribe | undefined
+        try {
+          const initialResult = await cacheDataLoaded
+
+          if (!initialResult) return
+
+          const authUser = (getState() as RootState)?.session.authUser
+
+          if (!authUser) throw new Error("No authenticated user found")
+
+          unsubscribe = onSnapshot(
+            ref,
+            async (snapshot) => {
+              if (!snapshot.exists()) return unsubscribe?.()
+
+              const data = { ...snapshot.data(), id: snapshot.id }
+
+              const userDocument = data as UserDoc
+
+              const user = formatSessionFromFirebaseUser({
+                user: userDocument,
+                authUser,
+              })
+
+              dispatch(updateSession({ user, status: SESSION_STATUS.SUCCESS }))
+
+              updateCachedData((draft) => {
+                const isSame = isEqual(draft, data)
+                if (isSame) return draft
+
+                return data
+              })
+            },
+            (error) => {
+              const state = getState() as RootState
+              const userUid = state.session?.authUser?.uid
+
+              if (!userUid) return unsubscribe?.()
+
+              console.error("Error listening to user document:", error)
+            },
+          )
+        } catch (error) {
+          throw new Error(`Something went wrong with ${ref.path}`)
         }
         await cacheEntryRemoved
         unsubscribe && unsubscribe()
