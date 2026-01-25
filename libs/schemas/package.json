@@ -3,9 +3,7 @@
   "description": "Schemas used across the repo",
   "version": "1.0.0",
   "type": "module",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

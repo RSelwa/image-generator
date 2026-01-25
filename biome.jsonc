@@ -1,17 +1,17 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
   "files": {
-    "includes": ["**/*", "!cli/template/**/*"],
+    "includes": ["**/*", "!cli/template/**/*"]
   },
   "css": {
     "parser": {
-      "tailwindDirectives": true,
-    },
+      "tailwindDirectives": true
+    }
   },
   "linter": {
     "domains": {
       "project": "all",
-      "test": "all",
+      "test": "all"
     },
     "rules": {
       "recommended": true,
@@ -21,19 +21,19 @@
         "noConsole": {
           "level": "warn",
           "options": {
-            "allow": ["error", "info"],
-          },
-        },
+            "allow": ["error", "info"]
+          }
+        }
       },
       "a11y": {
-        "noSvgWithoutTitle": "off",
+        "noSvgWithoutTitle": "off"
       },
       "correctness": {
         /**
          * To allow this, we would first need to get rid of TS project references,
          * because it allows noEmit set to true, which is not compatible with references.
          */
-        "useImportExtensions": "off",
+        "useImportExtensions": "off"
       },
       "nursery": {
         /**
@@ -44,42 +44,42 @@
         "noMisusedPromises": "error",
         "noUnnecessaryConditions": "info",
         // "noUnresolvedImports": "error", // Doesn't seem to understand node: prefix
-        "useExhaustiveSwitchCases": "error",
-      },
-    },
+        "useExhaustiveSwitchCases": "error"
+      }
+    }
   },
   "javascript": {
     "formatter": {
       "enabled": true,
       "indentStyle": "space",
       "indentWidth": 2,
-      "semicolons": "asNeeded",
-    },
+      "semicolons": "asNeeded"
+    }
   },
   "json": {
     "formatter": {
-      "trailingCommas": "none",
-    },
+      "trailingCommas": "none"
+    }
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "expand": "auto",
-    "lineEnding": "lf",
-    "formatWithErrors": true,
+    "lineEnding": "crlf",
+    "formatWithErrors": true
   },
 
   "vcs": {
     "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": true,
+    "useIgnoreFile": true
   },
   "assist": {
     "actions": {
       "source": {
         "recommended": true,
-        "organizeImports": "off",
-      },
-    },
-  },
+        "organizeImports": "off"
+      }
+    }
+  }
 }

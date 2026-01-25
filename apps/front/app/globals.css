@@ -50,7 +50,9 @@
   --header-height: 76px;
   --footer-height: 85px;
   --spacing-full-height: calc(
-    100svh - var(--header-height) - var(--footer-height)
+    100svh -
+    var(--header-height) -
+    var(--footer-height)
   );
 
   @keyframes loadingColors {

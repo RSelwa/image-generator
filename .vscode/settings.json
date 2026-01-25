@@ -2,5 +2,7 @@
   "cSpell.words": ["firestore"],
   "json.validate.enable": false,
   "deno.enablePaths": ["./scripts"],
-  "deno.lint": true
+  "deno.lint": false,
+  "editor.defaultFormatter": "biomejs.biome",
+  "biome.notifyErrors": false
 }

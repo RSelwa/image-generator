@@ -1,4 +1,5 @@
 import { pokemonApi } from "@/redux/api"
+import { adminApi } from "@/redux/api/admin"
 import { authApi } from "@/redux/api/auth"
 import { sessionSlice } from "@/redux/session/session.slice"
 import { configureStore } from "@reduxjs/toolkit"
@@ -8,12 +9,14 @@ export const makeStore = () => {
   return configureStore({
     reducer: {
       [pokemonApi.reducerPath]: pokemonApi.reducer,
+      [adminApi.reducerPath]: adminApi.reducer,
       [authApi.reducerPath]: authApi.reducer,
       [sessionSlice.name]: sessionSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ serializableCheck: false })
         .concat(pokemonApi.middleware)
+        .concat(adminApi.middleware)
         .concat(authApi.middleware),
   })
 }

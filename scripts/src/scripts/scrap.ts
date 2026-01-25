@@ -2,7 +2,21 @@ import { parse } from "acorn"
 import * as walk from "acorn-walk"
 import { JSDOM } from "jsdom"
 import z from "zod"
+import { TABLES } from "../../../libs/common/src/constants/firebase.ts"
+import { refs } from "../../../libs/providers/dist/db-refs.js"
 
+const scrapVariableSchema = z.object({
+  game: z.string().min(1),
+  id_game: z.string().min(1),
+  gameSrc: z.string().min(1),
+  mid_name: z.string(),
+  alternate_name: z.string(),
+  jacket: z.string().min(1),
+  mosaics: z.array(z.array(z.string())).optional(),
+})
+type ScrapVariableSchema = z.infer<typeof scrapVariableSchema>
+
+const mosaic = "mosaics"
 const allowedNames = [
   "games",
   "id_games",
@@ -12,9 +26,27 @@ const allowedNames = [
   "jacket",
 ]
 
-const getImageUrl = (image: string) => {
-  return `https://www.game-guessr.com/php/image.php?image=${image}`
+const getExistingDocs = async () => {
+  const [sphericalDocs, gamesDocs] = await Promise.all([
+    refs.spherical.get(),
+    refs.games.get(),
+  ])
+
+  const existingImageSource = new Set<string>()
+  const existingGamesId = new Set<string>()
+
+  sphericalDocs.forEach((doc) => {
+    const data = doc.data()
+    existingImageSource.add(data.image)
+  })
+
+  gamesDocs.forEach((doc) => {
+    existingGamesId.add(doc.id)
+  })
+
+  return { existingImageSource, existingGamesId }
 }
+const existing = await getExistingDocs()
 
 export const getVariables = async () => {
   const playFile = await fetch("https://www.game-guessr.com/play.html")
@@ -31,19 +63,27 @@ export const getVariables = async () => {
     .trim()
     .replace(/<!--[\s\S]*?-->/g, "")
 
-  const found: Record<string, string[]> = {}
+  const found: { [key: string]: string[] | string[][][] } = {}
 
   const ast = parse(code, {
     ecmaVersion: "latest",
     sourceType: "module",
+    locations: true,
   })
+
+  // Collect all variable declarations with their line numbers
+  const declarations: {
+    name: string
+    line: number
+    start: number
+    end: number
+  }[] = []
 
   walk.simple(ast, {
     VariableDeclarator(node) {
-      if (
-        node.id.type === "Identifier" &&
-        allowedNames.includes(node.id.name)
-      ) {
+      if (node.id.type !== "Identifier") return
+
+      if (allowedNames.includes(node.id.name)) {
         found[node.id.name] = JSON.parse(
           code.slice(
             node.init?.start ?? node.start,
@@ -51,44 +91,116 @@ export const getVariables = async () => {
           ),
         )
       }
+
+      if (node.loc) {
+        declarations.push({
+          name: node.id.name,
+          line: node.loc.start.line,
+          start: node.init?.start ?? node.start,
+          end: node.init?.end ?? node.end,
+        })
+      }
     },
   })
+
+  // Find "life" and get the variable on the previous line
+  const lifeDecl = declarations.find((d) => d.name === "life")
+
+  if (lifeDecl) {
+    const prevLineDecl = declarations.find((d) => d.line === lifeDecl.line - 1)
+    if (prevLineDecl) {
+      const rawValue = code.slice(prevLineDecl.start, prevLineDecl.end)
+
+      const fixedRaw = JSON.stringify(
+        JSON.parse(rawValue.replace("JSON.parse('", "").replace("')", "")),
+      )
+
+      found[mosaic] = JSON.parse(fixedRaw) as string[][][]
+    }
+  }
 
   return found
 }
 
-const scrapVariable = z.object({
-  games: z.string().min(1),
-  id_games: z.string().min(1),
-  gamesSrc: z.string().min(1),
-  mid_name: z.string(),
-  alternate_name: z.string(),
-  jacket: z.string().min(1),
-})
+const getScrapData = async () => {
+  try {
+    const vars = await getVariables()
 
-try {
-  const vars = await getVariables()
+    const games = Object.values(vars)
+      .map((_, index) => {
+        const scrap = scrapVariableSchema.safeParse({
+          game: vars.games[index],
+          id_game: vars.id_games[index],
+          gameSrc: vars.gamesSrc[index],
+          mid_name: vars.mid_name[index],
+          alternate_name: vars.alternate_name[index],
+          jacket: vars.jacket[index],
+          mosaics: vars.mosaics[index] as string[][],
+        })
 
-  const games = vars.games
+        if (scrap.error) {
+          console.error("Scrap parsing error:", scrap.error)
+          return null
+        }
 
-  games.forEach((game, index) => {
-    const scrap = scrapVariable.safeParse({
-      games: game,
-      id_games: vars.id_games[index],
-      gamesSrc: vars.gamesSrc[index],
-      mid_name: vars.mid_name[index],
-      alternate_name: vars.alternate_name[index],
-      jacket: vars.jacket[index],
-    })
+        const { data } = scrap
 
-    if (scrap.error) return
+        return data
+      })
+      .filter((g) => g !== null)
 
-    const { data } = scrap
+    return games
+  } catch (error) {
+    console.error("Error fetching variables:", error)
 
-    console.log(data.games)
-  })
-} catch (error) {
-  console.error("Error fetching variables:", error)
+    return []
+  }
+}
 
-  Deno.exit(1)
+const createOrUpdateDb = async (data: ScrapVariableSchema) => {
+  try {
+    const isGameExisting = existing.existingGamesId.has(data.id_game)
+    const isImageExisting = existing.existingImageSource.has(data.gameSrc)
+
+    const gameRef = refs.games.doc(data.id_game)
+
+    if (!isGameExisting) {
+      await gameRef.set({
+        title: data.game,
+        thumbnailUrl: data.jacket,
+        midName: data.mid_name,
+        alternateName: data.alternate_name,
+      })
+      console.info(`✅ Created game: ${data.id_game}`)
+
+      existing.existingGamesId.add(data.id_game)
+    } else console.info(`⚠️ Game already exists for game ID: ${data.id_game}`)
+
+    if (!isImageExisting) {
+      await refs.spherical.doc(data.id_game).set({
+        gameRef: `/${TABLES.GAMES}/${gameRef.id}`,
+        image: data.gameSrc,
+        mosaics: data.mosaics?.flat(),
+      })
+
+      console.info(`✅ Created spherical for game ID: ${data.id_game}`)
+
+      existing.existingImageSource.add(data.gameSrc)
+    } else console.info(`⚠️ Spherical already existed: ${data.gameSrc}`)
+  } catch (error) {
+    console.error("Error creating or updating DB:", error)
+  }
+}
+
+const length = 10000
+const iterations = Array.from({ length }).fill(0)
+
+for (const i of iterations.keys()) {
+  console.info(`🔄 Iteration ${i + 1} of ${length}`)
+
+  const scrapped = await getScrapData()
+
+  for (const data of scrapped) {
+    await createOrUpdateDb(data)
+  }
 }
