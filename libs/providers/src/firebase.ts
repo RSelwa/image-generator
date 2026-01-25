@@ -1,4 +1,3 @@
-import { PROJECT_ID } from "@repo/common"
 import admin from "firebase-admin"
 import { getAuth } from "firebase-admin/auth"
 import { getFunctions } from "firebase-admin/functions"
@@ -18,7 +17,7 @@ if (!admin.apps.length) {
       )
     : undefined
 
-  admin.initializeApp({ credential, projectId: PROJECT_ID })
+  admin.initializeApp({ credential })
 }
 
 const firebaseApp = admin.app()

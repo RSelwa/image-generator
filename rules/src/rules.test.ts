@@ -1,9 +1,10 @@
 import {
+  assertFails,
   assertSucceeds,
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from "@firebase/rules-unit-testing"
-import { doc, getDoc, setDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
 import { readFileSync } from "node:fs"
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from "vitest"
 import { generateCoverageReport } from "./utils"
@@ -57,7 +58,7 @@ describe("Firebase Security Rules", () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         await setDoc(doc(context.firestore(), `users/${uid}`), {
           uid,
-          rights: ["admin"],
+          rights: "admin",
         })
       })
 
@@ -68,6 +69,288 @@ describe("Firebase Security Rules", () => {
       )
 
       expect(result).toBeDefined()
+    })
+  })
+
+  describe("games collection", () => {
+    test("should be able to read a doc even if not logged in", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "games/game1"), {
+          name: "Test Game",
+        })
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      const result = await assertSucceeds(
+        getDoc(doc(unauthedDb, "games/game1")),
+      )
+
+      expect(result).toBeDefined()
+    })
+
+    test("should not be able to create a doc while not admin", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: [],
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        setDoc(doc(authedUserDb, "games/game1"), { name: "Test Game" }),
+      )
+    })
+
+    test("should not be able to update a doc while not admin", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: [],
+        })
+        await setDoc(doc(context.firestore(), "games/game1"), {
+          name: "Test Game",
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        updateDoc(doc(authedUserDb, "games/game1"), { name: "Updated Game" }),
+      )
+    })
+
+    test("should be able to write as admin", async () => {
+      const uid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: "admin",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        setDoc(doc(adminDb, "games/game1"), { name: "Test Game" }),
+      )
+    })
+
+    test("should be able to update as admin", async () => {
+      const uid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: "admin",
+        })
+        await setDoc(doc(context.firestore(), "games/game1"), {
+          name: "Test Game",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(adminDb, "games/game1"), { name: "Updated Game" }),
+      )
+    })
+  })
+
+  describe("maps collection", () => {
+    test("should be able to read a doc even if not logged in", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "maps/map1"), {
+          name: "Test Map",
+        })
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      const result = await assertSucceeds(getDoc(doc(unauthedDb, "maps/map1")))
+
+      expect(result).toBeDefined()
+    })
+
+    test("should not be able to create a doc while not admin", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: [],
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        setDoc(doc(authedUserDb, "maps/map1"), { name: "Test Map" }),
+      )
+    })
+
+    test("should not be able to update a doc while not admin", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: [],
+        })
+        await setDoc(doc(context.firestore(), "maps/map1"), {
+          name: "Test Map",
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        updateDoc(doc(authedUserDb, "maps/map1"), { name: "Updated Map" }),
+      )
+    })
+
+    test("should be able to write as admin", async () => {
+      const uid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: "admin",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        setDoc(doc(adminDb, "maps/map1"), { name: "Test Map" }),
+      )
+    })
+
+    test("should be able to update as admin", async () => {
+      const uid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: "admin",
+        })
+        await setDoc(doc(context.firestore(), "maps/map1"), {
+          name: "Test Map",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(adminDb, "maps/map1"), { name: "Updated Map" }),
+      )
+    })
+  })
+
+  describe("spherical collection", () => {
+    test("should be able to read a doc even if not logged in", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "spherical/spherical1"), {
+          name: "Test Spherical",
+        })
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      const result = await assertSucceeds(
+        getDoc(doc(unauthedDb, "spherical/spherical1")),
+      )
+
+      expect(result).toBeDefined()
+    })
+
+    test("should not be able to create a doc while not admin", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: [],
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        setDoc(doc(authedUserDb, "spherical/spherical1"), {
+          name: "Test Spherical",
+        }),
+      )
+    })
+
+    test("should not be able to update a doc while not admin", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: [],
+        })
+        await setDoc(doc(context.firestore(), "spherical/spherical1"), {
+          name: "Test Spherical",
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        updateDoc(doc(authedUserDb, "spherical/spherical1"), {
+          name: "Updated Spherical",
+        }),
+      )
+    })
+
+    test("should be able to write as admin", async () => {
+      const uid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: "admin",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        setDoc(doc(adminDb, "spherical/spherical1"), {
+          name: "Test Spherical",
+        }),
+      )
+    })
+
+    test("should be able to update as admin", async () => {
+      const uid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          rights: "admin",
+        })
+        await setDoc(doc(context.firestore(), "spherical/spherical1"), {
+          name: "Test Spherical",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(adminDb, "spherical/spherical1"), {
+          name: "Updated Spherical",
+        }),
+      )
     })
   })
 })

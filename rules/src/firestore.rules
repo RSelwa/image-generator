@@ -12,7 +12,7 @@ service cloud.firestore {
     }
     
   	function signedInAdmin() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.rights.contains("admin");
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.rights == "admin";
     }
 
     match /users/{user} {
@@ -20,6 +20,21 @@ service cloud.firestore {
       allow get, write: if isSignedIn() && request.auth.uid == user;
      
       allow read, write: if signedInAdmin();
+    } 
+
+    match /games/{game} {
+      allow write: if signedInAdmin() && isSignedIn();
+      allow read: if true;
+    } 
+
+    match /maps/{map} {
+      allow write: if signedInAdmin() && isSignedIn();
+      allow read: if true;
+    } 
+
+    match /spherical/{spherical} {
+      allow write: if signedInAdmin() && isSignedIn();
+      allow read: if true;
     } 
   }
 }
