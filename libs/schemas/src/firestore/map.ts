@@ -1,4 +1,4 @@
-import { DocumentReference } from "firebase-admin/firestore"
+import { DocumentReference } from "@firebase/firestore"
 import z from "zod"
 import type { GameRef } from "~/firestore/game"
 

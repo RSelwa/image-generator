@@ -47,8 +47,10 @@
 }
 
 @theme {
+  --admin-header-height: 76px;
   --header-height: 76px;
   --footer-height: 85px;
+  --spacing-full-height-admin: calc(100svh - var(--admin-header-height));
   --spacing-full-height: calc(
     100svh -
     var(--header-height) -

@@ -1,7 +1,7 @@
 import { db } from "@/constants/db"
-import { type CollectionReference, collection, doc } from "@firebase/firestore"
 import { TABLES } from "@repo/common"
 import type { GameDoc, SphericalDoc, UserDoc } from "@repo/schemas"
+import { type CollectionReference, collection, doc } from "firebase/firestore"
 
 export type DocumentMapping = {
   [TABLES.USERS]: UserDoc

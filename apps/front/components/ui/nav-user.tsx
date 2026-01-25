@@ -19,12 +19,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { PAGES } from "@/constants/pages"
 import { useLogoutMutation } from "@/redux/api/auth"
-import { selectUser } from "@/redux/session/session.selectors"
+import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import Link from "next/link"
 
 export function NavUser() {
   const user = useAppSelector(selectUser)
+  const isAdmin = useAppSelector(selectIsAdmin)
 
   if (!user) return null
 
@@ -70,6 +73,14 @@ export function NavUser() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          {isAdmin && (
+            <DropdownMenuItem asChild>
+              <Link href={PAGES.ADMIN}>
+                <BadgeCheck />
+                Admin
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem>
             <BadgeCheck />
             Account

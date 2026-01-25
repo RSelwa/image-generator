@@ -36,7 +36,7 @@ export const AdminGuard = ({ children }: AdminGuardProps) => {
     )
   }
 
-  if (status === SESSION_STATUS.SUCCESS || !isAdmin) {
+  if (status !== SESSION_STATUS.SUCCESS || !isAdmin) {
     return null
   }
 

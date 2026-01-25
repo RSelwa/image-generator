@@ -5,4 +5,5 @@ export const PAGES = {
   SIGNUP: "/signup",
   PRIVACY: "/privacy",
   TERMS: "/terms",
+  ADMIN: "/admin",
 } as const

@@ -1,4 +1,4 @@
-import type { DocumentReference } from "firebase-admin/firestore"
+import type { DocumentReference } from "@firebase/firestore"
 import z from "zod"
 
 export const gameDocSchema = z.object({

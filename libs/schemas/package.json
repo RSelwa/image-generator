@@ -21,8 +21,9 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@firebase/firestore": "^4.10.0",
     "@repo/common": "workspace:*",
-    "firebase-admin": "^13.6.0",
+    "firebase": "^12.8.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

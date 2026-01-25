@@ -9,7 +9,6 @@ import {
 } from "@/redux/session/session.actions"
 import type { RootState } from "@/redux/store"
 import { formatSessionFromFirebaseUser } from "@/utils/user"
-import { type DocumentReference, getDoc, onSnapshot } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { isEqual } from "@repo/common"
 import type { UserDoc } from "@repo/schemas"
@@ -22,6 +21,7 @@ import {
   signInWithPopup,
   type Unsubscribe,
 } from "firebase/auth"
+import { type DocumentReference, getDoc, onSnapshot } from "firebase/firestore"
 import { toast } from "sonner"
 import { z } from "zod"
 
