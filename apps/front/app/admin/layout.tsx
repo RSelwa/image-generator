@@ -43,6 +43,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
+          {children}
         </SidebarInset>
       </SidebarProvider>
     </AdminGuard>

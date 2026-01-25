@@ -1,77 +1,103 @@
 // Need to use the React-specific entry point to import createApi
+import { DEFAULT_SIZE_GAMES } from "@/constants/api"
 import { TABLE_REFS } from "@/constants/db-refs"
+import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { TABLES } from "@repo/common"
-import { gameDocSchema } from "@repo/schemas"
+import { capitalizeFirstLetter, TABLES } from "@repo/common"
+import { gameDocSchemaWithId } from "@repo/schemas"
 import {
-  type DocumentReference,
+  documentId,
   getDocs,
   limit,
+  orderBy,
   query,
+  startAfter,
+  where,
   type QueryConstraint,
-  startAt,
 } from "firebase/firestore"
 import z from "zod"
 
-const getGamesPayloadSchema = z.object({
-  page: z.number().min(1).default(1),
-  pageSize: z.number().min(1).max(100).default(50),
-  startAt: z.custom<DocumentReference>(),
-})
-const getGamesResponseSchema = z.object({
-  total: z.number().min(0),
-  games: z.array(gameDocSchema),
-  hasNextPage: z.boolean(),
-})
+const getGamesResponseSchema = z.array(gameDocSchemaWithId)
 
-type GetGamesPayload = z.infer<typeof getGamesPayloadSchema>
 type GetGamesResponse = z.infer<typeof getGamesResponseSchema>
 
 export const adminApi = createApi({
   reducerPath: "adminApi",
-  baseQuery: fakeBaseQuery(),
+  baseQuery: fakeBaseQuery<GlobalError>(),
   endpoints: (builder) => ({
-    getGames: builder.query<GetGamesResponse, GetGamesPayload>({
-      query: async (payload) => {
+    getGames: builder.infiniteQuery<
+      GetGamesResponse,
+      { search?: string },
+      { limit?: number; startAfter?: string }
+    >({
+      queryFn: async ({ pageParam, queryArg }) => {
         try {
-          const parsedPayload = getGamesPayloadSchema.safeParse(payload)
-          if (!parsedPayload.success)
-            return {
-              error: { status: 400, data: parsedPayload.error },
-            }
-
           const definedFieldsConstraints: QueryConstraint[] = []
+          const search = capitalizeFirstLetter(
+            queryArg.search?.trim().toLowerCase(),
+          )
 
-          if (parsedPayload.data.startAt) {
-            definedFieldsConstraints.push(startAt(parsedPayload.data.startAt))
+          if (search) {
+            // For search, order by title and use prefix matching
+            definedFieldsConstraints.push(orderBy("title"))
+            definedFieldsConstraints.push(where("title", ">=", search))
+            definedFieldsConstraints.push(
+              where("title", "<=", `${search}\uf8ff`),
+            )
+          } else {
+            definedFieldsConstraints.push(orderBy(documentId()))
           }
 
-          const q = query(
-            TABLE_REFS[TABLES.GAMES],
-            limit(parsedPayload.data.pageSize),
-            ...definedFieldsConstraints,
-          )
+          if (pageParam.startAfter) {
+            definedFieldsConstraints.push(startAfter(pageParam.startAfter))
+          }
+
+          if (pageParam.limit)
+            definedFieldsConstraints.push(limit(pageParam.limit))
+
+          const q = query(TABLE_REFS[TABLES.GAMES], ...definedFieldsConstraints)
 
           const snapshot = await getDocs(q)
 
-          const total = snapshot.size
+          const games = snapshot.docs.map((doc) => {
+            const { data, error } = gameDocSchemaWithId.safeParse({
+              id: doc.id,
+              ...doc.data(),
+            })
 
-          console.log(snapshot.docs[0])
+            if (error) throw new Error("Data parsing error")
 
-          return {
-            data: { total, games: [], hasNextPage: true },
-          }
+            return data
+          })
+
+          return { data: games }
         } catch (error) {
           console.error("Error fetching games:", error)
 
           return {
-            data: null,
-            error: { status: 500, data: "Internal Server Error" },
+            error: globalErrorHandler(error),
           }
         }
+      },
+      infiniteQueryOptions: {
+        initialPageParam: {
+          limit: DEFAULT_SIZE_GAMES,
+          startAfter: "",
+        },
+        getNextPageParam: (_, allPages, lastPageParams) => {
+          const lastPage = allPages.at(-1)
+          const lastGame = lastPage?.at(-1)
+
+          const limitValue = lastPageParams?.limit || DEFAULT_SIZE_GAMES
+
+          return {
+            startAfter: lastGame?.id,
+            limit: limitValue,
+          }
+        },
       },
     }),
   }),
 })
 
-export const { useGetGamesQuery } = adminApi
+export const { useGetGamesInfiniteQuery } = adminApi

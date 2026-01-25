@@ -41,3 +41,15 @@ export const isEqual = (a: unknown, b: unknown): boolean => {
 
   return false
 }
+
+export const capitalizeFirstLetter = (str?: string) => {
+  if (!str) return str
+
+  const words = str.split(" ")
+
+  words
+    .map((word) => {
+      return word[0]?.toUpperCase() + word.substring(1)
+    })
+    .join(" ")
+}

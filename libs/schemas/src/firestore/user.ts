@@ -1,5 +1,6 @@
 import { USERS_RIGHTS } from "@repo/common"
 import z from "zod"
+import { WITH_ID } from "~/zod"
 
 export const userDocSchema = z.object({
   email: z.email(),
@@ -7,4 +8,10 @@ export const userDocSchema = z.object({
   rights: z.enum(USERS_RIGHTS).nullish(),
 })
 
+export const userDocSchemaWithId = z.object({
+  ...userDocSchema.shape,
+  ...WITH_ID.shape,
+})
+
 export type UserDoc = z.infer<typeof userDocSchema>
+export type userDocSchemaWithId = z.infer<typeof userDocSchemaWithId>

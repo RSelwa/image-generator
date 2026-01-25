@@ -6,4 +6,5 @@ export const PAGES = {
   PRIVACY: "/privacy",
   TERMS: "/terms",
   ADMIN: "/admin",
+  ADMIN_GAMES: "/admin/games",
 } as const
