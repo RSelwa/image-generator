@@ -3,7 +3,7 @@
   "description": "Monorepo for flim",
   "version": "1.0.0",
   "files": ["dist"],
-  "packageManager": "pnpm@10.26.1",
+  "packageManager": "pnpm@10.28.2",
   "main": "dist/index.js",
   "scripts": {
     "compile": "turbo compile --continue",
@@ -13,15 +13,18 @@
     "?check-biome": "turbo check-biome --continue",
     "check-circular": "turbo check-circular --continue",
     "build": "turbo run build",
+    "create:function": "npx tsx cli/create-function.mts",
     "build:libs": "turbo run build --filter=@repo/providers --filter=@repo/schemas --filter=@repo/common && pnpm install",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
     "dev:front": "turbo run -F @repo/front dev",
+    "dev:server": "deno run --allow-all --env=./scripts/.env --config scripts/deno.json scripts/src/server/index.ts",
     "test": "turbo run test",
     "watch": "turbo watch build --filter=@repo/providers --filter=./functions/*",
     "deploy": "firebase deploy",
-    "build:create-user-document": "turbo run build --filter=@repo/create-user-document",
-    "script": "deno run --allow-all --env=./scripts/.env --config scripts/deno.json"
+    "script": "deno run --allow-all --env=./scripts/.env --config scripts/deno.json",
+    "build:create-party-doc": "turbo run build --filter=@repo/create-party-doc",
+    "build:create-user-document": "turbo run build --filter=@repo/create-user-document"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",

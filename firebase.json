@@ -13,6 +13,13 @@
       "isolate": true,
       "predeploy": ["pnpm build:create-user-document"],
       "codebase": "create-user-document"
+    },
+    {
+      "source": "functions/create-party-doc",
+      "runtime": "nodejs22",
+      "isolate": true,
+      "predeploy": ["pnpm build:create-party-doc"],
+      "codebase": "create-party-doc"
     }
   ],
   "emulators": {
