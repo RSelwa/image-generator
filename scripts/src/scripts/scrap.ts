@@ -1,9 +1,13 @@
+import { DIFFICULTIES } from "@repo/common"
 import { parse } from "acorn"
 import * as walk from "acorn-walk"
 import { JSDOM } from "jsdom"
 import z from "zod"
 import { TABLES } from "../../../libs/common/src/constants/firebase.ts"
+import { randomElement } from "../../../libs/common/src/utils/object.ts"
 import { refs } from "../../../libs/providers/dist/db-refs.js"
+import { gameDocSchema } from "../../../libs/schemas/src/firestore/game.ts"
+import { sphericalDocSchema } from "../../../libs/schemas/src/firestore/spherical.ts"
 
 const scrapVariableSchema = z.object({
   game: z.string().min(1),
@@ -165,23 +169,23 @@ const createOrUpdateDb = async (data: ScrapVariableSchema) => {
     const gameRef = refs.games.doc(data.id_game)
 
     if (!isGameExisting) {
-      await gameRef.set({
-        title: data.game,
-        thumbnailUrl: data.jacket,
-        midName: data.mid_name,
-        alternateName: data.alternate_name,
-      })
+      const doc = gameDocSchema.parse(data)
+
+      await gameRef.set(doc)
       console.info(`✅ Created game: ${data.id_game}`)
 
       existing.existingGamesId.add(data.id_game)
     } else console.info(`⚠️ Game already exists for game ID: ${data.id_game}`)
 
     if (!isImageExisting) {
-      await refs.spherical.doc(data.id_game).set({
+      const doc = sphericalDocSchema.parse({
         gameRef: `/${TABLES.GAMES}/${gameRef.id}`,
         image: data.gameSrc,
         mosaics: data.mosaics?.flat(),
+        difficulty: randomElement(Object.values(DIFFICULTIES)),
       })
+
+      await refs.spherical.doc(data.id_game).set(doc)
 
       console.info(`✅ Created spherical for game ID: ${data.id_game}`)
 

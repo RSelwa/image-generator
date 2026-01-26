@@ -4,17 +4,23 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "run": "deno run --allow-all"
+    "run": "deno run --allow-all",
+    "main": "deno run --allow-all src/server.ts"
   },
   "dependencies": {
     "@repo/common": "workspace:*",
     "@repo/providers": "workspace:*",
     "@repo/schemas": "workspace:*",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.10",
     "acorn": "^8.15.0",
     "acorn-walk": "^8.3.4",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "express": "^5.2.1",
     "firebase-admin": "^12.6.0",
     "jsdom": "^27.4.0",
+    "nodemon": "^3.1.11",
     "zod": "^4.3.6"
   }
 }
