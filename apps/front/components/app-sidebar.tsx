@@ -31,6 +31,10 @@ const navMain = [
         title: "Games",
         url: PAGES.ADMIN_GAMES,
       },
+      {
+        title: "Sphericals",
+        url: PAGES.ADMIN_SPHERICAL,
+      },
     ],
   },
   // {

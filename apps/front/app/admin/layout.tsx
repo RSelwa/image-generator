@@ -1,3 +1,5 @@
+"use client"
+
 import { AppSidebar } from "@/components/app-sidebar"
 import { AdminGuard } from "@/components/guards/admin-guard"
 import {
@@ -14,6 +16,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { PAGES } from "@/constants/pages"
 import type { ReactNode } from "react"
 
 type AdminLayoutProps = {
@@ -32,9 +35,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href={PAGES.ADMIN}>Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>

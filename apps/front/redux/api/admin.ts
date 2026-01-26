@@ -3,8 +3,8 @@ import { DEFAULT_SIZE_GAMES } from "@/constants/api"
 import { TABLE_REFS } from "@/constants/db-refs"
 import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { capitalizeFirstLetter, TABLES } from "@repo/common"
-import { gameDocSchemaWithId } from "@repo/schemas"
+import { capitalizeFirstLetter, getImageUrl, TABLES } from "@repo/common"
+import { gameDocSchemaWithId, sphericalDocSchemaWithId } from "@repo/schemas"
 import {
   documentId,
   getDocs,
@@ -18,8 +18,10 @@ import {
 import z from "zod"
 
 const getGamesResponseSchema = z.array(gameDocSchemaWithId)
+const getSphericalResponseSchema = z.array(sphericalDocSchemaWithId)
 
 type GetGamesResponse = z.infer<typeof getGamesResponseSchema>
+type GetSphericalResponse = z.infer<typeof getSphericalResponseSchema>
 
 export const adminApi = createApi({
   reducerPath: "adminApi",
@@ -63,6 +65,7 @@ export const adminApi = createApi({
             const { data, error } = gameDocSchemaWithId.safeParse({
               id: doc.id,
               ...doc.data(),
+              thumbnailUrl: getImageUrl(doc.data().thumbnailUrl),
             })
 
             if (error) throw new Error("Data parsing error")
@@ -97,7 +100,70 @@ export const adminApi = createApi({
         },
       },
     }),
+    getSpherical: builder.infiniteQuery<
+      GetSphericalResponse,
+      void,
+      { limit?: number; startAfter?: string }
+    >({
+      queryFn: async ({ pageParam }) => {
+        try {
+          const definedFieldsConstraints: QueryConstraint[] = []
+
+          if (pageParam.startAfter) {
+            definedFieldsConstraints.push(startAfter(pageParam.startAfter))
+          }
+
+          if (pageParam.limit)
+            definedFieldsConstraints.push(limit(pageParam.limit))
+
+          const q = query(
+            TABLE_REFS[TABLES.SPHERICAL],
+            ...definedFieldsConstraints,
+          )
+
+          const snapshot = await getDocs(q)
+
+          const spherical = snapshot.docs.map((doc) => {
+            const { data, error } = sphericalDocSchemaWithId.safeParse({
+              id: doc.id,
+              ...doc.data(),
+              image: getImageUrl(doc.data().image),
+            })
+
+            if (error) throw new Error("Data parsing error")
+
+            return data
+          })
+
+          return { data: spherical }
+        } catch (error) {
+          console.error("Error fetching games:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      infiniteQueryOptions: {
+        initialPageParam: {
+          limit: DEFAULT_SIZE_GAMES,
+          startAfter: "",
+        },
+        getNextPageParam: (_, allPages, lastPageParams) => {
+          const lastPage = allPages.at(-1)
+          const lastGame = lastPage?.at(-1)
+
+          const limitValue = lastPageParams?.limit || DEFAULT_SIZE_GAMES
+
+          return {
+            startAfter: lastGame?.id,
+            limit: limitValue,
+          }
+        },
+      },
+    }),
   }),
 })
 
-export const { useGetGamesInfiniteQuery } = adminApi
+export const { useGetGamesInfiniteQuery, useGetSphericalInfiniteQuery } =
+  adminApi
