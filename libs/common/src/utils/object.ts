@@ -53,3 +53,11 @@ export const capitalizeFirstLetter = (str?: string) => {
     })
     .join(" ")
 }
+
+export const getIdFromFirestoreRef = (ref: string) => {
+  const parts = ref.split("/")
+  return parts[parts.length - 1] || ""
+}
+
+export const randomElement = (array: unknown[]) =>
+  array[Math.floor(Math.random() * array.length)]

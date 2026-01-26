@@ -22,6 +22,7 @@ if (!admin.apps.length) {
 
 const firebaseApp = admin.app()
 
+export const region = "europe-west3"
 export const auth = getAuth(firebaseApp)
 export const db = admin.firestore(firebaseApp)
 db.settings({ ignoreUndefinedProperties: true, preferRest: true })

@@ -18,7 +18,7 @@ const Page = () => {
       <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
         {isLoading && <li>Loading...</li>}
 
-        {spherical?.map(({ image, id }) => {
+        {spherical?.map(({ image, id, game, difficulty }) => {
           return (
             <li
               key={id}
@@ -28,6 +28,16 @@ const Page = () => {
                 setModalType(MODAL_TYPES_VALUES.SPHERICAL)
               }}
             >
+              <div className="absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2">
+                <span className="inline-flex h-6 items-center rounded-full px-2 align-middle text-xs leading-none focus:outline-hidden uppercase border border-grey-100 bg-transparent backdrop-blur-sm text-neutral-100">
+                  {game.title}
+                </span>
+                <div className="flex gap-2">
+                  <span className="h-6 items-center rounded-full px-2 align-middle text-xs leading-none focus:outline-hidden bg-neutral-950 text-white flex gap-1">
+                    {difficulty}
+                  </span>
+                </div>
+              </div>
               <img src={image} alt="" className="size-full object-cover" />
             </li>
           )

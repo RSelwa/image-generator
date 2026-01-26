@@ -1,14 +1,19 @@
 // Need to use the React-specific entry point to import createApi
 import { DEFAULT_SIZE_GAMES, DEFAULT_SIZE_SPHERICALS } from "@/constants/api"
-import { getSphericalRef, TABLE_REFS } from "@/constants/db-refs"
+import { getGameRef, getSphericalRef, TABLE_REFS } from "@/constants/db-refs"
 import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { capitalizeFirstLetter, getImageUrl, TABLES } from "@repo/common"
+import {
+  capitalizeFirstLetter,
+  getIdFromFirestoreRef,
+  getImageUrl,
+  TABLES,
+} from "@repo/common"
 import {
   gameDocWithIdSchema,
-  sphericalDocWithIdSchema,
+  sphericalEntitySchema,
   type GameDocWithId,
-  type SphericalDocWithId,
+  type SphericalEntity,
 } from "@repo/schemas"
 import {
   documentId,
@@ -100,12 +105,40 @@ export const adminApi = createApi({
         },
       },
     }),
+    getGameById: builder.query<GameDocWithId, { id: string }>({
+      queryFn: async ({ id }) => {
+        try {
+          const docSnap = await getDoc(getGameRef(id))
+
+          if (!docSnap.exists()) {
+            throw new Error("Spherical not found")
+          }
+
+          const { data, error } = gameDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+            thumbnailUrl: getImageUrl(docSnap.data().thumbnailUrl),
+          })
+
+          if (error) throw new Error("Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error fetching game by ID:", error)
+          toast.error(`Error fetching game data for id: ${id}`)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+    }),
     getSpherical: builder.infiniteQuery<
-      SphericalDocWithId[],
+      SphericalEntity[],
       void,
       { limit?: number; startAfter?: string }
     >({
-      queryFn: async ({ pageParam }) => {
+      queryFn: async ({ pageParam }, { dispatch }) => {
         try {
           const definedFieldsConstraints: QueryConstraint[] = []
 
@@ -123,17 +156,28 @@ export const adminApi = createApi({
 
           const snapshot = await getDocs(q)
 
-          const spherical = snapshot.docs.map((doc) => {
-            const { data, error } = sphericalDocWithIdSchema.safeParse({
-              id: doc.id,
-              ...doc.data(),
-              image: getImageUrl(doc.data().image),
-            })
+          const spherical = await Promise.all(
+            snapshot.docs.map(async (doc) => {
+              const gameId = getIdFromFirestoreRef(doc.data().gameRef)
 
-            if (error) throw new Error("Data parsing error")
+              const game = await dispatch(
+                adminApi.endpoints.getGameById.initiate({
+                  id: gameId,
+                }),
+              ).unwrap()
 
-            return data
-          })
+              const { data, error } = sphericalEntitySchema.safeParse({
+                id: doc.id,
+                ...doc.data(),
+                image: getImageUrl(doc.data().image),
+                game,
+              })
+
+              if (error || !data) throw new Error("Data parsing error")
+
+              return data
+            }),
+          )
 
           return { data: spherical }
         } catch (error) {
@@ -162,8 +206,8 @@ export const adminApi = createApi({
         },
       },
     }),
-    getSphericalById: builder.query<SphericalDocWithId, { id: string }>({
-      queryFn: async ({ id }) => {
+    getSphericalById: builder.query<SphericalEntity, { id: string }>({
+      queryFn: async ({ id }, { dispatch }) => {
         try {
           const docSnap = await getDoc(getSphericalRef(id))
 
@@ -171,10 +215,19 @@ export const adminApi = createApi({
             throw new Error("Spherical not found")
           }
 
-          const { data, error } = sphericalDocWithIdSchema.safeParse({
+          const gameId = getIdFromFirestoreRef(docSnap.data().gameRef)
+
+          const game = await dispatch(
+            adminApi.endpoints.getGameById.initiate({
+              id: gameId,
+            }),
+          ).unwrap()
+
+          const { data, error } = sphericalEntitySchema.safeParse({
             id: docSnap.id,
             ...docSnap.data(),
             image: getImageUrl(docSnap.data().image),
+            game,
           })
 
           if (error) throw new Error("Data parsing error")

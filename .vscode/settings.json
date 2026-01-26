@@ -1,7 +1,6 @@
 {
   "cSpell.words": ["firestore", "Nuqs", "predeploy", "sphericals"],
   "json.validate.enable": false,
-  "deno.enablePaths": ["./scripts"],
   "deno.lint": false,
   "editor.defaultFormatter": "biomejs.biome",
   "biome.notifyErrors": false

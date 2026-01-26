@@ -11,12 +11,14 @@ const SphericalModal = () => {
 
   if (!data) return null
 
+  const img = `/api/proxy-image?url=${encodeURIComponent(data?.image)}`
   return (
-    <section className="w-full h-96">
+    <section className="w-full h-96" style={{ backgroundImage: img }}>
       <ReactPhotoSphereViewer
         hideNavbarButton={true}
         navbar={false}
-        src={`/api/proxy-image?url=${encodeURIComponent(data?.image)}`}
+        canvasBackground={img}
+        src={img}
         height={"100%"}
         width={"100%"}
       />
