@@ -111,7 +111,7 @@ configured:
 
 ### Auto deploy
 
-The Cloud function will be automatically deployed on `pusher-292200` when you
+The Cloud function will be automatically deployed on `tiktok-generator-fa261` when you
 push on develop and on `flim-prod` when you push on main. When you create a new
 function with the CLI, it will automatically create a GH Action file to deploy
 the function.

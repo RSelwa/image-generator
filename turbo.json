@@ -7,7 +7,12 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "outputLogs": "new-only",
-      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.pusher-292200", ".env.local"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        ".env.tiktok-generator-fa261",
+        ".env.local"
+      ]
     },
     "test": {
       "dependsOn": ["^build"],

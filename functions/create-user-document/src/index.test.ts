@@ -36,7 +36,7 @@ describe("createUserDocument", () => {
     await batch.commit()
 
     await fetch(
-      "http://localhost:9099/emulator/v1/projects/pusher-292200/accounts",
+      "http://localhost:9099/emulator/v1/projects/tiktok-generator-fa261/accounts",
       { method: "DELETE" },
     )
   })

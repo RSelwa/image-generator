@@ -1,5 +1,5 @@
 {
-  "name": "@repo/delete-board-by-id",
+  "name": "@repo/create-party-doc",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -13,8 +13,8 @@
     "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
     "test": "vitest run --coverage",
     "clean": "del-cli dist isolate tsconfig.tsbuildinfo coverage",
-    "deploy": "firebase deploy --project pusher-292200",
-    "emulate": "firebase emulators:start --project pusher-292200",
+    "deploy": "firebase deploy --project tiktok-generator-fa261",
+    "emulate": "firebase emulators:start --project tiktok-generator-fa261",
     "login": "firebase login"
   },
   "license": "MIT",

@@ -14,8 +14,8 @@
     "build": "tsdown",
     "clean": "del-cli dist isolate tsconfig.tsbuildinfo coverage",
     "test:coverage": "vitest run --coverage",
-    "deploy": "firebase deploy --project pusher-292200",
-    "emulate": "firebase emulators:start --project pusher-292200",
+    "deploy": "firebase deploy --project tiktok-generator-fa261",
+    "emulate": "firebase emulators:start --project tiktok-generator-fa261",
     "login": "firebase login",
     "env": "ls env.txt && grep -Ev '^#' env.txt  | xargs --no-run-if-empty -I NAME sh -c 'echo NAME=\"$(firebase functions:secrets:access \"$1\")\" >> .env.local' _ NAME || echo \"Please provide an env.txt\""
   },

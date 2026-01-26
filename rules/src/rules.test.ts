@@ -9,7 +9,7 @@ import { readFileSync } from "node:fs"
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from "vitest"
 import { generateCoverageReport } from "./utils"
 
-const projectId = "pusher-292200"
+const projectId = "tiktok-generator-fa261"
 const host = "localhost"
 const port = 8080
 const rules = readFileSync("./src/firestore.rules", "utf8")
