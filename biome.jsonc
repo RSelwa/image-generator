@@ -27,7 +27,8 @@
       },
       "a11y": {
         "noSvgWithoutTitle": "off",
-        "useSemanticElements": "warn"
+        "useSemanticElements": "warn",
+        "useKeyWithClickEvents": "off"
       },
       "correctness": {
         /**

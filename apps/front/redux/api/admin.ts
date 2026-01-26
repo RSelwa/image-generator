@@ -1,12 +1,18 @@
 // Need to use the React-specific entry point to import createApi
-import { DEFAULT_SIZE_GAMES } from "@/constants/api"
-import { TABLE_REFS } from "@/constants/db-refs"
+import { DEFAULT_SIZE_GAMES, DEFAULT_SIZE_SPHERICALS } from "@/constants/api"
+import { getSphericalRef, TABLE_REFS } from "@/constants/db-refs"
 import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { capitalizeFirstLetter, getImageUrl, TABLES } from "@repo/common"
-import { gameDocSchemaWithId, sphericalDocSchemaWithId } from "@repo/schemas"
+import {
+  gameDocWithIdSchema,
+  sphericalDocWithIdSchema,
+  type GameDocWithId,
+  type SphericalDocWithId,
+} from "@repo/schemas"
 import {
   documentId,
+  getDoc,
   getDocs,
   limit,
   orderBy,
@@ -15,20 +21,14 @@ import {
   where,
   type QueryConstraint,
 } from "firebase/firestore"
-import z from "zod"
-
-const getGamesResponseSchema = z.array(gameDocSchemaWithId)
-const getSphericalResponseSchema = z.array(sphericalDocSchemaWithId)
-
-type GetGamesResponse = z.infer<typeof getGamesResponseSchema>
-type GetSphericalResponse = z.infer<typeof getSphericalResponseSchema>
+import { toast } from "sonner"
 
 export const adminApi = createApi({
   reducerPath: "adminApi",
   baseQuery: fakeBaseQuery<GlobalError>(),
   endpoints: (builder) => ({
     getGames: builder.infiniteQuery<
-      GetGamesResponse,
+      GameDocWithId[],
       { search?: string },
       { limit?: number; startAfter?: string }
     >({
@@ -62,7 +62,7 @@ export const adminApi = createApi({
           const snapshot = await getDocs(q)
 
           const games = snapshot.docs.map((doc) => {
-            const { data, error } = gameDocSchemaWithId.safeParse({
+            const { data, error } = gameDocWithIdSchema.safeParse({
               id: doc.id,
               ...doc.data(),
               thumbnailUrl: getImageUrl(doc.data().thumbnailUrl),
@@ -101,7 +101,7 @@ export const adminApi = createApi({
       },
     }),
     getSpherical: builder.infiniteQuery<
-      GetSphericalResponse,
+      SphericalDocWithId[],
       void,
       { limit?: number; startAfter?: string }
     >({
@@ -124,7 +124,7 @@ export const adminApi = createApi({
           const snapshot = await getDocs(q)
 
           const spherical = snapshot.docs.map((doc) => {
-            const { data, error } = sphericalDocSchemaWithId.safeParse({
+            const { data, error } = sphericalDocWithIdSchema.safeParse({
               id: doc.id,
               ...doc.data(),
               image: getImageUrl(doc.data().image),
@@ -146,14 +146,14 @@ export const adminApi = createApi({
       },
       infiniteQueryOptions: {
         initialPageParam: {
-          limit: DEFAULT_SIZE_GAMES,
+          limit: DEFAULT_SIZE_SPHERICALS,
           startAfter: "",
         },
         getNextPageParam: (_, allPages, lastPageParams) => {
           const lastPage = allPages.at(-1)
           const lastGame = lastPage?.at(-1)
 
-          const limitValue = lastPageParams?.limit || DEFAULT_SIZE_GAMES
+          const limitValue = lastPageParams?.limit || DEFAULT_SIZE_SPHERICALS
 
           return {
             startAfter: lastGame?.id,
@@ -162,8 +162,39 @@ export const adminApi = createApi({
         },
       },
     }),
+    getSphericalById: builder.query<SphericalDocWithId, { id: string }>({
+      queryFn: async ({ id }) => {
+        try {
+          const docSnap = await getDoc(getSphericalRef(id))
+
+          if (!docSnap.exists()) {
+            throw new Error("Spherical not found")
+          }
+
+          const { data, error } = sphericalDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+            image: getImageUrl(docSnap.data().image),
+          })
+
+          if (error) throw new Error("Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error fetching spherical by ID:", error)
+          toast.error(`Error fetching spherical data for id: ${id}`)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+    }),
   }),
 })
 
-export const { useGetGamesInfiniteQuery, useGetSphericalInfiniteQuery } =
-  adminApi
+export const {
+  useGetGamesInfiniteQuery,
+  useGetSphericalInfiniteQuery,
+  useGetSphericalByIdQuery,
+} = adminApi

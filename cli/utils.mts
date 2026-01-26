@@ -41,7 +41,8 @@ export const updateFirebaseConfigFile = (rawName: string) => {
 
   // Check if the function already exists
   const functionExists = functionsConfig.some(
-    (func) => func.source === newFunction.source,
+    // biome-ignore lint/suspicious/noExplicitAny: Fix linter
+    (func: any) => func.source === newFunction.source,
   )
 
   if (functionExists) {

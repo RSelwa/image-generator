@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["firestore", "sphericals"],
+  "cSpell.words": ["firestore", "Nuqs", "predeploy", "sphericals"],
   "json.validate.enable": false,
   "deno.enablePaths": ["./scripts"],
   "deno.lint": false,

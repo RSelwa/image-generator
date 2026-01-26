@@ -30,3 +30,11 @@ export const TABLE_REFS = {
 
 export const getUserRef = (uid: string | undefined) =>
   uid ? doc(TABLE_REFS[TABLES.USERS], uid) : doc(TABLE_REFS[TABLES.USERS])
+
+export const getGameRef = (uid: string | undefined) =>
+  uid ? doc(TABLE_REFS[TABLES.GAMES], uid) : doc(TABLE_REFS[TABLES.GAMES])
+
+export const getSphericalRef = (uid: string | undefined) =>
+  uid
+    ? doc(TABLE_REFS[TABLES.SPHERICAL], uid)
+    : doc(TABLE_REFS[TABLES.SPHERICAL])

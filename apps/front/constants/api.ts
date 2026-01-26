@@ -1,1 +1,2 @@
-export const DEFAULT_SIZE_GAMES = 10
+export const DEFAULT_SIZE_GAMES = 100
+export const DEFAULT_SIZE_SPHERICALS = 10

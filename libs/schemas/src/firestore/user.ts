@@ -8,10 +8,10 @@ export const userDocSchema = z.object({
   rights: z.enum(USERS_RIGHTS).nullish(),
 })
 
-export const userDocSchemaWithId = z.object({
+export const userDocWithIdSchema = z.object({
   ...userDocSchema.shape,
   ...WITH_ID.shape,
 })
 
 export type UserDoc = z.infer<typeof userDocSchema>
-export type userDocSchemaWithId = z.infer<typeof userDocSchemaWithId>
+export type userDocSchemaWithId = z.infer<typeof userDocWithIdSchema>

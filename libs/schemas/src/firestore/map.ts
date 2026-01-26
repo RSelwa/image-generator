@@ -8,10 +8,10 @@ export const mapDocSchema = z.object({
   gameRef: z.custom<GameRef>((val) => val instanceof DocumentReference),
 })
 
-export const mapDocSchemaWithId = z.object({
+export const mapDocWithIdSchema = z.object({
   ...mapDocSchema.shape,
   ...WITH_ID.shape,
 })
 
 export type MapDoc = z.infer<typeof mapDocSchema>
-export type MapDocWithId = z.infer<typeof mapDocSchemaWithId>
+export type MapDocWithId = z.infer<typeof mapDocWithIdSchema>

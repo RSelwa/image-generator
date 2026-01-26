@@ -10,12 +10,12 @@ export const gameDocSchema = z.object({
   alternateName: z.string().optional().default(""),
 })
 
-export const gameDocSchemaWithId = z.object({
+export const gameDocWithIdSchema = z.object({
   ...gameDocSchema.shape,
   ...WITH_ID.shape,
 })
 
 export type GameDoc = z.infer<typeof gameDocSchema>
-export type GameDocWithId = z.infer<typeof gameDocSchemaWithId>
+export type GameDocWithId = z.infer<typeof gameDocWithIdSchema>
 
 export type GameRef = DocumentReference<GameDoc, GameDoc>

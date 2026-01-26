@@ -7,10 +7,10 @@ export const sphericalDocSchema = z.object({
   mosaics: z.array(z.string()).nullish(),
 })
 
-export const sphericalDocSchemaWithId = z.object({
+export const sphericalDocWithIdSchema = z.object({
   ...sphericalDocSchema.shape,
   ...WITH_ID.shape,
 })
 
 export type SphericalDoc = z.infer<typeof sphericalDocSchema>
-export type SphericalDocWithId = z.infer<typeof sphericalDocSchemaWithId>
+export type SphericalDocWithId = z.infer<typeof sphericalDocWithIdSchema>
