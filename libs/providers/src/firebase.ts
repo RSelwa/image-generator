@@ -11,13 +11,14 @@ export type { Firestore, UpdateData } from "firebase-admin/firestore"
 if (!admin.apps.length) {
   const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS
 
-  const credential = credentialsPath
-    ? admin.credential.cert(
-        JSON.parse(readFileSync(resolve(credentialsPath), "utf-8")),
-      )
-    : undefined
-
-  admin.initializeApp({ credential })
+  if (credentialsPath) {
+    const credential = admin.credential.cert(
+      JSON.parse(readFileSync(resolve(credentialsPath), "utf-8")),
+    )
+    admin.initializeApp({ credential })
+  } else {
+    admin.initializeApp()
+  }
 }
 
 const firebaseApp = admin.app()

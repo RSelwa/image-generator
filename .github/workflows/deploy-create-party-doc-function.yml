@@ -88,7 +88,7 @@ jobs:
     needs: [init, lint, format, test]
     name: 🚀 Deploy create-party-doc function
     if: github.ref_name == 'main' || github.ref_name == 'develop'
-    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    environment: prod
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
@@ -106,7 +106,7 @@ jobs:
       - name: 🚀 Deploy to Firebase
         run:
           npx firebase deploy --project "$PROJECT_ID" --only functions:create-party-doc
-          --token "$FIREBASE_TOKEN"
+          --token "$FIREBASE_TOKEN" --force
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
