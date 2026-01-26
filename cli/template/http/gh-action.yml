@@ -1,12 +1,10 @@
-name: 🚀 Deploy createUserDocument function
+name: 🚀 Deploy {{FUNCTION_NAME}} function
 
 on:
-  workflow_dispatch:
   push:
     paths:
-      - .github/workflows/deploy-create-user-document-function.yml
-      - functions/create-user-document/**
-      - libs/schemas/src/firestore/user
+      - .github/workflows/deploy-{{FUNCTION_NAME}}-function.yml
+      - functions/{{FUNCTION_FOLDER}}/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -56,6 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: init
     name: 🧪 Test
+    environment: dev
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
@@ -66,17 +65,19 @@ jobs:
       - name: ⚙️ Install Firebase tools
         run: pnpm install -g firebase-tools
 
-      - name: 🔒 Create .env file
+      - name: 🔒 Create .env.test file
         run: |
-          touch functions/create-user-document/.env
-          echo FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 >> functions/create-user-document/.env
+          touch functions/{{FUNCTION_FOLDER}}/.env.test
+          echo STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }} >> functions/{{FUNCTION_FOLDER}}/.env.test
+          echo DEMO_ENV_VAR='"env test file"' >> functions/{{FUNCTION_FOLDER}}/.env.test
 
       - name: ✨ Build project
-        run: pnpm build --filter=@repo/create-user-document
+        run: pnpm build --filter=@repo/{{FUNCTION_FOLDER}}
 
       - name: 🧪 Run tests
         run: firebase emulators:exec --token "$FIREBASE_TOKEN" --project
-          "$GCLOUD_PROJECT" 'pnpm test --filter=@repo/create-user-document'
+          "$GCLOUD_PROJECT" 'pnpm test
+          --filter=@repo/{{FUNCTION_FOLDER}}'
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           GCLOUD_PROJECT: ${{ secrets.PROJECT_ID }}
@@ -84,7 +85,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [init, lint, format, test]
-    name: 🚀 Deploy createUserDocument function
+    name: 🚀 Deploy {{FUNCTION_NAME}} function
     if: github.ref_name == 'main' || github.ref_name == 'develop'
     environment: prod
     steps:
@@ -99,11 +100,12 @@ jobs:
 
       - name: 🔒 Create .env file
         run: |
-          touch functions/create-user-document/.env
+          touch functions/{{FUNCTION_FOLDER}}/.env
 
       - name: 🚀 Deploy to Firebase
-        run: npx firebase deploy --project "$PROJECT_ID" --only
-          functions:create-user-document --token "$FIREBASE_TOKEN"
+        run:
+          npx firebase deploy --project "$PROJECT_ID" --only functions:{{FUNCTION_FOLDER}}
+          --token "$FIREBASE_TOKEN"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
