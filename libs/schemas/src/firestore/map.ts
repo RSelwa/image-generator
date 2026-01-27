@@ -1,6 +1,7 @@
 import { DocumentReference } from "@firebase/firestore"
 import z from "zod"
 import type { GameRef } from "~/firestore/game"
+// import { WITH_ID } from "./../zod.ts"
 import { WITH_ID } from "~/zod"
 
 export const mapDocSchema = z.object({

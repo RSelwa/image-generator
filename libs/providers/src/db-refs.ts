@@ -1,6 +1,7 @@
 import { TABLES } from "@repo/common"
 import type { GameDoc, MapDoc, SphericalDoc, UserDoc } from "@repo/schemas"
 import type {
+  CollectionGroup,
   CollectionReference,
   QueryDocumentSnapshot,
 } from "firebase-admin/firestore"
@@ -40,3 +41,21 @@ export const refs = {
     SphericalDoc
   >,
 }
+
+export const collectionGroupRefs = {
+  [TABLES.SPHERICAL]: db.collectionGroup(TABLES.SPHERICAL) as CollectionGroup<
+    SphericalDoc,
+    SphericalDoc
+  >,
+} as const
+
+export const subRefs = {
+  [TABLES.SPHERICAL]: (id: string) =>
+    db.collection(
+      `${TABLES.GAMES}/${id}/${TABLES.SPHERICAL}`,
+    ) as CollectionReference<SphericalDoc, SphericalDoc>,
+  [TABLES.MAPS]: (id: string) =>
+    db.collection(
+      `${TABLES.GAMES}/${id}/${TABLES.SPHERICAL}`,
+    ) as CollectionReference<MapDoc, MapDoc>,
+} as const

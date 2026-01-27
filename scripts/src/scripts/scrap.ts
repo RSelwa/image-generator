@@ -5,7 +5,11 @@ import { JSDOM } from "jsdom"
 import z from "zod"
 import { TABLES } from "../../../libs/common/src/constants/firebase.ts"
 import { randomElement } from "../../../libs/common/src/utils/object.ts"
-import { refs } from "../../../libs/providers/dist/db-refs.js"
+import {
+  collectionGroupRefs,
+  refs,
+  subRefs,
+} from "../../../libs/providers/dist/db-refs.js"
 import { gameDocSchema } from "../../../libs/schemas/src/firestore/game.ts"
 import { sphericalDocSchema } from "../../../libs/schemas/src/firestore/spherical.ts"
 
@@ -31,22 +35,21 @@ const allowedNames = [
 ]
 
 const getExistingDocs = async () => {
-  const [sphericalDocs, gamesDocs] = await Promise.all([
-    refs.spherical.get(),
+  const [sphericalSnapshot, gamesSnapshot] = await Promise.all([
+    collectionGroupRefs.spherical.get(),
     refs.games.get(),
   ])
 
   const existingImageSource = new Set<string>()
   const existingGamesId = new Set<string>()
 
-  sphericalDocs.forEach((doc) => {
-    const data = doc.data()
-    existingImageSource.add(data.image)
-  })
+  for (const doc of sphericalSnapshot.docs) {
+    existingImageSource.add(doc.data().image)
+  }
 
-  gamesDocs.forEach((doc) => {
+  for (const doc of gamesSnapshot.docs) {
     existingGamesId.add(doc.id)
-  })
+  }
 
   return { existingImageSource, existingGamesId }
 }
@@ -180,12 +183,13 @@ const createOrUpdateDb = async (data: ScrapVariableSchema) => {
     if (!isImageExisting) {
       const doc = sphericalDocSchema.parse({
         gameRef: `/${TABLES.GAMES}/${gameRef.id}`,
+        gameId: gameRef.id,
         image: data.gameSrc,
         mosaics: data.mosaics?.flat(),
         difficulty: randomElement(Object.values(DIFFICULTIES)),
       })
 
-      await refs.spherical.doc(data.id_game).set(doc)
+      await subRefs.spherical(data.id_game).add(doc)
 
       console.info(`✅ Created spherical for game ID: ${data.id_game}`)
 
@@ -196,7 +200,7 @@ const createOrUpdateDb = async (data: ScrapVariableSchema) => {
   }
 }
 
-const length = 10000
+const length = 1000
 const iterations = Array.from({ length }).fill(0)
 
 for (const i of iterations.keys()) {

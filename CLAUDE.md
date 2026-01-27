@@ -2,6 +2,7 @@
 
 - pnpm --filter @repo/front build: Build the front
 - pnpm run typecheck: Run the typechecker
+- pnpm build:libs: Build all libs of the monorepo
 
 # Code style
 
