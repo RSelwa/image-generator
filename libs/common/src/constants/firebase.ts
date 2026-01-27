@@ -9,6 +9,7 @@ export const TABLES = {
 
 export const STORAGE_PATHS = {
   GAME_THUMBNAILS: "game-thumbnails",
+  SPHERICALS: "sphericals",
   MAP_THUMBNAILS: "map-thumbnails",
 } as const
 

@@ -77,7 +77,9 @@ export const gameApi = createApi({
               const { data, error } = gameEntitySchema.safeParse({
                 id: doc.id,
                 ...doc.data(),
-                thumbnailUrl: getImageUrl(doc.data().thumbnailUrl),
+                thumbnailUrl:
+                  doc.data().storageImage ||
+                  getImageUrl(doc.data().thumbnailUrl),
                 sphericalsCount,
               })
 

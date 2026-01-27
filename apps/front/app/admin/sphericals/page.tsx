@@ -19,6 +19,8 @@ const Page = () => {
         {isLoading && <li>Loading...</li>}
 
         {spherical?.map(({ image, id, game, difficulty }) => {
+          const img = `/api/proxy-image?url=${image}`
+
           return (
             <li
               key={id}
@@ -38,7 +40,7 @@ const Page = () => {
                   </span>
                 </div>
               </div>
-              <img src={image} alt="" className="size-full object-cover" />
+              <img src={img} alt="" className="size-full object-cover" />
             </li>
           )
         })}

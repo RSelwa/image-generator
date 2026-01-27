@@ -61,10 +61,12 @@ export const sphericalApi = createApi({
                 id: doc.id,
                 ...doc.data(),
                 image: getImageUrl(doc.data().image),
+                gameId,
                 game,
               })
 
-              if (error || !data) throw new Error("Data parsing error")
+              if (error || !data)
+                throw new Error(error.message || "Data parsing error")
 
               return data
             }),
@@ -170,5 +172,8 @@ export const sphericalApi = createApi({
   }),
 })
 
-export const { useGetSphericalInfiniteQuery, useGetSphericalByIdQuery } =
-  sphericalApi
+export const {
+  useGetSphericalInfiniteQuery,
+  useGetSphericalByIdQuery,
+  useDeleteSphericalMutation,
+} = sphericalApi

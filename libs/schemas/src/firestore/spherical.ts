@@ -7,6 +7,7 @@ export const sphericalDocSchema = z.object({
   gameRef: z.string(),
   gameId: z.string(),
   image: z.string(),
+  storageImage: z.string().nullish(),
   mosaics: z.array(z.string()).nullish(),
   difficulty: z.enum(DIFFICULTIES).optional().default(DIFFICULTIES.EASY),
 })

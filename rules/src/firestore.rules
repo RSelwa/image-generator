@@ -1,4 +1,5 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
     function isSignedIn() { return request.auth != null; }
@@ -41,5 +42,13 @@ service cloud.firestore {
       allow write: if signedInAdmin() && isSignedIn();
       allow read: if true;
     } 
+  }
+}
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
   }
 }

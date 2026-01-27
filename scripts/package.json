@@ -11,6 +11,7 @@
     "@repo/common": "workspace:*",
     "@repo/providers": "workspace:*",
     "@repo/schemas": "workspace:*",
+    "@std/cli": "jsr:^1.0.26",
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.10",
     "acorn": "^8.15.0",

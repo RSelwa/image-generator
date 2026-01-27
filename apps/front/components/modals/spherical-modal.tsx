@@ -1,9 +1,16 @@
 import { Button } from "@/components/ui/button"
-import { MODAL_ACTION_VALUES, MODAL_KEYS } from "@/constants/mapping"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
+import { MODAL_KEYS } from "@/constants/mapping"
+import { copy } from "@/lib/utils"
 import { useGetSphericalsByGameIdQuery } from "@/redux/api/games"
-import { useGetSphericalByIdQuery } from "@/redux/api/spherical"
-import { Pen } from "lucide-react"
+import {
+  useDeleteSphericalMutation,
+  useGetSphericalByIdQuery,
+} from "@/redux/api/spherical"
+import Image from "next/image"
 import { useQueryState } from "nuqs"
+import { useState } from "react"
 import { ReactPhotoSphereViewer } from "react-photo-sphere-viewer"
 
 export const SphericalModal = () => {
@@ -31,43 +38,90 @@ export const SphericalModal = () => {
 }
 
 export const SphericalGalleryModal = () => {
+  const [selectedId, setSelectedId] = useState<string[]>([])
   const [gameId] = useQueryState(MODAL_KEYS.GAME_ID)
-  const [action, setAction] = useQueryState(MODAL_KEYS.MODAL_ACTION)
+  const [deleteSpherical, { isLoading }] = useDeleteSphericalMutation()
 
-  if (!gameId) return null
+  const { data } = useGetSphericalsByGameIdQuery({ gameId: gameId || "" })
 
-  const { data } = useGetSphericalsByGameIdQuery({ gameId })
+  if (!data || !gameId) return null
 
-  if (!data) return null
+  const hasSelected = selectedId.length > 0
 
-  const isDelete = action === MODAL_ACTION_VALUES.DELETE
+  const deleteSelectedSphericals = async () => {
+    await Promise.all(selectedId.map((id) => deleteSpherical({ gameId, id })))
+
+    setSelectedId([])
+  }
 
   return (
-    <section className="relative w-full h-125 grid-cols-2 grid overflow-y-auto gap-3">
-      {data.map((spherical) => (
-        <div key={spherical.id} className="relative w-full aspect-video">
-          <img
-            src={`/api/proxy-image?url=${encodeURIComponent(spherical.image)}`}
-            alt={spherical.id}
-            className="size-full object-cover"
-          />
-          {isDelete && (
-            <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded-md">
-              Delete
-            </div>
-          )}
-        </div>
-      ))}
+    <section>
+      <div className="relative w-full h-125 grid-cols-5 grid overflow-y-auto gap-3">
+        {data.map((spherical) => {
+          const isSelected = selectedId.includes(spherical.id)
 
-      {!isDelete && (
-        <Button
-          variant="destructive"
-          className="fixed z-50 top-2 right-12"
-          onClick={() => setAction(MODAL_ACTION_VALUES.DELETE)}
-        >
-          <Pen />
-        </Button>
-      )}
+          const setChecked = (checked: boolean) => {
+            setSelectedId((prev) =>
+              checked
+                ? [...prev, spherical.id]
+                : prev.filter((id) => id !== spherical.id),
+            )
+          }
+
+          return (
+            <div
+              data-selected={isSelected}
+              data-has-selected={hasSelected}
+              key={spherical.id}
+              className="relative w-full aspect-video data-[selected=true]:border-2 data-[has-selected=true]:cursor-pointer border-red-500"
+            >
+              <Image
+                src={`/api/proxy-image?url=${encodeURIComponent(spherical.image)}`}
+                alt={spherical.id}
+                className="size-full object-cover"
+                width={110}
+                height={90}
+              />
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={setChecked}
+                className="absolute bottom-2 left-2"
+              />
+            </div>
+          )
+        })}
+      </div>
+      <Separator className="my-4" />
+      <article className="w-full flex gap-4">
+        {selectedId.length > 0 && (
+          <>
+            <Button
+              variant="destructive"
+              onClick={deleteSelectedSphericals}
+              disabled={isLoading}
+            >
+              Delete {selectedId.length} selected spherical(s)
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => copy(`["${selectedId.join('", "')}"]`)}
+            >
+              Copy Selected Id
+            </Button>
+            <Button variant="outline" onClick={() => copy(`${gameId}`)}>
+              Copy Game Id
+            </Button>
+            <Button
+              onClick={() =>
+                copy(`export const gameId = "${gameId}"
+                export const sphericalIdsToSave: string[] = ["${selectedId.join('", "')}"]`)
+              }
+            >
+              Copy All
+            </Button>
+          </>
+        )}
+      </article>
     </section>
   )
 }
