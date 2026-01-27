@@ -9,6 +9,7 @@ import { getIdFromFirestoreRef, getImageUrl, TABLES } from "@repo/common"
 import { sphericalEntitySchema, type SphericalEntity } from "@repo/schemas"
 import {
   collection,
+  deleteDoc,
   getCountFromServer,
   getDoc,
   getDocs,
@@ -96,16 +97,17 @@ export const sphericalApi = createApi({
         },
       },
     }),
-    getSphericalById: builder.query<SphericalEntity, { id: string }>({
-      queryFn: async ({ id }, { dispatch }) => {
+    getSphericalById: builder.query<
+      SphericalEntity,
+      { gameId: string; id: string }
+    >({
+      queryFn: async ({ id, gameId }, { dispatch }) => {
         try {
-          const docSnap = await getDoc(getSphericalRef(id))
+          const docSnap = await getDoc(getSphericalRef(gameId, id))
 
           if (!docSnap.exists()) {
             throw new Error("Spherical not found")
           }
-
-          const gameId = getIdFromFirestoreRef(docSnap.data().gameRef)
 
           const game = await dispatch(
             gameApi.endpoints.getGameById.initiate({
@@ -144,6 +146,21 @@ export const sphericalApi = createApi({
           console.error("Error fetching spherical count:", error)
           toast.error("Error fetching spherical count")
 
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+    }),
+    deleteSpherical: builder.mutation<null, { gameId: string; id: string }>({
+      queryFn: async ({ gameId, id }) => {
+        try {
+          await deleteDoc(getSphericalRef(gameId, id))
+
+          return { data: null }
+        } catch (error) {
+          console.error("Error deleting spherical:", error)
+          toast.error("Error deleting spherical")
           return {
             error: globalErrorHandler(error),
           }

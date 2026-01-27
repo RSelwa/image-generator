@@ -2,12 +2,12 @@ import { MODAL_KEYS, MODAL_TYPES_VALUES } from "@/constants/mapping"
 import type { GameEntity } from "@repo/schemas"
 import { useQueryState } from "nuqs"
 
-const GameCard = ({ game }: { game: GameEntity }) => {
-  const [, setModalId] = useQueryState(MODAL_KEYS.ID)
+const GameCard = ({ game, index }: { game: GameEntity; index?: number }) => {
+  const [, setModalGameId] = useQueryState(MODAL_KEYS.GAME_ID)
   const [, setModalType] = useQueryState(MODAL_KEYS.MODAL_TYPE)
 
   const openSphericalsModal = () => {
-    setModalId(game.id)
+    setModalGameId(game.id)
     setModalType(MODAL_TYPES_VALUES.SPHERICAL_GALLERY)
   }
 
@@ -43,6 +43,7 @@ const GameCard = ({ game }: { game: GameEntity }) => {
           </h2>
         </div>
       </div>
+      <span className="absolute top-3 right-3">{index}</span>
     </li>
   )
 }

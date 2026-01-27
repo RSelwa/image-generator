@@ -5,13 +5,19 @@ export const SESSION_STATUS = {
 } as const
 
 export const MODAL_KEYS = {
-  ID: "id",
+  GAME_ID: "game-id",
+  SPHERICAL_ID: "spherical-id",
   MODAL_TYPE: "modalType",
+  MODAL_ACTION: "action",
 } as const
 
 export const MODAL_TYPES_VALUES = {
   SPHERICAL_GALLERY: "spherical-gallery",
   SPHERICAL: "spherical",
+}
+
+export const MODAL_ACTION_VALUES = {
+  DELETE: "delete",
 }
 
 export const APP_NAME = "Geo gamer"

@@ -5,7 +5,7 @@ import { useGetSphericalInfiniteQuery } from "@/redux/api/spherical"
 import { useQueryState } from "nuqs"
 
 const Page = () => {
-  const [, setModalId] = useQueryState(MODAL_KEYS.ID)
+  const [, setModalSphericalId] = useQueryState(MODAL_KEYS.SPHERICAL_ID)
   const [, setModalType] = useQueryState(MODAL_KEYS.MODAL_TYPE)
 
   const { data, isLoading } = useGetSphericalInfiniteQuery()
@@ -24,7 +24,7 @@ const Page = () => {
               key={id}
               className="relative h-64 cursor-pointer overflow-hidden rounded-xl border border-grey-100"
               onClick={() => {
-                setModalId(id)
+                setModalSphericalId(id)
                 setModalType(MODAL_TYPES_VALUES.SPHERICAL)
               }}
             >

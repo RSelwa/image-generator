@@ -107,6 +107,11 @@ export const gameApi = createApi({
 
           const limitValue = lastPageParams?.limit || DEFAULT_SIZE_GAMES
 
+          // No more pages if the last page has fewer items than the limit
+          if (!lastPage || lastPage.length < limitValue) {
+            return undefined
+          }
+
           return {
             startAfter: lastGame?.id,
             limit: limitValue,
