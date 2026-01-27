@@ -21,6 +21,8 @@ export const makeStore = () => {
       getDefaultMiddleware({ serializableCheck: false })
         .concat(pokemonApi.middleware)
         .concat(adminApi.middleware)
+        .concat(gameApi.middleware)
+        .concat(sphericalApi.middleware)
         .concat(authApi.middleware),
   })
 }

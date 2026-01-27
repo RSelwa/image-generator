@@ -1,7 +1,7 @@
 "use client"
 
 import { MODAL_KEYS, MODAL_TYPES_VALUES } from "@/constants/mapping"
-import { useGetSphericalInfiniteQuery } from "@/redux/api/admin"
+import { useGetSphericalInfiniteQuery } from "@/redux/api/spherical"
 import { useQueryState } from "nuqs"
 
 const Page = () => {

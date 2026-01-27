@@ -10,6 +10,7 @@ export const MODAL_KEYS = {
 } as const
 
 export const MODAL_TYPES_VALUES = {
+  SPHERICAL_GALLERY: "spherical-gallery",
   SPHERICAL: "spherical",
 }
 

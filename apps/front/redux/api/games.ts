@@ -1,11 +1,18 @@
 // Need to use the React-specific entry point to import createApi
 import { DEFAULT_SIZE_GAMES } from "@/constants/api"
 import { db } from "@/constants/db"
-import { getGameRef, TABLE_REFS } from "@/constants/db-refs"
+import { getGameRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
 import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { capitalizeFirstLetter, getImageUrl, TABLES } from "@repo/common"
-import { gameDocWithIdSchema, type GameDocWithId } from "@repo/schemas"
+import {
+  gameDocWithIdSchema,
+  gameEntitySchema,
+  sphericalDocWithIdSchema,
+  type GameDocWithId,
+  type GameEntity,
+  type SphericalDocWithId,
+} from "@repo/schemas"
 import {
   collection,
   documentId,
@@ -26,11 +33,11 @@ export const gameApi = createApi({
   baseQuery: fakeBaseQuery<GlobalError>(),
   endpoints: (builder) => ({
     getGames: builder.infiniteQuery<
-      GameDocWithId[],
+      GameEntity[],
       { search?: string },
       { limit?: number; startAfter?: string }
     >({
-      queryFn: async ({ pageParam, queryArg }) => {
+      queryFn: async ({ pageParam, queryArg }, { dispatch }) => {
         try {
           const definedFieldsConstraints: QueryConstraint[] = []
           const search = capitalizeFirstLetter(
@@ -59,17 +66,26 @@ export const gameApi = createApi({
 
           const snapshot = await getDocs(q)
 
-          const games = snapshot.docs.map((doc) => {
-            const { data, error } = gameDocWithIdSchema.safeParse({
-              id: doc.id,
-              ...doc.data(),
-              thumbnailUrl: getImageUrl(doc.data().thumbnailUrl),
-            })
+          const games = await Promise.all(
+            snapshot.docs.map(async (doc) => {
+              const sphericalsCount = await dispatch(
+                gameApi.endpoints.getGameSphericalCount.initiate({
+                  id: doc.id,
+                }),
+              ).unwrap()
 
-            if (error) throw new Error("Data parsing error")
+              const { data, error } = gameEntitySchema.safeParse({
+                id: doc.id,
+                ...doc.data(),
+                thumbnailUrl: getImageUrl(doc.data().thumbnailUrl),
+                sphericalsCount,
+              })
 
-            return data
-          })
+              if (error) throw new Error("Data parsing error")
+
+              return data
+            }),
+          )
 
           return { data: games }
         } catch (error) {
@@ -143,6 +159,59 @@ export const gameApi = createApi({
         }
       },
     }),
+    getGameSphericalCount: builder.query<number, { id: string }>({
+      queryFn: async ({ id }) => {
+        try {
+          const snapshot = await getCountFromServer(
+            TABLES_SUB_REFS[TABLES.SPHERICAL](id),
+          )
+
+          return { data: snapshot.data().count }
+        } catch (error) {
+          console.error("Error fetching game spherical count:", error)
+          toast.error("Error fetching game spherical count")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+    }),
+    getSphericalsByGameId: builder.query<
+      SphericalDocWithId[],
+      { gameId: string }
+    >({
+      queryFn: async ({ gameId }) => {
+        try {
+          const snapshot = await getDocs(
+            TABLES_SUB_REFS[TABLES.SPHERICAL](gameId),
+          )
+
+          const sphericals = snapshot.docs
+            .map((doc) => {
+              const { data, error } = sphericalDocWithIdSchema.safeParse({
+                id: doc.id,
+                ...doc.data(),
+                image: getImageUrl(doc.data().image),
+              })
+
+              if (error) return null
+
+              return data
+            })
+            .filter((s) => s !== null)
+
+          return { data: sphericals }
+        } catch (error) {
+          console.error("Error fetching game spherical count:", error)
+          toast.error("Error fetching game spherical count")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+    }),
   }),
 })
 
@@ -150,4 +219,6 @@ export const {
   useGetGamesInfiniteQuery,
   useGetGameByIdQuery,
   useGetTotalGamesCountQuery,
+  useGetGameSphericalCountQuery,
+  useGetSphericalsByGameIdQuery,
 } = gameApi

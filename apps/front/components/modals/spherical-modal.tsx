@@ -1,9 +1,10 @@
 import { MODAL_KEYS } from "@/constants/mapping"
-import { useGetSphericalByIdQuery } from "@/redux/api/admin"
+import { useGetSphericalsByGameIdQuery } from "@/redux/api/games"
+import { useGetSphericalByIdQuery } from "@/redux/api/spherical"
 import { useQueryState } from "nuqs"
 import { ReactPhotoSphereViewer } from "react-photo-sphere-viewer"
 
-const SphericalModal = () => {
+export const SphericalModal = () => {
   const [sphericalId] = useQueryState(MODAL_KEYS.ID)
 
   if (!sphericalId) return null
@@ -26,4 +27,24 @@ const SphericalModal = () => {
   )
 }
 
-export default SphericalModal
+export const SphericalGalleryModal = () => {
+  const [gameId] = useQueryState(MODAL_KEYS.ID)
+
+  if (!gameId) return null
+
+  const { data } = useGetSphericalsByGameIdQuery({ gameId: gameId })
+
+  if (!data) return null
+
+  return (
+    <section className="w-full h-125 grid-cols-2 grid overflow-y-auto gap-3">
+      {data.map((spherical) => (
+        <img
+          src={`/api/proxy-image?url=${encodeURIComponent(spherical.image)}`}
+          alt={spherical.id}
+          className="aspect-video w-full object-contain"
+        />
+      ))}
+    </section>
+  )
+}

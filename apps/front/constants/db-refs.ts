@@ -26,7 +26,17 @@ export const TABLE_REFS = {
   [TABLES.SPHERICAL]: collection(db, TABLES.SPHERICAL) as CustomCollectionRef<
     typeof TABLES.SPHERICAL
   >,
-}
+} as const
+
+export const TABLES_SUB_REFS = {
+  [TABLES.SPHERICAL]: (gameId: string) =>
+    collection(
+      db,
+      TABLES.GAMES,
+      gameId,
+      TABLES.SPHERICAL,
+    ) as CustomCollectionRef<typeof TABLES.SPHERICAL>,
+} as const
 
 export const getUserRef = (uid: string | undefined) =>
   uid ? doc(TABLE_REFS[TABLES.USERS], uid) : doc(TABLE_REFS[TABLES.USERS])

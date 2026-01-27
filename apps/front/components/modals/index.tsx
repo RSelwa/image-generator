@@ -1,6 +1,9 @@
 "use client"
 
-import SphericalModal from "@/components/modals/spherical-modal"
+import {
+  SphericalGalleryModal,
+  SphericalModal,
+} from "@/components/modals/spherical-modal"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import VisuallyHidden from "@/components/ui/visually-hidden"
@@ -12,6 +15,8 @@ const ModalContent = () => {
   const [modalType] = useQueryState(MODAL_KEYS.MODAL_TYPE)
 
   if (modalType === MODAL_TYPES_VALUES.SPHERICAL) return <SphericalModal />
+  if (modalType === MODAL_TYPES_VALUES.SPHERICAL_GALLERY)
+    return <SphericalGalleryModal />
 
   return null
 }
