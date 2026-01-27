@@ -25,6 +25,11 @@ service cloud.firestore {
     match /games/{game} {
       allow write: if signedInAdmin() && isSignedIn();
       allow read: if true;
+
+    match /spherical/{spherical} {
+      allow write: if signedInAdmin() && isSignedIn();
+      allow read: if true;
+      } 
     } 
 
     match /maps/{map} {
