@@ -1,11 +1,12 @@
 name: 🚀 Deploy listen-docs
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - .github/workflows/deploy-listen-docs-function.yml
       - functions/listen-docs/**
-      - libs/schemas/firestore/**
+      - libs/schemas/src/firestore/**
       - libs/common/**
 
 concurrency:
@@ -57,7 +58,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: init
     name: 🧪 Test
-    environment: prod
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
@@ -69,15 +69,12 @@ jobs:
         run: pnpm install -g firebase-tools
 
       - name: ✨ Build project
-        run: pnpm build --filter=@repo/listen-doc-board-image
+        run: pnpm build --filter=@repo/listen-docs
 
       - name: 🧪 Run tests
-        run: firebase emulators:exec --token "$FIREBASE_TOKEN" --project
-          "$GCLOUD_PROJECT" 'pnpm test
-          --filter=@repo/listen-docs'
+        run: firebase emulators:exec --project "$PROJECT_ID" 'pnpm test --filter=@repo/listen-docs'
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          GCLOUD_PROJECT: ${{ vars.PROJECT_ID }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -92,12 +89,15 @@ jobs:
       - name: ⚙️ Initialize Node.js Environment
         uses: ./.github/actions/initialization
 
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - name: ⚙️ Install Firebase tools
         run: pnpm install -g firebase-tools
 
       - name: 🚀 Deploy to Firebase
-        run:
-          npx firebase deploy --project "$PROJECT_ID" --only functions:listen-docs --token "$FIREBASE_TOKEN"
+        run: npx firebase deploy --project "$PROJECT_ID" --only functions:listen-docs --force
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}

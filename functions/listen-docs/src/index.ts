@@ -24,56 +24,42 @@ export const listen_doc_spherical_written = onDocumentWritten(
       updatedAt: Timestamp.now(),
     })
 
-    const gameUpdate: {
-      updatedAt: Timestamp
-      hasSphericalImagesReady?: boolean
-    } = {
-      updatedAt: Timestamp.now(),
-    }
+    if (afterData?.status !== DOCUMENTS_STATUS.READY) return
 
-    if (afterData?.status === DOCUMENTS_STATUS.READY) {
-      const gameDoc = await refs[TABLES.GAMES].doc(gameId).get()
+    const gameDoc = await refs[TABLES.GAMES].doc(gameId).get()
 
-      if (!gameDoc.data()?.hasSphericalImagesReady)
-        gameUpdate.hasSphericalImagesReady = true
-    }
+    if (gameDoc.data()?.hasSphericalImagesReady) return
 
-    await refs[TABLES.GAMES].doc(gameId).update(gameUpdate)
+    await refs[TABLES.GAMES]
+      .doc(gameId)
+      .update({ hasSphericalImagesReady: true })
   },
 )
 
-export const listen_doc_games_written = onDocumentWritten(
-  `${TABLES.GAMES}/{gameId}`,
-  async (event) => {
-    logger.log(`✍ Game ${event.document} written`)
+// export const listen_doc_games_written = onDocumentWritten(
+//   `${TABLES.GAMES}/{gameId}`,
+//   async (event) => {
+//     logger.log(`✍ Game ${event.document} written`)
 
-    const [, gameId] = event.document.split("/")
+//     const [, gameId] = event.document.split("/")
 
-    if (!gameId) {
-      logger.error(`Game ID is undefined in document path: ${event.document}`)
-      return
-    }
+//     if (!gameId) {
+//       logger.error(`Game ID is undefined in document path: ${event.document}`)
+//       return
+//     }
+//   },
+// )
 
-    await refs[TABLES.GAMES].doc(gameId).update({
-      updatedAt: Timestamp.now(),
-    })
-  },
-)
+// export const listen_doc_users_written = onDocumentWritten(
+//   `${TABLES.USERS}/{userId}`,
+//   async (event) => {
+//     logger.log(`✍ Game ${event.document} written`)
 
-export const listen_doc_users_written = onDocumentWritten(
-  `${TABLES.USERS}/{userId}`,
-  async (event) => {
-    logger.log(`✍ Game ${event.document} written`)
+//     const [, userId] = event.document.split("/")
 
-    const [, userId] = event.document.split("/")
-
-    if (!userId) {
-      logger.error(`User ID is undefined in document path: ${event.document}`)
-      return
-    }
-
-    await refs[TABLES.USERS].doc(userId).update({
-      updatedAt: Timestamp.now(),
-    })
-  },
-)
+//     if (!userId) {
+//       logger.error(`User ID is undefined in document path: ${event.document}`)
+//       return
+//     }
+//   },
+// )

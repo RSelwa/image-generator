@@ -99,14 +99,13 @@ jobs:
       - name: ⚙️ Install Firebase tools
         run: pnpm install -g firebase-tools
 
-      - name: 🔒 Create .env file
-        run: |
-          touch functions/create-party-doc/.env
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: 🚀 Deploy to Firebase
         run:
           npx firebase deploy --project "$PROJECT_ID" --only functions:create-party-doc
-          --token "$FIREBASE_TOKEN" --force
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}

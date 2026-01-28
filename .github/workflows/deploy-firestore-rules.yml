@@ -38,10 +38,14 @@ jobs:
         run: npx firebase emulators:exec --only firestore,storage "pnpm --filter
           @repo/rules test"
 
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - name: 🔥 Deploy Firestore & Storage Rules
         if: github.ref_name == 'main' || github.ref_name == 'develop'
         run: npx firebase deploy --project "$PROJECT_ID" --only
-          firestore,storage --token "$FIREBASE_TOKEN"
+          firestore,storage --force
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}

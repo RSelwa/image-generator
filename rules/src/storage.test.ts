@@ -4,7 +4,12 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from "@firebase/rules-unit-testing"
-import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage"
 import { readFileSync } from "node:fs"
 import { afterAll, beforeAll, beforeEach, describe, test } from "vitest"
 
@@ -19,7 +24,10 @@ describe("Firebase Storage Rules", () => {
   beforeAll(async () => {
     const storage = { port: STORAGE_PORT, host: HOST, rules: storageRules }
 
-    testEnv = await initializeTestEnvironment({ projectId: PROJECT_ID, storage })
+    testEnv = await initializeTestEnvironment({
+      projectId: PROJECT_ID,
+      storage,
+    })
   })
 
   beforeEach(async () => {
@@ -43,7 +51,7 @@ describe("Firebase Storage Rules", () => {
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
       await assertSucceeds(
-        getDownloadURL(ref(unauthedStorage, "game-thumbnails/test.png"))
+        getDownloadURL(ref(unauthedStorage, "game-thumbnails/test.png")),
       )
     })
 
@@ -52,7 +60,7 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv.authenticatedContext(uid).storage()
 
       await assertSucceeds(
-        uploadBytes(ref(authedStorage, "game-thumbnails/test.png"), testFile)
+        uploadBytes(ref(authedStorage, "game-thumbnails/test.png"), testFile),
       )
     })
 
@@ -60,7 +68,7 @@ describe("Firebase Storage Rules", () => {
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
       await assertFails(
-        uploadBytes(ref(unauthedStorage, "game-thumbnails/test.png"), testFile)
+        uploadBytes(ref(unauthedStorage, "game-thumbnails/test.png"), testFile),
       )
     })
 
@@ -75,7 +83,7 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv.authenticatedContext(uid).storage()
 
       await assertFails(
-        deleteObject(ref(authedStorage, "game-thumbnails/test.png"))
+        deleteObject(ref(authedStorage, "game-thumbnails/test.png")),
       )
     })
   })
@@ -90,7 +98,7 @@ describe("Firebase Storage Rules", () => {
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
       await assertSucceeds(
-        getDownloadURL(ref(unauthedStorage, "sphericals/test.jpg"))
+        getDownloadURL(ref(unauthedStorage, "sphericals/test.jpg")),
       )
     })
 
@@ -99,7 +107,7 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv.authenticatedContext(uid).storage()
 
       await assertSucceeds(
-        uploadBytes(ref(authedStorage, "sphericals/test.jpg"), testFile)
+        uploadBytes(ref(authedStorage, "sphericals/test.jpg"), testFile),
       )
     })
 
@@ -107,10 +115,9 @@ describe("Firebase Storage Rules", () => {
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
       await assertFails(
-        uploadBytes(ref(unauthedStorage, "sphericals/test.jpg"), testFile)
+        uploadBytes(ref(unauthedStorage, "sphericals/test.jpg"), testFile),
       )
     })
-
   })
 
   describe("map-thumbnails", () => {
@@ -123,7 +130,7 @@ describe("Firebase Storage Rules", () => {
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
       await assertSucceeds(
-        getDownloadURL(ref(unauthedStorage, "map-thumbnails/test.png"))
+        getDownloadURL(ref(unauthedStorage, "map-thumbnails/test.png")),
       )
     })
 
@@ -132,7 +139,7 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv.authenticatedContext(uid).storage()
 
       await assertSucceeds(
-        uploadBytes(ref(authedStorage, "map-thumbnails/test.png"), testFile)
+        uploadBytes(ref(authedStorage, "map-thumbnails/test.png"), testFile),
       )
     })
 
@@ -140,7 +147,7 @@ describe("Firebase Storage Rules", () => {
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
       await assertFails(
-        uploadBytes(ref(unauthedStorage, "map-thumbnails/test.png"), testFile)
+        uploadBytes(ref(unauthedStorage, "map-thumbnails/test.png"), testFile),
       )
     })
 
@@ -155,7 +162,7 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv.authenticatedContext(uid).storage()
 
       await assertFails(
-        deleteObject(ref(authedStorage, "map-thumbnails/test.png"))
+        deleteObject(ref(authedStorage, "map-thumbnails/test.png")),
       )
     })
   })
@@ -169,9 +176,7 @@ describe("Firebase Storage Rules", () => {
 
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
-      await assertFails(
-        getDownloadURL(ref(unauthedStorage, "other/test.png"))
-      )
+      await assertFails(getDownloadURL(ref(unauthedStorage, "other/test.png")))
     })
 
     test("should deny write on unlisted paths even when authenticated", async () => {
@@ -179,7 +184,7 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv.authenticatedContext(uid).storage()
 
       await assertFails(
-        uploadBytes(ref(authedStorage, "other/test.png"), testFile)
+        uploadBytes(ref(authedStorage, "other/test.png"), testFile),
       )
     })
   })
