@@ -1,4 +1,4 @@
-import { Timestamp } from "@firebase/firestore/lite"
+import { Timestamp } from "@firebase/firestore"
 import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
 import z from "zod"
 // import { WITH_ID } from "./../zod.ts"
@@ -16,7 +16,7 @@ export const sphericalDocSchema = z.object({
   updatedAt: z.instanceof(Timestamp),
   status: z
     .enum(DOCUMENTS_STATUS)
-    .optional()
+    .nullish()
     .default(DOCUMENTS_STATUS.NEED_VERIFICATION),
   isValid: z.boolean().optional().default(false),
 })

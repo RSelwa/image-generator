@@ -130,13 +130,17 @@ export const gameApi = createApi({
             throw new Error("Spherical not found")
           }
 
+          console.log(docSnap.data())
+
           const { data, error } = gameDocWithIdSchema.safeParse({
             id: docSnap.id,
             ...docSnap.data(),
-            thumbnailUrl: getImageUrl(docSnap.data().thumbnailUrl),
+            thumbnailUrl:
+              docSnap.data().thumbnailUrl ||
+              getImageUrl(docSnap.data().thumbnailUrl),
           })
 
-          if (error) throw new Error("Data parsing error")
+          if (error) throw new Error(error.message || "Data parsing error")
 
           return { data }
         } catch (error) {

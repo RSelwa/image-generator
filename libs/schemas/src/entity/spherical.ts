@@ -3,9 +3,15 @@ import { gameDocWithIdSchema } from "~/firestore"
 import { sphericalDocWithIdSchema } from "~/firestore/spherical"
 
 export const sphericalEntitySchema = z.object({
-  ...sphericalDocWithIdSchema.shape,
+  ...sphericalDocWithIdSchema.omit({
+    createdAt: true,
+    updatedAt: true,
+  }).shape,
   game: z.object({
-    ...gameDocWithIdSchema.shape,
+    ...gameDocWithIdSchema.omit({
+      createdAt: true,
+      updatedAt: true,
+    }).shape,
   }),
 })
 

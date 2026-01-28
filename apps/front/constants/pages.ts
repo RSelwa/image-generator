@@ -8,4 +8,5 @@ export const PAGES = {
   ADMIN: "/admin",
   ADMIN_GAMES: "/admin/games",
   ADMIN_SPHERICAL: "/admin/sphericals",
+  ADMIN_TEST: "/admin/test",
 } as const

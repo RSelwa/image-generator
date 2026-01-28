@@ -1,4 +1,4 @@
-import { Timestamp } from "@firebase/firestore/lite"
+import { Timestamp } from "@firebase/firestore"
 import z from "zod"
 // import { WITH_ID } from "./../zod.ts"
 import { WITH_ID } from "~/zod"

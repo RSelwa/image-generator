@@ -1,4 +1,4 @@
-import { Timestamp } from "@firebase/firestore/lite"
+import { Timestamp } from "@firebase/firestore"
 import { USERS_RIGHTS } from "@repo/common"
 import z from "zod"
 // import { WITH_ID } from "./../zod.ts"

@@ -1,3 +1,4 @@
+import { ReactSphere } from "@/components/providers/react-sphere"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
@@ -11,7 +12,6 @@ import {
 import Image from "next/image"
 import { useQueryState } from "nuqs"
 import { useState } from "react"
-import { ReactPhotoSphereViewer } from "react-photo-sphere-viewer"
 
 export const SphericalModal = () => {
   const [sphericalId] = useQueryState(MODAL_KEYS.SPHERICAL_ID)
@@ -22,17 +22,9 @@ export const SphericalModal = () => {
 
   if (!data) return null
 
-  const img = `/api/proxy-image?url=${encodeURIComponent(data?.image)}`
   return (
-    <section className="w-full h-96" style={{ backgroundImage: img }}>
-      <ReactPhotoSphereViewer
-        hideNavbarButton={true}
-        navbar={false}
-        canvasBackground={img}
-        src={img}
-        height={"100%"}
-        width={"100%"}
-      />
+    <section className="w-full h-96">
+      <ReactSphere src={data?.storageImage || data?.image} />
     </section>
   )
 }

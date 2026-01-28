@@ -124,7 +124,7 @@ export const sphericalApi = createApi({
             game,
           })
 
-          if (error) throw new Error("Data parsing error")
+          if (error) throw new Error(error.message || "Data parsing error")
 
           return { data }
         } catch (error) {

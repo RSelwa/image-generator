@@ -1,6 +1,6 @@
-import { Timestamp } from "firebase-admin/firestore"
 import { refs, subRefs } from "../../../libs/providers/dist/db-refs.js"
-import { db } from "./../../../libs/providers/dist/firebase.js"
+import { db } from "../../../libs/providers/dist/firebase.js"
+import { DOCUMENTS_STATUS } from "./../../../libs/common/dist/index.js"
 
 // const allSphericals = await collectionGroupRefs[TABLES.SPHERICAL].get()
 const allGames = await refs.games.get()
@@ -16,8 +16,7 @@ for (const doc of allGames.docs) {
 
   allSphericals.docs.forEach((sphericalDoc) => {
     batch.update(subRefs.spherical(gameId).doc(sphericalDoc.id), {
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
+      status: DOCUMENTS_STATUS.NEED_VERIFICATION,
     })
     lengt.push(sphericalDoc.id)
   })

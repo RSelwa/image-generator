@@ -36,10 +36,6 @@ export const refs = {
     MapDoc,
     MapDoc
   >,
-  [TABLES.SPHERICAL]: db.collection(TABLES.SPHERICAL) as CollectionReference<
-    SphericalDoc,
-    SphericalDoc
-  >,
 }
 
 export const collectionGroupRefs = {
