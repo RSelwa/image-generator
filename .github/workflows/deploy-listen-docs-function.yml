@@ -97,8 +97,7 @@ jobs:
 
       - name: 🚀 Deploy to Firebase
         run:
-          npx firebase deploy --project "$PROJECT_ID" --only functions:listen-docs
-          --token "$FIREBASE_TOKEN"
+          npx firebase deploy --project "$PROJECT_ID" --only functions:listen-docs --token "$FIREBASE_TOKEN"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}

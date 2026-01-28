@@ -3,5 +3,14 @@
   "json.validate.enable": false,
   "deno.lint": false,
   "editor.defaultFormatter": "biomejs.biome",
-  "biome.notifyErrors": false
+  "biome.notifyErrors": false,
+  "terminal.integrated.env.windows": {
+    "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/service-account.json"
+  },
+  "terminal.integrated.env.linux": {
+    "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/service-account.json"
+  },
+  "terminal.integrated.env.osx": {
+    "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/service-account.json"
+  }
 }

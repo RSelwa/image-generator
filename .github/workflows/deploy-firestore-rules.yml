@@ -1,4 +1,4 @@
-name: 🔥 Deploy Firestore Rules
+name: 🔥 Deploy Firestore & Storage Rules
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
   deploy:
     needs: init
     runs-on: ubuntu-latest
-    name: 🔥 Deploy Firestore Rules
+    name: 🔥 Deploy Firestore & Storage Rules
     environment: prod
 
     steps:
@@ -35,13 +35,13 @@ jobs:
         run: pnpm install -g firebase-tools
 
       - name: 🧪 Test Security Rules
-        run: npx firebase emulators:exec --only firestore "pnpm --filter
+        run: npx firebase emulators:exec --only firestore,storage "pnpm --filter
           @repo/rules test"
 
-      - name: 🔥 Deploy Firestore Rules
+      - name: 🔥 Deploy Firestore & Storage Rules
         if: github.ref_name == 'main' || github.ref_name == 'develop'
         run: npx firebase deploy --project "$PROJECT_ID" --only
-          firestore:$PROJECT_ID --token "$FIREBASE_TOKEN"
+          firestore,storage --token "$FIREBASE_TOKEN"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}

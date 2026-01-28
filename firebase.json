@@ -40,5 +40,8 @@
     "database": "(default)",
     "location": "eur3",
     "rules": "./rules/src/firestore.rules"
+  },
+  "storage": {
+    "rules": "rules/src/storage.rules"
   }
 }
