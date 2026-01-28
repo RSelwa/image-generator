@@ -68,7 +68,7 @@
     "enabled": true,
     "indentStyle": "space",
     "expand": "auto",
-    "lineEnding": "crlf",
+    "lineEnding": "lf",
     "formatWithErrors": true
   },
 

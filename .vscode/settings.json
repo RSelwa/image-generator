@@ -4,6 +4,7 @@
   "deno.lint": false,
   "editor.defaultFormatter": "biomejs.biome",
   "biome.notifyErrors": false,
+  "files.eol": "\n",
   "terminal.integrated.env.windows": {
     "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/service-account.json"
   },
