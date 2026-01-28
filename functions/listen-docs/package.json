@@ -1,0 +1,44 @@
+{
+  "name": "@repo/listen-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "files": ["dist", ".env.*"],
+  "scripts": {
+    "build": "tsdown",
+    "compile": "tsc --noEmit",
+    "lint": "biome check",
+    "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
+    "test": "vitest run --coverage",
+    "clean": "del-cli dist isolate tsconfig.tsbuildinfo coverage",
+    "deploy": "firebase deploy --project pusher-292200",
+    "emulate": "firebase emulators:start --project pusher-292200",
+    "login": "firebase login"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^4.0.0",
+    "@repo/common": "workspace:*",
+    "@repo/providers": "workspace:*",
+    "cors": "^2.8.5",
+    "del-cli": "^6.0.0",
+    "firebase-admin": "^13.4.0",
+    "firebase-functions": "^6.3.2",
+    "nocache": "^4.0.0"
+  },
+  "devDependencies": {
+    "@repo/schemas": "workspace:*",
+    "@codecompose/typescript-config": "^2.0.1",
+    "@faker-js/faker": "^10.1.0",
+    "@types/cors": "^2.8.19",
+    "@types/node": "^22.10.10",
+    "@vitest/coverage-v8": "^3.2.3",
+    "firebase-functions-test": "^3.4.1",
+    "tsdown": "^0.15.6",
+    "typescript": "^5.7.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.3"
+  }
+}

@@ -55,8 +55,8 @@ export const SphericalGalleryModal = () => {
   }
 
   return (
-    <section>
-      <div className="relative w-full h-125 grid-cols-5 grid overflow-y-auto gap-3">
+    <section className="h-125">
+      <div className="grid-cols-5 grid gap-3">
         {data.map((spherical) => {
           const isSelected = selectedId.includes(spherical.id)
 
@@ -91,7 +91,7 @@ export const SphericalGalleryModal = () => {
           )
         })}
       </div>
-      <Separator className="my-4" />
+      <Separator className="my-4 mt-full" />
       <article className="w-full flex gap-4">
         {selectedId.length > 0 && (
           <>

@@ -20,6 +20,13 @@
       "isolate": true,
       "predeploy": ["pnpm build:create-party-doc"],
       "codebase": "create-party-doc"
+    },
+    {
+      "source": "functions/listen-docs",
+      "runtime": "nodejs22",
+      "isolate": true,
+      "predeploy": ["pnpm build:listen-docs"],
+      "codebase": "listen-docs"
     }
   ],
   "emulators": {

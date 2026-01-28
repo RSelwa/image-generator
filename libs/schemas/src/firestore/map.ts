@@ -1,12 +1,13 @@
-import { DocumentReference } from "@firebase/firestore"
+import { Timestamp } from "@firebase/firestore/lite"
 import z from "zod"
-import type { GameRef } from "~/firestore/game"
 // import { WITH_ID } from "./../zod.ts"
 import { WITH_ID } from "~/zod"
 
 export const mapDocSchema = z.object({
   title: z.string().min(1),
-  gameRef: z.custom<GameRef>((val) => val instanceof DocumentReference),
+  createdAt: z.instanceof(Timestamp),
+  updatedAt: z.instanceof(Timestamp),
+  imageUrl: z.string(),
 })
 
 export const mapDocWithIdSchema = z.object({

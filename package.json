@@ -24,7 +24,8 @@
     "deploy": "firebase deploy",
     "script": "deno run --allow-all --env=./scripts/.env --config scripts/deno.json",
     "build:create-party-doc": "turbo run build --filter=@repo/create-party-doc",
-    "build:create-user-document": "turbo run build --filter=@repo/create-user-document"
+    "build:create-user-document": "turbo run build --filter=@repo/create-user-document",
+    "build:listen-docs": "turbo run build --filter=@repo/listen-docs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
