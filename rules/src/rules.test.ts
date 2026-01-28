@@ -52,6 +52,67 @@ describe("Firebase Security Rules", () => {
       expect(result).toBeDefined()
     })
 
+    test("should be able to write doc as admin", async () => {
+      const adminUid = "admin"
+      const uid = "uid"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${adminUid}`), {
+          uid: adminUid,
+          rights: "admin",
+        })
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(adminUid).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(authedUserDb, `users/${uid}`), {
+          updatedAt: true,
+          rights: "admin",
+        }),
+      )
+    })
+
+    test("should be able to write own doc", async () => {
+      const uid = "uid"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(authedUserDb, `users/${uid}`), {
+          updatedAt: true,
+        }),
+      )
+    })
+
+    test("should not be able to write own doc if contains 'rights' fields", async () => {
+      const uid = "uid"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        updateDoc(doc(authedUserDb, `users/${uid}`), {
+          updatedAt: true,
+          rights: "admin",
+        }),
+      )
+    })
+
     test("should not be able to write other doc if not admin", async () => {
       const uid = "uid"
 

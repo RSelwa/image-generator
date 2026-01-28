@@ -8,6 +8,15 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
     }
 
+    function isUpdateUsersRights() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasAny(['rights'])
+    }
+
+     function isDocOwner(id) {
+      return request.auth.uid == id || request.auth.uid == resource.data.ownerId || request.auth.uid == resource.data.owner_id;
+    }
+
     function noUpdatesOnFields(fields) {
       return (!request.resource.data.diff(resource.data).affectedKeys().hasAny(fields))
     }
@@ -18,9 +27,12 @@ service cloud.firestore {
 
     match /users/{user} {
       allow create: if isSignedIn();
-      allow get, write: if isSignedIn() && request.auth.uid == user;
+
+      allow update: if (request.auth.uid == user && !request.resource.data.diff(resource.data).affectedKeys()
+        .hasAny(['rights'])) || signedInAdmin();
+      allow  delete: if request.auth.uid == user;
      
-      allow read, write: if signedInAdmin();
+      allow read: if true;
     } 
 
     match /games/{game} {
