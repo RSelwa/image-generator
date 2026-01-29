@@ -6,7 +6,7 @@ import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { capitalizeFirstLetter, getImageUrl, TABLES } from "@repo/common"
 import {
-  createGameInputSchema,
+  gameDocSchema,
   gameDocWithIdSchema,
   gameEntitySchema,
   sphericalDocWithIdSchema,
@@ -39,7 +39,13 @@ import { toast } from "sonner"
 export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery: fakeBaseQuery<GlobalError>(),
-  tagTypes: ["Game", "GameList", "GameCount", "GameSphericalCount", "GameSphericals"],
+  tagTypes: [
+    "Game",
+    "GameList",
+    "GameCount",
+    "GameSphericalCount",
+    "GameSphericals",
+  ],
   endpoints: (builder) => ({
     getGames: builder.infiniteQuery<
       GameEntity[],
@@ -82,6 +88,8 @@ export const gameApi = createApi({
                   id: doc.id,
                 }),
               ).unwrap()
+
+
 
               const { data, error } = gameEntitySchema.safeParse({
                 id: doc.id,
@@ -132,7 +140,9 @@ export const gameApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.pages.flat().map(({ id }) => ({ type: "Game" as const, id })),
+              ...result.pages
+                .flat()
+                .map(({ id }) => ({ type: "Game" as const, id })),
               { type: "GameList" as const },
             ]
           : [{ type: "GameList" as const }],
@@ -145,8 +155,6 @@ export const gameApi = createApi({
           if (!docSnap.exists()) {
             throw new Error("Spherical not found")
           }
-
-          console.log(docSnap.data())
 
           const { data, error } = gameDocWithIdSchema.safeParse({
             id: docSnap.id,
@@ -205,7 +213,9 @@ export const gameApi = createApi({
           }
         }
       },
-      providesTags: (_result, _error, { id }) => [{ type: "GameSphericalCount", id }],
+      providesTags: (_result, _error, { id }) => [
+        { type: "GameSphericalCount", id },
+      ],
     }),
     getSphericalsByGameId: builder.query<
       SphericalDocWithId[],
@@ -241,24 +251,26 @@ export const gameApi = createApi({
           }
         }
       },
-      providesTags: (_result, _error, { gameId }) => [{ type: "GameSphericals", id: gameId }],
+      providesTags: (_result, _error, { gameId }) => [
+        { type: "GameSphericals", id: gameId },
+      ],
     }),
     createGame: builder.mutation<GameDocWithId, CreateGameInput>({
       queryFn: async (input) => {
         try {
+          const now = Timestamp.now()
           const { data: validatedInput, error: validationError } =
-            createGameInputSchema.safeParse(input)
+            gameDocSchema.safeParse({
+              ...input,
+              createdAt: now,
+              updatedAt: now,
+            })
 
           if (validationError) {
             throw new Error(validationError.message || "Validation error")
           }
 
-          const now = Timestamp.now()
-          const docRef = await addDoc(TABLE_REFS[TABLES.GAMES], {
-            ...validatedInput,
-            createdAt: now,
-            updatedAt: now,
-          })
+          const docRef = await addDoc(TABLE_REFS[TABLES.GAMES], validatedInput)
 
           const docSnap = await getDoc(docRef)
 

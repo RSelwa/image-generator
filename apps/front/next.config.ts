@@ -4,9 +4,16 @@ const nextConfig: NextConfig = {
   /* config options here */
   turbopack: {},
   images: {
-    localPatterns: [
+    remotePatterns: [
       {
-        pathname: "**",
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        pathname: "/tiktok-generator-fa261.firebasestorage.app/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.game-guessr.com",
+        pathname: "/**",
       },
     ],
   },

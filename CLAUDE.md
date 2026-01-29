@@ -7,6 +7,7 @@
 # Code style
 
 - Use pnpm instead of npm
+- use Arrow functions
 - Use CONSTANTS instead of "variable" when possible
 - Use ES modules (import/export) syntax, not CommonJS (require)
 - Destructure imports when possible (eg. import { foo } from 'bar')

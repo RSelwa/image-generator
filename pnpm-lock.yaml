@@ -92,6 +92,9 @@ importers:
       '@repo/common':
         specifier: workspace:*
         version: link:../../libs/common
+      '@repo/providers':
+        specifier: workspace:*
+        version: link:../../libs/providers
       '@repo/schemas':
         specifier: workspace:*
         version: link:../../libs/schemas
@@ -107,6 +110,9 @@ importers:
       firebase:
         specifier: ^12.8.0
         version: 12.8.0
+      firebase-admin:
+        specifier: ^13.6.0
+        version: 13.6.0(encoding@0.1.13)
       lucide-react:
         specifier: ^0.562.0
         version: 0.562.0(react@19.2.3)

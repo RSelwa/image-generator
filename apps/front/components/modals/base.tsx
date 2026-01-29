@@ -10,6 +10,7 @@ import {
 import VisuallyHidden from "@/components/ui/visually-hidden"
 import type { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
+import { cn } from "@/lib/utils"
 import type { DialogProps } from "@radix-ui/react-dialog"
 import type { ConstantValues } from "@repo/common"
 import { XIcon } from "lucide-react"
@@ -33,7 +34,7 @@ export const ModalBase = ({
 
   return (
     <Dialog open onOpenChange={customClose || closeModal} {...props}>
-      <DialogContent className={className}>
+      <DialogContent className={cn("max-h-[80vh] overflow-y-auto", className)}>
         <VisuallyHidden>
           <DialogTitle />
         </VisuallyHidden>
@@ -47,5 +48,19 @@ export const ModalBase = ({
         {children}
       </DialogContent>
     </Dialog>
+  )
+}
+
+export const LoadingModal = ({
+  modalKey,
+}: {
+  modalKey: ConstantValues<typeof MODAL_KEYS>
+}) => {
+  return (
+    <ModalBase {...{ modalKey }} alertDialog>
+      <div className="flex flex-col items-center justify-center p-4"></div>
+      <div className="loader mb-4" />
+      <p className="text-center">Loading...</p>
+    </ModalBase>
   )
 }

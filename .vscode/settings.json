@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["firestore", "Nuqs", "predeploy", "sphericals"],
+  "cSpell.words": ["firestore", "guessr", "Nuqs", "predeploy", "sphericals"],
   "json.validate.enable": false,
   "deno.lint": false,
   "editor.defaultFormatter": "biomejs.biome",

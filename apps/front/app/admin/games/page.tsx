@@ -2,6 +2,9 @@
 
 import GameCard from "@/components/admin/game-card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
+import { useModal } from "@/hooks/use-modal"
 import {
   useGetGamesInfiniteQuery,
   useGetTotalGamesCountQuery,
@@ -11,6 +14,7 @@ import { useState } from "react"
 const Page = () => {
   const [search, setSearch] = useState("")
   const { data: gameCount } = useGetTotalGamesCountQuery()
+  const { openModal } = useModal(MODAL_KEYS.GAME_ID, NEW_SEARCH_PARAM)
   const { data, isLoading, fetchNextPage, hasNextPage } =
     useGetGamesInfiniteQuery({
       search,
@@ -20,14 +24,20 @@ const Page = () => {
 
   return (
     <main className="p-2 h-full-height-admin">
-      <h1>Games {gameCount && `(${gameCount})`}</h1>
-      <input
-        type="search"
-        placeholder="Search games..."
-        className="mb-4"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <header className="mb-4 flex items-center w-full justify-between">
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-semibold whitespace-nowrap">
+            Games {gameCount && `(${gameCount})`}
+          </h1>
+          <Input
+            type="search"
+            placeholder="Search games..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <Button onClick={openModal}>Add New Game</Button>
+      </header>
 
       {isLoading && <p>Loading...</p>}
       <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">

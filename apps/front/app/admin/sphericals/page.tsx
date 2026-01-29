@@ -1,13 +1,8 @@
 "use client"
 
-import { MODAL_KEYS, MODAL_TYPES } from "@/constants/mapping"
 import { useGetSphericalsInfiniteQuery } from "@/redux/api/spherical"
-import { useQueryState } from "nuqs"
 
 const Page = () => {
-  const [, setModalSphericalId] = useQueryState(MODAL_KEYS.SPHERICAL_ID)
-  const [, setModalType] = useQueryState(MODAL_KEYS.MODAL_TYPE)
-
   const { data, isLoading } = useGetSphericalsInfiniteQuery()
 
   const spherical = data?.pages.flat() || []
@@ -25,10 +20,6 @@ const Page = () => {
             <li
               key={id}
               className="relative h-64 cursor-pointer overflow-hidden rounded-xl border border-grey-100"
-              onClick={() => {
-                setModalSphericalId(id)
-                setModalType(MODAL_TYPES.SPHERICAL)
-              }}
             >
               <div className="absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2">
                 <span className="inline-flex h-6 items-center rounded-full px-2 align-middle text-xs leading-none focus:outline-hidden uppercase border border-grey-100 bg-transparent backdrop-blur-sm text-neutral-100">

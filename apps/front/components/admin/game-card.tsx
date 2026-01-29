@@ -1,21 +1,39 @@
 import { Badge } from "@/components/ui/badge"
-import { MODAL_KEYS } from "@/constants/mapping"
+import { FALL_BACK_IMAGE, MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import type { GameEntity } from "@repo/schemas"
-
+import Image from "next/image"
 const GameCard = ({ game }: { game: GameEntity; index?: number }) => {
-  const { openModal } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID, game.id)
+  const { openModal: openGallery } = useModal(
+    MODAL_KEYS.SPHERICAL_GALLERY_ID,
+    game.id,
+  )
+  const { openModal } = useModal(MODAL_KEYS.GAME_ID, game.id)
 
   return (
-    <li className="relative h-64 cursor-pointer overflow-hidden rounded-xl border border-grey-100">
-      <img
-        src={game.thumbnailUrl}
+    <div
+      onClick={openModal}
+      className="relative h-64 cursor-pointer overflow-hidden rounded-xl border border-grey-100"
+    >
+      <Image
+        src={game.thumbnailUrl || FALL_BACK_IMAGE}
         alt={game.title}
+        height={200}
+        loading="eager"
+        width={400}
         className="size-full object-cover"
       />
       <div className="absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2">
         <Badge asChild variant="blur" className="mr-1">
-          <button type="button" onClick={openModal}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              openGallery()
+            }}
+            className="cursor-pointer"
+          >
             {game.sphericalsCount} Sphericals
           </button>
         </Badge>
@@ -36,7 +54,7 @@ const GameCard = ({ game }: { game: GameEntity; index?: number }) => {
           </h2>
         </div>
       </div>
-    </li>
+    </div>
   )
 }
 
