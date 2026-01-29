@@ -31,8 +31,8 @@ const Page = () => {
 
       {isLoading && <p>Loading...</p>}
       <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-        {games?.map((game, index) => (
-          <GameCard key={game.id} game={game} index={index} />
+        {games?.map((game) => (
+          <GameCard key={game.id} game={game} />
         ))}
       </ul>
       {hasNextPage && (

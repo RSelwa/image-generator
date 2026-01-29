@@ -1,3 +1,4 @@
+import { ModalBase } from "@/components/modals/base"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -31,7 +32,7 @@ export const SphericalModal = () => {
 
 export const SphericalGalleryModal = () => {
   const [selectedId, setSelectedId] = useState<string[]>([])
-  const [gameId] = useQueryState(MODAL_KEYS.GAME_ID)
+  const [gameId] = useQueryState(MODAL_KEYS.SPHERICAL_GALLERY_ID)
   const [deleteSpherical, { isLoading }] = useDeleteSphericalMutation()
 
   const { data } = useGetSphericalsByGameIdQuery({ gameId: gameId || "" })
@@ -47,7 +48,7 @@ export const SphericalGalleryModal = () => {
   }
 
   return (
-    <section className="h-125">
+    <ModalBase className="h-125" modalKey={MODAL_KEYS.SPHERICAL_GALLERY_ID}>
       <div className="grid-cols-5 grid gap-3 overflow-y-auto h-100">
         {data.map((spherical) => {
           const isSelected = selectedId.includes(spherical.id)
@@ -114,6 +115,6 @@ export const SphericalGalleryModal = () => {
           </>
         )}
       </article>
-    </section>
+    </ModalBase>
   )
 }

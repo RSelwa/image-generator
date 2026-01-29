@@ -1,6 +1,6 @@
 "use client"
 
-import { MODAL_KEYS, MODAL_TYPES_VALUES } from "@/constants/mapping"
+import { MODAL_KEYS, MODAL_TYPES } from "@/constants/mapping"
 import { useGetSphericalsInfiniteQuery } from "@/redux/api/spherical"
 import { useQueryState } from "nuqs"
 
@@ -27,7 +27,7 @@ const Page = () => {
               className="relative h-64 cursor-pointer overflow-hidden rounded-xl border border-grey-100"
               onClick={() => {
                 setModalSphericalId(id)
-                setModalType(MODAL_TYPES_VALUES.SPHERICAL)
+                setModalType(MODAL_TYPES.SPHERICAL)
               }}
             >
               <div className="absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2">

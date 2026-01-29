@@ -1,4 +1,4 @@
-import { Modals } from "@/components/modals"
+import { ModalProvider } from "@/components/modals"
 import StoreProvider from "@/components/providers/redux-provider"
 import { Toaster } from "@/components/ui/sonner"
 import "@photo-sphere-viewer/core/index.css"
@@ -35,7 +35,7 @@ export default function RootLayout({
         <NuqsAdapter>
           <StoreProvider>
             <Toaster />
-            <Modals />
+            <ModalProvider />
             {children}
           </StoreProvider>
         </NuqsAdapter>
