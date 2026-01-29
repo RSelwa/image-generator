@@ -24,4 +24,15 @@ export const gameDocWithIdSchema = z.object({
 export type GameDoc = z.infer<typeof gameDocSchema>
 export type GameDocWithId = z.infer<typeof gameDocWithIdSchema>
 
+// Input schemas for CRUD operations (without timestamps)
+export const createGameInputSchema = gameDocSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+})
+
+export const updateGameInputSchema = createGameInputSchema.partial()
+
+export type CreateGameInput = z.infer<typeof createGameInputSchema>
+export type UpdateGameInput = z.infer<typeof updateGameInputSchema>
+
 export type GameRef = DocumentReference<GameDoc, GameDoc>

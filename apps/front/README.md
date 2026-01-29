@@ -343,3 +343,8 @@ Check for .env.example for environnement variables to setup
  There are few github secrets to setup for auto deploy cloud functions
  - PROJECT_ID
  - FIREBASE_TOKEN
+
+## Service account
+
+export GOOGLE_APPLICATION_CREDENTIALS="./service-account.json"
+echo $GOOGLE_APPLICATION_CREDENTIALS 

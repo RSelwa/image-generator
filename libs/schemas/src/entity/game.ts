@@ -2,10 +2,7 @@ import z from "zod"
 import { gameDocWithIdSchema } from "~/firestore"
 
 export const gameEntitySchema = z.object({
-  ...gameDocWithIdSchema.omit({
-    createdAt: true,
-    updatedAt: true,
-  }).shape,
+  ...gameDocWithIdSchema.shape,
   sphericalsCount: z.number(),
 })
 

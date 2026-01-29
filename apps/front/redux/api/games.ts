@@ -6,15 +6,21 @@ import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { capitalizeFirstLetter, getImageUrl, TABLES } from "@repo/common"
 import {
+  createGameInputSchema,
   gameDocWithIdSchema,
   gameEntitySchema,
   sphericalDocWithIdSchema,
+  updateGameInputSchema,
+  type CreateGameInput,
   type GameDocWithId,
   type GameEntity,
   type SphericalDocWithId,
+  type UpdateGameInput,
 } from "@repo/schemas"
 import {
+  addDoc,
   collection,
+  deleteDoc,
   documentId,
   getCountFromServer,
   getDoc,
@@ -23,6 +29,8 @@ import {
   orderBy,
   query,
   startAfter,
+  Timestamp,
+  updateDoc,
   where,
   type QueryConstraint,
 } from "firebase/firestore"
@@ -31,6 +39,7 @@ import { toast } from "sonner"
 export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery: fakeBaseQuery<GlobalError>(),
+  tagTypes: ["Game", "GameList", "GameCount", "GameSphericalCount", "GameSphericals"],
   endpoints: (builder) => ({
     getGames: builder.infiniteQuery<
       GameEntity[],
@@ -120,6 +129,13 @@ export const gameApi = createApi({
           }
         },
       },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.pages.flat().map(({ id }) => ({ type: "Game" as const, id })),
+              { type: "GameList" as const },
+            ]
+          : [{ type: "GameList" as const }],
     }),
     getGameById: builder.query<GameDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
@@ -152,6 +168,7 @@ export const gameApi = createApi({
           }
         }
       },
+      providesTags: (_result, _error, { id }) => [{ type: "Game", id }],
     }),
     getTotalGamesCount: builder.query<number, void>({
       queryFn: async () => {
@@ -169,6 +186,7 @@ export const gameApi = createApi({
           }
         }
       },
+      providesTags: [{ type: "GameCount" }],
     }),
     getGameSphericalCount: builder.query<number, { id: string }>({
       queryFn: async ({ id }) => {
@@ -187,6 +205,7 @@ export const gameApi = createApi({
           }
         }
       },
+      providesTags: (_result, _error, { id }) => [{ type: "GameSphericalCount", id }],
     }),
     getSphericalsByGameId: builder.query<
       SphericalDocWithId[],
@@ -222,6 +241,115 @@ export const gameApi = createApi({
           }
         }
       },
+      providesTags: (_result, _error, { gameId }) => [{ type: "GameSphericals", id: gameId }],
+    }),
+    createGame: builder.mutation<GameDocWithId, CreateGameInput>({
+      queryFn: async (input) => {
+        try {
+          const { data: validatedInput, error: validationError } =
+            createGameInputSchema.safeParse(input)
+
+          if (validationError) {
+            throw new Error(validationError.message || "Validation error")
+          }
+
+          const now = Timestamp.now()
+          const docRef = await addDoc(TABLE_REFS[TABLES.GAMES], {
+            ...validatedInput,
+            createdAt: now,
+            updatedAt: now,
+          })
+
+          const docSnap = await getDoc(docRef)
+
+          const { data, error } = gameDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error creating game:", error)
+          toast.error("Error creating game")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: [{ type: "GameList" }, { type: "GameCount" }],
+    }),
+    updateGameById: builder.mutation<
+      GameDocWithId,
+      { id: string; data: UpdateGameInput }
+    >({
+      queryFn: async ({ id, data: input }) => {
+        try {
+          const { data: validatedInput, error: validationError } =
+            updateGameInputSchema.safeParse(input)
+
+          if (validationError) {
+            throw new Error(validationError.message || "Validation error")
+          }
+
+          const gameRef = getGameRef(id)
+          await updateDoc(gameRef, {
+            ...validatedInput,
+            updatedAt: Timestamp.now(),
+          })
+
+          const docSnap = await getDoc(gameRef)
+
+          if (!docSnap.exists()) {
+            throw new Error("Game not found")
+          }
+
+          const { data, error } = gameDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error updating game:", error)
+          toast.error("Error updating game")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Game", id },
+        { type: "GameList" },
+      ],
+    }),
+    deleteGameById: builder.mutation<null, { id: string }>({
+      queryFn: async ({ id }) => {
+        try {
+          await deleteDoc(getGameRef(id))
+
+          return { data: null }
+        } catch (error) {
+          console.error("Error deleting game:", error)
+          toast.error("Error deleting game")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Game", id },
+        { type: "GameList" },
+        { type: "GameCount" },
+        { type: "GameSphericalCount", id },
+        { type: "GameSphericals", id },
+      ],
     }),
   }),
 })
@@ -232,4 +360,7 @@ export const {
   useGetTotalGamesCountQuery,
   useGetGameSphericalCountQuery,
   useGetSphericalsByGameIdQuery,
+  useCreateGameMutation,
+  useUpdateGameByIdMutation,
+  useDeleteGameByIdMutation,
 } = gameApi

@@ -4,9 +4,18 @@ import z from "zod"
 // import { WITH_ID } from "./../zod.ts"
 import { WITH_ID } from "~/zod"
 
+// Position on the map (percentage 0-100)
+export const mapPositionSchema = z.object({
+  x: z.number().min(0).max(100),
+  y: z.number().min(0).max(100),
+})
+
+export type MapPosition = z.infer<typeof mapPositionSchema>
+
 export const sphericalDocSchema = z.object({
   gameRef: z.string(),
   mapId: z.string().nullish(),
+  mapPosition: mapPositionSchema.nullish(),
   gameId: z.string(),
   image: z.string(),
   storageImage: z.string().nullish(),
@@ -28,3 +37,14 @@ export const sphericalDocWithIdSchema = z.object({
 
 export type SphericalDoc = z.infer<typeof sphericalDocSchema>
 export type SphericalDocWithId = z.infer<typeof sphericalDocWithIdSchema>
+
+// Input schemas for CRUD operations (without timestamps)
+export const createSphericalInputSchema = sphericalDocSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+})
+
+export const updateSphericalInputSchema = createSphericalInputSchema.partial()
+
+export type CreateSphericalInput = z.infer<typeof createSphericalInputSchema>
+export type UpdateSphericalInput = z.infer<typeof updateSphericalInputSchema>

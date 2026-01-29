@@ -1,13 +1,15 @@
 import { Timestamp } from "@firebase/firestore"
 import z from "zod"
-// import { WITH_ID } from "./../zod.ts"
 import { WITH_ID } from "~/zod"
 
 export const mapDocSchema = z.object({
-  title: z.string().min(1),
+  name: z.string().min(1),
+  imageUrl: z.string(),
+  width: z.number().positive(),
+  height: z.number().positive(),
+  gameId: z.string(), // For collectionGroup queries
   createdAt: z.instanceof(Timestamp),
   updatedAt: z.instanceof(Timestamp),
-  imageUrl: z.string(),
 })
 
 export const mapDocWithIdSchema = z.object({
@@ -17,3 +19,14 @@ export const mapDocWithIdSchema = z.object({
 
 export type MapDoc = z.infer<typeof mapDocSchema>
 export type MapDocWithId = z.infer<typeof mapDocWithIdSchema>
+
+// Input schemas for CRUD operations (without timestamps)
+export const createMapInputSchema = mapDocSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+})
+
+export const updateMapInputSchema = createMapInputSchema.partial()
+
+export type CreateMapInput = z.infer<typeof createMapInputSchema>
+export type UpdateMapInput = z.infer<typeof updateMapInputSchema>

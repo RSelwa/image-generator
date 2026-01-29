@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge"
 import { MODAL_KEYS, MODAL_TYPES_VALUES } from "@/constants/mapping"
 import type { GameEntity } from "@repo/schemas"
 import { useQueryState } from "nuqs"
@@ -19,13 +20,11 @@ const GameCard = ({ game, index }: { game: GameEntity; index?: number }) => {
         className="size-full object-cover"
       />
       <div className="absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2">
-        <button
-          type="button"
-          onClick={openSphericalsModal}
-          className="inline-flex h-6 items-center rounded-full px-2 align-middle text-xs leading-none focus:outline-hidden uppercase border border-grey-100 bg-transparent backdrop-blur-sm text-neutral-100"
-        >
-          {game.sphericalsCount} Sphericals
-        </button>
+        <Badge asChild variant="blur" className="mr-1">
+          <button type="button" onClick={openSphericalsModal}>
+            {game.sphericalsCount} Sphericals
+          </button>
+        </Badge>
       </div>
       <div className="absolute inset-x-0 flex h-1/2 w-full -translate-y-full flex-col justify-end p-2 text-white">
         <div
@@ -43,7 +42,6 @@ const GameCard = ({ game, index }: { game: GameEntity; index?: number }) => {
           </h2>
         </div>
       </div>
-      <span className="absolute top-3 right-3">{index}</span>
     </li>
   )
 }

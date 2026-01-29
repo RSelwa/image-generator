@@ -1,13 +1,23 @@
 // Need to use the React-specific entry point to import createApi
 import { DEFAULT_SIZE_SPHERICALS } from "@/constants/api"
 import { db } from "@/constants/db"
-import { getSphericalRef, TABLE_REFS } from "@/constants/db-refs"
+import { getSphericalRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
 import { gameApi } from "@/redux/api/games"
 import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { getIdFromFirestoreRef, getImageUrl, TABLES } from "@repo/common"
-import { sphericalEntitySchema, type SphericalEntity } from "@repo/schemas"
 import {
+  createSphericalInputSchema,
+  sphericalDocWithIdSchema,
+  sphericalEntitySchema,
+  updateSphericalInputSchema,
+  type CreateSphericalInput,
+  type SphericalDocWithId,
+  type SphericalEntity,
+  type UpdateSphericalInput,
+} from "@repo/schemas"
+import {
+  addDoc,
   collection,
   deleteDoc,
   getCountFromServer,
@@ -16,6 +26,8 @@ import {
   limit,
   query,
   startAfter,
+  Timestamp,
+  updateDoc,
   type QueryConstraint,
 } from "firebase/firestore"
 import { toast } from "sonner"
@@ -23,8 +35,9 @@ import { toast } from "sonner"
 export const sphericalApi = createApi({
   reducerPath: "sphericalApi",
   baseQuery: fakeBaseQuery<GlobalError>(),
+  tagTypes: ["Spherical", "SphericalList", "SphericalCount"],
   endpoints: (builder) => ({
-    getSpherical: builder.infiniteQuery<
+    getSphericals: builder.infiniteQuery<
       SphericalEntity[],
       void,
       { limit?: number; startAfter?: string }
@@ -98,6 +111,13 @@ export const sphericalApi = createApi({
           }
         },
       },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.pages.flat().map(({ id }) => ({ type: "Spherical" as const, id })),
+              { type: "SphericalList" as const },
+            ]
+          : [{ type: "SphericalList" as const }],
     }),
     getSphericalById: builder.query<
       SphericalEntity,
@@ -136,6 +156,7 @@ export const sphericalApi = createApi({
           }
         }
       },
+      providesTags: (_result, _error, { id }) => [{ type: "Spherical", id }],
     }),
     getTotalSphericalsCount: builder.query<number, void>({
       queryFn: async () => {
@@ -153,6 +174,7 @@ export const sphericalApi = createApi({
           }
         }
       },
+      providesTags: [{ type: "SphericalCount" }],
     }),
     deleteSpherical: builder.mutation<null, { gameId: string; id: string }>({
       queryFn: async ({ gameId, id }) => {
@@ -168,12 +190,131 @@ export const sphericalApi = createApi({
           }
         }
       },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Spherical", id },
+        { type: "SphericalList" },
+        { type: "SphericalCount" },
+      ],
+      onQueryStarted: async ({ gameId }, { dispatch, queryFulfilled }) => {
+        await queryFulfilled
+        dispatch(
+          gameApi.util.invalidateTags([
+            { type: "GameSphericalCount", id: gameId },
+            { type: "GameSphericals", id: gameId },
+          ]),
+        )
+      },
+    }),
+    createSpherical: builder.mutation<
+      SphericalDocWithId,
+      { gameId: string; data: CreateSphericalInput }
+    >({
+      queryFn: async ({ gameId, data: input }) => {
+        try {
+          const { data: validatedInput, error: validationError } =
+            createSphericalInputSchema.safeParse(input)
+
+          if (validationError) {
+            throw new Error(validationError.message || "Validation error")
+          }
+
+          const now = Timestamp.now()
+          const docRef = await addDoc(TABLES_SUB_REFS[TABLES.SPHERICAL](gameId), {
+            ...validatedInput,
+            createdAt: now,
+            updatedAt: now,
+          })
+
+          const docSnap = await getDoc(docRef)
+
+          const { data, error } = sphericalDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error creating spherical:", error)
+          toast.error("Error creating spherical")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: [{ type: "SphericalList" }, { type: "SphericalCount" }],
+      onQueryStarted: async ({ gameId }, { dispatch, queryFulfilled }) => {
+        await queryFulfilled
+        dispatch(
+          gameApi.util.invalidateTags([
+            { type: "GameSphericalCount", id: gameId },
+            { type: "GameSphericals", id: gameId },
+          ]),
+        )
+      },
+    }),
+    updateSphericalById: builder.mutation<
+      SphericalDocWithId,
+      { gameId: string; id: string; data: UpdateSphericalInput }
+    >({
+      queryFn: async ({ gameId, id, data: input }) => {
+        try {
+          const { data: validatedInput, error: validationError } =
+            updateSphericalInputSchema.safeParse(input)
+
+          if (validationError) {
+            throw new Error(validationError.message || "Validation error")
+          }
+
+          const sphericalRef = getSphericalRef(gameId, id)
+          await updateDoc(sphericalRef, {
+            ...validatedInput,
+            updatedAt: Timestamp.now(),
+          })
+
+          const docSnap = await getDoc(sphericalRef)
+
+          if (!docSnap.exists()) {
+            throw new Error("Spherical not found")
+          }
+
+          const { data, error } = sphericalDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error updating spherical:", error)
+          toast.error("Error updating spherical")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Spherical", id },
+        { type: "SphericalList" },
+      ],
+      onQueryStarted: async ({ gameId }, { dispatch, queryFulfilled }) => {
+        await queryFulfilled
+        dispatch(
+          gameApi.util.invalidateTags([{ type: "GameSphericals", id: gameId }]),
+        )
+      },
     }),
   }),
 })
 
 export const {
-  useGetSphericalInfiniteQuery,
+  useGetSphericalsInfiniteQuery,
   useGetSphericalByIdQuery,
   useDeleteSphericalMutation,
+  useCreateSphericalMutation,
+  useUpdateSphericalByIdMutation,
 } = sphericalApi

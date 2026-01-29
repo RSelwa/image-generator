@@ -48,7 +48,7 @@ export const SphericalGalleryModal = () => {
 
   return (
     <section className="h-125">
-      <div className="grid-cols-5 grid gap-3">
+      <div className="grid-cols-5 grid gap-3 overflow-y-auto h-100">
         {data.map((spherical) => {
           const isSelected = selectedId.includes(spherical.id)
 

@@ -1,14 +1,14 @@
 "use client"
 
 import { MODAL_KEYS, MODAL_TYPES_VALUES } from "@/constants/mapping"
-import { useGetSphericalInfiniteQuery } from "@/redux/api/spherical"
+import { useGetSphericalsInfiniteQuery } from "@/redux/api/spherical"
 import { useQueryState } from "nuqs"
 
 const Page = () => {
   const [, setModalSphericalId] = useQueryState(MODAL_KEYS.SPHERICAL_ID)
   const [, setModalType] = useQueryState(MODAL_KEYS.MODAL_TYPE)
 
-  const { data, isLoading } = useGetSphericalInfiniteQuery()
+  const { data, isLoading } = useGetSphericalsInfiniteQuery()
 
   const spherical = data?.pages.flat() || []
 

@@ -12,6 +12,6 @@
     "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/service-account.json"
   },
   "terminal.integrated.env.osx": {
-    "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/service-account.json"
+    "GOOGLE_APPLICATION_CREDENTIALS": "/Users/raphael/image-generator/service-account.json"
   }
 }
