@@ -33,7 +33,11 @@ const NON_ADMIN_UID = "non-admin-user"
 describe("Firebase Storage Rules", () => {
   beforeAll(async () => {
     const storage = { port: STORAGE_PORT, host: HOST, rules: storageRules }
-    const firestore = { port: FIRESTORE_PORT, host: HOST, rules: firestoreRules }
+    const firestore = {
+      port: FIRESTORE_PORT,
+      host: HOST,
+      rules: firestoreRules,
+    }
 
     testEnv = await initializeTestEnvironment({
       projectId: PROJECT_ID,
@@ -97,7 +101,10 @@ describe("Firebase Storage Rules", () => {
       const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
-        uploadBytes(ref(authedStorage, "game-thumbnails/test.png"), updatedFile),
+        uploadBytes(
+          ref(authedStorage, "game-thumbnails/test.png"),
+          updatedFile,
+        ),
       )
     })
 
@@ -210,9 +217,7 @@ describe("Firebase Storage Rules", () => {
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
 
-      await assertFails(
-        deleteObject(ref(authedStorage, "sphericals/test.jpg")),
-      )
+      await assertFails(deleteObject(ref(authedStorage, "sphericals/test.jpg")))
     })
 
     test("should deny unauthenticated create", async () => {
