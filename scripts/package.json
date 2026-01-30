@@ -1,8 +1,8 @@
 {
   "name": "@repo/scripts",
+  "type": "module",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "run": "deno run --allow-all",
     "main": "deno run --allow-all src/server.ts"

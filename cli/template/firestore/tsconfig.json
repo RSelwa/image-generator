@@ -1,12 +1,12 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@codecompose/typescript-config/service",
-  "references": [
-    {
-      "path": "../../libs/common"
-    },
-    {
-      "path": "../../libs/providers"
-    }
-  ]
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "@codecompose/typescript-config/service",
+	"references": [
+		{
+			"path": "../../libs/common"
+		},
+		{
+			"path": "../../libs/providers"
+		}
+	]
 }

@@ -14,6 +14,7 @@ export const listen_doc_spherical_written = onDocumentWritten(
       logger.error(
         `Spherical ID is undefined in document path: ${event.document}`,
       )
+
       return
     }
 

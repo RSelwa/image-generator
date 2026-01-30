@@ -1,6 +1,6 @@
-import type { MetadataRoute } from "next"
+import { type MetadataRoute } from "next"
 
-const robots = (): MetadataRoute.Robots => {
+function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",

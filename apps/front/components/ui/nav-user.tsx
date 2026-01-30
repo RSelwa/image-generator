@@ -9,6 +9,7 @@ import {
   Sparkles,
 } from "lucide-react"
 
+import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -23,15 +24,13 @@ import { PAGES } from "@/constants/pages"
 import { useLogoutMutation } from "@/redux/api/auth"
 import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import Link from "next/link"
 
 export function NavUser() {
   const user = useAppSelector(selectUser)
   const isAdmin = useAppSelector(selectIsAdmin)
+  const [logout] = useLogoutMutation()
 
   if (!user) return null
-
-  const [logout] = useLogoutMutation()
 
   return (
     <DropdownMenu>

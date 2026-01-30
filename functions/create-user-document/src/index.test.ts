@@ -2,13 +2,13 @@ import { refs } from "@repo/providers/db-refs"
 import { db } from "@repo/providers/firebase"
 import { beforeAll, describe, expect, it } from "vitest"
 
-const createAuthUser = async ({
+async function createAuthUser({
   email,
   password = "Test1234!",
 }: {
   email: string
   password?: string
-}) => {
+}) {
   const res = await fetch(
     "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake-api-key",
     {
@@ -18,7 +18,7 @@ const createAuthUser = async ({
     },
   )
 
-  const data = (await res.json()) as { localId: string; email: string }
+  const data = (await res.json()) as { localId: string, email: string }
 
   return { uid: data.localId, email: data.email }
 }

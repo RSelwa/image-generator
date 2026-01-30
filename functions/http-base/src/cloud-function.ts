@@ -1,5 +1,4 @@
-import { region } from "@repo/providers/config"
-import { stripe } from "@repo/providers/stripe"
+import { region } from "@repo/providers/firebase"
 import { https } from "firebase-functions"
 import { HttpsError } from "firebase-functions/https"
 import { defineSecret } from "firebase-functions/params"
@@ -27,10 +26,8 @@ export const http_endpoint = https.onRequest(
   },
   async (_, res) => {
     try {
-      const customers = await stripe.customers.list({ limit: 2 })
-
       res.status(200).json({
-        customers,
+        customers: [],
         apiKey: apiKey.value(),
         stripeApiKey: stripeApiKey.value(),
       })
@@ -41,7 +38,7 @@ export const http_endpoint = https.onRequest(
         throw new HttpsError("internal", error.message)
       }
 
-      new HttpsError("cancelled", "Request was cancelled")
+      throw new HttpsError("cancelled", "Request was cancelled")
     }
   },
 )
@@ -63,9 +60,7 @@ export const http_endpoint_authenticated = https.onCall(
         throw new HttpsError("unauthenticated", "User must be authenticated")
       }
 
-      const customers = await stripe.customers.list({ limit: 2 })
-
-      return { customers }
+      return { customers: [] }
     } catch (error) {
       console.error(error)
 
@@ -73,7 +68,7 @@ export const http_endpoint_authenticated = https.onCall(
         throw new HttpsError("internal", error.message)
       }
 
-      new HttpsError("cancelled", "Request was cancelled")
+      throw new HttpsError("cancelled", "Request was cancelled")
     }
   },
 )

@@ -1,5 +1,5 @@
+import { subRefs } from "@repo/providers/db-refs"
 import { TABLES } from "../../../libs/common/src/constants/firebase.ts"
-import { subRefs } from "../../../libs/providers/dist/db-refs.js"
 import { gameId, sphericalIdsToSave } from "../constants/index.ts"
 import { getFlag } from "../constants/utils.ts"
 

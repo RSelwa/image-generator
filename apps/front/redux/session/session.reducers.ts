@@ -1,5 +1,5 @@
-import type { Session } from "@/schemas/session"
-import type { PayloadAction } from "@reduxjs/toolkit"
+import { type PayloadAction } from "@reduxjs/toolkit"
+import { type Session } from "@/schemas/session"
 
 export const sessionReducers = {
   updateSession: (

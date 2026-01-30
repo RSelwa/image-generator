@@ -1,4 +1,4 @@
-const isSameArray = (a: unknown[], b: unknown[]) => {
+function isSameArray(a: unknown[], b: unknown[]) {
   if (a.length !== b.length) return false
 
   return a.every((element, index) => isEqual(element, b[index]))
@@ -6,11 +6,11 @@ const isSameArray = (a: unknown[], b: unknown[]) => {
 
 type PlainObject = Record<PropertyKey, unknown>
 
-const isPlainObject = (value: unknown): value is PlainObject => {
+function isPlainObject(value: unknown): value is PlainObject {
   return value?.constructor === Object
 }
 
-const isSameObject = (a: PlainObject, b: PlainObject) => {
+function isSameObject(a: PlainObject, b: PlainObject) {
   // check if the objects have the same keys
   const keys1 = Object.keys(a)
   const keys2 = Object.keys(b)
@@ -25,14 +25,15 @@ const isSameObject = (a: PlainObject, b: PlainObject) => {
   return true
 }
 
-export const isEqual = (a: unknown, b: unknown): boolean => {
+export function isEqual(a: unknown, b: unknown): boolean {
   if (Object.is(a, b)) return true
 
   if (typeof a !== typeof b) return false
 
   if (Array.isArray(a) && Array.isArray(b)) return isSameArray(a, b)
 
-  if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime()
+  if (a instanceof Date && b instanceof Date)
+    return a.getTime() === b.getTime()
 
   if (a instanceof RegExp && b instanceof RegExp)
     return a.toString() === b.toString()
@@ -42,7 +43,7 @@ export const isEqual = (a: unknown, b: unknown): boolean => {
   return false
 }
 
-export const capitalizeFirstLetter = (str?: string) => {
+export function capitalizeFirstLetter(str?: string) {
   if (!str) return str
 
   const words = str.split(" ")
@@ -54,25 +55,27 @@ export const capitalizeFirstLetter = (str?: string) => {
     .join(" ")
 }
 
-export const getIdFromFirestoreRef = (ref: string) => {
+export function getIdFromFirestoreRef(ref: string) {
   const parts = ref.split("/")
+
   return parts[parts.length - 1] || ""
 }
 
-export const randomElement = (array: unknown[]) =>
-  array[Math.floor(Math.random() * array.length)]
+export function randomElement(array: unknown[]) {
+  return array[Math.floor(Math.random() * array.length)]
+}
 
 // Export Now at format dd-mm-yyyy-hh-mm-ss
-export const getNowString = () => {
-   const now = new Date()
-    const dateStr = [
-      now.getDate().toString().padStart(2, "0"),
-      (now.getMonth() + 1).toString().padStart(2, "0"),
-      now.getFullYear(),
-      now.getHours().toString().padStart(2, "0"),
-      now.getMinutes().toString().padStart(2, "0"),
-      now.getSeconds().toString().padStart(2, "0"),
-    ].join("-")
+export function getNowString() {
+  const now = new Date()
+  const dateStr = [
+    now.getDate().toString().padStart(2, "0"),
+    (now.getMonth() + 1).toString().padStart(2, "0"),
+    now.getFullYear(),
+    now.getHours().toString().padStart(2, "0"),
+    now.getMinutes().toString().padStart(2, "0"),
+    now.getSeconds().toString().padStart(2, "0"),
+  ].join("-")
 
-    return dateStr
-  }
+  return dateStr
+}

@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { useCallback, useRef, useState } from "react"
 import {
   TransformComponent,
@@ -8,17 +7,18 @@ import {
   useControls,
   useTransformContext,
 } from "react-zoom-pan-pinch"
+import { Button } from "@/components/ui/button"
 
 // Types for the map system
-export interface Position {
+export type Position = {
   x: number // percentage 0-100
   y: number // percentage 0-100
 }
 
-export interface MapData {
+export type MapData = {
   mapImage: string
   correctPosition?: Position
-  size: { width: number; height: number }
+  size: { width: number, height: number }
 }
 
 // Mini map sizes
@@ -26,7 +26,7 @@ const MINI_MAP_COLLAPSED = { width: 250, height: 130 }
 const MINI_MAP_EXPANDED = { width: 600, height: 350 }
 
 // Zoom controls component
-const ZoomControls = ({ isExpanded }: { isExpanded: boolean }) => {
+function ZoomControls({ isExpanded }: { isExpanded: boolean }) {
   const { zoomIn, zoomOut, resetTransform } = useControls()
 
   if (!isExpanded) return null
@@ -47,7 +47,7 @@ const ZoomControls = ({ isExpanded }: { isExpanded: boolean }) => {
 }
 
 // Markers layer - contains all markers and uses transform context for scale
-const MarkersLayer = ({
+function MarkersLayer({
   guessPosition,
   correctPosition,
   showCorrectMarker = true,
@@ -57,7 +57,7 @@ const MarkersLayer = ({
   correctPosition?: Position
   showCorrectMarker?: boolean
   showLine?: boolean
-}) => {
+}) {
   const { transformState } = useTransformContext()
   const scale = transformState.scale
 
@@ -91,7 +91,9 @@ const MarkersLayer = ({
   return (
     <>
       {/* Correct position marker */}
-      {showCorrectMarker && correctPosition && renderMarker(correctPosition, "green")}
+      {showCorrectMarker &&
+        correctPosition &&
+        renderMarker(correctPosition, "green")}
 
       {/* Guess marker */}
       {guessPosition && renderMarker(guessPosition, "blue")}
@@ -117,7 +119,7 @@ const MarkersLayer = ({
   )
 }
 
-export interface MiniMapProps {
+export type MiniMapProps = {
   mapData: MapData
   guessPosition: Position | null
   onMapClick: (position: Position) => void
@@ -125,8 +127,8 @@ export interface MiniMapProps {
   showCorrectMarker?: boolean
   showLine?: boolean
   disabled?: boolean
-  collapsedSize?: { width: number; height: number }
-  expandedSize?: { width: number; height: number }
+  collapsedSize?: { width: number, height: number }
+  expandedSize?: { width: number, height: number }
   className?: string
   /** When true, the map is rendered inline (relative) instead of fixed positioned */
   inline?: boolean
@@ -135,7 +137,7 @@ export interface MiniMapProps {
 }
 
 // Mini Map Component (bottom-right, expands on hover)
-export const MiniMap = ({
+export function MiniMap({
   mapData,
   guessPosition,
   onMapClick,
@@ -148,7 +150,7 @@ export const MiniMap = ({
   className,
   inline = false,
   alwaysExpanded = false,
-}: MiniMapProps) => {
+}: MiniMapProps) {
   const [isHovered, setIsHovered] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 

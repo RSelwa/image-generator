@@ -1,17 +1,6 @@
-import type { SignupSchema } from "@/components/signup-form"
-import { auth } from "@/constants/db"
-import { getUserRef } from "@/constants/db-refs"
-import { SESSION_STATUS } from "@/constants/mapping"
-import {
-  updateSession,
-  updateSessionAuthUser,
-  updateSessionStatus,
-} from "@/redux/session/session.actions"
-import type { RootState } from "@/redux/store"
-import { formatSessionFromFirebaseUser } from "@/utils/user"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { isEqual } from "@repo/common"
-import type { UserDoc } from "@repo/schemas"
+import { type UserDoc } from "@repo/schemas"
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -24,6 +13,17 @@ import {
 import { type DocumentReference, getDoc, onSnapshot } from "firebase/firestore"
 import { toast } from "sonner"
 import { z } from "zod"
+import { type SignupSchema } from "@/components/signup-form"
+import { auth } from "@/constants/db"
+import { getUserRef } from "@/constants/db-refs"
+import { SESSION_STATUS } from "@/constants/mapping"
+import {
+  updateSession,
+  updateSessionAuthUser,
+  updateSessionStatus,
+} from "@/redux/session/session.actions"
+import { type RootState } from "@/redux/store"
+import { formatSessionFromFirebaseUser } from "@/utils/user"
 
 type User = {
   id: string
@@ -105,7 +105,7 @@ export const authApi = createApi({
           unsubscribe = onAuthStateChanged(auth, async (user) => {
             const isSignedIn = !!user
 
-            if (!user)
+            if (!user) {
               await dispatch(
                 updateSession({
                   authUser: null,
@@ -113,6 +113,7 @@ export const authApi = createApi({
                   status: SESSION_STATUS.SUCCESS,
                 }),
               )
+            }
 
             if (isSignedIn) {
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
@@ -130,7 +131,7 @@ export const authApi = createApi({
         unsubscribe?.()
       },
     }),
-    login: builder.mutation<null, { email: string; password: string }>({
+    login: builder.mutation<null, { email: string, password: string }>({
       queryFn: async (data) => {
         try {
           await signInWithEmailAndPassword(auth, data.email, data.password)
@@ -171,7 +172,7 @@ export const authApi = createApi({
 
           return { data: null }
         } catch (error) {
-          return { error: error }
+          return { error }
         }
       },
     }),

@@ -2,7 +2,7 @@ import { Viewer } from "@photo-sphere-viewer/core"
 import { getImageUrl } from "@repo/common"
 import { useEffect, useRef } from "react"
 
-export const SphericalViewer = ({ src }: { src: string }) => {
+export function SphericalViewer({ src }: { src: string }) {
   const ref = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {

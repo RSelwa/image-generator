@@ -1,12 +1,11 @@
-import type { ComponentProps } from "react"
+import { type ComponentProps } from "react"
 
-const Loader = ({
+function Loader({
   className,
-  strokeWidth = 1,
   ...props
 }: ComponentProps<"svg"> & {
   size?: string | number
-}) => {
+}) {
   return (
     <svg
       viewBox="0 0 16 16"

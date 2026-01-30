@@ -179,7 +179,6 @@ To run all tests for the API:
 pnpm --filter @repo/api test
 ```
 
-
 ## Usage
 
 **You need to run all your commands at the roo of the monorepo** When you want
@@ -333,7 +332,6 @@ pnpm run test --cache=local:w
 
 </details>
 
-
 ## Environnement variables
 
 Check for .env.example for environnement variables to setup
@@ -347,4 +345,4 @@ Check for .env.example for environnement variables to setup
 ## Service account
 
 export GOOGLE_APPLICATION_CREDENTIALS="./service-account.json"
-echo $GOOGLE_APPLICATION_CREDENTIALS 
+echo $GOOGLE_APPLICATION_CREDENTIALS

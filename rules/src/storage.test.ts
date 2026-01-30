@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs"
 import {
   assertFails,
   assertSucceeds,
@@ -11,8 +12,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage"
-import { readFileSync } from "node:fs"
-import { afterAll, beforeAll, beforeEach, describe, test } from "vitest"
+import { afterAll, beforeAll, beforeEach, describe, it } from "vitest"
 
 // NOTE: Admin tests are skipped because firestore.get() cross-service calls
 // don't work reliably in the Firebase emulator testing environment.
@@ -30,7 +30,7 @@ let testEnv: RulesTestEnvironment
 const ADMIN_UID = "admin-user"
 const NON_ADMIN_UID = "non-admin-user"
 
-describe("Firebase Storage Rules", () => {
+describe("firebase Storage Rules", () => {
   beforeAll(async () => {
     const storage = { port: STORAGE_PORT, host: HOST, rules: storageRules }
     const firestore = {
@@ -62,10 +62,10 @@ describe("Firebase Storage Rules", () => {
     await testEnv.cleanup()
   })
 
-  const testFile = new Uint8Array([0x48, 0x65, 0x6c, 0x6c, 0x6f]) // "Hello" in bytes
+  const testFile = new Uint8Array([0x48, 0x65, 0x6C, 0x6C, 0x6F]) // "Hello" in bytes
 
   describe("game-thumbnails", () => {
-    test("should allow unauthenticated read", async () => {
+    it("should allow unauthenticated read", async () => {
       // First upload a file with rules disabled
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
@@ -79,7 +79,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny non-admin create", async () => {
+    it("should deny non-admin create", async () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
@@ -89,7 +89,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny non-admin update", async () => {
+    it("should deny non-admin update", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "game-thumbnails/test.png"), testFile)
@@ -98,7 +98,7 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(
@@ -108,7 +108,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny non-admin delete", async () => {
+    it("should deny non-admin delete", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "game-thumbnails/test.png"), testFile)
@@ -123,7 +123,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny unauthenticated create", async () => {
+    it("should deny unauthenticated create", async () => {
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
       await assertFails(
@@ -131,7 +131,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test.skip("should allow admin create", async () => {
+    it.skip("should allow admin create", async () => {
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
 
       await assertSucceeds(
@@ -139,21 +139,21 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test.skip("should allow admin update", async () => {
+    it.skip("should allow admin update", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "game-thumbnails/test.png"), testFile)
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "game-thumbnails/test.png"), updatedFile),
       )
     })
 
-    test.skip("should allow admin delete", async () => {
+    it.skip("should allow admin delete", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "game-thumbnails/test.png"), testFile)
@@ -168,7 +168,7 @@ describe("Firebase Storage Rules", () => {
   })
 
   describe("sphericals", () => {
-    test("should allow unauthenticated read", async () => {
+    it("should allow unauthenticated read", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "sphericals/test.jpg"), testFile)
@@ -181,7 +181,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny non-admin create", async () => {
+    it("should deny non-admin create", async () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
@@ -191,7 +191,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny non-admin update", async () => {
+    it("should deny non-admin update", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "sphericals/test.jpg"), testFile)
@@ -200,14 +200,14 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "sphericals/test.jpg"), updatedFile),
       )
     })
 
-    test("should deny non-admin delete", async () => {
+    it("should deny non-admin delete", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "sphericals/test.jpg"), testFile)
@@ -217,10 +217,12 @@ describe("Firebase Storage Rules", () => {
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
 
-      await assertFails(deleteObject(ref(authedStorage, "sphericals/test.jpg")))
+      await assertFails(
+        deleteObject(ref(authedStorage, "sphericals/test.jpg")),
+      )
     })
 
-    test("should deny unauthenticated create", async () => {
+    it("should deny unauthenticated create", async () => {
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
       await assertFails(
@@ -228,7 +230,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test.skip("should allow admin create", async () => {
+    it.skip("should allow admin create", async () => {
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
 
       await assertSucceeds(
@@ -236,21 +238,21 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test.skip("should allow admin update", async () => {
+    it.skip("should allow admin update", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "sphericals/test.jpg"), testFile)
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "sphericals/test.jpg"), updatedFile),
       )
     })
 
-    test.skip("should allow admin delete", async () => {
+    it.skip("should allow admin delete", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "sphericals/test.jpg"), testFile)
@@ -265,7 +267,7 @@ describe("Firebase Storage Rules", () => {
   })
 
   describe("map-thumbnails", () => {
-    test("should allow unauthenticated read", async () => {
+    it("should allow unauthenticated read", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "map-thumbnails/test.png"), testFile)
@@ -278,7 +280,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny non-admin create", async () => {
+    it("should deny non-admin create", async () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
@@ -288,7 +290,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny non-admin update", async () => {
+    it("should deny non-admin update", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "map-thumbnails/test.png"), testFile)
@@ -297,14 +299,14 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "map-thumbnails/test.png"), updatedFile),
       )
     })
 
-    test("should deny non-admin delete", async () => {
+    it("should deny non-admin delete", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "map-thumbnails/test.png"), testFile)
@@ -319,7 +321,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny unauthenticated create", async () => {
+    it("should deny unauthenticated create", async () => {
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
       await assertFails(
@@ -327,7 +329,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test.skip("should allow admin create", async () => {
+    it.skip("should allow admin create", async () => {
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
 
       await assertSucceeds(
@@ -335,21 +337,21 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test.skip("should allow admin update", async () => {
+    it.skip("should allow admin update", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "map-thumbnails/test.png"), testFile)
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "map-thumbnails/test.png"), updatedFile),
       )
     })
 
-    test.skip("should allow admin delete", async () => {
+    it.skip("should allow admin delete", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "map-thumbnails/test.png"), testFile)
@@ -364,7 +366,7 @@ describe("Firebase Storage Rules", () => {
   })
 
   describe("other paths", () => {
-    test("should deny unauthenticated read on unlisted paths", async () => {
+    it("should deny unauthenticated read on unlisted paths", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "other/test.png"), testFile)
@@ -375,7 +377,7 @@ describe("Firebase Storage Rules", () => {
       await assertFails(getDownloadURL(ref(unauthedStorage, "other/test.png")))
     })
 
-    test("should deny non-admin read on unlisted paths", async () => {
+    it("should deny non-admin read on unlisted paths", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "other/test.png"), testFile)
@@ -388,7 +390,7 @@ describe("Firebase Storage Rules", () => {
       await assertFails(getDownloadURL(ref(authedStorage, "other/test.png")))
     })
 
-    test("should deny non-admin create on unlisted paths", async () => {
+    it("should deny non-admin create on unlisted paths", async () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
@@ -398,7 +400,7 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test("should deny non-admin update on unlisted paths", async () => {
+    it("should deny non-admin update on unlisted paths", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "other/test.png"), testFile)
@@ -407,14 +409,14 @@ describe("Firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "other/test.png"), updatedFile),
       )
     })
 
-    test("should deny non-admin delete on unlisted paths", async () => {
+    it("should deny non-admin delete on unlisted paths", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "other/test.png"), testFile)
@@ -427,7 +429,7 @@ describe("Firebase Storage Rules", () => {
       await assertFails(deleteObject(ref(authedStorage, "other/test.png")))
     })
 
-    test.skip("should allow admin read on unlisted paths", async () => {
+    it.skip("should allow admin read on unlisted paths", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "other/test.png"), testFile)
@@ -438,7 +440,7 @@ describe("Firebase Storage Rules", () => {
       await assertSucceeds(getDownloadURL(ref(adminStorage, "other/test.png")))
     })
 
-    test.skip("should allow admin create on unlisted paths", async () => {
+    it.skip("should allow admin create on unlisted paths", async () => {
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
 
       await assertSucceeds(
@@ -446,21 +448,21 @@ describe("Firebase Storage Rules", () => {
       )
     })
 
-    test.skip("should allow admin update on unlisted paths", async () => {
+    it.skip("should allow admin update on unlisted paths", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "other/test.png"), testFile)
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "other/test.png"), updatedFile),
       )
     })
 
-    test.skip("should allow admin delete on unlisted paths", async () => {
+    it.skip("should allow admin delete on unlisted paths", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         const storage = context.storage()
         await uploadBytes(ref(storage, "other/test.png"), testFile)

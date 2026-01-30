@@ -22,7 +22,7 @@ export const createPartyDoc = https.onCall<Payload>(
         throw new HttpsError("internal", error.message)
       }
 
-      new HttpsError("cancelled", "Request was cancelled")
+      throw new HttpsError("cancelled", "Request was cancelled")
     }
   },
 )

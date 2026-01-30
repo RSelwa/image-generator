@@ -1,12 +1,12 @@
 "use client"
 
-import { MiniMap, type MapData, type Position } from "@/components/mini-map"
-import { Button } from "@/components/ui/button"
 import { useCallback, useState } from "react"
+import { type MapData, MiniMap, type Position } from "@/components/mini-map"
+import { Button } from "@/components/ui/button"
 
-interface MapRound extends MapData {
+type MapRound = {
   correctPosition: Position
-}
+} & MapData
 
 // Example map data - replace with your actual maps
 const EXAMPLE_ROUNDS: MapRound[] = [
@@ -23,21 +23,23 @@ const EXAMPLE_ROUNDS: MapRound[] = [
 const MAX_POINTS = 5000
 
 // Calculate distance between two positions (in percentage units)
-const calculateDistance = (pos1: Position, pos2: Position): number => {
+function calculateDistance(pos1: Position, pos2: Position): number {
   const dx = pos1.x - pos2.x
   const dy = pos1.y - pos2.y
+
   return Math.sqrt(dx * dx + dy * dy)
 }
 
 // Calculate points based on distance (exponential decay)
-const calculatePoints = (distance: number): number => {
+function calculatePoints(distance: number): number {
   if (distance < 1) return MAX_POINTS
   // Exponential decay: closer = more points
   const points = MAX_POINTS * Math.exp(-distance / 15)
+
   return Math.round(Math.max(0, points))
 }
 
-const MapGuesser = () => {
+function MapGuesser() {
   const [currentRound, setCurrentRound] = useState(0)
   const [guessPosition, setGuessPosition] = useState<Position | null>(null)
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -95,7 +97,10 @@ const MapGuesser = () => {
           <p className="text-xl mb-2">
             Round {currentRound + 1} of {EXAMPLE_ROUNDS.length}
           </p>
-          <p className="text-2xl font-semibold">Score: {totalScore}</p>
+          <p className="text-2xl font-semibold">
+            Score:
+            {totalScore}
+          </p>
 
           {/* Placeholder for panorama view */}
           <div className="mt-8 p-8 border-2 border-dashed border-gray-600 rounded-lg">
@@ -120,7 +125,8 @@ const MapGuesser = () => {
         {hasSubmitted && guessPosition && (
           <div className="bg-black/80 text-white px-4 py-2 rounded-lg text-center">
             <p>
-              Distance:{" "}
+              Distance:
+              {" "}
               {calculateDistance(
                 guessPosition,
                 currentMap.correctPosition,
@@ -145,7 +151,10 @@ const MapGuesser = () => {
         ) : isGameOver ? (
           <div className="flex flex-col items-center gap-2">
             <p className="text-white text-xl font-bold">
-              Game Over! Final Score: {totalScore}/
+              Game Over! Final Score:
+              {" "}
+              {totalScore}
+              /
               {MAX_POINTS * EXAMPLE_ROUNDS.length}
             </p>
             <Button size="lg" onClick={handleReset}>
@@ -162,7 +171,7 @@ const MapGuesser = () => {
   )
 }
 
-const Page = () => {
+function Page() {
   return <MapGuesser />
 }
 

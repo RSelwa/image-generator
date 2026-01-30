@@ -1,29 +1,31 @@
 import { sessionSlice } from "@/redux/session/session.slice"
-import type { ReturnAction } from "@/redux/store"
-import type { Session } from "@/schemas/session"
+import { type ReturnAction } from "@/redux/store"
+import { type Session } from "@/schemas/session"
 
 const { actions } = sessionSlice
 
-export const updateSession =
-  (session: Partial<Session>): ReturnAction =>
-  (dispatch) => {
+export function updateSession(session: Partial<Session>): ReturnAction {
+  return (dispatch) => {
     dispatch(actions.updateSession(session))
   }
+}
 
-export const updateSessionAuthUser =
-  (payload: Session["authUser"]): ReturnAction =>
-  (dispatch) => {
+export function updateSessionAuthUser(
+  payload: Session["authUser"],
+): ReturnAction {
+  return (dispatch) => {
     dispatch(actions.updateAuthUser(payload))
   }
+}
 
-export const updateSessionStatus =
-  (status: Session["status"]): ReturnAction =>
-  (dispatch) => {
+export function updateSessionStatus(status: Session["status"]): ReturnAction {
+  return (dispatch) => {
     dispatch(actions.updateSessionStatus(status))
   }
+}
 
-export const populateToken =
-  (token: string | null): ReturnAction =>
-  (dispatch) => {
+export function populateToken(token: string | null): ReturnAction {
+  return (dispatch) => {
     dispatch(actions.populateToken(token))
   }
+}

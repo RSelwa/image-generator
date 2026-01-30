@@ -1,31 +1,34 @@
+import { type SphericalDocWithId } from "@repo/schemas"
+import { Pencil } from "lucide-react"
+import Image from "next/image"
+import { useQueryState } from "nuqs"
 import { ModalBase } from "@/components/modals/base"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import { useGetSphericalsByGameIdQuery } from "@/redux/api/games"
-import { SphericalDocWithId } from "@repo/schemas"
-import { Pencil } from "lucide-react"
-import Image from "next/image"
-import { useQueryState } from "nuqs"
 
-const SphericalCard = ({
+function SphericalCard({
   spherical,
   gameId,
 }: {
   spherical: SphericalDocWithId
   gameId: string
-}) => {
+}) {
   const sphericalParam = buildSubcollectionParam(gameId, spherical.id)
   const { openModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalParam)
   const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID)
 
-  
   const externalImage = `/api/proxy-image?url=${encodeURIComponent(spherical.image)}`
-  const src = spherical.storageImage||externalImage
+  const src = spherical.storageImage || externalImage
 
   return (
     <div className="group relative w-full aspect-video cursor-pointer overflow-hidden rounded-lg">
@@ -62,23 +65,19 @@ const SphericalCard = ({
   )
 }
 
-export const SphericalGalleryModal = () => {
+export function SphericalGalleryModal() {
   const [gameId] = useQueryState(MODAL_KEYS.SPHERICAL_GALLERY_ID)
 
   const { data } = useGetSphericalsByGameIdQuery({ gameId: gameId || "" })
 
   if (!data || !gameId) return null
 
-
-
   return (
     <ModalBase className="h-125" modalKey={MODAL_KEYS.SPHERICAL_GALLERY_ID}>
       <div className="grid-cols-2 grid gap-3 overflow-y-auto h-100">
         {data.map((spherical) => {
-          
-
           return (
-           <SphericalCard
+            <SphericalCard
               spherical={spherical}
               gameId={gameId}
               key={spherical.id}

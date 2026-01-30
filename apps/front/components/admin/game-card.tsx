@@ -1,9 +1,10 @@
+import { type GameEntity } from "@repo/schemas"
+import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { FALL_BACK_IMAGE, MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
-import type { GameEntity } from "@repo/schemas"
-import Image from "next/image"
-const GameCard = ({ game }: { game: GameEntity; index?: number }) => {
+
+function GameCard({ game }: { game: GameEntity, index?: number }) {
   const { openModal: openGallery } = useModal(
     MODAL_KEYS.SPHERICAL_GALLERY_ID,
     game.id,
@@ -16,7 +17,7 @@ const GameCard = ({ game }: { game: GameEntity; index?: number }) => {
 
   return (
     <div
-      onClick={openModal}
+      onClick={() => openModal()}
       className="relative h-64 cursor-pointer overflow-hidden rounded-xl border border-grey-100"
     >
       <Image
@@ -29,35 +30,33 @@ const GameCard = ({ game }: { game: GameEntity; index?: number }) => {
       />
       <div className="absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-
-        <Badge asChild variant="blur" className="mr-1">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              openGallery()
-            }}
-            className="cursor-pointer"
-          >
-            {game.sphericalsCount} Sphericals
-          </button>
-        </Badge>
-        <Badge asChild variant="blur" className="mr-1">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              openMapsGallery()
-            }}
-            className="cursor-pointer"
-          >
-            {game.mapsCount} Maps
-          </button>
-        </Badge>
+          <Badge asChild variant="blur" className="mr-1">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                openGallery()
+              }}
+              className="cursor-pointer"
+            >
+              {game.sphericalsCount} Sphericals
+            </button>
+          </Badge>
+          <Badge asChild variant="blur" className="mr-1">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                openMapsGallery()
+              }}
+              className="cursor-pointer"
+            >
+              {game.mapsCount} Maps
+            </button>
+          </Badge>
         </div>
-
       </div>
       <div className="absolute inset-x-0 flex h-1/2 w-full -translate-y-full flex-col justify-end p-2 text-white">
         <div

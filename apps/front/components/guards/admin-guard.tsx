@@ -1,5 +1,7 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+import { type ReactNode, useEffect } from "react"
 import { SESSION_STATUS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import {
@@ -7,14 +9,12 @@ import {
   selectSessionStatus,
 } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { useRouter } from "next/navigation"
-import { useEffect, type ReactNode } from "react"
 
 type AdminGuardProps = {
   children: ReactNode
 }
 
-export const AdminGuard = ({ children }: AdminGuardProps) => {
+export function AdminGuard({ children }: AdminGuardProps) {
   const router = useRouter()
   const status = useAppSelector(selectSessionStatus)
   const isAdmin = useAppSelector(selectIsAdmin)
@@ -31,7 +31,10 @@ export const AdminGuard = ({ children }: AdminGuardProps) => {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="text-muted-foreground">{status}...</div>
+        <div className="text-muted-foreground">
+          {status}
+          ...
+        </div>
       </div>
     )
   }

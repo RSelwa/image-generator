@@ -1,5 +1,5 @@
 import type { DecodedIdToken } from "@repo/providers/firebase"
-import { {{FUNCTION_NAME}} } from "./index"
+import { {FUNCTION_NAME} } from "./index"
 
 import type { Request } from "firebase-functions/https"
 import firebaseFunctionsTest from "firebase-functions-test"

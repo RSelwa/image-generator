@@ -1,15 +1,15 @@
 import { useSearchParams } from "next/navigation"
 
 // Helper to get current search params from URL (not stale React state)
-const getCurrentSearchParams = () => new URLSearchParams(window.location.search)
+const getCurrentSearchParams = () =>
+  new URLSearchParams(window.location.search)
 
-
-export const useModal = (key: string, value?: string) => {
+export function useModal(key: string, value?: string) {
   const searchParams = useSearchParams()
 
-  const openModal = () => {
+  const openModal = (overrideValue?: string) => {
     const query = getCurrentSearchParams()
-    query.set(key, value ?? "")
+    query.set(key, overrideValue ?? value ?? "")
 
     window.history.replaceState(null, "", `?${query.toString()}`)
   }

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import GameCard from "@/components/admin/game-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,9 +10,8 @@ import {
   useGetGamesInfiniteQuery,
   useGetTotalGamesCountQuery,
 } from "@/redux/api/games"
-import { useState } from "react"
 
-const Page = () => {
+function Page() {
   const [search, setSearch] = useState("")
   const { data: gameCount } = useGetTotalGamesCountQuery()
   const { openModal } = useModal(MODAL_KEYS.GAME_ID, NEW_SEARCH_PARAM)
@@ -23,7 +23,7 @@ const Page = () => {
   const games = data?.pages.flat() || []
 
   const filteredGames = games.filter((game) =>
-    game.title.toLowerCase().includes(search.toLowerCase())
+    game.title.toLowerCase().includes(search.toLowerCase()),
   )
 
   return (

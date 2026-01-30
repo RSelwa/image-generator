@@ -1,6 +1,6 @@
-import { refs, subRefs } from "../../../libs/providers/dist/db-refs.js"
-import { db } from "../../../libs/providers/dist/firebase.js"
-import { DOCUMENTS_STATUS } from "./../../../libs/common/dist/index.js"
+import { DOCUMENTS_STATUS } from "@repo/common"
+import { refs, subRefs } from "@repo/providers/db-refs"
+import { db } from "@repo/providers/firebase"
 
 // const allSphericals = await collectionGroupRefs[TABLES.SPHERICAL].get()
 const allGames = await refs.games.get()

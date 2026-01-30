@@ -1,7 +1,7 @@
 "use client"
 
-import { useRef, useState } from "react"
 import { ImageIcon, XIcon } from "lucide-react"
+import { useRef, useState } from "react"
 import { toast } from "sonner"
 import Loader from "@/components/icons/loader"
 
@@ -14,14 +14,14 @@ type ImageDropzoneProps = {
   className?: string
 }
 
-export const ImageDropzone = ({
+export function ImageDropzone({
   imageUrl,
   onFileSelect,
   onRemove,
   isUploading = false,
   alt = "Uploaded image",
   className,
-}: ImageDropzoneProps) => {
+}: ImageDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -46,6 +46,7 @@ export const ImageDropzone = ({
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image file")
+
       return
     }
 
@@ -103,9 +104,7 @@ export const ImageDropzone = ({
         onDrop={handleDrop}
         onClick={() => !displayImage && openFilePicker()}
         className={`relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-colors ${
-          isDragging
-            ? "border-primary bg-primary/10"
-            : "border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50"
+          isDragging ? "border-primary bg-primary/10" : "border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50"
         } ${className ?? ""}`}
       >
         {displayImage ? (
@@ -151,4 +150,4 @@ export const ImageDropzone = ({
   )
 }
 
-export { type ImageDropzoneProps }
+export type { ImageDropzoneProps }

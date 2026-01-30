@@ -1,15 +1,18 @@
 {
   "name": "@repo/schemas",
-  "description": "Schemas used across the repo",
-  "version": "1.0.0",
   "type": "module",
-  "files": ["dist"],
+  "version": "1.0.0",
+  "description": "Schemas used across the repo",
+  "license": "MIT",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "compile": "tsc --noEmit",
@@ -19,7 +22,6 @@
     "clean": "del-cli dist isolate tsconfig.tsbuildinfo",
     "coverage": "vitest run --coverage"
   },
-  "license": "MIT",
   "dependencies": {
     "@firebase/firestore": "^4.10.0",
     "@repo/common": "workspace:*",

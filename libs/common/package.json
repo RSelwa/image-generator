@@ -1,9 +1,9 @@
 {
   "name": "@repo/common",
-  "description": "Common code for both backend and frontend",
-  "version": "0.0.0",
   "type": "module",
-  "types": "./dist/index.d.ts",
+  "version": "0.0.0",
+  "description": "Common code for both backend and frontend",
+  "license": "MIT",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -11,7 +11,10 @@
       "default": "./src/index.ts"
     }
   },
-  "files": ["dist"],
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "compile": "tsc --noEmit",
@@ -21,7 +24,6 @@
     "clean": "del-cli dist isolate tsconfig.tsbuildinfo",
     "coverage": "vitest run --coverage"
   },
-  "license": "MIT",
   "dependencies": {
     "firebase-admin": "^13.5.0"
   },

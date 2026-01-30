@@ -1,5 +1,10 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { type SubmitHandler, useForm } from "react-hook-form"
+import z from "zod"
 import { GoogleIcon } from "@/components/icons"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
@@ -18,11 +23,6 @@ import {
   useCreateUserAuthMutation,
   useLoginWithGoogleMutation,
 } from "@/redux/api/auth"
-import { zodResolver } from "@hookform/resolvers/zod"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { type SubmitHandler, useForm } from "react-hook-form"
-import z from "zod"
 
 const signupSchema = z.object({
   email: z.email(),
@@ -136,9 +136,14 @@ export function SignupForm({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our{" "}
-        <Link href={PAGES.TERMS}>Terms of Service</Link> and{" "}
-        <Link href={PAGES.PRIVACY}>Privacy Policy</Link>.
+        By clicking continue, you agree to our
+        {" "}
+        <Link href={PAGES.TERMS}>Terms of Service</Link>
+        {" "}
+        and
+        {" "}
+        <Link href={PAGES.PRIVACY}>Privacy Policy</Link>
+        .
       </FieldDescription>
     </div>
   )

@@ -1,9 +1,9 @@
 import { TABLES } from "@repo/common"
-import type { GameDoc, MapDoc, SphericalDoc, UserDoc } from "@repo/schemas"
-import type {
-  CollectionGroup,
-  CollectionReference,
-  QueryDocumentSnapshot,
+import { type GameDoc, type MapDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
+import {
+  type CollectionGroup,
+  type CollectionReference,
+  type QueryDocumentSnapshot,
 } from "firebase-admin/firestore"
 import { db } from "~/firebase"
 
@@ -11,17 +11,20 @@ type WithId<T> = T & { id: string }
 
 export type CustomJson = Record<string, unknown>
 
-const toFirestoreConverter = <T = unknown>({ id: _, ...item }: WithId<T>) =>
-  item
+function toFirestoreConverter<T = unknown>({ id: _, ...item }: WithId<T>) {
+  return item
+}
 
-export const createFirestoreConverter = <T = unknown>() => ({
-  toFirestore: toFirestoreConverter<T>,
-  fromFirestore: (snapshot: QueryDocumentSnapshot<T>): WithId<T> => {
-    const data = snapshot.data()
+export function createFirestoreConverter<T = unknown>() {
+  return {
+    toFirestore: toFirestoreConverter<T>,
+    fromFirestore: (snapshot: QueryDocumentSnapshot<T>): WithId<T> => {
+      const data = snapshot.data()
 
-    return { ...data, id: snapshot.id }
-  },
-})
+      return { ...data, id: snapshot.id }
+    },
+  }
+}
 
 export const refs = {
   [TABLES.USERS]: db.collection(TABLES.USERS) as CollectionReference<

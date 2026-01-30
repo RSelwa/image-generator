@@ -1,6 +1,6 @@
+import { type ConstantValues, type STORAGE_PATHS } from "@repo/common"
 import { ENDPOINTS_BASE } from "@/constants/api"
 import { auth } from "@/constants/db"
-import type { ConstantValues, STORAGE_PATHS } from "@repo/common"
 
 type Props = {
   file: File
@@ -14,11 +14,11 @@ type UploadResult = {
   height: number | null
 }
 
-export const uploadFileToBucket = async ({
+export async function uploadFileToBucket({
   file,
   bucketPath,
   title,
-}: Props): Promise<UploadResult> => {
+}: Props): Promise<UploadResult> {
   const token = await auth.currentUser?.getIdToken()
   const formData = new FormData()
   formData.append("file", file)

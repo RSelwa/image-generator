@@ -1,10 +1,10 @@
 import { execSync } from "node:child_process"
 import { createWriteStream } from "node:fs"
 import { get } from "node:http"
-import type { RulesTestEnvironment } from "@firebase/rules-unit-testing"
+import { type RulesTestEnvironment } from "@firebase/rules-unit-testing"
 import { doc, setDoc } from "firebase/firestore"
 
-export const generateCoverageReport = async (urlCoverageJson: string) => {
+export async function generateCoverageReport(urlCoverageJson: string) {
   const fbCoverageFile = "firestore-coverage.json"
 
   const fstream = createWriteStream(fbCoverageFile)
@@ -21,11 +21,11 @@ export const generateCoverageReport = async (urlCoverageJson: string) => {
   )
 }
 
-export const setupUserRole = async (
+export async function setupUserRole(
   testEnv: RulesTestEnvironment,
   uid: string,
   status: string,
-) => {
+) {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     await setDoc(doc(context.firestore(), `rights/${uid}`), {
       access: true,
@@ -35,7 +35,7 @@ export const setupUserRole = async (
   })
 }
 
-export const setupMedia = async (testEnv: RulesTestEnvironment, id: string) => {
+export async function setupMedia(testEnv: RulesTestEnvironment, id: string) {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     await setDoc(doc(context.firestore(), `medias/${id}`), {
       category: "MOVIE",

@@ -1,16 +1,17 @@
 {
   "name": "geo-gamer",
-  "description": "Monorepo for flim",
   "version": "1.0.0",
-  "files": ["dist"],
   "packageManager": "pnpm@10.28.2",
+  "description": "Monorepo for flim",
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "compile": "turbo compile --continue",
-    "lint:ci": "biome ci",
-    "lint": "biome check",
-    "format": "biome check --write",
-    "?check-biome": "turbo check-biome --continue",
+    "lint": "eslint",
+    "lint:errors": "eslint --quiet",
+    "lint:fix": "eslint --fix",
     "check-circular": "turbo check-circular --continue",
     "build": "turbo run build",
     "create:function": "npx tsx cli/create-function.mts",
@@ -28,10 +29,15 @@
     "build:listen-docs": "turbo run build --filter=@repo/listen-docs"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.4",
+    "@antfu/eslint-config": "^7.2.0",
     "@clack/prompts": "^0.11.0",
+    "@eslint-react/eslint-plugin": "^2.7.2",
+    "@next/eslint-plugin-next": "^16.1.6",
     "@types/node": "^22.10.10",
     "consola": "^3.4.2",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.26",
     "firebase-tools-with-isolate": "14.16.0",
     "husky": "^9.1.7",
     "tsx": "^4.20.6",

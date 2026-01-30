@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs"
 import {
   assertFails,
   assertSucceeds,
@@ -5,8 +6,7 @@ import {
   type RulesTestEnvironment,
 } from "@firebase/rules-unit-testing"
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
-import { readFileSync } from "node:fs"
-import { afterAll, beforeAll, beforeEach, describe, expect, test } from "vitest"
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { generateCoverageReport } from "./utils"
 
 const projectId = "tiktok-generator-fa261"
@@ -16,7 +16,7 @@ const rules = readFileSync("./src/firestore.rules", "utf8")
 
 let testEnv: RulesTestEnvironment
 
-describe("Firebase Security Rules", () => {
+describe("firebase Security Rules", () => {
   beforeAll(async () => {
     const firestore = { port, host, rules }
 
@@ -34,7 +34,7 @@ describe("Firebase Security Rules", () => {
   })
 
   describe("users collection", () => {
-    test("should be able to read own doc", async () => {
+    it("should be able to read own doc", async () => {
       const uid = "uid"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -52,7 +52,7 @@ describe("Firebase Security Rules", () => {
       expect(result).toBeDefined()
     })
 
-    test("should be able to write doc as admin", async () => {
+    it("should be able to write doc as admin", async () => {
       const adminUid = "admin"
       const uid = "uid"
 
@@ -76,7 +76,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should be able to write own doc", async () => {
+    it("should be able to write own doc", async () => {
       const uid = "uid"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -94,7 +94,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should not be able to write own doc if contains 'rights' fields", async () => {
+    it("should not be able to write own doc if contains 'rights' fields", async () => {
       const uid = "uid"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -113,7 +113,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should not be able to write other doc if not admin", async () => {
+    it("should not be able to write other doc if not admin", async () => {
       const uid = "uid"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -134,7 +134,7 @@ describe("Firebase Security Rules", () => {
   })
 
   describe("games collection", () => {
-    test("should be able to read a doc even if not logged in", async () => {
+    it("should be able to read a doc even if not logged in", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         await setDoc(doc(context.firestore(), "games/game1"), {
           name: "Test Game",
@@ -150,7 +150,7 @@ describe("Firebase Security Rules", () => {
       expect(result).toBeDefined()
     })
 
-    test("should not be able to create a doc while not admin", async () => {
+    it("should not be able to create a doc while not admin", async () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -167,7 +167,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should not be able to update a doc while not admin", async () => {
+    it("should not be able to update a doc while not admin", async () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -187,7 +187,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should be able to write as admin", async () => {
+    it("should be able to write as admin", async () => {
       const uid = "admin1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -204,7 +204,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should be able to update as admin", async () => {
+    it("should be able to update as admin", async () => {
       const uid = "admin1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -229,7 +229,7 @@ describe("Firebase Security Rules", () => {
     const gameId = "game1"
     const mapPath = `games/${gameId}/maps/map1`
 
-    test("should be able to read a doc even if not logged in", async () => {
+    it("should be able to read a doc even if not logged in", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         await setDoc(doc(context.firestore(), `games/${gameId}`), {
           name: "Test Game",
@@ -246,7 +246,7 @@ describe("Firebase Security Rules", () => {
       expect(result).toBeDefined()
     })
 
-    test("should not be able to create a doc while not admin", async () => {
+    it("should not be able to create a doc while not admin", async () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -266,7 +266,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should not be able to update a doc while not admin", async () => {
+    it("should not be able to update a doc while not admin", async () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -289,7 +289,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should be able to write as admin", async () => {
+    it("should be able to write as admin", async () => {
       const uid = "admin1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -304,12 +304,10 @@ describe("Firebase Security Rules", () => {
 
       const adminDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertSucceeds(
-        setDoc(doc(adminDb, mapPath), { name: "Test Map" }),
-      )
+      await assertSucceeds(setDoc(doc(adminDb, mapPath), { name: "Test Map" }))
     })
 
-    test("should be able to update as admin", async () => {
+    it("should be able to update as admin", async () => {
       const uid = "admin1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -334,7 +332,7 @@ describe("Firebase Security Rules", () => {
   })
 
   describe("spherical collection", () => {
-    test("should be able to read a doc even if not logged in", async () => {
+    it("should be able to read a doc even if not logged in", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         await setDoc(doc(context.firestore(), "spherical/spherical1"), {
           name: "Test Spherical",
@@ -350,7 +348,7 @@ describe("Firebase Security Rules", () => {
       expect(result).toBeDefined()
     })
 
-    test("should not be able to create a doc while not admin", async () => {
+    it("should not be able to create a doc while not admin", async () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -369,7 +367,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should not be able to update a doc while not admin", async () => {
+    it("should not be able to update a doc while not admin", async () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -391,7 +389,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should be able to write as admin", async () => {
+    it("should be able to write as admin", async () => {
       const uid = "admin1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -410,7 +408,7 @@ describe("Firebase Security Rules", () => {
       )
     })
 
-    test("should be able to update as admin", async () => {
+    it("should be able to update as admin", async () => {
       const uid = "admin1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {

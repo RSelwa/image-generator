@@ -1,23 +1,18 @@
-// Need to use the React-specific entry point to import createApi
-import { DEFAULT_SIZE_GAMES } from "@/constants/api"
-import { db } from "@/constants/db"
-import { getGameRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
-import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { capitalizeFirstLetter, getImageUrl, TABLES } from "@repo/common"
 import {
-  gameDocSchema,
-  gameDocWithIdSchema,
-  gameEntitySchema,
-  mapDocWithIdSchema,
-  sphericalDocWithIdSchema,
-  updateGameInputSchema,
   type CreateGameInput,
+  gameDocSchema,
   type GameDocWithId,
+  gameDocWithIdSchema,
   type GameEntity,
+  gameEntitySchema,
   type MapDocWithId,
+  mapDocWithIdSchema,
   type SphericalDocWithId,
+  sphericalDocWithIdSchema,
   type UpdateGameInput,
+  updateGameInputSchema,
 } from "@repo/schemas"
 import {
   addDoc,
@@ -30,13 +25,18 @@ import {
   limit,
   orderBy,
   query,
+  type QueryConstraint,
   startAfter,
   Timestamp,
   updateDoc,
   where,
-  type QueryConstraint,
 } from "firebase/firestore"
 import { toast } from "sonner"
+// Need to use the React-specific entry point to import createApi
+import { DEFAULT_SIZE_GAMES } from "@/constants/api"
+import { db } from "@/constants/db"
+import { getGameRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
+import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
 export const gameApi = createApi({
   reducerPath: "gameApi",
@@ -54,7 +54,7 @@ export const gameApi = createApi({
     getGames: builder.infiniteQuery<
       GameEntity[],
       { search?: string },
-      { limit?: number; startAfter?: string }
+      { limit?: number, startAfter?: string }
     >({
       queryFn: async ({ pageParam, queryArg }, { dispatch }) => {
         try {
@@ -68,7 +68,7 @@ export const gameApi = createApi({
             definedFieldsConstraints.push(orderBy("title"))
             definedFieldsConstraints.push(where("title", ">=", search))
             definedFieldsConstraints.push(
-              where("title", "<=", `${search}\uf8ff`),
+              where("title", "<=", `${search}\uF8FF`),
             )
           } else {
             definedFieldsConstraints.push(orderBy(documentId()))
@@ -81,7 +81,10 @@ export const gameApi = createApi({
           if (pageParam.limit)
             definedFieldsConstraints.push(limit(pageParam.limit))
 
-          const q = query(TABLE_REFS[TABLES.GAMES], ...definedFieldsConstraints)
+          const q = query(
+            TABLE_REFS[TABLES.GAMES],
+            ...definedFieldsConstraints,
+          )
 
           const snapshot = await getDocs(q)
 
@@ -94,11 +97,10 @@ export const gameApi = createApi({
               ).unwrap()
 
               const mapsCount = await dispatch(
-                gameApi.endpoints.getMapsCountByGameId.initiate({ gameId: doc.id }),
-              )
-                .unwrap()
-
-
+                gameApi.endpoints.getMapsCountByGameId.initiate({
+                  gameId: doc.id,
+                }),
+              ).unwrap()
 
               const { data, error } = gameEntitySchema.safeParse({
                 id: doc.id,
@@ -148,14 +150,12 @@ export const gameApi = createApi({
         },
       },
       providesTags: (result) =>
-        result
-          ? [
-              ...result.pages
-                .flat()
-                .map(({ id }) => ({ type: "Game" as const, id })),
-              { type: "GameList" as const },
-            ]
-          : [{ type: "GameList" as const }],
+        result ? [
+          ...result.pages
+            .flat()
+            .map(({ id }) => ({ type: "Game" as const, id })),
+          { type: "GameList" as const },
+        ] : [{ type: "GameList" as const }],
     }),
     getGameById: builder.query<GameDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
@@ -358,7 +358,7 @@ export const gameApi = createApi({
     }),
     updateGameById: builder.mutation<
       GameDocWithId,
-      { id: string; data: UpdateGameInput }
+      { id: string, data: UpdateGameInput }
     >({
       queryFn: async ({ id, data: input }) => {
         try {

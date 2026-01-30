@@ -1,5 +1,6 @@
 "use client"
 
+import { type ReactNode } from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import { AdminGuard } from "@/components/guards/admin-guard"
 import {
@@ -17,7 +18,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { PAGES } from "@/constants/pages"
-import type { ReactNode } from "react"
 
 type AdminLayoutProps = {
   children: ReactNode

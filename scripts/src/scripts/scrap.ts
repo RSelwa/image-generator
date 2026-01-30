@@ -1,15 +1,11 @@
 import { DIFFICULTIES } from "@repo/common"
+import { collectionGroupRefs, refs, subRefs } from "@repo/providers/db-refs"
 import { parse } from "acorn"
 import * as walk from "acorn-walk"
 import { JSDOM } from "jsdom"
 import z from "zod"
 import { TABLES } from "../../../libs/common/src/constants/firebase.ts"
 import { randomElement } from "../../../libs/common/src/utils/object.ts"
-import {
-  collectionGroupRefs,
-  refs,
-  subRefs,
-} from "../../../libs/providers/dist/db-refs.js"
 import { gameDocSchema } from "../../../libs/schemas/src/firestore/game.ts"
 import { sphericalDocSchema } from "../../../libs/schemas/src/firestore/spherical.ts"
 
@@ -34,7 +30,7 @@ const allowedNames = [
   "jacket",
 ]
 
-const getExistingDocs = async () => {
+async function getExistingDocs() {
   const [sphericalSnapshot, gamesSnapshot] = await Promise.all([
     collectionGroupRefs.spherical.get(),
     refs.games.get(),
@@ -55,7 +51,7 @@ const getExistingDocs = async () => {
 }
 const existing = await getExistingDocs()
 
-export const getVariables = async () => {
+export async function getVariables() {
   const playFile = await fetch("https://www.game-guessr.com/play.html")
   const html = await playFile.text()
 
@@ -129,7 +125,7 @@ export const getVariables = async () => {
   return found
 }
 
-const getScrapData = async () => {
+async function getScrapData() {
   try {
     const vars = await getVariables()
 
@@ -147,6 +143,7 @@ const getScrapData = async () => {
 
         if (scrap.error) {
           console.error("Scrap parsing error:", scrap.error)
+
           return null
         }
 
@@ -164,7 +161,7 @@ const getScrapData = async () => {
   }
 }
 
-const createOrUpdateDb = async (data: ScrapVariableSchema) => {
+async function createOrUpdateDb(data: ScrapVariableSchema) {
   try {
     const isGameExisting = existing.existingGamesId.has(data.id_game)
     const isImageExisting = existing.existingImageSource.has(data.gameSrc)
@@ -178,7 +175,9 @@ const createOrUpdateDb = async (data: ScrapVariableSchema) => {
       console.info(`✅ Created game: ${data.id_game}`)
 
       existing.existingGamesId.add(data.id_game)
-    } else console.info(`⚠️ Game already exists for game ID: ${data.id_game}`)
+    } else {
+      console.info(`⚠️ Game already exists for game ID: ${data.id_game}`)
+    }
 
     if (!isImageExisting) {
       const doc = sphericalDocSchema.parse({
@@ -194,7 +193,9 @@ const createOrUpdateDb = async (data: ScrapVariableSchema) => {
       console.info(`✅ Created spherical for game ID: ${data.id_game}`)
 
       existing.existingImageSource.add(data.gameSrc)
-    } else console.info(`⚠️ Spherical already existed: ${data.gameSrc}`)
+    } else {
+      console.info(`⚠️ Spherical already existed: ${data.gameSrc}`)
+    }
   } catch (error) {
     console.error("Error creating or updating DB:", error)
   }

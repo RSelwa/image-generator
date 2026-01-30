@@ -1,6 +1,10 @@
+shellEmulator: true
+
+trustPolicy: no-downgrade
+
 packages:
   - "libs/*"
   - "functions/*"
-  - "rules"
+  - rules
   - "apps/*"
-  - "scripts"
+  - scripts

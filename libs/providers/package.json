@@ -1,20 +1,23 @@
 {
   "name": "@repo/providers",
-  "description": "Providers of services for the monorepo",
-  "version": "0.0.0",
   "type": "module",
-  "files": ["dist"],
-  "types": "./dist/index.d.ts",
+  "version": "0.0.0",
+  "description": "Providers of services for the monorepo",
+  "license": "MIT",
   "exports": {
     "./db-refs": {
-      "default": "./dist/db-refs.js",
-      "types": "./dist/db-refs.js"
+      "types": "./dist/db-refs.js",
+      "default": "./dist/db-refs.js"
     },
     "./firebase": {
-      "default": "./dist/firebase.js",
-      "types": "./dist/firebase.js"
+      "types": "./dist/firebase.js",
+      "default": "./dist/firebase.js"
     }
   },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "compile": "tsc --noEmit",
     "lint": "biome check",
@@ -23,7 +26,6 @@
     "coverage": "vitest run --coverage",
     "clean": "del-cli dist isolate tsconfig.tsbuildinfo"
   },
-  "license": "MIT",
   "dependencies": {
     "@opensearch-project/opensearch": "^3.5.1",
     "@repo/common": "workspace:*",

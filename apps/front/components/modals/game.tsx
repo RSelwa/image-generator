@@ -1,5 +1,14 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { STORAGE_PATHS } from "@repo/common"
+import { createGameInputSchema } from "@repo/schemas"
+import Link from "next/link"
+import { useQueryState } from "nuqs"
+import { useEffect, useState } from "react"
+import { Controller, type SubmitHandler, useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { type z } from "zod"
 import Loader from "@/components/icons/loader"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
@@ -21,21 +30,12 @@ import {
   useUpdateGameByIdMutation,
 } from "@/redux/api/games"
 import { uploadFileToBucket } from "@/utils/file"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { STORAGE_PATHS } from "@repo/common"
-import { createGameInputSchema } from "@repo/schemas"
-import Link from "next/link"
-import { useQueryState } from "nuqs"
-import { useEffect, useState } from "react"
-import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-import { toast } from "sonner"
-import type { z } from "zod"
 
 type GameFormSchema = z.input<typeof createGameInputSchema>
 
 const KEY = MODAL_KEYS.GAME_ID
 
-const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
+function GameForm({ gameId, isNew }: { gameId: string, isNew: boolean }) {
   const { data, isLoading } = useGetGameByIdQuery(
     { id: gameId },
     { skip: isNew },
@@ -91,7 +91,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
       const { url } = await uploadFileToBucket({
         file,
         bucketPath: STORAGE_PATHS.GAME_THUMBNAILS,
-        title: title,
+        title,
       })
 
       setValue("storageImage", url, { shouldDirty: true })
@@ -257,11 +257,13 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
                   <strong>Firebase link:</strong> {data.id}
                 </Link>
                 <p>
-                  <strong>Created:</strong>{" "}
+                  <strong>Created:</strong>
+                  {" "}
                   {data.createdAt?.toDate().toLocaleString()}
                 </p>
                 <p>
-                  <strong>Updated:</strong>{" "}
+                  <strong>Updated:</strong>
+                  {" "}
                   {data.updatedAt?.toDate().toLocaleString()}
                 </p>
               </div>
@@ -299,7 +301,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
   )
 }
 
-export const ModalGame = () => {
+export function ModalGame() {
   const [gameId] = useQueryState(KEY)
 
   if (!gameId) return <LoadingModal modalKey={KEY} />

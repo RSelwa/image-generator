@@ -1,4 +1,4 @@
-import { storage } from "../../../libs/providers/dist/firebase.js"
+import { storage } from "@repo/providers/firebase"
 
 const bucket = storage.bucket("tiktok-generator-fa261.firebasestorage.app")
 const file = bucket.file("sphericals/sphericals_1DjpNvVfyOVNepcAmRzT.webp")

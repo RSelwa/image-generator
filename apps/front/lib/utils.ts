@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const copy = (text: string) => {
+export function copy(text: string) {
   navigator.clipboard
     ?.writeText(text)
     .then(() => {

@@ -4,7 +4,7 @@ description:
   Node.js, and installing dependencies with pnpm
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: ✨ Checkout
       uses: actions/checkout@v4
@@ -24,7 +24,7 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
-        cache: "pnpm"
+        cache: pnpm
 
     - name: 🚚 Install dependencies
       shell: bash

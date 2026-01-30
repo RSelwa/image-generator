@@ -1,7 +1,7 @@
-import { SESSION_STATUS } from "@/constants/mapping"
 import { USERS_RIGHTS } from "@repo/common"
-import type { User } from "firebase/auth"
+import { type User } from "firebase/auth"
 import { z } from "zod"
+import { SESSION_STATUS } from "@/constants/mapping"
 
 export const sessionUserSchema = z.object({
   id: z.string(),

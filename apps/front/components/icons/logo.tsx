@@ -1,4 +1,4 @@
-const Logo = () => {
+function Logo() {
   return (
     <svg
       aria-label="Logo"
@@ -17,7 +17,7 @@ const Logo = () => {
         width="151.802"
         x="88.1023"
         y="144.792"
-      ></rect>
+      />
       <rect
         fill="currentColor"
         height="36.5788"
@@ -26,7 +26,7 @@ const Logo = () => {
         width="151.802"
         x="85.3459"
         y="244.537"
-      ></rect>
+      />
     </svg>
   )
 }

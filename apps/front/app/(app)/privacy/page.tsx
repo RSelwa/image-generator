@@ -18,7 +18,9 @@ export default function PrivacyPolicy() {
               1. Introduction
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              {APP_NAME} ("we", "our", or "us") is committed to protecting your
+              {APP_NAME}
+              {" "}
+              ("we", "our", or "us") is committed to protecting your
               privacy. This Privacy Policy explains how we collect, use,
               disclose, and safeguard your information when you use our Service.
               Please read this privacy policy carefully.
@@ -184,33 +186,46 @@ export default function PrivacyPolicy() {
             </p>
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
               <li>
-                <strong>Access:</strong> Request a copy of your personal
+                <strong>Access:</strong>
+                {" "}
+                Request a copy of your personal
                 information
               </li>
               <li>
-                <strong>Correction:</strong> Request correction of inaccurate
+                <strong>Correction:</strong>
+                {" "}
+                Request correction of inaccurate
                 information
               </li>
               <li>
-                <strong>Deletion:</strong> Request deletion of your personal
+                <strong>Deletion:</strong>
+                {" "}
+                Request deletion of your personal
                 information
               </li>
               <li>
-                <strong>Data Portability:</strong> Request transfer of your data
+                <strong>Data Portability:</strong>
+                {" "}
+                Request transfer of your data
                 to another service
               </li>
               <li>
-                <strong>Opt-out:</strong> Unsubscribe from marketing
+                <strong>Opt-out:</strong>
+                {" "}
+                Unsubscribe from marketing
                 communications
               </li>
               <li>
-                <strong>Withdraw Consent:</strong> Withdraw consent for
+                <strong>Withdraw Consent:</strong>
+                {" "}
+                Withdraw consent for
                 processing where applicable
               </li>
             </ul>
             <p className="text-zinc-700 dark:text-zinc-300 mt-4">
               To exercise these rights, please contact us at
-              {CONTACT_EMAIL}.
+              {CONTACT_EMAIL}
+              .
             </p>
           </section>
 
@@ -290,7 +305,10 @@ export default function PrivacyPolicy() {
               practices, please contact us:
             </p>
             <div className="text-zinc-700 dark:text-zinc-300">
-              <p>Email: {CONTACT_EMAIL}</p>
+              <p>
+                Email:
+                {CONTACT_EMAIL}
+              </p>
               <p>Address: [Your Company Address]</p>
             </div>
           </section>

@@ -1,8 +1,8 @@
-import { PAGES } from "@/constants/pages"
 import Image from "next/image"
 import Link from "next/link"
+import { PAGES } from "@/constants/pages"
 
-const Page = () => {
+function Page() {
   const adminRoutes = [
     {
       url: PAGES.ADMIN_GAMES,

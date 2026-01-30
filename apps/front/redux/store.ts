@@ -1,3 +1,5 @@
+import { configureStore } from "@reduxjs/toolkit"
+import { useDispatch, useSelector, useStore } from "react-redux"
 import { pokemonApi } from "@/redux/api"
 import { adminApi } from "@/redux/api/admin"
 import { authApi } from "@/redux/api/auth"
@@ -5,10 +7,8 @@ import { gameApi } from "@/redux/api/games"
 import { mapApi } from "@/redux/api/maps"
 import { sphericalApi } from "@/redux/api/spherical"
 import { sessionSlice } from "@/redux/session/session.slice"
-import { configureStore } from "@reduxjs/toolkit"
-import { useDispatch, useSelector, useStore } from "react-redux"
 
-export const makeStore = () => {
+export function makeStore() {
   return configureStore({
     reducer: {
       [pokemonApi.reducerPath]: pokemonApi.reducer,

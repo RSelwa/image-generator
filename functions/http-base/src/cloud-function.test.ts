@@ -1,6 +1,6 @@
-import type { DecodedIdToken } from "@repo/providers/firebase"
-import type { Request } from "firebase-functions/https"
+import { type DecodedIdToken } from "@repo/providers/firebase"
 import firebaseFunctionsTest from "firebase-functions-test"
+import { type Request } from "firebase-functions/https"
 import { describe, expect, it } from "vitest"
 import { http_endpoint_authenticated } from "./cloud-function"
 

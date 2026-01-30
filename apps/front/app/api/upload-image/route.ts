@@ -1,8 +1,8 @@
-import { storage } from "@/lib/firebase-admin"
-import { verifyAdmin } from "@/utils/api"
-import { STORAGE_PATHS, getNowString } from "@repo/common"
+import { getNowString, STORAGE_PATHS } from "@repo/common"
 import sharp from "sharp"
 import z from "zod"
+import { storage } from "@/lib/firebase-admin"
+import { verifyAdmin } from "@/utils/api"
 
 export const payloadSchema = z.object({
   file: z.custom((v) => v, {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const authResult = await verifyAdmin(request)
     if ("error" in authResult) {
       console.error("Authentication error:", authResult.error)
-      
+
       return Response.json(
         { error: authResult.error },
         { status: authResult.status },
@@ -38,14 +38,12 @@ export async function POST(request: Request) {
       )
     }
 
-    const dateStr =getNowString()
+    const dateStr = getNowString()
 
-    const safeGameName = gameName
-      ? gameName
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "")
-      : "untitled"
+    const safeGameName = gameName ? gameName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") : "untitled"
     const extension = file?.name?.split(".").pop() || "jpg"
     const storagePath = `${bucketPath}/${safeGameName}-${dateStr}.${extension}`
 
@@ -75,6 +73,7 @@ export async function POST(request: Request) {
     return Response.json({ url: publicUrl, width, height })
   } catch (error) {
     console.error("Upload error:", error)
+
     return Response.json({ error: "Failed to upload image" }, { status: 500 })
   }
 }

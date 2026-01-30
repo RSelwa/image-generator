@@ -21,7 +21,7 @@ service cloud.firestore {
       return (!request.resource.data.diff(resource.data).affectedKeys().hasAny(fields))
     }
     
-  	function signedInAdmin() {
+    function signedInAdmin() {
       return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.rights == "admin";
     }
 

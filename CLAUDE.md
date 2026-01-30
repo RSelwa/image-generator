@@ -3,10 +3,12 @@
 - pnpm --filter @repo/front build: Build the front
 - pnpm run typecheck: Run the typechecker
 - pnpm build:libs: Build all libs of the monorepo
+- pnpm lint: run the linter
 
 # Code style
 
 - Use pnpm instead of npm
+- use || instead of ??
 - use () => x instead of () => { return x } when possible
 - use Arrow functions
 - Use CONSTANTS instead of "variable" when possible

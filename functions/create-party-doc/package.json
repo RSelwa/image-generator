@@ -1,11 +1,15 @@
 {
   "name": "@repo/create-party-doc",
+  "type": "module",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
+  "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "files": ["dist", ".env.*"],
+  "files": [
+    ".env.*",
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "compile": "tsc --noEmit",
@@ -17,7 +21,6 @@
     "emulate": "firebase emulators:start --project tiktok-generator-fa261",
     "login": "firebase login"
   },
-  "license": "MIT",
   "dependencies": {
     "@google-cloud/functions-framework": "^4.0.0",
     "@repo/common": "workspace:*",

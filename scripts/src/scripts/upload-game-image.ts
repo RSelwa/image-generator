@@ -1,9 +1,9 @@
+import { refs } from "@repo/providers/db-refs"
+import { storage } from "@repo/providers/firebase"
 import {
   STORAGE_PATHS,
   TABLES,
 } from "../../../libs/common/src/constants/firebase.ts"
-import { refs } from "../../../libs/providers/dist/db-refs.js"
-import { storage } from "../../../libs/providers/dist/firebase.js"
 
 const gameId = process.argv[2] || ""
 const externalUrl = process.argv[3] || ""
@@ -15,7 +15,7 @@ if (!gameId || !externalUrl) {
   process.exit(1)
 }
 
-const fetchAndUploadImage = async (url: string, destinationPath: string) => {
+async function fetchAndUploadImage(url: string, destinationPath: string) {
   console.info(`📥 Fetching image from: ${url}`)
 
   const response = await fetch(url)
@@ -52,7 +52,7 @@ const fetchAndUploadImage = async (url: string, destinationPath: string) => {
   return publicUrl
 }
 
-const updateGameStorageImage = async (gameId: string, storageUrl: string) => {
+async function updateGameStorageImage(gameId: string, storageUrl: string) {
   const gameRef = refs[TABLES.GAMES].doc(gameId)
   const gameSnapshot = await gameRef.get()
 
@@ -65,7 +65,7 @@ const updateGameStorageImage = async (gameId: string, storageUrl: string) => {
   console.info(`✅ Updated game "${gameId}" with storageImage: ${storageUrl}`)
 }
 
-const main = async () => {
+async function main() {
   try {
     console.info(`🎮 Processing game: ${gameId}`)
 

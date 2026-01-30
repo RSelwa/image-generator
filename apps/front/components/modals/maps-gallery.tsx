@@ -1,24 +1,36 @@
+import Image from "next/image"
+import { useQueryState } from "nuqs"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { Button } from "@/components/ui/button"
-import { FALL_BACK_IMAGE, MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
+import {
+  FALL_BACK_IMAGE,
+  MODAL_KEYS,
+  NEW_SEARCH_PARAM,
+} from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
-import { useGetGameByIdQuery, useGetMapsByGameIdQuery } from "@/redux/api/games"
-import Image from "next/image"
-import { useQueryState } from "nuqs"
+import {
+  useGetGameByIdQuery,
+  useGetMapsByGameIdQuery,
+} from "@/redux/api/games"
 
-export const MapsGallery = () => {
+export function MapsGallery() {
   const [gameId] = useQueryState(MODAL_KEYS.MAPS_GALLERY_ID)
   const { closeModal } = useModal(MODAL_KEYS.MAPS_GALLERY_ID)
+  const { openModal: openNewMapModal } = useModal(MODAL_KEYS.MAP_ID)
+  const { data: game } = useGetGameByIdQuery(
+    { id: gameId ?? "" },
+    { skip: !gameId },
+  )
+  const { data: maps } = useGetMapsByGameIdQuery(
+    { gameId: gameId ?? "" },
+    { skip: !gameId },
+  )
 
   if (!gameId) return <LoadingModal modalKey={MODAL_KEYS.MAPS_GALLERY_ID} />
 
   // Build the combined param for creating a new map
   const newMapParam = buildSubcollectionParam(gameId, NEW_SEARCH_PARAM)
-  const { openModal: openNewMapModal } = useModal(MODAL_KEYS.MAP_ID, newMapParam)
-
-  const { data: game } = useGetGameByIdQuery({ id: gameId })
-  const { data: maps } = useGetMapsByGameIdQuery({ gameId })
   const hasMaps = maps && maps.length > 0
 
   return (
@@ -31,7 +43,7 @@ export const MapsGallery = () => {
         </div>
         <Button
           onClick={() => {
-            openNewMapModal()
+            openNewMapModal(newMapParam)
             closeModal()
           }}
         >
@@ -51,13 +63,13 @@ export const MapsGallery = () => {
   )
 }
 
-const MapCard = ({
+function MapCard({
   map,
   gameId,
 }: {
-  map: { id: string; name: string; imageUrl?: string | null }
+  map: { id: string, name: string, imageUrl?: string | null }
   gameId: string
-}) => {
+}) {
   // Build the combined param for editing this map
   const mapParam = buildSubcollectionParam(gameId, map.id)
   const { openModal } = useModal(MODAL_KEYS.MAP_ID, mapParam)

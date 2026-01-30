@@ -1,4 +1,4 @@
-name: 🚀 Deploy listen-docs 
+name: 🚀 Deploy listen-docs
 
 on:
   workflow_dispatch:

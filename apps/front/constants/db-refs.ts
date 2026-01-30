@@ -1,7 +1,7 @@
-import { db } from "@/constants/db"
 import { TABLES } from "@repo/common"
-import type { GameDoc, MapDoc, SphericalDoc, UserDoc } from "@repo/schemas"
-import { type CollectionReference, collection, doc } from "firebase/firestore"
+import { type GameDoc, type MapDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
+import { collection, type CollectionReference, doc } from "firebase/firestore"
+import { db } from "@/constants/db"
 
 export type DocumentMapping = {
   [TABLES.USERS]: UserDoc
@@ -38,22 +38,23 @@ export const TABLES_SUB_REFS = {
       TABLES.SPHERICAL,
     ) as CustomCollectionRef<typeof TABLES.SPHERICAL>,
   [TABLES.MAPS]: (gameId: string) =>
-    collection(
-      db,
-      TABLES.GAMES,
-      gameId,
-      TABLES.MAPS,
-    ) as CustomCollectionRef<typeof TABLES.MAPS>,
+    collection(db, TABLES.GAMES, gameId, TABLES.MAPS) as CustomCollectionRef<
+      typeof TABLES.MAPS
+    >,
 } as const
 
-export const getUserRef = (uid: string | undefined) =>
-  uid ? doc(TABLE_REFS[TABLES.USERS], uid) : doc(TABLE_REFS[TABLES.USERS])
+export function getUserRef(uid: string | undefined) {
+  return uid ? doc(TABLE_REFS[TABLES.USERS], uid) : doc(TABLE_REFS[TABLES.USERS])
+}
 
-export const getGameRef = (uid: string | undefined) =>
-  uid ? doc(TABLE_REFS[TABLES.GAMES], uid) : doc(TABLE_REFS[TABLES.GAMES])
+export function getGameRef(uid: string | undefined) {
+  return uid ? doc(TABLE_REFS[TABLES.GAMES], uid) : doc(TABLE_REFS[TABLES.GAMES])
+}
 
-export const getSphericalRef = (gameId: string, sphericalId: string) =>
-  doc(TABLES_SUB_REFS[TABLES.SPHERICAL](gameId), sphericalId)
+export function getSphericalRef(gameId: string, sphericalId: string) {
+  return doc(TABLES_SUB_REFS[TABLES.SPHERICAL](gameId), sphericalId)
+}
 
-export const getMapRef = (gameId: string, mapId: string) =>
-  doc(TABLES_SUB_REFS[TABLES.MAPS](gameId), mapId)
+export function getMapRef(gameId: string, mapId: string) {
+  return doc(TABLES_SUB_REFS[TABLES.MAPS](gameId), mapId)
+}

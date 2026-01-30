@@ -1,6 +1,6 @@
-import { ChevronRight } from "lucide-react"
 import type * as React from "react"
-
+import { ChevronRight } from "lucide-react"
+import Link from "next/link"
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,7 +20,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { PAGES } from "@/constants/pages"
-import Link from "next/link"
 
 const navMain = [
   {
@@ -164,7 +163,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
               >
                 <CollapsibleTrigger>
-                  {item.title}{" "}
+                  {item.title}
+                  {" "}
                   <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                 </CollapsibleTrigger>
               </SidebarGroupLabel>

@@ -1,5 +1,13 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { STORAGE_PATHS } from "@repo/common"
+import { createMapInputSchema } from "@repo/schemas"
+import { useQueryState } from "nuqs"
+import { useEffect, useState } from "react"
+import { type SubmitHandler, useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { type z } from "zod"
 import Loader from "@/components/icons/loader"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
@@ -19,39 +27,34 @@ import {
   useUpdateMapByIdMutation,
 } from "@/redux/api/maps"
 import { uploadFileToBucket } from "@/utils/file"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { STORAGE_PATHS } from "@repo/common"
-import { createMapInputSchema } from "@repo/schemas"
-import { useQueryState } from "nuqs"
-import { useEffect, useState } from "react"
-import { type SubmitHandler, useForm } from "react-hook-form"
-import { toast } from "sonner"
-import type { z } from "zod"
 
 type MapFormSchema = z.input<typeof createMapInputSchema>
 
 const KEY = MODAL_KEYS.MAP_ID
 
 // Helper to parse combined param format: "parentId_childId"
-export const parseSubcollectionParam = (
+export function parseSubcollectionParam(
   param: string | null,
-): { parentId: string; childId: string } | null => {
+): { parentId: string, childId: string } | null {
   if (!param) return null
   const separatorIndex = param.indexOf("_")
   if (separatorIndex === -1) return null
   const parentId = param.substring(0, separatorIndex)
   const childId = param.substring(separatorIndex + 1)
   if (!parentId || !childId) return null
+
   return { parentId, childId }
 }
 
 // Helper to build combined param format: "parentId_childId"
-export const buildSubcollectionParam = (
+export function buildSubcollectionParam(
   parentId: string,
   childId: string,
-): string => `${parentId}_${childId}`
+): string {
+  return `${parentId}_${childId}`
+}
 
-const MapForm = ({
+function MapForm({
   mapId,
   gameId,
   isNew,
@@ -59,7 +62,7 @@ const MapForm = ({
   mapId: string
   gameId: string
   isNew: boolean
-}) => {
+}) {
   const { data, isLoading } = useGetMapByIdQuery(
     { gameId, id: mapId },
     { skip: isNew },
@@ -230,11 +233,13 @@ const MapForm = ({
                   <strong>Game ID:</strong> {data.gameId}
                 </p>
                 <p>
-                  <strong>Created:</strong>{" "}
+                  <strong>Created:</strong>
+                  {" "}
                   {data.createdAt?.toDate().toLocaleString()}
                 </p>
                 <p>
-                  <strong>Updated:</strong>{" "}
+                  <strong>Updated:</strong>
+                  {" "}
                   {data.updatedAt?.toDate().toLocaleString()}
                 </p>
               </div>
@@ -271,7 +276,7 @@ const MapForm = ({
   )
 }
 
-export const ModalMapId = () => {
+export function ModalMapId() {
   const [modalParam] = useQueryState(KEY)
 
   const parsed = parseSubcollectionParam(modalParam)

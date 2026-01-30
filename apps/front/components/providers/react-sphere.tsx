@@ -7,12 +7,12 @@ type Props = {
   width?: string
 }
 
-export const ReactSphere = ({
+export function ReactSphere({
   src,
   canvasBackground,
   height = "100%",
   width = "100%",
-}: Props) => {
+}: Props) {
   const proxySrc = `/api/proxy-image?url=${encodeURIComponent(src)}`
 
   return (

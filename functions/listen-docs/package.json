@@ -1,11 +1,15 @@
 {
   "name": "@repo/listen-docs",
+  "type": "module",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
+  "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "files": ["dist", ".env.*"],
+  "files": [
+    ".env.*",
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "compile": "tsc --noEmit",
@@ -17,7 +21,6 @@
     "emulate": "firebase emulators:start --project pusher-292200",
     "login": "firebase login"
   },
-  "license": "MIT",
   "dependencies": {
     "@google-cloud/functions-framework": "^4.0.0",
     "@repo/common": "workspace:*",
@@ -29,9 +32,9 @@
     "nocache": "^4.0.0"
   },
   "devDependencies": {
-    "@repo/schemas": "workspace:*",
     "@codecompose/typescript-config": "^2.0.1",
     "@faker-js/faker": "^10.1.0",
+    "@repo/schemas": "workspace:*",
     "@types/cors": "^2.8.19",
     "@types/node": "^22.10.10",
     "@vitest/coverage-v8": "^3.2.3",

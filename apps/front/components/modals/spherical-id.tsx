@@ -1,5 +1,13 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { DIFFICULTIES, DOCUMENTS_STATUS, STORAGE_PATHS } from "@repo/common"
+import { createSphericalInputSchema } from "@repo/schemas"
+import { useQueryState } from "nuqs"
+import { useCallback, useEffect, useState } from "react"
+import { Controller, type SubmitHandler, useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { type z } from "zod"
 import Loader from "@/components/icons/loader"
 import { MiniMap, type Position } from "@/components/mini-map"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
@@ -30,37 +38,30 @@ import {
   useUpdateSphericalByIdMutation,
 } from "@/redux/api/spherical"
 import { uploadFileToBucket } from "@/utils/file"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { DIFFICULTIES, DOCUMENTS_STATUS, STORAGE_PATHS } from "@repo/common"
-import { createSphericalInputSchema } from "@repo/schemas"
-import { useQueryState } from "nuqs"
-import { useCallback, useEffect, useState } from "react"
-import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-import { toast } from "sonner"
-import type { z } from "zod"
 
 type SphericalFormSchema = z.input<typeof createSphericalInputSchema>
 
 const KEY = MODAL_KEYS.SPHERICAL_ID
 
 // Helper to parse combined param format: "gameId_sphericalId"
-export const parseSphericalModalParam = (
+export function parseSphericalModalParam(
   param: string | null,
-): { gameId: string; sphericalId: string } | null => {
+): { gameId: string, sphericalId: string } | null {
   if (!param) return null
   const separatorIndex = param.indexOf("_")
   if (separatorIndex === -1) return null
   const gameId = param.substring(0, separatorIndex)
   const sphericalId = param.substring(separatorIndex + 1)
   if (!gameId || !sphericalId) return null
+
   return { gameId, sphericalId }
 }
 
 // Helper to build combined param format: "gameId_sphericalId"
-export const buildSphericalModalParam = (
+export function buildSphericalModalParam(
   gameId: string,
   sphericalId: string,
-): string => {
+): string {
   return `${gameId}_${sphericalId}`
 }
 
@@ -68,7 +69,7 @@ const DIFFICULTY_OPTIONS = Object.values(DIFFICULTIES)
 const STATUS_OPTIONS = Object.values(DOCUMENTS_STATUS)
 const NO_MAP_VALUE = "__none__"
 
-const SphericalForm = ({
+function SphericalForm({
   sphericalId,
   gameId,
   isNew,
@@ -76,7 +77,7 @@ const SphericalForm = ({
   sphericalId: string
   gameId: string
   isNew: boolean
-}) => {
+}) {
   const { data, isLoading } = useGetSphericalByIdQuery(
     { gameId, id: sphericalId },
     { skip: isNew },
@@ -240,8 +241,7 @@ const SphericalForm = ({
                     <Select
                       value={field.value || NO_MAP_VALUE}
                       onValueChange={(value) =>
-                        field.onChange(value === NO_MAP_VALUE ? "" : value)
-                      }
+                        field.onChange(value === NO_MAP_VALUE ? "" : value)}
                       disabled={isMapsLoading}
                     >
                       <SelectTrigger className="w-full">
@@ -289,88 +289,92 @@ const SphericalForm = ({
             </div>
 
             {/* Map Position Picker */}
-            {selectedMap?.imageUrl && selectedMap.width && selectedMap.height ? (
-              <div className="space-y-2">
-                <FieldLabel>Position on Map</FieldLabel>
-                <FieldDescription>
-                  Click on the map to set the spherical position
-                </FieldDescription>
-                <MiniMap
-                  inline
-                  alwaysExpanded
-                  mapData={{
-                    mapImage: selectedMap.imageUrl,
-                    size: {
-                      width: selectedMap.width,
-                      height: selectedMap.height,
-                    },
-                  }}
-                  guessPosition={mapPosition ?? null}
-                  onMapClick={handleMapClick}
-                  showCorrectMarker={false}
-                  showLine={false}
-                  expandedSize={{ width: 400, height: 250 }}
-                  collapsedSize={{ width: 400, height: 250 }}
-                />
-                <div className="bg-muted/50 rounded-md p-3 text-sm">
-                  <p className="font-medium mb-1">Position to be stored:</p>
-                  <div className="grid grid-cols-2 gap-2 text-muted-foreground">
+            {selectedMap?.imageUrl &&
+              selectedMap.width &&
+              selectedMap.height ? (
+                  <div className="space-y-2">
+                    <FieldLabel>Position on Map</FieldLabel>
+                    <FieldDescription>
+                      Click on the map to set the spherical position
+                    </FieldDescription>
+                    <MiniMap
+                      inline
+                      alwaysExpanded
+                      mapData={{
+                        mapImage: selectedMap.imageUrl,
+                        size: {
+                          width: selectedMap.width,
+                          height: selectedMap.height,
+                        },
+                      }}
+                      guessPosition={mapPosition ?? null}
+                      onMapClick={handleMapClick}
+                      showCorrectMarker={false}
+                      showLine={false}
+                      expandedSize={{ width: 400, height: 250 }}
+                      collapsedSize={{ width: 400, height: 250 }}
+                    />
+                    <div className="bg-muted/50 rounded-md p-3 text-sm">
+                      <p className="font-medium mb-1">Position to be stored:</p>
+                      <div className="grid grid-cols-2 gap-2 text-muted-foreground">
+                        <p>
+                          <strong>X:</strong> {mapPosition?.x?.toFixed(2) ?? "—"}%
+                        </p>
+                        <p>
+                          <strong>Y:</strong> {mapPosition?.y?.toFixed(2) ?? "—"}%
+                        </p>
+                      </div>
+                    </div>
+                    {(errors.mapPosition?.x || errors.mapPosition?.y) && (
+                      <FieldError>
+                        {errors.mapPosition?.x?.message ||
+                          errors.mapPosition?.y?.message}
+                      </FieldError>
+                    )}
+                  </div>
+                ) : selectedMapId ? (
+                  <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-foreground">
+                    <p>Selected map has no image or dimensions.</p>
                     <p>
-                      <strong>X:</strong> {mapPosition?.x?.toFixed(2) ?? "—"}%
-                    </p>
-                    <p>
-                      <strong>Y:</strong> {mapPosition?.y?.toFixed(2) ?? "—"}%
+                      Upload an image to the map first to enable position picking.
                     </p>
                   </div>
-                </div>
-                {(errors.mapPosition?.x || errors.mapPosition?.y) && (
-                  <FieldError>
-                    {errors.mapPosition?.x?.message ||
-                      errors.mapPosition?.y?.message}
-                  </FieldError>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    <Field>
+                      <FieldLabel htmlFor="mapPositionX">Map Position X</FieldLabel>
+                      <Input
+                        id="mapPositionX"
+                        type="number"
+                        min={0}
+                        max={100}
+                        placeholder="X position (0-100)"
+                        {...register("mapPosition.x", { valueAsNumber: true })}
+                        aria-invalid={!!errors.mapPosition?.x}
+                      />
+                      <FieldDescription>Position X (0-100%)</FieldDescription>
+                      {errors.mapPosition?.x && (
+                        <FieldError>{errors.mapPosition.x.message}</FieldError>
+                      )}
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor="mapPositionY">Map Position Y</FieldLabel>
+                      <Input
+                        id="mapPositionY"
+                        type="number"
+                        min={0}
+                        max={100}
+                        placeholder="Y position (0-100)"
+                        {...register("mapPosition.y", { valueAsNumber: true })}
+                        aria-invalid={!!errors.mapPosition?.y}
+                      />
+                      <FieldDescription>Position Y (0-100%)</FieldDescription>
+                      {errors.mapPosition?.y && (
+                        <FieldError>{errors.mapPosition.y.message}</FieldError>
+                      )}
+                    </Field>
+                  </div>
                 )}
-              </div>
-            ) : selectedMapId ? (
-              <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-foreground">
-                <p>Selected map has no image or dimensions.</p>
-                <p>Upload an image to the map first to enable position picking.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <Field>
-                  <FieldLabel htmlFor="mapPositionX">Map Position X</FieldLabel>
-                  <Input
-                    id="mapPositionX"
-                    type="number"
-                    min={0}
-                    max={100}
-                    placeholder="X position (0-100)"
-                    {...register("mapPosition.x", { valueAsNumber: true })}
-                    aria-invalid={!!errors.mapPosition?.x}
-                  />
-                  <FieldDescription>Position X (0-100%)</FieldDescription>
-                  {errors.mapPosition?.x && (
-                    <FieldError>{errors.mapPosition.x.message}</FieldError>
-                  )}
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="mapPositionY">Map Position Y</FieldLabel>
-                  <Input
-                    id="mapPositionY"
-                    type="number"
-                    min={0}
-                    max={100}
-                    placeholder="Y position (0-100)"
-                    {...register("mapPosition.y", { valueAsNumber: true })}
-                    aria-invalid={!!errors.mapPosition?.y}
-                  />
-                  <FieldDescription>Position Y (0-100%)</FieldDescription>
-                  {errors.mapPosition?.y && (
-                    <FieldError>{errors.mapPosition.y.message}</FieldError>
-                  )}
-                </Field>
-              </div>
-            )}
 
             <div className="grid grid-cols-2 gap-2">
               <Field>
@@ -428,11 +432,13 @@ const SphericalForm = ({
                   <strong>Game ID:</strong> {data.gameId}
                 </p>
                 <p>
-                  <strong>Created:</strong>{" "}
+                  <strong>Created:</strong>
+                  {" "}
                   {data.createdAt?.toDate().toLocaleString()}
                 </p>
                 <p>
-                  <strong>Updated:</strong>{" "}
+                  <strong>Updated:</strong>
+                  {" "}
                   {data.updatedAt?.toDate().toLocaleString()}
                 </p>
               </div>
@@ -448,12 +454,11 @@ const SphericalForm = ({
               isUploading={isUploading}
               alt="Spherical image"
             />
-            {storageImage &&
-            <div className="aspect-video w-full">
-
-            <ReactSphere src={storageImage} />
-            </div>
-            }
+            {storageImage && (
+              <div className="aspect-video w-full">
+                <ReactSphere src={storageImage} />
+              </div>
+            )}
             {errors.image && <FieldError>{errors.image.message}</FieldError>}
           </div>
         </div>
@@ -476,7 +481,7 @@ const SphericalForm = ({
   )
 }
 
-export const ModalSphericalId = () => {
+export function ModalSphericalId() {
   const [modalParam] = useQueryState(KEY)
 
   const parsed = parseSphericalModalParam(modalParam)
@@ -486,7 +491,9 @@ export const ModalSphericalId = () => {
   const { gameId, sphericalId } = parsed
   const isNew = sphericalId === NEW_SEARCH_PARAM
 
-  return <SphericalForm sphericalId={sphericalId} gameId={gameId} isNew={isNew} />
+  return (
+    <SphericalForm sphericalId={sphericalId} gameId={gameId} isNew={isNew} />
+  )
 }
 
 export default ModalSphericalId

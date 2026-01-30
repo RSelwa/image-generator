@@ -1,7 +1,7 @@
+import { createSlice } from "@reduxjs/toolkit"
 import { SESSION_STATUS } from "@/constants/mapping"
 import { sessionReducers } from "@/redux/session/session.reducers"
-import type { Session } from "@/schemas/session"
-import { createSlice } from "@reduxjs/toolkit"
+import { type Session } from "@/schemas/session"
 
 const initialState: Session = {
   disconnected: false,
@@ -13,6 +13,6 @@ const initialState: Session = {
 
 export const sessionSlice = createSlice({
   name: "session",
-  initialState: initialState,
+  initialState,
   reducers: sessionReducers,
 })

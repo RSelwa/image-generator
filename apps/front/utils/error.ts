@@ -1,4 +1,4 @@
-import type { FetchBaseQueryError } from "@reduxjs/toolkit/query/react"
+import { type FetchBaseQueryError } from "@reduxjs/toolkit/query/react"
 import { FirebaseError } from "firebase/app"
 import z from "zod"
 
@@ -13,7 +13,7 @@ export const globalErrorSchema = z.object({
 
 export type GlobalError = z.infer<typeof globalErrorSchema>
 
-const isRTKQueryError = (error: unknown): error is FetchBaseQueryError => {
+function isRTKQueryError(error: unknown): error is FetchBaseQueryError {
   const isObject = typeof error === "object" && error !== null
 
   if (!isObject) return false
@@ -25,13 +25,13 @@ const isRTKQueryError = (error: unknown): error is FetchBaseQueryError => {
   return typeof error.status === "number" || typeof error.status === "string"
 }
 
-const maybeLogAndReturn = <T>(data: T, log?: boolean): T => {
+function maybeLogAndReturn<T>(data: T, log?: boolean): T {
   log && console.trace("⛔️ Logged error:", data)
 
   return data
 }
 
-export const rtkQueryErrorHandler = (error: FetchBaseQueryError) => {
+export function rtkQueryErrorHandler(error: FetchBaseQueryError) {
   const { status, data } = error
 
   const hastHttpStatusCode = typeof status === "number"
@@ -62,9 +62,7 @@ export const rtkQueryErrorHandler = (error: FetchBaseQueryError) => {
       code: "HTTP_ERROR",
       message: data ? JSON.stringify(data) : "Internal server error",
       data:
-        typeof data === "object" && data !== null
-          ? (data as Record<string, unknown>)
-          : undefined,
+        typeof data === "object" && data !== null ? (data as Record<string, unknown>) : undefined,
     }
   }
 
@@ -83,7 +81,7 @@ export const rtkQueryErrorHandler = (error: FetchBaseQueryError) => {
   }
 }
 
-export const firebaseErrorHandler = (code: string) => {
+export function firebaseErrorHandler(code: string) {
   if (code === "auth/too-many-requests")
     return "Please wait a few minutes before trying again"
   if (code === "auth/popup-closed-by-user")
@@ -133,7 +131,8 @@ export const firebaseErrorHandler = (code: string) => {
   if (code === "auth/invalid-cordova-configuration")
     return "Something went wrong"
   if (code === "auth/invalid-custom-token") return "Something went wrong"
-  if (code === "auth/invalid-dynamic-link-domain") return "Something went wrong"
+  if (code === "auth/invalid-dynamic-link-domain")
+    return "Something went wrong"
   if (code === "auth/invalid-email") return "Invalid email format"
   if (code === "auth/invalid-emulator-scheme") return "Something went wrong"
   if (code === "auth/invalid-credential") return "Something went wrong"
@@ -151,11 +150,13 @@ export const firebaseErrorHandler = (code: string) => {
   if (code === "auth/invalid-sender") return "Something went wrong"
   if (code === "auth/invalid-verification-id") return "Something went wrong"
   if (code === "auth/invalid-tenant-id") return "Something went wrong"
-  if (code === "auth/multi-factor-info-not-found") return "Something went wrong"
+  if (code === "auth/multi-factor-info-not-found")
+    return "Something went wrong"
   if (code === "auth/multi-factor-auth-required") return "Something went wrong"
   if (code === "auth/missing-android-pkg-name") return "Something went wrong"
   if (code === "auth/missing-app-credential") return "Something went wrong"
-  if (code === "auth/auth-domain-config-required") return "Something went wrong"
+  if (code === "auth/auth-domain-config-required")
+    return "Something went wrong"
   if (code === "auth/missing-verification-code") return "Something went wrong"
   if (code === "auth/missing-continue-uri") return "Something went wrong"
   if (code === "auth/missing-iframe-start") return "Something went wrong"
@@ -231,10 +232,10 @@ export const firebaseErrorHandler = (code: string) => {
   return "Something went wrong"
 }
 
-export const globalErrorHandler = (
+export function globalErrorHandler(
   error: unknown,
   options: { log?: boolean } = { log: false },
-): GlobalError => {
+): GlobalError {
   if (isRTKQueryError(error)) {
     return maybeLogAndReturn(
       {
@@ -246,7 +247,7 @@ export const globalErrorHandler = (
     )
   }
 
-  if (error instanceof FirebaseError)
+  if (error instanceof FirebaseError) {
     return maybeLogAndReturn(
       {
         status: 500,
@@ -257,8 +258,9 @@ export const globalErrorHandler = (
       },
       options.log,
     )
+  }
 
-  if (error instanceof Error)
+  if (error instanceof Error) {
     return maybeLogAndReturn(
       {
         status: 500,
@@ -269,6 +271,7 @@ export const globalErrorHandler = (
       },
       options.log,
     )
+  }
 
   return maybeLogAndReturn(
     {

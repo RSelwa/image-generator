@@ -1,20 +1,20 @@
-import { sessionUserSchema, type SessionUser } from "@/schemas/session"
-import type { UserDoc } from "@repo/schemas"
-import type { User } from "firebase/auth"
+import { type UserDoc } from "@repo/schemas"
+import { type User } from "firebase/auth"
+import { type SessionUser, sessionUserSchema } from "@/schemas/session"
 
-export const formatSessionFromFirebaseUser = ({
+export function formatSessionFromFirebaseUser({
   user,
   authUser,
 }: {
   user: UserDoc
   authUser: User
-}): SessionUser => {
+}): SessionUser {
   const { uid, photoURL } = authUser
   const { email, rights } = user
 
   const sessionUser = sessionUserSchema.safeParse({
     id: uid,
-    email: email,
+    email,
     photoUrl: photoURL || "",
     rights,
   })

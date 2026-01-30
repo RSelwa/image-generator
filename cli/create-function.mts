@@ -1,30 +1,31 @@
-import { cancel, intro, isCancel, outro, select, text } from "@clack/prompts"
-import { consola } from "consola"
-import { TYPE_FUNCTIONS } from "./constant.mts"
-import { createFirebaseTriggeredFunction } from "./create-function.firestore.mts"
-import { createHttpTriggeredFunction } from "./create-function.http.mts"
+import { cancel, intro, isCancel, outro, select, text } from "@clack/prompts";
+import { consola } from "consola";
+import { TYPE_FUNCTIONS } from "./constant.mts";
+import { createFirebaseTriggeredFunction } from "./create-function.firestore.mts";
+import { createHttpTriggeredFunction } from "./create-function.http.mts";
 
-const init = async () => {
-  intro("😎 Welcome to the Cloud Function Creator")
+async function init() {
+  intro("😎 Welcome to the Cloud Function Creator");
 
   try {
     const name = await text({
       message: "Enter the name of the cloud function",
       placeholder: "my-function",
       validate: (input) => {
-        if (input.length < 5) return "name must be at least 5 characters long"
+        if (input.length < 5) return "name must be at least 5 characters long";
 
-        if (!/^[a-zA-Z_-]+$/.test(input)) {
-          return "Function name can only contain letters, numbers, underscores, and hyphens"
+        if (!/^[a-z_-]+$/i.test(input)) {
+          return "Function name can only contain letters, numbers, underscores, and hyphens";
         }
 
-        return undefined
+        return undefined;
       },
-    })
+    });
 
     if (isCancel(name)) {
-      cancel("👋 Operation cancelled by user, see you soon")
-      return process.exit(0)
+      cancel("👋 Operation cancelled by user, see you soon");
+
+      return process.exit(0);
     }
 
     const type = await select({
@@ -48,35 +49,38 @@ const init = async () => {
       ],
       initialValue: TYPE_FUNCTIONS.http,
       maxItems: 1,
-    })
+    });
 
     if (isCancel(name) || isCancel(type)) {
-      cancel("👋 Operation cancelled by user, see you soon")
-      return process.exit(0)
+      cancel("👋 Operation cancelled by user, see you soon");
+
+      return process.exit(0);
     }
 
     if (type !== TYPE_FUNCTIONS.firestore && type !== TYPE_FUNCTIONS.http) {
       consola.warn(
         "Only HTTP and Firestore triggered functions are supported at the moment.",
-      )
-      outro("👋  Exiting the function creation process.")
-      return
+      );
+      outro("👋  Exiting the function creation process.");
+
+      return;
     }
 
     if (type === TYPE_FUNCTIONS.firestore)
-      await createFirebaseTriggeredFunction(name)
+      await createFirebaseTriggeredFunction(name);
 
-    if (type === TYPE_FUNCTIONS.http) await createHttpTriggeredFunction(name)
+    if (type === TYPE_FUNCTIONS.http) await createHttpTriggeredFunction(name);
 
-    outro("🎉 Function creation completed successfully!")
+    outro("🎉 Function creation completed successfully!");
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === "ExitPromptError")
-        return consola.info("Exiting prompts gracefully")
-      return consola.error(error.message)
+        return consola.info("Exiting prompts gracefully");
+
+      return consola.error(error.message);
     }
-    consola.error(error)
+    consola.error(error);
   }
 }
 
-await init()
+await init();

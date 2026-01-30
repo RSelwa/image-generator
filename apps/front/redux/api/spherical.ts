@@ -1,20 +1,14 @@
-// Need to use the React-specific entry point to import createApi
-import { DEFAULT_SIZE_SPHERICALS } from "@/constants/api"
-import { db } from "@/constants/db"
-import { getSphericalRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
-import { gameApi } from "@/redux/api/games"
-import { globalErrorHandler, type GlobalError } from "@/utils/error"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { getIdFromFirestoreRef, getImageUrl, TABLES } from "@repo/common"
 import {
-  createSphericalInputSchema,
-  sphericalDocWithIdSchema,
-  sphericalEntitySchema,
-  updateSphericalInputSchema,
   type CreateSphericalInput,
+  createSphericalInputSchema,
   type SphericalDocWithId,
+  sphericalDocWithIdSchema,
   type SphericalEntity,
+  sphericalEntitySchema,
   type UpdateSphericalInput,
+  updateSphericalInputSchema,
 } from "@repo/schemas"
 import {
   addDoc,
@@ -25,12 +19,22 @@ import {
   getDocs,
   limit,
   query,
+  type QueryConstraint,
   startAfter,
   Timestamp,
   updateDoc,
-  type QueryConstraint,
 } from "firebase/firestore"
 import { toast } from "sonner"
+// Need to use the React-specific entry point to import createApi
+import { DEFAULT_SIZE_SPHERICALS } from "@/constants/api"
+import { db } from "@/constants/db"
+import {
+  getSphericalRef,
+  TABLE_REFS,
+  TABLES_SUB_REFS,
+} from "@/constants/db-refs"
+import { gameApi } from "@/redux/api/games"
+import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
 export const sphericalApi = createApi({
   reducerPath: "sphericalApi",
@@ -40,7 +44,7 @@ export const sphericalApi = createApi({
     getSphericals: builder.infiniteQuery<
       SphericalEntity[],
       void,
-      { limit?: number; startAfter?: string }
+      { limit?: number, startAfter?: string }
     >({
       queryFn: async ({ pageParam }, { dispatch }) => {
         try {
@@ -112,16 +116,16 @@ export const sphericalApi = createApi({
         },
       },
       providesTags: (result) =>
-        result
-          ? [
-              ...result.pages.flat().map(({ id }) => ({ type: "Spherical" as const, id })),
-              { type: "SphericalList" as const },
-            ]
-          : [{ type: "SphericalList" as const }],
+        result ? [
+          ...result.pages
+            .flat()
+            .map(({ id }) => ({ type: "Spherical" as const, id })),
+          { type: "SphericalList" as const },
+        ] : [{ type: "SphericalList" as const }],
     }),
     getSphericalById: builder.query<
       SphericalEntity,
-      { gameId: string; id: string }
+      { gameId: string, id: string }
     >({
       queryFn: async ({ id, gameId }, { dispatch }) => {
         try {
@@ -176,7 +180,7 @@ export const sphericalApi = createApi({
       },
       providesTags: [{ type: "SphericalCount" }],
     }),
-    deleteSpherical: builder.mutation<null, { gameId: string; id: string }>({
+    deleteSpherical: builder.mutation<null, { gameId: string, id: string }>({
       queryFn: async ({ gameId, id }) => {
         try {
           await deleteDoc(getSphericalRef(gameId, id))
@@ -185,6 +189,7 @@ export const sphericalApi = createApi({
         } catch (error) {
           console.error("Error deleting spherical:", error)
           toast.error("Error deleting spherical")
+
           return {
             error: globalErrorHandler(error),
           }
@@ -207,7 +212,7 @@ export const sphericalApi = createApi({
     }),
     createSpherical: builder.mutation<
       SphericalDocWithId,
-      { gameId: string; data: CreateSphericalInput }
+      { gameId: string, data: CreateSphericalInput }
     >({
       queryFn: async ({ gameId, data: input }) => {
         try {
@@ -219,11 +224,14 @@ export const sphericalApi = createApi({
           }
 
           const now = Timestamp.now()
-          const docRef = await addDoc(TABLES_SUB_REFS[TABLES.SPHERICAL](gameId), {
-            ...validatedInput,
-            createdAt: now,
-            updatedAt: now,
-          })
+          const docRef = await addDoc(
+            TABLES_SUB_REFS[TABLES.SPHERICAL](gameId),
+            {
+              ...validatedInput,
+              createdAt: now,
+              updatedAt: now,
+            },
+          )
 
           const docSnap = await getDoc(docRef)
 
@@ -257,7 +265,7 @@ export const sphericalApi = createApi({
     }),
     updateSphericalById: builder.mutation<
       SphericalDocWithId,
-      { gameId: string; id: string; data: UpdateSphericalInput }
+      { gameId: string, id: string, data: UpdateSphericalInput }
     >({
       queryFn: async ({ gameId, id, data: input }) => {
         try {
