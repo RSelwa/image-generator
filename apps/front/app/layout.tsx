@@ -1,6 +1,7 @@
 import { type Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
+import { Suspense } from "react"
 import { ModalProvider } from "@/components/modals"
 import StoreProvider from "@/components/providers/redux-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -35,7 +36,9 @@ export default function RootLayout({
         <NuqsAdapter>
           <StoreProvider>
             <Toaster />
-            <ModalProvider />
+            <Suspense>
+              <ModalProvider />
+            </Suspense>
             {children}
           </StoreProvider>
         </NuqsAdapter>
