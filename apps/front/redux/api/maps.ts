@@ -174,6 +174,7 @@ export const mapApi = createApi({
           gameApi.util.invalidateTags([
             { type: "GameMapCount", id: gameId },
             { type: "GameMaps", id: gameId },
+            { type: "GameList" },
           ]),
         )
       },
@@ -224,6 +225,7 @@ export const mapApi = createApi({
           gameApi.util.invalidateTags([
             { type: "GameMapCount", id: gameId },
             { type: "GameMaps", id: gameId },
+            { type: "GameList" },
           ]),
         )
       },

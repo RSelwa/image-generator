@@ -23,12 +23,16 @@ const SphericalCard = ({
   const { openModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalParam)
   const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID)
 
+  
+  const externalImage = `/api/proxy-image?url=${encodeURIComponent(spherical.image)}`
+  const src = spherical.storageImage||externalImage
+
   return (
     <div className="group relative w-full aspect-video cursor-pointer overflow-hidden rounded-lg">
       <Tooltip>
         <TooltipTrigger asChild>
           <Image
-            src={`/api/proxy-image?url=${encodeURIComponent(spherical.image)}`}
+            src={src}
             alt={spherical.id}
             fill
             className="object-cover transition-transform group-hover:scale-105"
