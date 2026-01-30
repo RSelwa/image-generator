@@ -225,17 +225,23 @@ describe("Firebase Security Rules", () => {
     })
   })
 
-  describe("maps collection", () => {
+  describe("maps subcollection (games/{gameId}/maps)", () => {
+    const gameId = "game1"
+    const mapPath = `games/${gameId}/maps/map1`
+
     test("should be able to read a doc even if not logged in", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), "maps/map1"), {
+        await setDoc(doc(context.firestore(), `games/${gameId}`), {
+          name: "Test Game",
+        })
+        await setDoc(doc(context.firestore(), mapPath), {
           name: "Test Map",
         })
       })
 
       const unauthedDb = testEnv.unauthenticatedContext().firestore()
 
-      const result = await assertSucceeds(getDoc(doc(unauthedDb, "maps/map1")))
+      const result = await assertSucceeds(getDoc(doc(unauthedDb, mapPath)))
 
       expect(result).toBeDefined()
     })
@@ -248,12 +254,15 @@ describe("Firebase Security Rules", () => {
           uid,
           rights: [],
         })
+        await setDoc(doc(context.firestore(), `games/${gameId}`), {
+          name: "Test Game",
+        })
       })
 
       const authedUserDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertFails(
-        setDoc(doc(authedUserDb, "maps/map1"), { name: "Test Map" }),
+        setDoc(doc(authedUserDb, mapPath), { name: "Test Map" }),
       )
     })
 
@@ -265,7 +274,10 @@ describe("Firebase Security Rules", () => {
           uid,
           rights: [],
         })
-        await setDoc(doc(context.firestore(), "maps/map1"), {
+        await setDoc(doc(context.firestore(), `games/${gameId}`), {
+          name: "Test Game",
+        })
+        await setDoc(doc(context.firestore(), mapPath), {
           name: "Test Map",
         })
       })
@@ -273,7 +285,7 @@ describe("Firebase Security Rules", () => {
       const authedUserDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertFails(
-        updateDoc(doc(authedUserDb, "maps/map1"), { name: "Updated Map" }),
+        updateDoc(doc(authedUserDb, mapPath), { name: "Updated Map" }),
       )
     })
 
@@ -285,12 +297,15 @@ describe("Firebase Security Rules", () => {
           uid,
           rights: "admin",
         })
+        await setDoc(doc(context.firestore(), `games/${gameId}`), {
+          name: "Test Game",
+        })
       })
 
       const adminDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertSucceeds(
-        setDoc(doc(adminDb, "maps/map1"), { name: "Test Map" }),
+        setDoc(doc(adminDb, mapPath), { name: "Test Map" }),
       )
     })
 
@@ -302,7 +317,10 @@ describe("Firebase Security Rules", () => {
           uid,
           rights: "admin",
         })
-        await setDoc(doc(context.firestore(), "maps/map1"), {
+        await setDoc(doc(context.firestore(), `games/${gameId}`), {
+          name: "Test Game",
+        })
+        await setDoc(doc(context.firestore(), mapPath), {
           name: "Test Map",
         })
       })
@@ -310,7 +328,7 @@ describe("Firebase Security Rules", () => {
       const adminDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertSucceeds(
-        updateDoc(doc(adminDb, "maps/map1"), { name: "Updated Map" }),
+        updateDoc(doc(adminDb, mapPath), { name: "Updated Map" }),
       )
     })
   })

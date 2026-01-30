@@ -39,16 +39,17 @@ service cloud.firestore {
       allow write: if signedInAdmin() && isSignedIn();
       allow read: if true;
 
-    match /spherical/{spherical} {
-      allow write: if signedInAdmin() && isSignedIn();
-      allow read: if true;
+      match /spherical/{spherical} {
+        allow write: if signedInAdmin() && isSignedIn();
+        allow read: if true;
+        } 
+
+      match /maps/{map} {
+        allow write: if signedInAdmin() && isSignedIn();
+        allow read: if true;
       } 
     } 
 
-    match /maps/{map} {
-      allow write: if signedInAdmin() && isSignedIn();
-      allow read: if true;
-    } 
 
     match /spherical/{spherical} {
       allow write: if signedInAdmin() && isSignedIn();
