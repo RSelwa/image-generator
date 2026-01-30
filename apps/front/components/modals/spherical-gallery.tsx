@@ -1,59 +1,71 @@
 import { ModalBase } from "@/components/modals/base"
+import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { ReactSphere } from "@/components/providers/react-sphere"
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { MODAL_KEYS } from "@/constants/mapping"
+import { useModal } from "@/hooks/use-modal"
 import { useGetSphericalsByGameIdQuery } from "@/redux/api/games"
-import {
-  useDeleteSphericalMutation
-} from "@/redux/api/spherical"
 import { SphericalDocWithId } from "@repo/schemas"
+import { Pencil } from "lucide-react"
 import Image from "next/image"
 import { useQueryState } from "nuqs"
-import { useState } from "react"
 
-const SphericalCard = ({spherical}: {spherical: SphericalDocWithId}) => {
+const SphericalCard = ({
+  spherical,
+  gameId,
+}: {
+  spherical: SphericalDocWithId
+  gameId: string
+}) => {
+  const sphericalParam = buildSubcollectionParam(gameId, spherical.id)
+  const { openModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalParam)
+  const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID)
 
-
-    return (
-         <div
-              data-selected={false}
-              data-has-selected={false}
-              className="relative w-full aspect-video data-[selected=true]:border-2 data-[has-selected=true]:cursor-pointer border-red-500"
-            >
-              <Tooltip>
-  <TooltipTrigger asChild><Image
-                src={`/api/proxy-image?url=${encodeURIComponent(spherical.image)}`}
-                alt={spherical.id}
-                className="size-full object-cover"
-                width={110}
-                height={90}
-              /></TooltipTrigger>
-  <TooltipContent className="h-70 aspect-video" sideOffset={0} hideArrow>
-    <ReactSphere src={spherical.storageImage || spherical.image} />
-  </TooltipContent>
-</Tooltip>
-              
-            </div>
-    )
+  return (
+    <div className="group relative w-full aspect-video cursor-pointer overflow-hidden rounded-lg">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Image
+            src={`/api/proxy-image?url=${encodeURIComponent(spherical.image)}`}
+            alt={spherical.id}
+            fill
+            className="object-cover transition-transform group-hover:scale-105"
+          />
+        </TooltipTrigger>
+        <TooltipContent className="h-70 aspect-video" sideOffset={0} hideArrow>
+          <ReactSphere src={spherical.storageImage || spherical.image} />
+        </TooltipContent>
+      </Tooltip>
+      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent p-3">
+        <p className="text-white text-sm font-medium truncate">
+          {spherical.difficulty}
+        </p>
+      </div>
+      <Button
+        size="icon"
+        variant="secondary"
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+        onClick={() => {
+          openModal()
+          closeModal()
+        }}
+      >
+        <Pencil className="size-4" />
+      </Button>
+    </div>
+  )
 }
 
 export const SphericalGalleryModal = () => {
-  const [selectedId, setSelectedId] = useState<string[]>([])
   const [gameId] = useQueryState(MODAL_KEYS.SPHERICAL_GALLERY_ID)
-  const [deleteSpherical, { isLoading }] = useDeleteSphericalMutation()
 
   const { data } = useGetSphericalsByGameIdQuery({ gameId: gameId || "" })
 
   if (!data || !gameId) return null
 
-  const hasSelected = selectedId.length > 0
 
-  const deleteSelectedSphericals = async () => {
-    await Promise.all(selectedId.map((id) => deleteSpherical({ gameId, id })))
-
-    setSelectedId([])
-  }
 
   return (
     <ModalBase className="h-125" modalKey={MODAL_KEYS.SPHERICAL_GALLERY_ID}>
@@ -63,7 +75,8 @@ export const SphericalGalleryModal = () => {
 
           return (
            <SphericalCard
-                spherical={spherical} 
+              spherical={spherical}
+              gameId={gameId}
               key={spherical.id}
             />
           )

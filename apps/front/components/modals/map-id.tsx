@@ -32,23 +32,24 @@ type MapFormSchema = z.input<typeof createMapInputSchema>
 
 const KEY = MODAL_KEYS.MAP_ID
 
-// Helper to parse combined param format: "gameId_mapId"
-export const parseMapModalParam = (
+// Helper to parse combined param format: "parentId_childId"
+export const parseSubcollectionParam = (
   param: string | null,
-): { gameId: string; mapId: string } | null => {
+): { parentId: string; childId: string } | null => {
   if (!param) return null
   const separatorIndex = param.indexOf("_")
   if (separatorIndex === -1) return null
-  const gameId = param.substring(0, separatorIndex)
-  const mapId = param.substring(separatorIndex + 1)
-  if (!gameId || !mapId) return null
-  return { gameId, mapId }
+  const parentId = param.substring(0, separatorIndex)
+  const childId = param.substring(separatorIndex + 1)
+  if (!parentId || !childId) return null
+  return { parentId, childId }
 }
 
-// Helper to build combined param format: "gameId_mapId"
-export const buildMapModalParam = (gameId: string, mapId: string): string => {
-  return `${gameId}_${mapId}`
-}
+// Helper to build combined param format: "parentId_childId"
+export const buildSubcollectionParam = (
+  parentId: string,
+  childId: string,
+): string => `${parentId}_${childId}`
 
 const MapForm = ({
   mapId,
@@ -74,7 +75,7 @@ const MapForm = ({
     reset,
     setValue,
     watch,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, dirtyFields },
   } = useForm<MapFormSchema>({
     resolver: zodResolver(createMapInputSchema),
     defaultValues: {
@@ -141,13 +142,22 @@ const MapForm = ({
       toast.success("Map created successfully")
       if (createdMap?.id) {
         // Update URL to the new map's combined param
-        setModalParam(buildMapModalParam(gameId, createdMap.id))
+        setModalParam(buildSubcollectionParam(gameId, createdMap.id))
       }
     } else {
+      // Only include image fields if they were actually changed
+      const { imageUrl, width, height, ...rest } = parsedData
+      const updateData = {
+        ...rest,
+        ...(dirtyFields.imageUrl && { imageUrl }),
+        ...(dirtyFields.width && { width }),
+        ...(dirtyFields.height && { height }),
+      }
+
       const { error } = await updateMap({
         gameId,
         id: mapId,
-        data: parsedData,
+        data: updateData,
       })
 
       if (error) return
@@ -264,11 +274,11 @@ const MapForm = ({
 export const ModalMapId = () => {
   const [modalParam] = useQueryState(KEY)
 
-  const parsed = parseMapModalParam(modalParam)
+  const parsed = parseSubcollectionParam(modalParam)
 
   if (!parsed) return <LoadingModal modalKey={KEY} />
 
-  const { gameId, mapId } = parsed
+  const { parentId: gameId, childId: mapId } = parsed
   const isNew = mapId === NEW_SEARCH_PARAM
 
   return <MapForm mapId={mapId} gameId={gameId} isNew={isNew} />

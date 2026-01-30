@@ -1,5 +1,5 @@
-import { buildMapModalParam } from "@/components/modals/map-id"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
+import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { Button } from "@/components/ui/button"
 import { FALL_BACK_IMAGE, MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
@@ -14,7 +14,7 @@ export const MapsGallery = () => {
   if (!gameId) return <LoadingModal modalKey={MODAL_KEYS.MAPS_GALLERY_ID} />
 
   // Build the combined param for creating a new map
-  const newMapParam = buildMapModalParam(gameId, NEW_SEARCH_PARAM)
+  const newMapParam = buildSubcollectionParam(gameId, NEW_SEARCH_PARAM)
   const { openModal: openNewMapModal } = useModal(MODAL_KEYS.MAP_ID, newMapParam)
 
   const { data: game } = useGetGameByIdQuery({ id: gameId })
@@ -59,7 +59,7 @@ const MapCard = ({
   gameId: string
 }) => {
   // Build the combined param for editing this map
-  const mapParam = buildMapModalParam(gameId, map.id)
+  const mapParam = buildSubcollectionParam(gameId, map.id)
   const { openModal } = useModal(MODAL_KEYS.MAP_ID, mapParam)
   const { closeModal } = useModal(MODAL_KEYS.MAPS_GALLERY_ID)
 

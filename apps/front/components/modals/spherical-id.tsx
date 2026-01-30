@@ -3,6 +3,7 @@
 import Loader from "@/components/icons/loader"
 import { MiniMap, type Position } from "@/components/mini-map"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
+import { ReactSphere } from "@/components/providers/react-sphere"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -65,6 +66,7 @@ export const buildSphericalModalParam = (
 
 const DIFFICULTY_OPTIONS = Object.values(DIFFICULTIES)
 const STATUS_OPTIONS = Object.values(DOCUMENTS_STATUS)
+const NO_MAP_VALUE = "__none__"
 
 const SphericalForm = ({
   sphericalId,
@@ -98,7 +100,7 @@ const SphericalForm = ({
     reset,
     setValue,
     watch,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, dirtyFields },
   } = useForm<SphericalFormSchema>({
     resolver: zodResolver(createSphericalInputSchema),
     defaultValues: {
@@ -195,10 +197,18 @@ const SphericalForm = ({
         setModalParam(buildSphericalModalParam(gameId, createdSpherical.id))
       }
     } else {
+      // Only include image fields if they were actually changed
+      const { image, storageImage, ...rest } = parsedData
+      const updateData = {
+        ...rest,
+        ...(dirtyFields.image && { image }),
+        ...(dirtyFields.storageImage && { storageImage }),
+      }
+
       const { error } = await updateSpherical({
         gameId,
         id: sphericalId,
-        data: parsedData,
+        data: updateData,
       })
 
       if (error) return
@@ -228,15 +238,19 @@ const SphericalForm = ({
                   control={control}
                   render={({ field }) => (
                     <Select
-                      value={field.value ?? ""}
-                      onValueChange={field.onChange}
+                      value={field.value || NO_MAP_VALUE}
+                      onValueChange={(value) =>
+                        field.onChange(value === NO_MAP_VALUE ? "" : value)
+                      }
                       disabled={isMapsLoading}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="No map selected" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No map selected</SelectItem>
+                        <SelectItem value={NO_MAP_VALUE}>
+                          No map selected
+                        </SelectItem>
                         {maps.map((map) => (
                           <SelectItem key={map.id} value={map.id}>
                             {map.name}
@@ -434,6 +448,12 @@ const SphericalForm = ({
               isUploading={isUploading}
               alt="Spherical image"
             />
+            {storageImage &&
+            <div className="aspect-video w-full">
+
+            <ReactSphere src={storageImage} />
+            </div>
+            }
             {errors.image && <FieldError>{errors.image.message}</FieldError>}
           </div>
         </div>
