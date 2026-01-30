@@ -7,6 +7,8 @@ export const SESSION_STATUS = {
 export const MODAL_KEYS = {
   GAME_ID: "game-id",
   SPHERICAL_ID: "spherical-id",
+  MAPS_GALLERY_ID: "maps-gallery-id",
+  MAP_ID: "map-id",
   SPHERICAL_GALLERY_ID: "spherical-gallery-id",
 } as const
 

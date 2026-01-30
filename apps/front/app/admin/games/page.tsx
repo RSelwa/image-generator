@@ -23,8 +23,8 @@ const Page = () => {
   const games = data?.pages.flat() || []
 
   return (
-    <main className="p-2 h-full-height-admin">
-      <header className="mb-4 flex items-center w-full justify-between">
+    <main className="p-2 min-h-full-height-admin">
+      <header className="py-4 sticky top-0 flex items-center w-full justify-between bg-white z-20">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-semibold whitespace-nowrap">
             Games {gameCount && `(${gameCount})`}

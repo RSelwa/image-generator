@@ -4,9 +4,9 @@ import { WITH_ID } from "~/zod"
 
 export const mapDocSchema = z.object({
   name: z.string().min(1),
-  imageUrl: z.string(),
-  width: z.number().positive(),
-  height: z.number().positive(),
+  imageUrl: z.string().nullish().default(null),
+  width: z.number().positive().nullish().default(null),
+  height: z.number().positive().nullish().default(null),
   gameId: z.string(), // For collectionGroup queries
   createdAt: z.instanceof(Timestamp),
   updatedAt: z.instanceof(Timestamp),

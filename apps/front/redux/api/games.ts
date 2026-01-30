@@ -9,11 +9,13 @@ import {
   gameDocSchema,
   gameDocWithIdSchema,
   gameEntitySchema,
+  mapDocWithIdSchema,
   sphericalDocWithIdSchema,
   updateGameInputSchema,
   type CreateGameInput,
   type GameDocWithId,
   type GameEntity,
+  type MapDocWithId,
   type SphericalDocWithId,
   type UpdateGameInput,
 } from "@repo/schemas"
@@ -45,6 +47,8 @@ export const gameApi = createApi({
     "GameCount",
     "GameSphericalCount",
     "GameSphericals",
+    "GameMapCount",
+    "GameMaps",
   ],
   endpoints: (builder) => ({
     getGames: builder.infiniteQuery<
@@ -89,6 +93,11 @@ export const gameApi = createApi({
                 }),
               ).unwrap()
 
+              const mapsCount = await dispatch(
+                gameApi.endpoints.getMapsCountByGameId.initiate({ gameId: doc.id }),
+              )
+                .unwrap()
+
 
 
               const { data, error } = gameEntitySchema.safeParse({
@@ -98,6 +107,7 @@ export const gameApi = createApi({
                   doc.data().storageImage ||
                   getImageUrl(doc.data().thumbnailUrl),
                 sphericalsCount,
+                mapsCount,
               })
 
               if (error) throw new Error("Data parsing error")
@@ -255,6 +265,59 @@ export const gameApi = createApi({
         { type: "GameSphericals", id: gameId },
       ],
     }),
+    getMapsCountByGameId: builder.query<number, { gameId: string }>({
+      queryFn: async ({ gameId }) => {
+        try {
+          const snapshot = await getCountFromServer(
+            TABLES_SUB_REFS[TABLES.MAPS](gameId),
+          )
+
+          return { data: snapshot.data().count }
+        } catch (error) {
+          console.error("Error fetching game maps count:", error)
+          toast.error("Error fetching game maps count")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      providesTags: (_result, _error, { gameId }) => [
+        { type: "GameMapCount", id: gameId },
+      ],
+    }),
+    getMapsByGameId: builder.query<MapDocWithId[], { gameId: string }>({
+      queryFn: async ({ gameId }) => {
+        try {
+          const snapshot = await getDocs(TABLES_SUB_REFS[TABLES.MAPS](gameId))
+
+          const maps = snapshot.docs
+            .map((doc) => {
+              const { data, error } = mapDocWithIdSchema.safeParse({
+                id: doc.id,
+                ...doc.data(),
+              })
+
+              if (error) return null
+
+              return data
+            })
+            .filter((m) => m !== null)
+
+          return { data: maps }
+        } catch (error) {
+          console.error("Error fetching game maps:", error)
+          toast.error("Error fetching game maps")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      providesTags: (_result, _error, { gameId }) => [
+        { type: "GameMaps", id: gameId },
+      ],
+    }),
     createGame: builder.mutation<GameDocWithId, CreateGameInput>({
       queryFn: async (input) => {
         try {
@@ -372,6 +435,7 @@ export const {
   useGetTotalGamesCountQuery,
   useGetGameSphericalCountQuery,
   useGetSphericalsByGameIdQuery,
+  useGetMapsByGameIdQuery,
   useCreateGameMutation,
   useUpdateGameByIdMutation,
   useDeleteGameByIdMutation,

@@ -12,7 +12,8 @@
       "Bash(pnpm --filter @repo/front typecheck:*)",
       "Bash(pnpm --filter @repo/front exec tsc:*)",
       "Bash(pnpm build:libs:*)",
-      "Bash(pnpm:*)"
+      "Bash(pnpm:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

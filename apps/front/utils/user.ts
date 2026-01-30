@@ -1,4 +1,4 @@
-import type { SessionUser } from "@/schemas/session"
+import { sessionUserSchema, type SessionUser } from "@/schemas/session"
 import type { UserDoc } from "@repo/schemas"
 import type { User } from "firebase/auth"
 
@@ -12,12 +12,16 @@ export const formatSessionFromFirebaseUser = ({
   const { uid, photoURL } = authUser
   const { email, rights } = user
 
-  const sessionUser: SessionUser = {
+  const sessionUser = sessionUserSchema.safeParse({
     id: uid,
     email: email,
     photoUrl: photoURL || "",
     rights,
+  })
+
+  if (!sessionUser.success) {
+    throw new Error("Invalid session user data")
   }
 
-  return sessionUser
+  return sessionUser.data
 }

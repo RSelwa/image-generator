@@ -7,7 +7,7 @@ export const sessionUserSchema = z.object({
   id: z.string(),
   email: z.email(),
   photoUrl: z.string(),
-  rights: z.array(z.enum(USERS_RIGHTS)).default([]),
+  rights: z.enum(USERS_RIGHTS).nullish().default(""),
 })
 
 const authUserSchema = z.custom<User>()

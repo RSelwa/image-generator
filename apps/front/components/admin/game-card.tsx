@@ -8,6 +8,10 @@ const GameCard = ({ game }: { game: GameEntity; index?: number }) => {
     MODAL_KEYS.SPHERICAL_GALLERY_ID,
     game.id,
   )
+  const { openModal: openMapsGallery } = useModal(
+    MODAL_KEYS.MAPS_GALLERY_ID,
+    game.id,
+  )
   const { openModal } = useModal(MODAL_KEYS.GAME_ID, game.id)
 
   return (
@@ -24,6 +28,8 @@ const GameCard = ({ game }: { game: GameEntity; index?: number }) => {
         className="size-full object-cover"
       />
       <div className="absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+
         <Badge asChild variant="blur" className="mr-1">
           <button
             type="button"
@@ -37,6 +43,21 @@ const GameCard = ({ game }: { game: GameEntity; index?: number }) => {
             {game.sphericalsCount} Sphericals
           </button>
         </Badge>
+        <Badge asChild variant="blur" className="mr-1">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              openMapsGallery()
+            }}
+            className="cursor-pointer"
+          >
+            {game.mapsCount} Maps
+          </button>
+        </Badge>
+        </div>
+
       </div>
       <div className="absolute inset-x-0 flex h-1/2 w-full -translate-y-full flex-col justify-end p-2 text-white">
         <div
