@@ -22,9 +22,9 @@ import { uploadFileToBucket } from "@/utils/file"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { STORAGE_PATHS } from "@repo/common"
 import { createGameInputSchema } from "@repo/schemas"
-import { ImageIcon, UploadIcon, XIcon } from "lucide-react"
 import { useQueryState } from "nuqs"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
+import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type { z } from "zod"
@@ -41,9 +41,6 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
   const [createGame, { isLoading: isCreating }] = useCreateGameMutation()
   const [updateGame, { isLoading: isUpdating }] = useUpdateGameByIdMutation()
   const [isUploading, setIsUploading] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [, setGameId] = useQueryState(KEY)
 
   const {
@@ -86,17 +83,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
     }
   }, [data, reset])
 
-  const uploadFile = async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file")
-      return
-    }
-
-    // Create preview
-    const objectUrl = URL.createObjectURL(file)
-    setPreviewUrl(objectUrl)
-
-    // Upload via proxy API using FormData
+  const handleFileUpload = async (file: File) => {
     setIsUploading(true)
     try {
       const { url } = await uploadFileToBucket({
@@ -110,53 +97,14 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
     } catch (error) {
       console.error("Upload error:", error)
       toast.error("Failed to upload image")
-      URL.revokeObjectURL(objectUrl)
-      setPreviewUrl(null)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""
-      }
+      throw error
     } finally {
       setIsUploading(false)
     }
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) await uploadFile(file)
-  }
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-  }
-
-  const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(true)
-  }
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-  }
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-
-    const file = e.dataTransfer.files?.[0]
-    if (file) await uploadFile(file)
-  }
-
   const handleRemoveImage = () => {
     setValue("storageImage", "", { shouldDirty: true })
-    setPreviewUrl(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
   }
 
   const onSubmit: SubmitHandler<GameFormSchema> = async (formData) => {
@@ -185,8 +133,6 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
   if (!isNew && isLoading) {
     return <LoadingModal modalKey={KEY} />
   }
-
-  const displayImage = previewUrl || storageImage
 
   return (
     <ModalBase modalKey={KEY} className="max-w-4xl">
@@ -312,69 +258,13 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
           {/* Right column - Image upload */}
           <div className="flex flex-col gap-3">
             <FieldLabel>Game Image</FieldLabel>
-            <div
-              onDragOver={handleDragOver}
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => !displayImage && fileInputRef.current?.click()}
-              className={`relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-colors ${
-                isDragging
-                  ? "border-primary bg-primary/10"
-                  : "border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50"
-              }`}
-            >
-              {displayImage ? (
-                <>
-                  <img
-                    src={displayImage}
-                    alt="Game thumbnail"
-                    className="h-full w-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleRemoveImage()
-                    }}
-                    className="bg-destructive text-destructive-foreground absolute top-2 right-2 rounded-full p-1"
-                  >
-                    <XIcon className="size-4" />
-                  </button>
-                </>
-              ) : (
-                <div className="text-muted-foreground flex flex-col items-center gap-2 p-4 text-center">
-                  <ImageIcon className="size-12 opacity-50" />
-                  <p className="text-sm">
-                    {isDragging
-                      ? "Drop image here"
-                      : "Drag & drop or click to upload"}
-                  </p>
-                </div>
-              )}
-              {isUploading && (
-                <div className="bg-background/80 absolute inset-0 flex items-center justify-center">
-                  <Loader className="size-4" />
-                </div>
-              )}
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-              id="imageUpload"
+            <ImageDropzone
+              imageUrl={storageImage ?? null}
+              onFileSelect={handleFileUpload}
+              onRemove={handleRemoveImage}
+              isUploading={isUploading}
+              alt="Game thumbnail"
             />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-            >
-              <UploadIcon className="mr-2 size-4" />
-              {isUploading ? "Uploading..." : "Upload Image"}
-            </Button>
           </div>
         </div>
 

@@ -10,6 +10,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
+import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { Input } from "@/components/ui/input"
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import {
@@ -21,9 +22,8 @@ import { uploadFileToBucket } from "@/utils/file"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { STORAGE_PATHS } from "@repo/common"
 import { createMapInputSchema } from "@repo/schemas"
-import { ImageIcon, XIcon } from "lucide-react"
 import { useQueryState } from "nuqs"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type { z } from "zod"
@@ -31,6 +31,24 @@ import type { z } from "zod"
 type MapFormSchema = z.input<typeof createMapInputSchema>
 
 const KEY = MODAL_KEYS.MAP_ID
+
+// Helper to parse combined param format: "gameId_mapId"
+export const parseMapModalParam = (
+  param: string | null,
+): { gameId: string; mapId: string } | null => {
+  if (!param) return null
+  const separatorIndex = param.indexOf("_")
+  if (separatorIndex === -1) return null
+  const gameId = param.substring(0, separatorIndex)
+  const mapId = param.substring(separatorIndex + 1)
+  if (!gameId || !mapId) return null
+  return { gameId, mapId }
+}
+
+// Helper to build combined param format: "gameId_mapId"
+export const buildMapModalParam = (gameId: string, mapId: string): string => {
+  return `${gameId}_${mapId}`
+}
 
 const MapForm = ({
   mapId,
@@ -48,10 +66,7 @@ const MapForm = ({
   const [createMap, { isLoading: isCreating }] = useCreateMapMutation()
   const [updateMap, { isLoading: isUpdating }] = useUpdateMapByIdMutation()
   const [isUploading, setIsUploading] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [, setMapId] = useQueryState(KEY)
+  const [, setModalParam] = useQueryState(KEY)
 
   const {
     register,
@@ -86,15 +101,7 @@ const MapForm = ({
     }
   }, [data, reset])
 
-  const uploadFile = async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file")
-      return
-    }
-
-    const objectUrl = URL.createObjectURL(file)
-    setPreviewUrl(objectUrl)
-
+  const handleFileUpload = async (file: File) => {
     setIsUploading(true)
     try {
       const { url, width, height } = await uploadFileToBucket({
@@ -110,53 +117,14 @@ const MapForm = ({
     } catch (error) {
       console.error("Upload error:", error)
       toast.error("Failed to upload image")
-      URL.revokeObjectURL(objectUrl)
-      setPreviewUrl(null)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""
-      }
+      throw error
     } finally {
       setIsUploading(false)
     }
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) await uploadFile(file)
-  }
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-  }
-
-  const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(true)
-  }
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-  }
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-
-    const file = e.dataTransfer.files?.[0]
-    if (file) await uploadFile(file)
-  }
-
   const handleRemoveImage = () => {
     setValue("imageUrl", null, { shouldDirty: true })
-    setPreviewUrl(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
   }
 
   const onSubmit: SubmitHandler<MapFormSchema> = async (formData) => {
@@ -172,7 +140,8 @@ const MapForm = ({
 
       toast.success("Map created successfully")
       if (createdMap?.id) {
-        setMapId(createdMap.id)
+        // Update URL to the new map's combined param
+        setModalParam(buildMapModalParam(gameId, createdMap.id))
       }
     } else {
       const { error } = await updateMap({
@@ -190,8 +159,6 @@ const MapForm = ({
   if (!isNew && isLoading) {
     return <LoadingModal modalKey={KEY} />
   }
-
-  const displayImage = previewUrl || imageUrl
 
   return (
     <ModalBase modalKey={KEY} className="max-w-3xl">
@@ -266,69 +233,13 @@ const MapForm = ({
 
           <div className="flex flex-col gap-3">
             <FieldLabel>Map Image</FieldLabel>
-            <div
-              onDragOver={handleDragOver}
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => !displayImage && fileInputRef.current?.click()}
-              className={`relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-colors ${
-                isDragging
-                  ? "border-primary bg-primary/10"
-                  : "border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50"
-              }`}
-            >
-              {displayImage ? (
-                <>
-                  <img
-                    src={displayImage}
-                    alt="Map image"
-                    className="h-full w-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleRemoveImage()
-                    }}
-                    className="bg-destructive text-destructive-foreground absolute top-2 right-2 rounded-full p-1"
-                  >
-                    <XIcon className="size-4" />
-                  </button>
-                </>
-              ) : (
-                <div className="text-muted-foreground flex flex-col items-center gap-2 p-4 text-center">
-                  <ImageIcon className="size-12 opacity-50" />
-                  <p className="text-sm">
-                    {isDragging
-                      ? "Drop image here"
-                      : "Drag & drop or click to upload"}
-                  </p>
-                </div>
-              )}
-              {isUploading && (
-                <div className="bg-background/80 absolute inset-0 flex items-center justify-center">
-                  <Loader className="size-4" />
-                </div>
-              )}
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-              id="mapImageUpload"
+            <ImageDropzone
+              imageUrl={imageUrl ?? null}
+              onFileSelect={handleFileUpload}
+              onRemove={handleRemoveImage}
+              isUploading={isUploading}
+              alt="Map image"
             />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-            >
-              {isUploading ? "Uploading..." : "Upload Image"}
-            </Button>
           </div>
         </div>
 
@@ -351,14 +262,16 @@ const MapForm = ({
 }
 
 export const ModalMapId = () => {
-  const [mapId] = useQueryState(KEY)
-  const [gameId] = useQueryState(MODAL_KEYS.MAPS_GALLERY_ID)
+  const [modalParam] = useQueryState(KEY)
 
-  if (!mapId || !gameId) return <LoadingModal modalKey={KEY} />
+  const parsed = parseMapModalParam(modalParam)
 
-  return (
-    <MapForm mapId={mapId} gameId={gameId} isNew={mapId === NEW_SEARCH_PARAM} />
-  )
+  if (!parsed) return <LoadingModal modalKey={KEY} />
+
+  const { gameId, mapId } = parsed
+  const isNew = mapId === NEW_SEARCH_PARAM
+
+  return <MapForm mapId={mapId} gameId={gameId} isNew={isNew} />
 }
 
 export default ModalMapId

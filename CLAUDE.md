@@ -7,6 +7,7 @@
 # Code style
 
 - Use pnpm instead of npm
+- use () => x instead of () => { return x } when possible
 - use Arrow functions
 - Use CONSTANTS instead of "variable" when possible
 - Use ES modules (import/export) syntax, not CommonJS (require)

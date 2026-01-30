@@ -18,6 +18,8 @@ export async function POST(request: Request) {
   try {
     const authResult = await verifyAdmin(request)
     if ("error" in authResult) {
+      console.error("Authentication error:", authResult.error)
+      
       return Response.json(
         { error: authResult.error },
         { status: authResult.status },

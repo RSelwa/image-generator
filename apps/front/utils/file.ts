@@ -1,4 +1,5 @@
 import { ENDPOINTS_BASE } from "@/constants/api"
+import { auth } from "@/constants/db"
 import type { ConstantValues, STORAGE_PATHS } from "@repo/common"
 
 type Props = {
@@ -18,6 +19,7 @@ export const uploadFileToBucket = async ({
   bucketPath,
   title,
 }: Props): Promise<UploadResult> => {
+  const token = await auth.currentUser?.getIdToken()
   const formData = new FormData()
   formData.append("file", file)
   formData.append("gameName", title)
@@ -25,6 +27,9 @@ export const uploadFileToBucket = async ({
 
   const response = await fetch(ENDPOINTS_BASE.UPLOAD_IMAGE, {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     body: formData,
   })
 

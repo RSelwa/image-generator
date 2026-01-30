@@ -15,7 +15,7 @@ export type MapPosition = z.infer<typeof mapPositionSchema>
 export const sphericalDocSchema = z.object({
   gameRef: z.string(),
   mapId: z.string().nullish(),
-  mapPosition: mapPositionSchema.nullish(),
+  mapPosition: mapPositionSchema.nullish().default({ x: 50, y: 50 }),
   gameId: z.string(),
   image: z.string(),
   storageImage: z.string().nullish(),
