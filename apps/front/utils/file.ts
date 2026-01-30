@@ -7,11 +7,17 @@ type Props = {
   title: string
 }
 
+type UploadResult = {
+  url: string
+  width: number | null
+  height: number | null
+}
+
 export const uploadFileToBucket = async ({
   file,
   bucketPath,
   title,
-}: Props) => {
+}: Props): Promise<UploadResult> => {
   const formData = new FormData()
   formData.append("file", file)
   formData.append("gameName", title)
@@ -26,7 +32,7 @@ export const uploadFileToBucket = async ({
     throw new Error("Upload failed")
   }
 
-  const { url } = await response.json()
+  const { url, width, height } = await response.json()
 
-  return url
+  return { url, width, height }
 }

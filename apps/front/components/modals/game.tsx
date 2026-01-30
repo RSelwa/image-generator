@@ -99,7 +99,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
     // Upload via proxy API using FormData
     setIsUploading(true)
     try {
-      const url = await uploadFileToBucket({
+      const { url } = await uploadFileToBucket({
         file,
         bucketPath: STORAGE_PATHS.GAME_THUMBNAILS,
         title: title,

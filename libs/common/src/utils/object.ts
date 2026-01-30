@@ -61,3 +61,18 @@ export const getIdFromFirestoreRef = (ref: string) => {
 
 export const randomElement = (array: unknown[]) =>
   array[Math.floor(Math.random() * array.length)]
+
+// Export Now at format dd-mm-yyyy-hh-mm-ss
+export const getNowString = () => {
+   const now = new Date()
+    const dateStr = [
+      now.getDate().toString().padStart(2, "0"),
+      (now.getMonth() + 1).toString().padStart(2, "0"),
+      now.getFullYear(),
+      now.getHours().toString().padStart(2, "0"),
+      now.getMinutes().toString().padStart(2, "0"),
+      now.getSeconds().toString().padStart(2, "0"),
+    ].join("-")
+
+    return dateStr
+  }
