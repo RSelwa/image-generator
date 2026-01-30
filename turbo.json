@@ -25,7 +25,6 @@
       "inputs": ["src/**/*.ts", "test/**/*.ts"]
     },
     "check-circular": { "dependsOn": ["^build"] },
-    "lint:ci": { "dependsOn": ["^build"] },
     "lint": { "dependsOn": [] },
     "compile": { "dependsOn": ["^build"] },
     "clean": { "dependsOn": [] },

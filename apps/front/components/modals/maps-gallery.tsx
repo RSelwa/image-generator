@@ -89,7 +89,7 @@ function MapCard({
         fill
         className="object-cover transition-transform group-hover:scale-105"
       />
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent p-3">
         <p className="text-white text-sm font-medium truncate">{map.name}</p>
       </div>
     </div>

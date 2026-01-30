@@ -40,7 +40,7 @@ function Page() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Button onClick={openModal}>Add New Game</Button>
+        <Button onClick={() => openModal()}>Add New Game</Button>
       </header>
 
       {isLoading && <p>Loading...</p>}
