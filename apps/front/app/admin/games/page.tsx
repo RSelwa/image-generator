@@ -22,6 +22,10 @@ const Page = () => {
 
   const games = data?.pages.flat() || []
 
+  const filteredGames = games.filter((game) =>
+    game.title.toLowerCase().includes(search.toLowerCase())
+  )
+
   return (
     <main className="p-2 min-h-full-height-admin">
       <header className="py-4 sticky top-0 flex items-center w-full justify-between bg-white z-20">
@@ -40,8 +44,8 @@ const Page = () => {
       </header>
 
       {isLoading && <p>Loading...</p>}
-      <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-        {games?.map((game) => (
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 mb-8">
+        {filteredGames?.map((game) => (
           <GameCard key={game.id} game={game} />
         ))}
       </ul>

@@ -1,19 +1,9 @@
-import { ModalBase } from "@/components/modals/base"
 import { ReactSphere } from "@/components/providers/react-sphere"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Separator } from "@/components/ui/separator"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { MODAL_KEYS } from "@/constants/mapping"
-import { copy } from "@/lib/utils"
-import { useGetSphericalsByGameIdQuery } from "@/redux/api/games"
 import {
-  useDeleteSphericalMutation,
-  useGetSphericalByIdQuery,
+  useGetSphericalByIdQuery
 } from "@/redux/api/spherical"
-import Image from "next/image"
 import { useQueryState } from "nuqs"
-import { useState } from "react"
 
 export const SphericalModal = () => {
   const [sphericalId] = useQueryState(MODAL_KEYS.SPHERICAL_ID)
@@ -31,97 +21,3 @@ export const SphericalModal = () => {
   )
 }
 
-export const SphericalGalleryModal = () => {
-  const [selectedId, setSelectedId] = useState<string[]>([])
-  const [gameId] = useQueryState(MODAL_KEYS.SPHERICAL_GALLERY_ID)
-  const [deleteSpherical, { isLoading }] = useDeleteSphericalMutation()
-
-  const { data } = useGetSphericalsByGameIdQuery({ gameId: gameId || "" })
-
-  if (!data || !gameId) return null
-
-  const hasSelected = selectedId.length > 0
-
-  const deleteSelectedSphericals = async () => {
-    await Promise.all(selectedId.map((id) => deleteSpherical({ gameId, id })))
-
-    setSelectedId([])
-  }
-
-  return (
-    <ModalBase className="h-125" modalKey={MODAL_KEYS.SPHERICAL_GALLERY_ID}>
-      <div className="grid-cols-2 grid gap-3 overflow-y-auto h-100">
-        {data.map((spherical) => {
-          const isSelected = selectedId.includes(spherical.id)
-
-          const setChecked = (checked: boolean) => {
-            setSelectedId((prev) =>
-              checked
-                ? [...prev, spherical.id]
-                : prev.filter((id) => id !== spherical.id),
-            )
-          }
-
-          return (
-            <div
-              data-selected={isSelected}
-              data-has-selected={hasSelected}
-              key={spherical.id}
-              className="relative w-full aspect-video data-[selected=true]:border-2 data-[has-selected=true]:cursor-pointer border-red-500"
-            >
-              <Tooltip>
-  <TooltipTrigger asChild><Image
-                src={`/api/proxy-image?url=${encodeURIComponent(spherical.image)}`}
-                alt={spherical.id}
-                className="size-full object-cover"
-                width={110}
-                height={90}
-              /></TooltipTrigger>
-  <TooltipContent className="size-96">
-    <ReactSphere src={spherical.storageImage || spherical.image} />
-  </TooltipContent>
-</Tooltip>
-              
-              <Checkbox
-                checked={isSelected}
-                onCheckedChange={setChecked}
-                className="absolute bottom-2 left-2"
-              />
-            </div>
-          )
-        })}
-      </div>
-      <Separator className="my-4 mt-full" />
-      <article className="w-full flex gap-4">
-        {selectedId.length > 0 && (
-          <>
-            <Button
-              variant="destructive"
-              onClick={deleteSelectedSphericals}
-              disabled={isLoading}
-            >
-              Delete {selectedId.length} selected spherical(s)
-            </Button>
-            <Button
-              variant="default"
-              onClick={() => copy(`["${selectedId.join('", "')}"]`)}
-            >
-              Copy Selected Id
-            </Button>
-            <Button variant="outline" onClick={() => copy(`${gameId}`)}>
-              Copy Game Id
-            </Button>
-            <Button
-              onClick={() =>
-                copy(`export const gameId = "${gameId}"
-                export const sphericalIdsToSave: string[] = ["${selectedId.join('", "')}"]`)
-              }
-            >
-              Copy All
-            </Button>
-          </>
-        )}
-      </article>
-    </ModalBase>
-  )
-}

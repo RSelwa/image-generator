@@ -11,7 +11,9 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
+import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { Input } from "@/components/ui/input"
+import { BASE_FIREBASE_URL } from "@/constants/db"
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import {
   useCreateGameMutation,
@@ -22,9 +24,9 @@ import { uploadFileToBucket } from "@/utils/file"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { STORAGE_PATHS } from "@repo/common"
 import { createGameInputSchema } from "@repo/schemas"
+import Link from "next/link"
 import { useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
-import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type { z } from "zod"
@@ -243,6 +245,9 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
                 <p>
                   <strong>ID:</strong> {data.id}
                 </p>
+                <Link href={`${BASE_FIREBASE_URL}/${gameId}/${data.id}`}>
+                  <strong>Firebase link:</strong> {data.id}
+                </Link>
                 <p>
                   <strong>Created:</strong>{" "}
                   {data.createdAt?.toDate().toLocaleString()}

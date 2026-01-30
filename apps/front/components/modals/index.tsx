@@ -3,8 +3,8 @@
 import { ModalGame } from "@/components/modals/game"
 import { ModalMapId } from "@/components/modals/map-id"
 import { MapsGallery } from "@/components/modals/maps-gallery"
+import { SphericalGalleryModal } from "@/components/modals/spherical-gallery"
 import { ModalSphericalId } from "@/components/modals/spherical-id"
-import { SphericalGalleryModal } from "@/components/modals/spherical-modal"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { useSearchParams } from "next/navigation"
 

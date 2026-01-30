@@ -1,6 +1,6 @@
-import { initializeFirestore } from "firebase/firestore"
 import { initializeApp } from "firebase/app"
 import { getAuth } from "firebase/auth"
+import { initializeFirestore } from "firebase/firestore"
 import { getFunctions } from "firebase/functions"
 import { getStorage } from "firebase/storage"
 
@@ -24,3 +24,5 @@ export const auth = getAuth(app)
 export const functions = getFunctions(app, "europe-west3")
 export const storage = getStorage(app)
 export const db = initializeFirestore(app, { ignoreUndefinedProperties: true })
+
+export const BASE_FIREBASE_URL = `https://console.firebase.google.com/u/1/project/tiktok-generator-fa261/firestore/databases/-default-/data`
