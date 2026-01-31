@@ -123,7 +123,9 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
 
       if (createMultiple) {
         // Reset form to create another game
-        reset()
+        reset({
+
+        })
       } else {
         // Close modal
         setGameId(null)
@@ -144,6 +146,10 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
       toast.success("Game updated successfully")
     }
   }
+
+  useEffect(() => {
+    console.log(createMultiple)
+  }, [createMultiple])
 
   if (!isNew && isLoading) {
     return <LoadingModal modalKey={KEY} />

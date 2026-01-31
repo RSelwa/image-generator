@@ -73,8 +73,8 @@ export const SphericalGalleryModal = () => {
   if (!data || !gameId) return null
 
   return (
-    <ModalBase className="h-125" modalKey={MODAL_KEYS.SPHERICAL_GALLERY_ID}>
-      <div className="grid-cols-2 grid gap-3 overflow-y-auto h-100">
+    <ModalBase className="h-125 overflow-y-auto pb-0" modalKey={MODAL_KEYS.SPHERICAL_GALLERY_ID}>
+      <div className="grid-cols-2 grid gap-3">
         {data.map((spherical) => {
           return (
             <SphericalCard
@@ -85,7 +85,10 @@ export const SphericalGalleryModal = () => {
           )
         })}
       </div>
-      <Separator className="my-4 mt-full" />
+      <div className="sticky bottom-0 pb-4 w-full bg-white">
+        <Separator className="my-4 mt-full" />
+        <Button>Test</Button>
+      </div>
     </ModalBase>
   )
 }

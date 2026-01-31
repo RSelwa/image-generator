@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { capitalizeFirstLetter, getImageUrl, TABLES } from "@repo/common"
+import { getImageUrl, TABLES } from "@repo/common"
 import {
   type CreateGameInput,
   gameDocSchema,
@@ -29,7 +29,6 @@ import {
   startAfter,
   Timestamp,
   updateDoc,
-  where,
 } from "firebase/firestore"
 import { toast } from "sonner"
 // Need to use the React-specific entry point to import createApi
@@ -53,26 +52,14 @@ export const gameApi = createApi({
   endpoints: (builder) => ({
     getGames: builder.infiniteQuery<
       GameEntity[],
-      { search?: string },
+      void,
       { limit?: number, startAfter?: string }
     >({
-      queryFn: async ({ pageParam, queryArg }, { dispatch }) => {
+      queryFn: async ({ pageParam }, { dispatch }) => {
         try {
           const definedFieldsConstraints: QueryConstraint[] = []
-          const search = capitalizeFirstLetter(
-            queryArg.search?.trim().toLowerCase(),
-          )
 
-          if (search) {
-            // For search, order by title and use prefix matching
-            definedFieldsConstraints.push(orderBy("title"))
-            definedFieldsConstraints.push(where("title", ">=", search))
-            definedFieldsConstraints.push(
-              where("title", "<=", `${search}\uF8FF`),
-            )
-          } else {
-            definedFieldsConstraints.push(orderBy(documentId()))
-          }
+          definedFieldsConstraints.push(orderBy(documentId()))
 
           if (pageParam.startAfter) {
             definedFieldsConstraints.push(startAfter(pageParam.startAfter))

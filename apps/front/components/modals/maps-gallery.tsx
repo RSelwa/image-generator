@@ -14,6 +14,39 @@ import {
   useGetMapsByGameIdQuery,
 } from "@/redux/api/games"
 
+const MapCard = ({
+  map,
+  gameId,
+}: {
+  map: { id: string, name: string, imageUrl?: string | null }
+  gameId: string
+}) => {
+  // Build the combined param for editing this map
+  const mapParam = buildSubcollectionParam(gameId, map.id)
+  const { openModal } = useModal(MODAL_KEYS.MAP_ID, mapParam)
+  const { closeModal } = useModal(MODAL_KEYS.MAPS_GALLERY_ID)
+
+  return (
+    <div
+      onClick={() => {
+        openModal()
+        closeModal()
+      }}
+      className="w-full h-48 relative cursor-pointer group overflow-hidden rounded-lg"
+    >
+      <Image
+        src={map.imageUrl || FALL_BACK_IMAGE}
+        alt={map.name}
+        fill
+        className="object-cover transition-transform group-hover:scale-105"
+      />
+      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent p-3">
+        <p className="text-white text-sm font-medium truncate">{map.name}</p>
+      </div>
+    </div>
+  )
+}
+
 export const MapsGallery = () => {
   const [gameId] = useQueryState(MODAL_KEYS.MAPS_GALLERY_ID)
   const { closeModal } = useModal(MODAL_KEYS.MAPS_GALLERY_ID)
@@ -60,38 +93,5 @@ export const MapsGallery = () => {
           maps.map((map) => <MapCard key={map.id} map={map} gameId={gameId} />)}
       </section>
     </ModalBase>
-  )
-}
-
-const MapCard = ({
-  map,
-  gameId,
-}: {
-  map: { id: string, name: string, imageUrl?: string | null }
-  gameId: string
-}) => {
-  // Build the combined param for editing this map
-  const mapParam = buildSubcollectionParam(gameId, map.id)
-  const { openModal } = useModal(MODAL_KEYS.MAP_ID, mapParam)
-  const { closeModal } = useModal(MODAL_KEYS.MAPS_GALLERY_ID)
-
-  return (
-    <div
-      onClick={() => {
-        openModal()
-        closeModal()
-      }}
-      className="w-full h-48 relative cursor-pointer group overflow-hidden rounded-lg"
-    >
-      <Image
-        src={map.imageUrl || FALL_BACK_IMAGE}
-        alt={map.name}
-        fill
-        className="object-cover transition-transform group-hover:scale-105"
-      />
-      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent p-3">
-        <p className="text-white text-sm font-medium truncate">{map.name}</p>
-      </div>
-    </div>
   )
 }

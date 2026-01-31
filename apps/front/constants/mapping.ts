@@ -4,12 +4,32 @@ export const SESSION_STATUS = {
   ERROR: "error",
 } as const
 
+export const QUERY_PARAMS = {
+  SORT: "sort",
+  SEARCH: "search",
+  MISSING_IMAGE: "missing_image",
+} as const
+
 export const MODAL_KEYS = {
   GAME_ID: "game-id",
   SPHERICAL_ID: "spherical-id",
   MAPS_GALLERY_ID: "maps-gallery-id",
   MAP_ID: "map-id",
   SPHERICAL_GALLERY_ID: "spherical-gallery-id",
+} as const
+
+export const SORT_OPTIONS = {
+  TITLE_ASC: "title_asc",
+  TITLE_DESC: "title_desc",
+  CREATED_AT_ASC: "created_at_asc",
+  CREATED_AT_DESC: "created_at_desc",
+} as const
+
+export const SORT_OPTIONS_LABEL = {
+  [SORT_OPTIONS.TITLE_ASC]: "Title (A-Z)",
+  [SORT_OPTIONS.TITLE_DESC]: "Title (Z-A)",
+  [SORT_OPTIONS.CREATED_AT_ASC]: "Created At (Oldest)",
+  [SORT_OPTIONS.CREATED_AT_DESC]: "Created At (Newest)",
 } as const
 
 export const NEW_SEARCH_PARAM = "new"

@@ -9,6 +9,7 @@
 
 - Use pnpm instead of npm
 - use || instead of ??
+- use if instead of switch
 - use () => x instead of () => { return x } when possible
 - use Arrow functions
 - Use CONSTANTS instead of "variable" when possible
