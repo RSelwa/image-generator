@@ -1,6 +1,6 @@
-import { Timestamp } from "@firebase/firestore"
 import { refs } from "@repo/providers/db-refs"
 import { userDocSchema } from "@repo/schemas"
+import { Timestamp } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 import { beforeUserCreated, HttpsError } from "firebase-functions/identity"
 
@@ -21,7 +21,12 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
       `Creating user document for uid: ${user.uid} email: ${user.email}`,
     )
 
-    const userDoc = userDocSchema.parse({ email: user.email, createdAt: Timestamp.now(), updatedAt: Timestamp.now() })
+    const now = Timestamp.now()
+    const userDoc = userDocSchema.parse({
+      email: user.email,
+      createdAt: now,
+      updatedAt: now,
+    })
 
     try {
       await refs.users.doc(user.uid).set(userDoc)

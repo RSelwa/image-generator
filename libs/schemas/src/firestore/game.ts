@@ -1,7 +1,7 @@
-import { type DocumentReference, Timestamp } from "@firebase/firestore"
+import { type DocumentReference } from "@firebase/firestore"
 import z from "zod"
 // import { WITH_ID } from "./../zod.ts"
-import { WITH_ID } from "~/zod"
+import { timestampSchema, WITH_ID } from "~/zod"
 
 export const gameDocSchema = z.object({
   title: z.string().min(1),
@@ -12,8 +12,8 @@ export const gameDocSchema = z.object({
   alternateName: z.string().optional().default(""),
   hasSphericalImagesReady: z.boolean().optional().default(false),
   hasSpecialImagesReady: z.boolean().optional().default(false),
-  createdAt: z.instanceof(Timestamp),
-  updatedAt: z.instanceof(Timestamp),
+  createdAt: timestampSchema.nullish().default(() => null),
+  updatedAt: timestampSchema.nullish().default(() => null),
 })
 
 export const gameDocWithIdSchema = z.object({

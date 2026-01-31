@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker"
 import { refs } from "@repo/providers/db-refs"
 import { db } from "@repo/providers/firebase"
 import { beforeAll, describe, expect, it } from "vitest"
@@ -25,51 +26,36 @@ async function createAuthUser({
 
 describe("createUserDocument", () => {
   beforeAll(async () => {
-    const snapshotUsers = await refs.users.get()
+    // Only run destructive operations if using the Firestore emulator
+    if (process.env.FIRESTORE_EMULATOR_HOST) {
+      const snapshotUsers = await refs.users.get()
+      const batch = db.batch()
+      snapshotUsers.docs.forEach((doc) => {
+        batch.delete(doc.ref)
+      })
+      await batch.commit()
 
-    const batch = db.batch()
-
-    snapshotUsers.docs.forEach((doc) => {
-      batch.delete(doc.ref)
-    })
-
-    await batch.commit()
-
-    await fetch(
-      "http://localhost:9099/emulator/v1/projects/tiktok-generator-fa261/accounts",
-      { method: "DELETE" },
-    )
+      // Delete all auth accounts in the emulator
+      await fetch(
+        "http://localhost:9099/emulator/v1/projects/tiktok-generator-fa261/accounts",
+        { method: "DELETE" },
+      )
+    } else {
+      throw new Error("Tests must be run against the Firestore emulator. Aborting destructive operation.")
+    }
   })
 
-  it.skip("should create a user document", async () => {
-    const { uid } = await createAuthUser({ email: "test-base@fl.im" })
+  it("should create a user document", async () => {
+    const email = faker.internet.email({ provider: "test.com" }).toLocaleLowerCase()
+
+    const { uid } = await createAuthUser({ email })
 
     const snapshot = await refs.users.doc(uid).get()
 
     const userDoc = snapshot.data()
 
-    expect(userDoc).toHaveProperty("email", "test-base@fl.im")
-    expect(userDoc).toHaveProperty("zoomClicks", 0)
-    expect(userDoc).toHaveProperty("preferences", {
-      grid: {
-        masonry: {
-          spacing: 10,
-          nbColumns: 6,
-          hasNameDisplayed: false,
-        },
-      },
-      generationGrid: {
-        gridType: "LIST",
-        options: {
-          mode: "ASPECT",
-          size: 6,
-        },
-      },
-      safetyContentFilter: {
-        hideNudity: true,
-        hideViolence: true,
-      },
-      isVideoAutoplay: true,
-    })
+    expect(userDoc).toHaveProperty("email", email)
+    expect(userDoc).toHaveProperty("createdAt")
+    expect(userDoc).toHaveProperty("updatedAt")
   })
 })

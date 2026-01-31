@@ -7,7 +7,6 @@ import { getStorage } from "firebase-admin/storage"
 
 export type { DecodedIdToken } from "firebase-admin/auth"
 export type { Firestore, UpdateData } from "firebase-admin/firestore"
-export { FieldValue, Timestamp } from "firebase-admin/firestore"
 
 if (!admin.apps.length) {
   const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS

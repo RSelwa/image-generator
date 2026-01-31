@@ -1,6 +1,5 @@
-import { Timestamp } from "@firebase/firestore"
 import z from "zod"
-import { WITH_ID } from "~/zod"
+import { timestampSchema, WITH_ID } from "~/zod"
 
 export const mapDocSchema = z.object({
   name: z.string().min(1),
@@ -8,8 +7,8 @@ export const mapDocSchema = z.object({
   width: z.number().positive().nullish().default(null),
   height: z.number().positive().nullish().default(null),
   gameId: z.string(), // For collectionGroup queries
-  createdAt: z.instanceof(Timestamp),
-  updatedAt: z.instanceof(Timestamp),
+  createdAt: timestampSchema.nullish().default(() => null),
+  updatedAt: timestampSchema.nullish().default(() => null),
 })
 
 export const mapDocWithIdSchema = z.object({

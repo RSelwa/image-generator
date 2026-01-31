@@ -1,8 +1,7 @@
-import { Timestamp } from "@firebase/firestore"
 import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
 import z from "zod"
 // import { WITH_ID } from "./../zod.ts"
-import { WITH_ID } from "~/zod"
+import { timestampSchema, WITH_ID } from "~/zod"
 
 // Position on the map (percentage 0-100)
 export const mapPositionSchema = z.object({
@@ -21,8 +20,8 @@ export const sphericalDocSchema = z.object({
   storageImage: z.string().nullish(),
   mosaics: z.array(z.string()).nullish(),
   difficulty: z.enum(DIFFICULTIES).optional().default(DIFFICULTIES.EASY),
-  createdAt: z.instanceof(Timestamp),
-  updatedAt: z.instanceof(Timestamp),
+  createdAt: timestampSchema.nullish().default(() => null),
+  updatedAt: timestampSchema.nullish().default(() => null),
   status: z
     .enum(DOCUMENTS_STATUS)
     .nullish()
