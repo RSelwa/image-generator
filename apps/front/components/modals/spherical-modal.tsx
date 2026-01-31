@@ -15,7 +15,7 @@ export const SphericalModal = () => {
 
   return (
     <section className="w-full h-96">
-      <ReactSphere src={data?.storageImage || data?.image} />
+      <ReactSphere src={data.image} />
     </section>
   )
 }

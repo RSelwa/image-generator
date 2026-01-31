@@ -14,19 +14,17 @@ export type MapPosition = z.infer<typeof mapPositionSchema>
 export const sphericalDocSchema = z.object({
   gameRef: z.string(),
   mapId: z.string().nullish(),
-  mapPosition: mapPositionSchema.nullish().default({ x: 50, y: 50 }),
+  mapPosition: mapPositionSchema.optional(),
   gameId: z.string(),
-  image: z.string(),
-  storageImage: z.string().nullish(),
+  image: z.string().optional().default(""),
   mosaics: z.array(z.string()).nullish(),
   difficulty: z.enum(DIFFICULTIES).optional().default(DIFFICULTIES.EASY),
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
   status: z
     .enum(DOCUMENTS_STATUS)
-    .nullish()
+    .optional()
     .default(DOCUMENTS_STATUS.WAITING),
-  isValid: z.boolean().optional().default(false),
 })
 
 export const sphericalDocWithIdSchema = z.object({
@@ -43,7 +41,19 @@ export const createSphericalInputSchema = sphericalDocSchema.omit({
   updatedAt: true,
 })
 
-export const updateSphericalInputSchema = createSphericalInputSchema.partial()
+// Update schema without defaults to avoid overwriting existing values
+export const updateSphericalInputSchema = z
+  .object({
+    gameRef: z.string(),
+    mapId: z.string().nullish(),
+    mapPosition: mapPositionSchema.optional(),
+    gameId: z.string(),
+    image: z.string(),
+    mosaics: z.array(z.string()).nullish(),
+    difficulty: z.enum(DIFFICULTIES),
+    status: z.enum(DOCUMENTS_STATUS),
+  })
+  .partial()
 
 export type CreateSphericalInput = z.infer<typeof createSphericalInputSchema>
 export type UpdateSphericalInput = z.infer<typeof updateSphericalInputSchema>

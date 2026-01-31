@@ -1,6 +1,6 @@
 import { TABLES } from "@repo/common"
 import { type GameDoc, type MapDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
-import { collection, type CollectionReference, doc } from "firebase/firestore"
+import { collection, collectionGroup, type CollectionReference, doc } from "firebase/firestore"
 import { db } from "@/constants/db"
 
 export type DocumentMapping = {
@@ -24,7 +24,10 @@ export const TABLE_REFS = {
   [TABLES.GAMES]: collection(db, TABLES.GAMES) as CustomCollectionRef<
     typeof TABLES.GAMES
   >,
-  [TABLES.SPHERICAL]: collection(db, TABLES.SPHERICAL) as CustomCollectionRef<
+} as const
+
+export const TABLES_GROUP_REFS = {
+  [TABLES.SPHERICAL]: collectionGroup(db, TABLES.SPHERICAL) as CustomCollectionRef<
     typeof TABLES.SPHERICAL
   >,
 } as const

@@ -1,41 +1,94 @@
 "use client"
 
+import { useQueryState } from "nuqs"
+import { SphericalCard } from "@/components/modals/spherical-gallery"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Field, FieldContent, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { MODAL_KEYS, NEW_SEARCH_PARAM, QUERY_PARAMS, SORT_OPTIONS, SORT_OPTIONS_LABEL } from "@/constants/mapping"
+import { useModal } from "@/hooks/use-modal"
 import { useGetSphericalsInfiniteQuery } from "@/redux/api/spherical"
 
 const Page = () => {
-  const { data, isLoading } = useGetSphericalsInfiniteQuery()
+  const [sort, setSort] = useQueryState(QUERY_PARAMS.SORT, { defaultValue: "" })
+  const [search, setSearch] = useQueryState(QUERY_PARAMS.SEARCH, { defaultValue: "" })
+  const [displayMissingImages, setDisplayMissingImages] = useQueryState(QUERY_PARAMS.MISSING_IMAGE, { defaultValue: "" })
 
-  const spherical = data?.pages.flat() || []
+  const { openModal } = useModal(MODAL_KEYS.SPHERICAL_ID, NEW_SEARCH_PARAM)
+
+  const { data, isLoading, hasNextPage, fetchNextPage } = useGetSphericalsInfiniteQuery()
+
+  const isOnlyDisplayMissingImages = displayMissingImages === "true"
+
+  const sphericals = data?.pages.flat() || []
+
+  const filteredSphericals = sphericals.filter((spherical) => {
+    if (isOnlyDisplayMissingImages)
+      return !spherical.image || !spherical.mapPosition
+
+    return true
+  })
 
   return (
     <main className="p-2 h-full-height-admin">
-      <h1>Spherical</h1>
-      <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-        {isLoading && <li>Loading...</li>}
+      <header className="py-4 sticky top-0 flex items-center w-full justify-between bg-white z-20">
+        <div className="flex items-center justify-end gap-4">
+          <h1 className="text-2xl font-semibold whitespace-nowrap">
+            Sphericals
+          </h1>
+          <Input
+            type="search"
+            placeholder="Search games..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center justify-end gap-4">
+          <div className="flex items-center gap-2 shrink-0">
+            <Button asChild variant="ghost">
+              <FieldGroup className="min-w-48 max-w-max hover:bg-neutral-200">
+                <Field orientation="horizontal">
+                  <Checkbox id="toggle-only-images" checked={isOnlyDisplayMissingImages} onCheckedChange={(checked) => setDisplayMissingImages(checked ? "true" : "")} />
+                  <FieldContent>
+                    <FieldLabel htmlFor="toggle-only-images">Only invalids</FieldLabel>
+                  </FieldContent>
+                </Field>
+              </FieldGroup>
+            </Button>
 
-        {spherical?.map(({ image, id, game, difficulty }) => {
-          const img = `/api/proxy-image?url=${image}`
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">Sort By</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {Object.values(SORT_OPTIONS).map((sortOption) => (
+                  <DropdownMenuCheckboxItem
+                    key={sortOption}
+                    checked={sort === sortOption}
+                    onCheckedChange={() => setSort(sortOption)}
+                  >
+                    {SORT_OPTIONS_LABEL[sortOption]}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <Button onClick={() => openModal()}>Add New Game</Button>
+        </div>
+      </header>
+      {isLoading && <p>Loading...</p>}
 
-          return (
-            <li
-              key={id}
-              className="relative h-64 cursor-pointer overflow-hidden rounded-xl border border-grey-100"
-            >
-              <div className="absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2">
-                <span className="inline-flex h-6 items-center rounded-full px-2 align-middle text-xs leading-none focus:outline-hidden uppercase border border-grey-100 bg-transparent backdrop-blur-sm text-neutral-100">
-                  {game.title}
-                </span>
-                <div className="flex gap-2">
-                  <span className="h-6 items-center rounded-full px-2 align-middle text-xs leading-none focus:outline-hidden bg-neutral-950 text-white flex gap-1">
-                    {difficulty}
-                  </span>
-                </div>
-              </div>
-              <img src={img} alt="" className="size-full object-cover" />
-            </li>
-          )
-        })}
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 mb-8">
+        {filteredSphericals.map((spherical) => <SphericalCard key={spherical.id} spherical={spherical} gameId={spherical.gameId} />)}
       </ul>
+
+      {hasNextPage && (
+        <Button disabled={isLoading} onClick={fetchNextPage} className="mx-auto my-8 w-full">
+          Load more
+        </Button>
+      )}
     </main>
   )
 }

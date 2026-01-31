@@ -12,6 +12,7 @@
 - use if instead of switch
 - use () => x instead of () => { return x } when possible
 - use Arrow functions
+- use visible/invisible instead of opacity
 - Use CONSTANTS instead of "variable" when possible
 - Use ES modules (import/export) syntax, not CommonJS (require)
 - Destructure imports when possible (eg. import { foo } from 'bar')

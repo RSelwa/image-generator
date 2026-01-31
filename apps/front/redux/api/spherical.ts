@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { getIdFromFirestoreRef, getImageUrl, TABLES } from "@repo/common"
+import { getIdFromFirestoreRef, TABLES } from "@repo/common"
 import {
   type CreateSphericalInput,
   createSphericalInputSchema,
@@ -18,6 +18,7 @@ import {
   getDoc,
   getDocs,
   limit,
+  orderBy,
   query,
   type QueryConstraint,
   startAfter,
@@ -30,7 +31,7 @@ import { DEFAULT_SIZE_SPHERICALS } from "@/constants/api"
 import { db } from "@/constants/db"
 import {
   getSphericalRef,
-  TABLE_REFS,
+  TABLES_GROUP_REFS,
   TABLES_SUB_REFS,
 } from "@/constants/db-refs"
 import { gameApi } from "@/redux/api/games"
@@ -44,22 +45,22 @@ export const sphericalApi = createApi({
     getSphericals: builder.infiniteQuery<
       SphericalEntity[],
       void,
-      { limit?: number, startAfter?: string }
+      { limit?: number, startAfter?: Timestamp | null }
     >({
       queryFn: async ({ pageParam }, { dispatch }) => {
         try {
-          const definedFieldsConstraints: QueryConstraint[] = []
+          const constraints: QueryConstraint[] = [orderBy("createdAt", "desc")]
 
           if (pageParam.startAfter) {
-            definedFieldsConstraints.push(startAfter(pageParam.startAfter))
+            constraints.push(startAfter(pageParam.startAfter))
           }
 
           if (pageParam.limit)
-            definedFieldsConstraints.push(limit(pageParam.limit))
+            constraints.push(limit(pageParam.limit))
 
           const q = query(
-            TABLE_REFS[TABLES.SPHERICAL],
-            ...definedFieldsConstraints,
+            TABLES_GROUP_REFS[TABLES.SPHERICAL],
+            ...constraints,
           )
 
           const snapshot = await getDocs(q)
@@ -77,7 +78,6 @@ export const sphericalApi = createApi({
               const { data, error } = sphericalEntitySchema.safeParse({
                 id: doc.id,
                 ...doc.data(),
-                image: getImageUrl(doc.data().image),
                 gameId,
                 game,
               })
@@ -101,16 +101,21 @@ export const sphericalApi = createApi({
       infiniteQueryOptions: {
         initialPageParam: {
           limit: DEFAULT_SIZE_SPHERICALS,
-          startAfter: "",
+          startAfter: null,
         },
         getNextPageParam: (_, allPages, lastPageParams) => {
           const lastPage = allPages.at(-1)
-          const lastGame = lastPage?.at(-1)
+          const lastItem = lastPage?.at(-1)
 
           const limitValue = lastPageParams?.limit || DEFAULT_SIZE_SPHERICALS
 
+          // No more pages if the last page has fewer items than the limit
+          if (!lastPage || lastPage.length < limitValue) {
+            return undefined
+          }
+
           return {
-            startAfter: lastGame?.id,
+            startAfter: lastItem?.createdAt || null,
             limit: limitValue,
           }
         },
@@ -144,7 +149,6 @@ export const sphericalApi = createApi({
           const { data, error } = sphericalEntitySchema.safeParse({
             id: docSnap.id,
             ...docSnap.data(),
-            image: getImageUrl(docSnap.data().image),
             game,
           })
 

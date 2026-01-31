@@ -1,3 +1,5 @@
+import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
+
 export const SESSION_STATUS = {
   LOADING: "loading",
   SUCCESS: "success",
@@ -36,3 +38,16 @@ export const NEW_SEARCH_PARAM = "new"
 export const FALL_BACK_IMAGE = "/signup.png"
 export const APP_NAME = "Geo gamer"
 export const CONTACT_EMAIL = "selwa.raphael@gmail.com"
+
+export const DIFFICULTIES_TO_BADGE_VARIANT = {
+  [DIFFICULTIES.EASY]: "green",
+  [DIFFICULTIES.MEDIUM]: "orange",
+  [DIFFICULTIES.HARD]: "red",
+} as const
+
+export const STATUS_TO_BADGE_VARIANT = {
+  [DOCUMENTS_STATUS.ERROR]: "red",
+  [DOCUMENTS_STATUS.NEED_VERIFICATION]: "orange",
+  [DOCUMENTS_STATUS.READY]: "green",
+  [DOCUMENTS_STATUS.WAITING]: "neutral",
+} as const

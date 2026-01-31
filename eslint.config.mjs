@@ -41,7 +41,6 @@ export default antfu({
     // Next/react overrides
     "next/no-img-element": "off",
     "react-hooks/exhaustive-deps": "off",
-    "react-refresh/only-export-components": "warn",
 
     // Antfu overrides
     "antfu/top-level-function": "off",
@@ -56,6 +55,7 @@ export default antfu({
     "node/prefer-global/buffer": "off",
 
     // Custom rules
+    "react-refresh/only-export-components": "off",
     "no-console": ["warn", { allow: ["warn", "error", "info"] }],
   },
 })

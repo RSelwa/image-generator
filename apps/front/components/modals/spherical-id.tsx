@@ -13,7 +13,6 @@ import { MiniMap, type Position } from "@/components/mini-map"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
   FieldDescription,
@@ -31,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
+import { useModal } from "@/hooks/use-modal"
 import { useGetMapsInfiniteQuery } from "@/redux/api/maps"
 import {
   useCreateSphericalMutation,
@@ -76,6 +76,9 @@ const SphericalForm = ({
   gameId: string
   isNew: boolean
 }) => {
+  const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalId)
+  const { openModal } = useModal(MODAL_KEYS.MAP_ID, `${gameId}_${NEW_SEARCH_PARAM}`)
+
   const { data, isLoading } = useGetSphericalByIdQuery(
     { gameId, id: sphericalId },
     { skip: isNew },
@@ -87,6 +90,7 @@ const SphericalForm = ({
   const { data: mapsData, isLoading: isMapsLoading } = useGetMapsInfiniteQuery({
     gameId,
   })
+
   const [isUploading, setIsUploading] = useState(false)
   const [, setModalParam] = useQueryState(KEY)
 
@@ -106,17 +110,15 @@ const SphericalForm = ({
       gameRef: `games/${gameId}`,
       gameId,
       image: "",
-      storageImage: "",
       mapId: "",
       mapPosition: { x: 50, y: 50 },
       difficulty: DIFFICULTIES.EASY,
       status: DOCUMENTS_STATUS.NEED_VERIFICATION,
-      isValid: false,
       mosaics: [],
     },
   })
 
-  const storageImage = watch("storageImage")
+  const image = watch("image")
   const selectedMapId = watch("mapId")
   const mapPosition = watch("mapPosition")
 
@@ -142,12 +144,10 @@ const SphericalForm = ({
         gameRef: data.gameRef,
         gameId: data.gameId,
         image: data.image ?? "",
-        storageImage: data.storageImage ?? "",
         mapId: data.mapId ?? "",
         mapPosition: data.mapPosition ?? { x: 50, y: 50 },
         difficulty: data.difficulty ?? DIFFICULTIES.EASY,
         status: data.status ?? DOCUMENTS_STATUS.NEED_VERIFICATION,
-        isValid: data.isValid ?? false,
         mosaics: data.mosaics ?? [],
       })
     }
@@ -162,7 +162,6 @@ const SphericalForm = ({
         title: `spherical-${gameId}`,
       })
 
-      setValue("storageImage", url, { shouldDirty: true })
       setValue("image", url, { shouldDirty: true })
       toast.success("Image uploaded successfully")
     } catch (error) {
@@ -175,7 +174,6 @@ const SphericalForm = ({
   }
 
   const handleRemoveImage = () => {
-    setValue("storageImage", "", { shouldDirty: true })
     setValue("image", "", { shouldDirty: true })
   }
 
@@ -197,11 +195,10 @@ const SphericalForm = ({
       }
     } else {
       // Only include image fields if they were actually changed
-      const { image, storageImage, ...rest } = parsedData
+      const { image, ...rest } = parsedData
       const updateData = {
         ...rest,
         ...(dirtyFields.image && { image }),
-        ...(dirtyFields.storageImage && { storageImage }),
       }
 
       const { error } = await updateSpherical({
@@ -222,11 +219,21 @@ const SphericalForm = ({
 
   return (
     <ModalBase modalKey={KEY} className="max-w-4xl">
-      <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8">
-        <h2 className="mb-6 text-2xl font-bold">
-          {isNew ? "Create Spherical" : "Edit Spherical"}
-        </h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8 ">
+        <div className="flex mb-6 items-center gap-6">
 
+          <h2 className=" text-2xl font-bold">
+            {isNew ? "Create Spherical" : "Edit Spherical"}
+          </h2>
+          <Button onClick={() => {
+            openModal()
+            closeModal()
+          }}
+          >
+            New map
+          </Button>
+
+        </div>
         <div className="grid grid-cols-[1fr_220px] gap-6">
           <FieldGroup>
             <div className="grid grid-cols-2 gap-2">
@@ -405,20 +412,6 @@ const SphericalForm = ({
                   )}
                 />
               </Field>
-              <Field orientation="horizontal" className="items-end pb-2">
-                <Controller
-                  name="isValid"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      id="isValid"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  )}
-                />
-                <FieldLabel htmlFor="isValid">Is Valid</FieldLabel>
-              </Field>
             </div>
 
             {data && (
@@ -446,15 +439,15 @@ const SphericalForm = ({
           <div className="flex flex-col gap-3">
             <FieldLabel>Spherical Image</FieldLabel>
             <ImageDropzone
-              imageUrl={storageImage ?? null}
+              imageUrl={image ?? null}
               onFileSelect={handleFileUpload}
               onRemove={handleRemoveImage}
               isUploading={isUploading}
               alt="Spherical image"
             />
-            {storageImage && (
+            {image && (
               <div className="aspect-video w-full">
-                <ReactSphere src={storageImage} />
+                <ReactSphere src={image} />
               </div>
             )}
             {errors.image && <FieldError>{errors.image.message}</FieldError>}

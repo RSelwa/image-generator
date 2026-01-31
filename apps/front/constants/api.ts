@@ -1,6 +1,6 @@
 export const DEFAULT_SIZE_GAMES = 150
-export const DEFAULT_SIZE_SPHERICALS = 10
-export const DEFAULT_SIZE_MAPS = 10
+export const DEFAULT_SIZE_SPHERICALS = 20
+export const DEFAULT_SIZE_MAPS = 100
 
 export const ENDPOINTS_BASE = {
   UPLOAD_IMAGE: "/api/upload-image",

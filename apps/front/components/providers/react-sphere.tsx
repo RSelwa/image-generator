@@ -1,3 +1,5 @@
+"use client"
+
 import { ReactPhotoSphereViewer } from "react-photo-sphere-viewer"
 
 type Props = {
