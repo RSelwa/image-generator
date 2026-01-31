@@ -42,6 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: init
     name: 🧪 Test
+    environment: prod
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
@@ -52,23 +53,18 @@ jobs:
       - name: ⚙️ Install Firebase tools
         run: pnpm install -g firebase-tools
 
-      - name: 🔒 Create .env file
-        run: |
-          touch functions/create-user-document/.env
-          echo FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 >> functions/create-user-document/.env
-          echo FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 >> functions/create-user-document/.env
-          echo GCLOUD_PROJECT=tiktok-generator-fa261 >> functions/create-user-document/.env
-          cat functions/create-user-document/.env
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: ✨ Build project
         run: pnpm build --filter=@repo/create-user-document
 
       - name: 🧪 Run tests
-        run: firebase emulators:exec --token "$FIREBASE_TOKEN" --project
-          "$GCLOUD_PROJECT" 'pnpm test --filter=@repo/create-user-document'
+        run: pnpm -F @repo/create-user-document test:emulator
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          GCLOUD_PROJECT: ${{ secrets.PROJECT_ID }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
 
   deploy:
     runs-on: ubuntu-latest
