@@ -22,6 +22,7 @@
     "login": "firebase login"
   },
   "dependencies": {
+    "@firebase/firestore": "^4.10.0",
     "@google-cloud/functions-framework": "^4.0.0",
     "@repo/common": "workspace:*",
     "@repo/providers": "workspace:*",
