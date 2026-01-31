@@ -5,10 +5,9 @@ export const DIFFICULTIES = {
 } as const
 
 export const DOCUMENTS_STATUS = {
+  WAITING: "waiting",
   ERROR: "error",
   NEED_VERIFICATION: "need_verification",
-  WAITING: "waiting",
-  PROCESSING: "processing",
   READY: "ready",
 } as const
 

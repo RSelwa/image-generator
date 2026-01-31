@@ -25,7 +25,7 @@ export const sphericalDocSchema = z.object({
   status: z
     .enum(DOCUMENTS_STATUS)
     .nullish()
-    .default(DOCUMENTS_STATUS.NEED_VERIFICATION),
+    .default(DOCUMENTS_STATUS.WAITING),
   isValid: z.boolean().optional().default(false),
 })
 

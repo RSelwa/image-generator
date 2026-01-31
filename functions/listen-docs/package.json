@@ -16,6 +16,7 @@
     "lint": "biome check",
     "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
     "test": "vitest run --coverage",
+    "test:emulator": "firebase emulators:exec --project tiktok-generator-fa261 'vitest run --coverage'",
     "clean": "del-cli dist isolate tsconfig.tsbuildinfo coverage",
     "deploy": "firebase deploy --project pusher-292200",
     "emulate": "firebase emulators:start --project pusher-292200",

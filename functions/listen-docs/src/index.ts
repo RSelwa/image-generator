@@ -1,7 +1,8 @@
-import { DOCUMENTS_STATUS, TABLES } from "@repo/common"
-import { refs } from "@repo/providers/db-refs"
+import { TABLES } from "@repo/common"
+import { type SphericalDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
+import { updateGameStatus, updateSphericalStatus } from "~/updates-status"
 
 export const listen_doc_spherical_written = onDocumentWritten(
   `${TABLES.GAMES}/{gameId}/${TABLES.SPHERICAL}/{sphericalId}`,
@@ -18,23 +19,12 @@ export const listen_doc_spherical_written = onDocumentWritten(
       return
     }
 
-    // Check if any spherical document in the subcollection has status READY
-    const sphericalDocs = await refs[TABLES.GAMES]
-      .doc(gameId)
-      .collection(TABLES.SPHERICAL)
-      .where("status", "==", DOCUMENTS_STATUS.READY)
-      .limit(1)
-      .get()
+    const data = event.data?.after.data() as SphericalDoc | undefined
 
-    const hasSphericalImagesReady = !sphericalDocs.empty
-
-    const gameDoc = await refs[TABLES.GAMES].doc(gameId).get()
-
-    // Only update if the value changed
-    if (gameDoc.data()?.hasSphericalImagesReady === hasSphericalImagesReady)
-      return
-
-    await refs[TABLES.GAMES].doc(gameId).update({ hasSphericalImagesReady })
+    await Promise.all([
+      updateGameStatus(gameId),
+      updateSphericalStatus(gameId, sphericalId, data),
+    ])
   },
 )
 

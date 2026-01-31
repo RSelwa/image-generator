@@ -44,6 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: init
     name: 🧪 Test
+    environment: prod
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
@@ -54,11 +55,16 @@ jobs:
       - name: ⚙️ Install Firebase tools
         run: pnpm install -g firebase-tools
 
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - name: ✨ Build project
         run: pnpm build --filter=@repo/listen-docs
 
       - name: 🧪 Run tests
-        run: firebase emulators:exec --project "$PROJECT_ID" 'pnpm test --filter=@repo/listen-docs'
+        run: pnpm -F @repo/listen-docs test:emulator
         env:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
 
