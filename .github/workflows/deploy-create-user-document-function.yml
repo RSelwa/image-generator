@@ -56,6 +56,9 @@ jobs:
         run: |
           touch functions/create-user-document/.env
           echo FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 >> functions/create-user-document/.env
+          echo FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 >> functions/create-user-document/.env
+          echo GCLOUD_PROJECT=tiktok-generator-fa261 >> functions/create-user-document/.env
+          cat functions/create-user-document/.env
 
       - name: ✨ Build project
         run: pnpm build --filter=@repo/create-user-document

@@ -5,7 +5,14 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from "@firebase/rules-unit-testing"
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
+import {
+  collectionGroup,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { generateCoverageReport } from "./utils"
 
@@ -428,6 +435,150 @@ describe("firebase Security Rules", () => {
           name: "Updated Spherical",
         }),
       )
+    })
+  })
+
+  describe("collectionGroup queries", () => {
+    describe("spherical collectionGroup", () => {
+      it("should be able to read spherical docs via collectionGroup even if not logged in", async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), "games/game1"), {
+            name: "Test Game",
+          })
+          await setDoc(doc(context.firestore(), "games/game1/spherical/s1"), {
+            name: "Spherical 1",
+          })
+          await setDoc(doc(context.firestore(), "games/game2"), {
+            name: "Test Game 2",
+          })
+          await setDoc(doc(context.firestore(), "games/game2/spherical/s2"), {
+            name: "Spherical 2",
+          })
+        })
+
+        const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+        const result = await assertSucceeds(
+          getDocs(collectionGroup(unauthedDb, "spherical")),
+        )
+
+        expect(result.docs.length).toBe(2)
+      })
+
+      it("should not be able to write via collectionGroup path while not admin", async () => {
+        const uid = "user1"
+
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `users/${uid}`), {
+            uid,
+            rights: [],
+          })
+          await setDoc(doc(context.firestore(), "games/game1"), {
+            name: "Test Game",
+          })
+        })
+
+        const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(
+          setDoc(doc(authedUserDb, "games/game1/spherical/s1"), {
+            name: "Test Spherical",
+          }),
+        )
+      })
+
+      it("should be able to write via collectionGroup path as admin", async () => {
+        const uid = "admin1"
+
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `users/${uid}`), {
+            uid,
+            rights: "admin",
+          })
+          await setDoc(doc(context.firestore(), "games/game1"), {
+            name: "Test Game",
+          })
+        })
+
+        const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(
+          setDoc(doc(adminDb, "games/game1/spherical/s1"), {
+            name: "Test Spherical",
+          }),
+        )
+      })
+    })
+
+    describe("maps collectionGroup", () => {
+      it("should be able to read maps docs via collectionGroup even if not logged in", async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), "games/game1"), {
+            name: "Test Game",
+          })
+          await setDoc(doc(context.firestore(), "games/game1/maps/m1"), {
+            name: "Map 1",
+          })
+          await setDoc(doc(context.firestore(), "games/game2"), {
+            name: "Test Game 2",
+          })
+          await setDoc(doc(context.firestore(), "games/game2/maps/m2"), {
+            name: "Map 2",
+          })
+        })
+
+        const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+        const result = await assertSucceeds(
+          getDocs(collectionGroup(unauthedDb, "maps")),
+        )
+
+        expect(result.docs.length).toBe(2)
+      })
+
+      it("should not be able to write via collectionGroup path while not admin", async () => {
+        const uid = "user1"
+
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `users/${uid}`), {
+            uid,
+            rights: [],
+          })
+          await setDoc(doc(context.firestore(), "games/game1"), {
+            name: "Test Game",
+          })
+        })
+
+        const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(
+          setDoc(doc(authedUserDb, "games/game1/maps/m1"), {
+            name: "Test Map",
+          }),
+        )
+      })
+
+      it("should be able to write via collectionGroup path as admin", async () => {
+        const uid = "admin1"
+
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `users/${uid}`), {
+            uid,
+            rights: "admin",
+          })
+          await setDoc(doc(context.firestore(), "games/game1"), {
+            name: "Test Game",
+          })
+        })
+
+        const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(
+          setDoc(doc(adminDb, "games/game1/maps/m1"), {
+            name: "Test Map",
+          }),
+        )
+      })
     })
   })
 })
