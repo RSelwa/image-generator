@@ -26,7 +26,7 @@ const MINI_MAP_COLLAPSED = { width: 250, height: 130 }
 const MINI_MAP_EXPANDED = { width: 600, height: 350 }
 
 // Zoom controls component
-function ZoomControls({ isExpanded }: { isExpanded: boolean }) {
+const ZoomControls = ({ isExpanded }: { isExpanded: boolean }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls()
 
   if (!isExpanded) return null
@@ -47,7 +47,7 @@ function ZoomControls({ isExpanded }: { isExpanded: boolean }) {
 }
 
 // Markers layer - contains all markers and uses transform context for scale
-function MarkersLayer({
+const MarkersLayer = ({
   guessPosition,
   correctPosition,
   showCorrectMarker = true,
@@ -57,7 +57,7 @@ function MarkersLayer({
   correctPosition?: Position
   showCorrectMarker?: boolean
   showLine?: boolean
-}) {
+}) => {
   const { transformState } = useTransformContext()
   const scale = transformState.scale
 
@@ -137,7 +137,7 @@ export type MiniMapProps = {
 }
 
 // Mini Map Component (bottom-right, expands on hover)
-export function MiniMap({
+export const MiniMap = ({
   mapData,
   guessPosition,
   onMapClick,
@@ -150,7 +150,7 @@ export function MiniMap({
   className,
   inline = false,
   alwaysExpanded = false,
-}: MiniMapProps) {
+}: MiniMapProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 

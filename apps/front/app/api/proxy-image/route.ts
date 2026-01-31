@@ -1,5 +1,5 @@
 // app/api/proxy-image/route.ts
-export async function GET(request: Request) {
+export const GET = async (request: Request) => {
   const { searchParams } = new URL(request.url)
   const imageUrl = searchParams.get("url")
 

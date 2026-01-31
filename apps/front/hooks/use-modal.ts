@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation"
 const getCurrentSearchParams = () =>
   new URLSearchParams(window.location.search)
 
-export function useModal(key: string, value?: string) {
+export const useModal = (key: string, value?: string) => {
   const searchParams = useSearchParams()
 
   const openModal = (overrideValue?: string) => {

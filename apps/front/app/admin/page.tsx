@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { PAGES } from "@/constants/pages"
 
-function Page() {
+const Page = () => {
   const adminRoutes = [
     {
       url: PAGES.ADMIN_GAMES,

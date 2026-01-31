@@ -14,7 +14,7 @@ export const payloadSchema = z.object({
   }),
 })
 
-export async function POST(request: Request) {
+export const POST = async (request: Request) => {
   try {
     const authResult = await verifyAdmin(request)
     if ("error" in authResult) {

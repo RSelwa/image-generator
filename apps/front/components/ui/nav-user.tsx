@@ -25,7 +25,7 @@ import { useLogoutMutation } from "@/redux/api/auth"
 import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
-export function NavUser() {
+export const NavUser = () => {
   const user = useAppSelector(selectUser)
   const isAdmin = useAppSelector(selectIsAdmin)
   const [logout] = useLogoutMutation()

@@ -16,13 +16,13 @@ import { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import { useGetSphericalsByGameIdQuery } from "@/redux/api/games"
 
-function SphericalCard({
+const SphericalCard = ({
   spherical,
   gameId,
 }: {
   spherical: SphericalDocWithId
   gameId: string
-}) {
+}) => {
   const sphericalParam = buildSubcollectionParam(gameId, spherical.id)
   const { openModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalParam)
   const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID)
@@ -65,7 +65,7 @@ function SphericalCard({
   )
 }
 
-export function SphericalGalleryModal() {
+export const SphericalGalleryModal = () => {
   const [gameId] = useQueryState(MODAL_KEYS.SPHERICAL_GALLERY_ID)
 
   const { data } = useGetSphericalsByGameIdQuery({ gameId: gameId || "" })

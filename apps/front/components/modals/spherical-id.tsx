@@ -44,9 +44,9 @@ type SphericalFormSchema = z.input<typeof createSphericalInputSchema>
 const KEY = MODAL_KEYS.SPHERICAL_ID
 
 // Helper to parse combined param format: "gameId_sphericalId"
-export function parseSphericalModalParam(
+export const parseSphericalModalParam = (
   param: string | null,
-): { gameId: string, sphericalId: string } | null {
+): { gameId: string, sphericalId: string } | null => {
   if (!param) return null
   const separatorIndex = param.indexOf("_")
   if (separatorIndex === -1) return null
@@ -58,18 +58,16 @@ export function parseSphericalModalParam(
 }
 
 // Helper to build combined param format: "gameId_sphericalId"
-export function buildSphericalModalParam(
+export const buildSphericalModalParam = (
   gameId: string,
   sphericalId: string,
-): string {
-  return `${gameId}_${sphericalId}`
-}
+): string => `${gameId}_${sphericalId}`
 
 const DIFFICULTY_OPTIONS = Object.values(DIFFICULTIES)
 const STATUS_OPTIONS = Object.values(DOCUMENTS_STATUS)
 const NO_MAP_VALUE = "__none__"
 
-function SphericalForm({
+const SphericalForm = ({
   sphericalId,
   gameId,
   isNew,
@@ -77,7 +75,7 @@ function SphericalForm({
   sphericalId: string
   gameId: string
   isNew: boolean
-}) {
+}) => {
   const { data, isLoading } = useGetSphericalByIdQuery(
     { gameId, id: sphericalId },
     { skip: isNew },
@@ -481,7 +479,7 @@ function SphericalForm({
   )
 }
 
-export function ModalSphericalId() {
+export const ModalSphericalId = () => {
   const [modalParam] = useQueryState(KEY)
 
   const parsed = parseSphericalModalParam(modalParam)

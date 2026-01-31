@@ -23,7 +23,7 @@ const EXAMPLE_ROUNDS: MapRound[] = [
 const MAX_POINTS = 5000
 
 // Calculate distance between two positions (in percentage units)
-function calculateDistance(pos1: Position, pos2: Position): number {
+const calculateDistance = (pos1: Position, pos2: Position): number => {
   const dx = pos1.x - pos2.x
   const dy = pos1.y - pos2.y
 
@@ -31,7 +31,7 @@ function calculateDistance(pos1: Position, pos2: Position): number {
 }
 
 // Calculate points based on distance (exponential decay)
-function calculatePoints(distance: number): number {
+const calculatePoints = (distance: number): number => {
   if (distance < 1) return MAX_POINTS
   // Exponential decay: closer = more points
   const points = MAX_POINTS * Math.exp(-distance / 15)
@@ -39,7 +39,7 @@ function calculatePoints(distance: number): number {
   return Math.round(Math.max(0, points))
 }
 
-function MapGuesser() {
+const MapGuesser = () => {
   const [currentRound, setCurrentRound] = useState(0)
   const [guessPosition, setGuessPosition] = useState<Position | null>(null)
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -171,8 +171,6 @@ function MapGuesser() {
   )
 }
 
-function Page() {
-  return <MapGuesser />
-}
+const Page = () => <MapGuesser />
 
 export default Page

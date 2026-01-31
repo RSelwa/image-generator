@@ -4,28 +4,24 @@ import { type Session } from "@/schemas/session"
 
 const { actions } = sessionSlice
 
-export function updateSession(session: Partial<Session>): ReturnAction {
-  return (dispatch) => {
+export const updateSession = (session: Partial<Session>): ReturnAction =>
+  (dispatch) => {
     dispatch(actions.updateSession(session))
   }
-}
 
-export function updateSessionAuthUser(
+export const updateSessionAuthUser = (
   payload: Session["authUser"],
-): ReturnAction {
-  return (dispatch) => {
+): ReturnAction =>
+  (dispatch) => {
     dispatch(actions.updateAuthUser(payload))
   }
-}
 
-export function updateSessionStatus(status: Session["status"]): ReturnAction {
-  return (dispatch) => {
+export const updateSessionStatus = (status: Session["status"]): ReturnAction =>
+  (dispatch) => {
     dispatch(actions.updateSessionStatus(status))
   }
-}
 
-export function populateToken(token: string | null): ReturnAction {
-  return (dispatch) => {
+export const populateToken = (token: string | null): ReturnAction =>
+  (dispatch) => {
     dispatch(actions.populateToken(token))
   }
-}

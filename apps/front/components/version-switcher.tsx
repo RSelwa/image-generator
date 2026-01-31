@@ -15,13 +15,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-export function VersionSwitcher({
+export const VersionSwitcher = ({
   versions,
   defaultVersion,
 }: {
   versions: string[]
   defaultVersion: string
-}) {
+}) => {
   const [selectedVersion, setSelectedVersion] = React.useState(defaultVersion)
 
   return (

@@ -2,7 +2,7 @@
 
 import { useGetSphericalsInfiniteQuery } from "@/redux/api/spherical"
 
-function Page() {
+const Page = () => {
   const { data, isLoading } = useGetSphericalsInfiniteQuery()
 
   const spherical = data?.pages.flat() || []

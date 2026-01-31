@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { FALL_BACK_IMAGE, MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 
-function GameCard({ game }: { game: GameEntity, index?: number }) {
+const GameCard = ({ game }: { game: GameEntity, index?: number }) => {
   const { openModal: openGallery } = useModal(
     MODAL_KEYS.SPHERICAL_GALLERY_ID,
     game.id,

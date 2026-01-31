@@ -11,7 +11,7 @@ import {
   useGetTotalGamesCountQuery,
 } from "@/redux/api/games"
 
-function Page() {
+const Page = () => {
   const [search, setSearch] = useState("")
   const { data: gameCount } = useGetTotalGamesCountQuery()
   const { openModal } = useModal(MODAL_KEYS.GAME_ID, NEW_SEARCH_PARAM)

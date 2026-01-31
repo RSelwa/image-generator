@@ -14,11 +14,11 @@ type UploadResult = {
   height: number | null
 }
 
-export async function uploadFileToBucket({
+export const uploadFileToBucket = async ({
   file,
   bucketPath,
   title,
-}: Props): Promise<UploadResult> {
+}: Props): Promise<UploadResult> => {
   const token = await auth.currentUser?.getIdToken()
   const formData = new FormData()
   formData.append("file", file)

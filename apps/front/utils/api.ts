@@ -1,7 +1,7 @@
 import { TABLES, USERS_RIGHTS } from "@repo/common"
 import { auth, db } from "@/lib/firebase-admin"
 
-export async function verifyAdmin(request: Request) {
+export const verifyAdmin = async (request: Request) => {
   const authHeader = request.headers.get("Authorization")
   if (!authHeader?.startsWith("Bearer ")) {
     return { error: "Missing or invalid Authorization header", status: 401 }

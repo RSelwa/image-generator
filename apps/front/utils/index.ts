@@ -2,11 +2,9 @@ import { type ClassValue, clsx } from "clsx"
 import { toast } from "sonner"
 import { twMerge } from "tailwind-merge"
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
 
-export function copy(text: string) {
+export const copy = (text: string) => {
   navigator.clipboard
     ?.writeText(text)
     .then(() => {

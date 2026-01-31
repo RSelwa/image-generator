@@ -14,16 +14,16 @@ import {
   useGetMapsByGameIdQuery,
 } from "@/redux/api/games"
 
-export function MapsGallery() {
+export const MapsGallery = () => {
   const [gameId] = useQueryState(MODAL_KEYS.MAPS_GALLERY_ID)
   const { closeModal } = useModal(MODAL_KEYS.MAPS_GALLERY_ID)
   const { openModal: openNewMapModal } = useModal(MODAL_KEYS.MAP_ID)
   const { data: game } = useGetGameByIdQuery(
-    { id: gameId ?? "" },
+    { id: gameId || "" },
     { skip: !gameId },
   )
   const { data: maps } = useGetMapsByGameIdQuery(
-    { gameId: gameId ?? "" },
+    { gameId: gameId || "" },
     { skip: !gameId },
   )
 
@@ -63,13 +63,13 @@ export function MapsGallery() {
   )
 }
 
-function MapCard({
+const MapCard = ({
   map,
   gameId,
 }: {
   map: { id: string, name: string, imageUrl?: string | null }
   gameId: string
-}) {
+}) => {
   // Build the combined param for editing this map
   const mapParam = buildSubcollectionParam(gameId, map.id)
   const { openModal } = useModal(MODAL_KEYS.MAP_ID, mapParam)

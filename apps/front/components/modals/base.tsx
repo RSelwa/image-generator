@@ -13,7 +13,7 @@ import {
 import VisuallyHidden from "@/components/ui/visually-hidden"
 import { type MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
-import { cn } from "@/lib/utils"
+import { cn } from "@/utils"
 
 type Props = {
   modalKey: ConstantValues<typeof MODAL_KEYS>
@@ -22,13 +22,13 @@ type Props = {
   className?: string
 } & DialogProps
 
-export function ModalBase({
+export const ModalBase = ({
   modalKey,
   children,
   className,
   customClose,
   ...props
-}: Props) {
+}: Props) => {
   const { closeModal } = useModal(modalKey)
 
   return (
@@ -50,16 +50,14 @@ export function ModalBase({
   )
 }
 
-export function LoadingModal({
+export const LoadingModal = ({
   modalKey,
 }: {
   modalKey: ConstantValues<typeof MODAL_KEYS>
-}) {
-  return (
-    <ModalBase {...{ modalKey }} alertDialog>
-      <div className="flex flex-col items-center justify-center p-4" />
-      <div className="loader mb-4" />
-      <p className="text-center">Loading...</p>
-    </ModalBase>
-  )
-}
+}) => (
+  <ModalBase {...{ modalKey }} alertDialog>
+    <div className="flex flex-col items-center justify-center p-4" />
+    <div className="loader mb-4" />
+    <p className="text-center">Loading...</p>
+  </ModalBase>
+)

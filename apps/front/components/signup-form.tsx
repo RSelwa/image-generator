@@ -18,11 +18,11 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { PAGES } from "@/constants/pages"
-import { cn } from "@/lib/utils"
 import {
   useCreateUserAuthMutation,
   useLoginWithGoogleMutation,
 } from "@/redux/api/auth"
+import { cn } from "@/utils"
 
 const signupSchema = z.object({
   email: z.email(),
@@ -30,10 +30,10 @@ const signupSchema = z.object({
 })
 export type SignupSchema = z.infer<typeof signupSchema>
 
-export function SignupForm({
+export const SignupForm = ({
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div">) => {
   const router = useRouter()
 
   const [createAuthUser, { isLoading }] = useCreateUserAuthMutation()

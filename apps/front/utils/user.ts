@@ -2,13 +2,13 @@ import { type UserDoc } from "@repo/schemas"
 import { type User } from "firebase/auth"
 import { type SessionUser, sessionUserSchema } from "@/schemas/session"
 
-export function formatSessionFromFirebaseUser({
+export const formatSessionFromFirebaseUser = ({
   user,
   authUser,
 }: {
   user: UserDoc
   authUser: User
-}): SessionUser {
+}): SessionUser => {
   const { uid, photoURL } = authUser
   const { email, rights } = user
 

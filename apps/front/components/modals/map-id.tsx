@@ -33,9 +33,9 @@ type MapFormSchema = z.input<typeof createMapInputSchema>
 const KEY = MODAL_KEYS.MAP_ID
 
 // Helper to parse combined param format: "parentId_childId"
-export function parseSubcollectionParam(
+export const parseSubcollectionParam = (
   param: string | null,
-): { parentId: string, childId: string } | null {
+): { parentId: string, childId: string } | null => {
   if (!param) return null
   const separatorIndex = param.indexOf("_")
   if (separatorIndex === -1) return null
@@ -47,14 +47,12 @@ export function parseSubcollectionParam(
 }
 
 // Helper to build combined param format: "parentId_childId"
-export function buildSubcollectionParam(
+export const buildSubcollectionParam = (
   parentId: string,
   childId: string,
-): string {
-  return `${parentId}_${childId}`
-}
+): string => `${parentId}_${childId}`
 
-function MapForm({
+const MapForm = ({
   mapId,
   gameId,
   isNew,
@@ -62,7 +60,7 @@ function MapForm({
   mapId: string
   gameId: string
   isNew: boolean
-}) {
+}) => {
   const { data, isLoading } = useGetMapByIdQuery(
     { gameId, id: mapId },
     { skip: isNew },
@@ -276,7 +274,7 @@ function MapForm({
   )
 }
 
-export function ModalMapId() {
+export const ModalMapId = () => {
   const [modalParam] = useQueryState(KEY)
 
   const parsed = parseSubcollectionParam(modalParam)

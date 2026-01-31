@@ -13,7 +13,7 @@ export const globalErrorSchema = z.object({
 
 export type GlobalError = z.infer<typeof globalErrorSchema>
 
-function isRTKQueryError(error: unknown): error is FetchBaseQueryError {
+const isRTKQueryError = (error: unknown): error is FetchBaseQueryError => {
   const isObject = typeof error === "object" && error !== null
 
   if (!isObject) return false
@@ -25,13 +25,13 @@ function isRTKQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error.status === "number" || typeof error.status === "string"
 }
 
-function maybeLogAndReturn<T>(data: T, log?: boolean): T {
+const maybeLogAndReturn = <T>(data: T, log?: boolean): T => {
   log && console.trace("⛔️ Logged error:", data)
 
   return data
 }
 
-export function rtkQueryErrorHandler(error: FetchBaseQueryError) {
+export const rtkQueryErrorHandler = (error: FetchBaseQueryError) => {
   const { status, data } = error
 
   const hastHttpStatusCode = typeof status === "number"
@@ -81,7 +81,7 @@ export function rtkQueryErrorHandler(error: FetchBaseQueryError) {
   }
 }
 
-export function firebaseErrorHandler(code: string) {
+export const firebaseErrorHandler = (code: string) => {
   if (code === "auth/too-many-requests")
     return "Please wait a few minutes before trying again"
   if (code === "auth/popup-closed-by-user")
@@ -232,10 +232,10 @@ export function firebaseErrorHandler(code: string) {
   return "Something went wrong"
 }
 
-export function globalErrorHandler(
+export const globalErrorHandler = (
   error: unknown,
   options: { log?: boolean } = { log: false },
-): GlobalError {
+): GlobalError => {
   if (isRTKQueryError(error)) {
     return maybeLogAndReturn(
       {

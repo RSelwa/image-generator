@@ -8,7 +8,7 @@ import { SphericalGalleryModal } from "@/components/modals/spherical-gallery"
 import { ModalSphericalId } from "@/components/modals/spherical-id"
 import { MODAL_KEYS } from "@/constants/mapping"
 
-export function ModalProvider() {
+export const ModalProvider = () => {
   const searchParams = useSearchParams()
 
   const type = Object.values(MODAL_KEYS).find((key) => searchParams.has(key))

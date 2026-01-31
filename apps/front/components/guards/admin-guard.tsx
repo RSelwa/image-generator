@@ -14,7 +14,7 @@ type AdminGuardProps = {
   children: ReactNode
 }
 
-export function AdminGuard({ children }: AdminGuardProps) {
+export const AdminGuard = ({ children }: AdminGuardProps) => {
   const router = useRouter()
   const status = useAppSelector(selectSessionStatus)
   const isAdmin = useAppSelector(selectIsAdmin)

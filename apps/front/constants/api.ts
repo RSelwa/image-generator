@@ -4,6 +4,7 @@ export const DEFAULT_SIZE_MAPS = 10
 
 export const ENDPOINTS_BASE = {
   UPLOAD_IMAGE: "/api/upload-image",
+  PROXY_IMAGE: "/api/proxy-image",
 } as const
 
 export const UPLOAD_GAME_IMAGE_PAYLOAD = {

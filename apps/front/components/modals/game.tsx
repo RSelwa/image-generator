@@ -35,7 +35,7 @@ type GameFormSchema = z.input<typeof createGameInputSchema>
 
 const KEY = MODAL_KEYS.GAME_ID
 
-function GameForm({ gameId, isNew }: { gameId: string, isNew: boolean }) {
+const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
   const { data, isLoading } = useGetGameByIdQuery(
     { id: gameId },
     { skip: isNew },
@@ -43,6 +43,7 @@ function GameForm({ gameId, isNew }: { gameId: string, isNew: boolean }) {
   const [createGame, { isLoading: isCreating }] = useCreateGameMutation()
   const [updateGame, { isLoading: isUpdating }] = useUpdateGameByIdMutation()
   const [isUploading, setIsUploading] = useState(false)
+  const [createMultiple, setCreateMultiple] = useState(false)
   const [, setGameId] = useQueryState(KEY)
 
   const {
@@ -114,14 +115,18 @@ function GameForm({ gameId, isNew }: { gameId: string, isNew: boolean }) {
     const parsedData = createGameInputSchema.parse(formData)
 
     if (isNew) {
-      const { data: createdGame, error } = await createGame(parsedData)
+      const { error } = await createGame(parsedData)
 
       if (error) return
 
       toast.success("Game created successfully")
-      // Redirect to the created game's edit page
-      if (createdGame?.id) {
-        setGameId(createdGame.id)
+
+      if (createMultiple) {
+        // Reset form to create another game
+        reset()
+      } else {
+        // Close modal
+        setGameId(null)
       }
     } else {
       // Only include image fields if they were actually changed
@@ -283,7 +288,18 @@ function GameForm({ gameId, isNew }: { gameId: string, isNew: boolean }) {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex items-center justify-between">
+          {isNew ? (
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={createMultiple}
+                onCheckedChange={(checked) => setCreateMultiple(!!checked)}
+              />
+              Create multiple
+            </label>
+          ) : (
+            <div />
+          )}
           <Button type="submit" disabled={isCreating || isUpdating || !isDirty}>
             {isCreating || isUpdating ? (
               <>
@@ -301,7 +317,7 @@ function GameForm({ gameId, isNew }: { gameId: string, isNew: boolean }) {
   )
 }
 
-export function ModalGame() {
+export const ModalGame = () => {
   const [gameId] = useQueryState(KEY)
 
   if (!gameId) return <LoadingModal modalKey={KEY} />

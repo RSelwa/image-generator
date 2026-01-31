@@ -18,12 +18,12 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { PAGES } from "@/constants/pages"
-import { cn } from "@/lib/utils"
 import {
   useLoginMutation,
   useLoginWithGoogleMutation,
   useSendPasswordResetEmailMutation,
 } from "@/redux/api/auth"
+import { cn } from "@/utils"
 
 const loginSchema = z.object({
   email: z.email(),
@@ -31,10 +31,10 @@ const loginSchema = z.object({
 })
 type LoginSchema = z.infer<typeof loginSchema>
 
-export function LoginForm({
+export const LoginForm = ({
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div">) => {
   const router = useRouter()
 
   const [sendPasswordResetEmail] = useSendPasswordResetEmailMutation()

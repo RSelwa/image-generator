@@ -14,14 +14,14 @@ type ImageDropzoneProps = {
   className?: string
 }
 
-export function ImageDropzone({
+export const ImageDropzone = ({
   imageUrl,
   onFileSelect,
   onRemove,
   isUploading = false,
   alt = "Uploaded image",
   className,
-}: ImageDropzoneProps) {
+}: ImageDropzoneProps) => {
   const [isDragging, setIsDragging] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)

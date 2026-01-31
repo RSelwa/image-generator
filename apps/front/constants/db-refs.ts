@@ -43,18 +43,14 @@ export const TABLES_SUB_REFS = {
     >,
 } as const
 
-export function getUserRef(uid: string | undefined) {
-  return uid ? doc(TABLE_REFS[TABLES.USERS], uid) : doc(TABLE_REFS[TABLES.USERS])
-}
+export const getUserRef = (uid: string | undefined) =>
+  uid ? doc(TABLE_REFS[TABLES.USERS], uid) : doc(TABLE_REFS[TABLES.USERS])
 
-export function getGameRef(uid: string | undefined) {
-  return uid ? doc(TABLE_REFS[TABLES.GAMES], uid) : doc(TABLE_REFS[TABLES.GAMES])
-}
+export const getGameRef = (uid: string | undefined) =>
+  uid ? doc(TABLE_REFS[TABLES.GAMES], uid) : doc(TABLE_REFS[TABLES.GAMES])
 
-export function getSphericalRef(gameId: string, sphericalId: string) {
-  return doc(TABLES_SUB_REFS[TABLES.SPHERICAL](gameId), sphericalId)
-}
+export const getSphericalRef = (gameId: string, sphericalId: string) =>
+  doc(TABLES_SUB_REFS[TABLES.SPHERICAL](gameId), sphericalId)
 
-export function getMapRef(gameId: string, mapId: string) {
-  return doc(TABLES_SUB_REFS[TABLES.MAPS](gameId), mapId)
-}
+export const getMapRef = (gameId: string, mapId: string) =>
+  doc(TABLES_SUB_REFS[TABLES.MAPS](gameId), mapId)
