@@ -92,9 +92,6 @@ export const gameApi = createApi({
               const { data, error } = gameEntitySchema.safeParse({
                 id: doc.id,
                 ...doc.data(),
-                thumbnailUrl:
-                  doc.data().storageImage ||
-                  getImageUrl(doc.data().thumbnailUrl),
                 sphericalsCount,
                 mapsCount,
               })
@@ -156,9 +153,6 @@ export const gameApi = createApi({
           const { data, error } = gameDocWithIdSchema.safeParse({
             id: docSnap.id,
             ...docSnap.data(),
-            thumbnailUrl:
-              docSnap.data().thumbnailUrl ||
-              getImageUrl(docSnap.data().thumbnailUrl),
           })
 
           if (error) throw new Error(error.message || "Data parsing error")

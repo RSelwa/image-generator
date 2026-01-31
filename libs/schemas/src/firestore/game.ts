@@ -6,8 +6,7 @@ import { timestampSchema, WITH_ID } from "~/zod"
 export const gameDocSchema = z.object({
   title: z.string().min(1),
   description: z.string().max(500).optional(),
-  thumbnailUrl: z.string().optional().default(""),
-  storageImage: z.string().nullish(),
+  image: z.string().optional().default(""),
   midName: z.string().optional().default(""),
   alternateName: z.string().optional().default(""),
   hasSphericalImagesReady: z.boolean().optional().default(false),

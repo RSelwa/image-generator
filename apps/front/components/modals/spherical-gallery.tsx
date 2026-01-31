@@ -62,7 +62,7 @@ export const SphericalCard = ({
       {game && (
         <div className="absolute w-36 bottom-2 right-2 flex-col items-end text-right">
           <Image
-            src={game.storageImage || ""}
+            src={game.image || ""}
             height={100}
             width={100}
             alt={game.title}

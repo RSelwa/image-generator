@@ -33,7 +33,7 @@ const Page = () => {
     game.title.toLowerCase().includes(search.toLowerCase()),
   ).filter((game) => {
     if (isOnlyDisplayMissingImages)
-      return !game.storageImage
+      return !game.image
 
     return true
   }).sort((a, b) => {

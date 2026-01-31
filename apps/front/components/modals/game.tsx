@@ -59,8 +59,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
     defaultValues: {
       title: "",
       description: "",
-      thumbnailUrl: "",
-      storageImage: "",
+      image: "",
       midName: "",
       alternateName: "",
       hasSphericalImagesReady: false,
@@ -68,7 +67,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
     },
   })
 
-  const storageImage = watch("storageImage")
+  const image = watch("image")
   const title = watch("title")
 
   useEffect(() => {
@@ -76,8 +75,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
       reset({
         title: data.title,
         description: data.description ?? "",
-        thumbnailUrl: data.thumbnailUrl ?? "",
-        storageImage: data.storageImage ?? "",
+        image: data.image ?? "",
         midName: data.midName ?? "",
         alternateName: data.alternateName ?? "",
         hasSphericalImagesReady: data.hasSphericalImagesReady ?? false,
@@ -95,7 +93,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
         title,
       })
 
-      setValue("storageImage", url, { shouldDirty: true })
+      setValue("image", url, { shouldDirty: true })
       toast.success("Image uploaded successfully")
     } catch (error) {
       console.error("Upload error:", error)
@@ -107,7 +105,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
   }
 
   const handleRemoveImage = () => {
-    setValue("storageImage", "", { shouldDirty: true })
+    setValue("image", "", { shouldDirty: true })
   }
 
   const onSubmit: SubmitHandler<GameFormSchema> = async (formData) => {
@@ -132,11 +130,10 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
       }
     } else {
       // Only include image fields if they were actually changed
-      const { storageImage, thumbnailUrl, ...rest } = parsedData
+      const { image, ...rest } = parsedData
       const updateData = {
         ...rest,
-        ...(dirtyFields.storageImage && { storageImage }),
-        ...(dirtyFields.thumbnailUrl && { thumbnailUrl }),
+        ...(dirtyFields.image && { image }),
       }
 
       const { error } = await updateGame({ id: gameId, data: updateData })
@@ -146,10 +143,6 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
       toast.success("Game updated successfully")
     }
   }
-
-  useEffect(() => {
-    console.log(createMultiple)
-  }, [createMultiple])
 
   if (!isNew && isLoading) {
     return <LoadingModal modalKey={KEY} />
@@ -211,14 +204,6 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
                   id="midName"
                   placeholder="Mid name"
                   {...register("midName")}
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="thumbnailUrl">Thumbnail URL</FieldLabel>
-                <Input
-                  id="thumbnailUrl"
-                  placeholder="https://..."
-                  {...register("thumbnailUrl")}
                 />
               </Field>
             </div>
@@ -285,7 +270,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
           <div className="flex flex-col gap-3">
             <FieldLabel>Game Image</FieldLabel>
             <ImageDropzone
-              imageUrl={storageImage ?? null}
+              imageUrl={image ?? null}
               onFileSelect={handleFileUpload}
               onRemove={handleRemoveImage}
               isUploading={isUploading}

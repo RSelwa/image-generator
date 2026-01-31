@@ -26,7 +26,7 @@ const isRTKQueryError = (error: unknown): error is FetchBaseQueryError => {
 }
 
 const maybeLogAndReturn = <T>(data: T, log?: boolean): T => {
-  log && console.trace("⛔️ Logged error:", data)
+  log && console.info("⛔️ Logged error:", data)
 
   return data
 }
