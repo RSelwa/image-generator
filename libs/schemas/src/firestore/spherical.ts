@@ -9,8 +9,6 @@ export const mapPositionSchema = z.object({
   y: z.number().min(0).max(100),
 })
 
-export type MapPosition = z.infer<typeof mapPositionSchema>
-
 export const sphericalDocSchema = z.object({
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
@@ -36,6 +34,7 @@ export const updateSphericalInputSchema = createSphericalInputSchema.partial()
 // Form schema (without gameId, added separately on submit)
 export const sphericalFormSchema = createSphericalInputSchema.omit({ gameId: true })
 
+export type MapPosition = z.infer<typeof mapPositionSchema>
 export type SphericalDoc = z.infer<typeof sphericalDocSchema>
 export type SphericalDocWithId = z.infer<typeof sphericalDocWithIdSchema>
 export type CreateSphericalInput = z.infer<typeof createSphericalInputSchema>

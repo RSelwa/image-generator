@@ -5,6 +5,8 @@ export const TABLES = {
   GAMES: "games",
   MAPS: "maps",
   SPHERICAL: "spherical",
+  FLAT: "flat",
+  RIGHTS: "rights",
 } as const
 
 export const STORAGE_PATHS = {

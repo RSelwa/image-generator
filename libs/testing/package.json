@@ -1,0 +1,47 @@
+{
+  "name": "@repo/testing",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Testing utilities for the monorepo",
+  "license": "MIT",
+  "exports": {
+    "./factory": {
+      "types": "./dist/factory.d.ts",
+      "default": "./dist/factory.js"
+    },
+    "./orm": {
+      "types": "./dist/orm.d.ts",
+      "default": "./dist/orm.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsdown",
+    "compile": "tsc --noEmit",
+    "lint": "biome check",
+    "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
+    "test": "vitest run --coverage",
+    "clean": "del-cli dist isolate tsconfig.tsbuildinfo",
+    "coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@firebase/firestore": "^4.10.0",
+    "@repo/common": "workspace:*",
+    "@repo/providers": "workspace:*",
+    "@repo/schemas": "workspace:*",
+    "firebase-admin": "^13.5.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@codecompose/typescript-config": "^2.2.0",
+    "@faker-js/faker": "^10.1.0",
+    "del-cli": "^7.0.0",
+    "firebase": "^12.3.0",
+    "madge": "^8.0.0",
+    "tsdown": "^0.15.6",
+    "typescript": "^5.7.3",
+    "vite": "^7.1.7",
+    "vitest": "^4.0.9"
+  }
+}

@@ -13,6 +13,7 @@
   - friends invitations
   - Buy domain name
   - Setup Reels Insta et tiktok
+  - Implement a system to interact with twitch chat, maybe to vote for games
 
 - Front
   - Clean footer
