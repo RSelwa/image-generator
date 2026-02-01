@@ -48,6 +48,7 @@ export const gameApi = createApi({
     "GameSphericals",
     "GameMapCount",
     "GameMaps",
+    "GameFlatCount",
   ],
   endpoints: (builder) => ({
     getGames: builder.infiniteQuery<
@@ -89,11 +90,18 @@ export const gameApi = createApi({
                 }),
               ).unwrap()
 
+              const flatsCount = await dispatch(
+                gameApi.endpoints.getFlatsCountByGameId.initiate({
+                  gameId: doc.id,
+                }),
+              ).unwrap()
+
               const { data, error } = gameEntitySchema.safeParse({
                 id: doc.id,
                 ...doc.data(),
                 sphericalsCount,
                 mapsCount,
+                flatsCount
               })
 
               if (error) throw new Error("Data parsing error")
@@ -298,6 +306,27 @@ export const gameApi = createApi({
         { type: "GameMaps", id: gameId },
       ],
     }),
+    getFlatsCountByGameId: builder.query<number, { gameId: string }>({
+      queryFn: async ({ gameId }) => {
+        try {
+          const snapshot = await getCountFromServer(
+            TABLES_SUB_REFS[TABLES.FLAT](gameId),
+          )
+
+          return { data: snapshot.data().count }
+        } catch (error) {
+          console.error("Error fetching game flats count:", error)
+          toast.error("Error fetching game flats count")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      providesTags: (_result, _error, { gameId }) => [
+        { type: "GameFlatCount", id: gameId },
+      ],
+    }),
     createGame: builder.mutation<GameDocWithId, CreateGameInput>({
       queryFn: async (input) => {
         try {
@@ -416,6 +445,7 @@ export const {
   useGetGameSphericalCountQuery,
   useGetSphericalsByGameIdQuery,
   useGetMapsByGameIdQuery,
+  useGetFlatsCountByGameIdQuery,
   useCreateGameMutation,
   useUpdateGameByIdMutation,
   useDeleteGameByIdMutation,

@@ -18,6 +18,8 @@ export const MODAL_KEYS = {
   MAPS_GALLERY_ID: "maps-gallery-id",
   MAP_ID: "map-id",
   SPHERICAL_GALLERY_ID: "spherical-gallery-id",
+  FLAT_GALLERY_ID: "flat-gallery-id",
+  FLAT_ID: "flat-id",
 } as const
 
 export const SORT_OPTIONS = {

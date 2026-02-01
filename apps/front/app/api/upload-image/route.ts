@@ -1,8 +1,10 @@
-import { getNowString, STORAGE_PATHS } from "@repo/common"
+import { BUCKETS_ACTIONS, type ConstantValues } from "@repo/common"
+import { getNowString, RIGHTS_CREATE_TO_BUCKETS, STORAGE_PATHS } from "@repo/common"
+import { type RightDoc } from "@repo/schemas"
 import sharp from "sharp"
 import z from "zod"
 import { storage } from "@/lib/firebase-admin"
-import { verifyAdmin } from "@/utils/api"
+import { getUserRight } from "@/utils/api"
 
 export const payloadSchema = z.object({
   file: z.custom((v) => v, {
@@ -14,15 +16,35 @@ export const payloadSchema = z.object({
   }),
 })
 
+const hasRightToUpload = (userRight: RightDoc["right"], bucketPath: ConstantValues<typeof STORAGE_PATHS>) => {
+  const bucket = RIGHTS_CREATE_TO_BUCKETS[bucketPath].find(({ role }) => role === userRight)
+
+  if (!bucket) return false
+
+  return userRight === bucket.role && bucket.rights.includes(BUCKETS_ACTIONS.CREATE)
+}
+
 export const POST = async (request: Request) => {
   try {
-    const authResult = await verifyAdmin(request)
-    if ("error" in authResult) {
-      console.error("Authentication error:", authResult.error)
+    const right = await getUserRight(request)
+
+    if ("error" in right) {
+      console.error("Authentication error:", right.error)
+
+      const status =
+        "status" in right ? right.status : 500
 
       return Response.json(
-        { error: authResult.error },
-        { status: authResult.status },
+        { error: right.error },
+        { status },
+      )
+    }
+
+    if (!hasRightToUpload(right.data.right, STORAGE_PATHS.MAP_IMAGES)) {
+      // Authorized
+      return Response.json(
+        { error: "Authorized to write in this bucket" },
+        { status: 401 },
       )
     }
 

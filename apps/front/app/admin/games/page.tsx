@@ -1,7 +1,7 @@
 "use client"
 
 import { useQueryState } from "nuqs"
-import GameCard from "@/components/admin/game-card"
+import GameCard from "@/components/cards/game-card"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"

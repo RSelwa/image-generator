@@ -18,6 +18,7 @@
     "build:libs": "turbo run build --filter=@repo/providers --filter=@repo/schemas --filter=@repo/testing --filter=@repo/common && pnpm install",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
+    "build:front": "turbo run -F @repo/front build",
     "dev:front": "turbo run -F @repo/front dev",
     "dev:server": "deno run --allow-all --env=./scripts/.env --config scripts/deno.json scripts/src/server/index.ts",
     "test": "turbo run test",

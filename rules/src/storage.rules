@@ -42,6 +42,22 @@ service firebase.storage {
       allow read: if true;
     }
 
+    // Flat images - public read, admin write only
+    match /flat-images/{allPaths=**} {
+      allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
+      allow read: if true;
+    }
+
+    // Flat thumbnails - public read, admin write only
+    match /flat-thumbnails/{allPaths=**} {
+      allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
+      allow read: if true;
+    }
+
     // Deny all other paths
     match /{allPaths=**} {
       // Admin

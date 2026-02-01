@@ -108,7 +108,7 @@ const MapForm = ({
     try {
       const { url, width, height } = await uploadFileToBucket({
         file,
-        bucketPath: STORAGE_PATHS.MAP_THUMBNAILS,
+        bucketPath: STORAGE_PATHS.MAP_IMAGES,
         title: name,
       })
 

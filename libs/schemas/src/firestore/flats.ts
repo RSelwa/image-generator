@@ -1,6 +1,6 @@
 import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
 import z from "zod"
-import { timestampSchema, WITH_ID } from "~/index"
+import { timestampSchema, WITH_ID } from "~/zod"
 
 export const flatDocSchema = z.object({
   createdAt: timestampSchema.nullish().default(() => null),
@@ -16,7 +16,16 @@ export const flatDocSchema = z.object({
 
 })
 
-export const sphericalDocWithIdSchema = z.object({ ...flatDocSchema.shape, ...WITH_ID.shape })
+export const flatDocWithIdSchema = z.object({ ...flatDocSchema.shape, ...WITH_ID.shape })
+
+export const createFlatInputSchema = flatDocSchema.omit({ createdAt: true, updatedAt: true })
+
+export const updateFlatInputSchema = createFlatInputSchema.partial()
+
+export const flatFormSchema = createFlatInputSchema.omit({ gameId: true })
 
 export type FlatDoc = z.infer<typeof flatDocSchema>
-export type FlatDocWithId = z.infer<typeof sphericalDocWithIdSchema>
+export type FlatDocWithId = z.infer<typeof flatDocWithIdSchema>
+export type CreateFlatInput = z.infer<typeof createFlatInputSchema>
+export type UpdateFlatInput = z.infer<typeof updateFlatInputSchema>
+export type FlatFormInput = z.infer<typeof flatFormSchema>

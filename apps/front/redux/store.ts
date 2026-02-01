@@ -3,6 +3,7 @@ import { useDispatch, useSelector, useStore } from "react-redux"
 import { pokemonApi } from "@/redux/api"
 import { adminApi } from "@/redux/api/admin"
 import { authApi } from "@/redux/api/auth"
+import { flatApi } from "@/redux/api/flat"
 import { gameApi } from "@/redux/api/games"
 import { localApi } from "@/redux/api/local"
 import { mapApi } from "@/redux/api/maps"
@@ -18,6 +19,7 @@ export const makeStore = () =>
       [localApi.reducerPath]: localApi.reducer,
       [mapApi.reducerPath]: mapApi.reducer,
       [sphericalApi.reducerPath]: sphericalApi.reducer,
+      [flatApi.reducerPath]: flatApi.reducer,
       [authApi.reducerPath]: authApi.reducer,
       [sessionSlice.name]: sessionSlice.reducer,
     },
@@ -29,6 +31,7 @@ export const makeStore = () =>
         .concat(localApi.middleware)
         .concat(mapApi.middleware)
         .concat(sphericalApi.middleware)
+        .concat(flatApi.middleware)
         .concat(authApi.middleware),
   })
 

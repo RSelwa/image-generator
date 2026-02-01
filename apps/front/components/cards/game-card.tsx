@@ -13,6 +13,10 @@ const GameCard = ({ game }: { game: GameEntity, index?: number }) => {
     MODAL_KEYS.MAPS_GALLERY_ID,
     game.id,
   )
+  const { openModal: openFlatGallery } = useModal(
+    MODAL_KEYS.FLAT_GALLERY_ID,
+    game.id,
+  )
   const { openModal } = useModal(MODAL_KEYS.GAME_ID, game.id)
 
   return (
@@ -54,6 +58,19 @@ const GameCard = ({ game }: { game: GameEntity, index?: number }) => {
               className="cursor-pointer"
             >
               {game.mapsCount} Maps
+            </button>
+          </Badge>
+          <Badge asChild variant="blur" className="mr-1">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                openFlatGallery()
+              }}
+              className="cursor-pointer"
+            >
+              {game.flatsCount} Flats
             </button>
           </Badge>
         </div>

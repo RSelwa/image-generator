@@ -15,7 +15,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { type SignupSchema } from "@/components/signup-form"
 import { auth } from "@/constants/db"
-import { getUserRef } from "@/constants/db-refs"
+import { getRightRef, getUserRef } from "@/constants/db-refs"
 import { SESSION_STATUS } from "@/constants/mapping"
 import {
   updateSession,
@@ -162,11 +162,9 @@ export const authApi = createApi({
 
           if (!user) throw new Error("No user found")
 
-          const token = await user.getIdToken()
-
           dispatch(updateSessionAuthUser(user))
 
-          const payload = { ref: getUserRef(user.uid), token }
+          const payload = { ref: getUserRef(user.uid) }
 
           await dispatch(authApi.endpoints.listenToUserDoc.initiate(payload))
 
@@ -186,14 +184,18 @@ export const authApi = createApi({
 
           if (!authUser) throw new Error("No authenticated user found")
 
-          const promiseGetDoc = await getDoc(ref)
-          if (!promiseGetDoc.exists()) throw new Error("Document not found")
+          const promiseGetUserDoc = await getDoc(ref)
+          const getUserRight = await getDoc(getRightRef(authUser.uid))
 
-          const userDocument = promiseGetDoc.data()
+          if (!promiseGetUserDoc.exists()) throw new Error("Document not found")
+
+          const rightsDoc = getUserRight.exists() ? getUserRight.data() : null
+          const userDocument = promiseGetUserDoc.data()
 
           const user = formatSessionFromFirebaseUser({
             user: userDocument,
             authUser,
+            rightsDoc
           })
 
           dispatch(updateSession({ user, status: SESSION_STATUS.SUCCESS }))
@@ -225,6 +227,9 @@ export const authApi = createApi({
 
           if (!authUser) throw new Error("No authenticated user found")
 
+          const getUserRight = await getDoc(getRightRef(authUser.uid))
+          const rightsDoc = getUserRight.exists() ? getUserRight.data() : null
+
           unsubscribe = onSnapshot(
             ref,
             async (snapshot) => {
@@ -237,6 +242,7 @@ export const authApi = createApi({
               const user = formatSessionFromFirebaseUser({
                 user: userDocument,
                 authUser,
+                rightsDoc
               })
 
               dispatch(updateSession({ user, status: SESSION_STATUS.SUCCESS }))

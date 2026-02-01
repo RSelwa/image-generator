@@ -2,11 +2,13 @@
 
 - Global
   - ~~Change gameRef into gameId in spherical + maps~~
-  - Update schema to allow sphericals to have mapId and coordinates or not depending on types
+  - ~~Update schema to allow sphericals to have mapId and coordinates or not depending on types~~
+  - ~~Implement 2D maps~~
+  - ~~Change rights into a dedicated table~~
+  - ~~Implement Icono roles~~
+  - Add firebase admin for front libs
+  - Add storage tests for Flat images and thumbnails
   - update the listeners too
-  - Implement 2D maps
-  - Change rights into a dedicated table
-  - Implement Icono roles
   - implements tests in front
   - Implements game creation
   - Implement suggestion
