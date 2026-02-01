@@ -15,7 +15,7 @@
     "check-circular": "turbo check-circular --continue",
     "build": "turbo run build",
     "create:function": "npx tsx cli/create-function.mts",
-    "build:libs": "turbo run build --filter=@repo/providers --filter=@repo/schemas --filter=@repo/common && pnpm install",
+    "build:libs": "turbo run build --filter=@repo/providers --filter=@repo/schemas --filter=@repo/testing --filter=@repo/common && pnpm install",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
     "dev:front": "turbo run -F @repo/front dev",

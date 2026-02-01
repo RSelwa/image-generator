@@ -24,6 +24,12 @@ async function createAuthUser({
   return { uid: data.localId, email: data.email }
 }
 
+beforeAll(() => {
+  if (!process.env.FIRESTORE_EMULATOR_HOST) {
+    throw new Error("FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.")
+  }
+})
+
 describe("createUserDocument", () => {
   beforeAll(async () => {
     // Only run destructive operations if using the Firestore emulator

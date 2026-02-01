@@ -10,6 +10,7 @@
 - Use pnpm instead of npm
 - use {condition && <code>} and {!condition && <fallback>} instead of {condition ? <code> : <fallback> }
 - use || instead of ??
+- use mocked urls from "libs/common/src/constants/testing.ts" when need mockedImages in tests
 - use if instead of switch
 - use () => x instead of () => { return x } when possible
 - use Arrow functions

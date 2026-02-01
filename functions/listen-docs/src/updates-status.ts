@@ -34,16 +34,23 @@ export const updateSphericalStatus = async (
     return
   }
 
-  const currentStatus = data.status || DOCUMENTS_STATUS.WAITING
+  const isOldDocNeedVerification = data.status === DOCUMENTS_STATUS.NEED_VERIFICATION
+  const isOldDocReady = data.status === DOCUMENTS_STATUS.READY
 
-  const isReady = Boolean(data.image) && data?.mapId && data?.mapPosition?.x !== undefined && data?.mapPosition?.y !== undefined
+  if (isOldDocNeedVerification || isOldDocReady) {
+    logger.info(`Spherical ${sphericalId} in game ${gameId} is already in status ${data.status}`)
 
-  const needChanges = ((currentStatus === DOCUMENTS_STATUS.ERROR || currentStatus === DOCUMENTS_STATUS.WAITING) && isReady)
+    return
+  }
 
-  if (!needChanges) {
+  const hasSphericalImage = Boolean(data.image && data.image !== "")
+  const isSphericalThumbnailReady = Boolean(data.thumbnail && data.thumbnail !== "")
+  const isSPhericalMapIdReady = Boolean(data.mapId && data.mapId !== "" && data.mapPosition && data.mapPosition.x !== undefined && data.mapPosition.y !== undefined)
+
+  const isReady = hasSphericalImage && (isSphericalThumbnailReady || isSPhericalMapIdReady)
+
+  if (!isReady) {
     logger.info(`No need to update spherical ${sphericalId} in game ${gameId}`)
-
-    logger.info(currentStatus, isReady, data, needChanges)
 
     return
   }
