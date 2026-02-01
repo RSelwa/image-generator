@@ -11,6 +11,7 @@ function config({ mode }) {
       exclude: [...configDefaults.exclude],
       env: loadEnv(mode, rootPath, ""),
       reporters: process.env.GITHUB_ACTIONS ? ["verbose", "github-actions"] : ["verbose"],
+      retry: 3, // Retry flaky tests up to 2 times (Firebase emulator can be flaky)
     },
   }
 }

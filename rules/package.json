@@ -8,7 +8,7 @@
   "module": "./dist/index.js",
   "scripts": {
     "posttest": "lcov-cli-report-viewer coverage/lcov.info",
-    "test": "vitest run",
+    "test": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 vitest run",
     "clean": "del-cli dist isolate tsconfig.tsbuildinfo"
   },
   "dependencies": {

@@ -14,9 +14,9 @@ import {
 } from "firebase/storage"
 import { afterAll, beforeAll, beforeEach, describe, it } from "vitest"
 
-// NOTE: Admin tests are skipped because firestore.get() cross-service calls
+// NOTE: Admin and iconograph tests are skipped because firestore.get() cross-service calls
 // don't work reliably in the Firebase emulator testing environment.
-// The admin functionality should be tested manually or in integration tests.
+// The admin/iconograph functionality should be tested manually or in integration tests.
 
 const PROJECT_ID = "tiktok-generator-fa261"
 const HOST = "localhost"
@@ -29,6 +29,7 @@ let testEnv: RulesTestEnvironment
 
 const ADMIN_UID = "admin-user"
 const NON_ADMIN_UID = "non-admin-user"
+const ICONOGRAPH_UID = "iconograph-user"
 
 describe("firebase Storage Rules", () => {
   beforeAll(async () => {
@@ -50,11 +51,18 @@ describe("firebase Storage Rules", () => {
     await testEnv.clearStorage()
     await testEnv.clearFirestore()
 
-    // Set up admin user in Firestore
+    // Set up users with rights in dedicated rights collection
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const firestore = context.firestore()
-      await setDoc(doc(firestore, "users", ADMIN_UID), { rights: "admin" })
-      await setDoc(doc(firestore, "users", NON_ADMIN_UID), { rights: "user" })
+      await setDoc(doc(firestore, "rights", ADMIN_UID), {
+        uid: ADMIN_UID,
+        right: "admin",
+      })
+      await setDoc(doc(firestore, "rights", ICONOGRAPH_UID), {
+        uid: ICONOGRAPH_UID,
+        right: "iconograph",
+      })
+      // NON_ADMIN_UID has no rights document
     })
   })
 
@@ -165,6 +173,47 @@ describe("firebase Storage Rules", () => {
         deleteObject(ref(adminStorage, "game-thumbnails/test.png")),
       )
     })
+
+    it.skip("should allow iconograph create", async () => {
+      const iconoStorage = testEnv
+        .authenticatedContext(ICONOGRAPH_UID)
+        .storage()
+
+      await assertSucceeds(
+        uploadBytes(ref(iconoStorage, "game-thumbnails/test.png"), testFile),
+      )
+    })
+
+    it.skip("should allow iconograph update", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "game-thumbnails/test.png"), testFile)
+      })
+
+      const iconoStorage = testEnv
+        .authenticatedContext(ICONOGRAPH_UID)
+        .storage()
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+
+      await assertSucceeds(
+        uploadBytes(ref(iconoStorage, "game-thumbnails/test.png"), updatedFile),
+      )
+    })
+
+    it.skip("should deny iconograph delete", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "game-thumbnails/test.png"), testFile)
+      })
+
+      const iconoStorage = testEnv
+        .authenticatedContext(ICONOGRAPH_UID)
+        .storage()
+
+      await assertFails(
+        deleteObject(ref(iconoStorage, "game-thumbnails/test.png")),
+      )
+    })
   })
 
   describe("sphericals", () => {
@@ -264,6 +313,45 @@ describe("firebase Storage Rules", () => {
         deleteObject(ref(adminStorage, "sphericals/test.jpg")),
       )
     })
+
+    it.skip("should allow iconograph create", async () => {
+      const iconoStorage = testEnv
+        .authenticatedContext(ICONOGRAPH_UID)
+        .storage()
+
+      await assertSucceeds(
+        uploadBytes(ref(iconoStorage, "sphericals/test.jpg"), testFile),
+      )
+    })
+
+    it.skip("should allow iconograph update", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "sphericals/test.jpg"), testFile)
+      })
+
+      const iconoStorage = testEnv
+        .authenticatedContext(ICONOGRAPH_UID)
+        .storage()
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+
+      await assertSucceeds(
+        uploadBytes(ref(iconoStorage, "sphericals/test.jpg"), updatedFile),
+      )
+    })
+
+    it.skip("should deny iconograph delete", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "sphericals/test.jpg"), testFile)
+      })
+
+      const iconoStorage = testEnv
+        .authenticatedContext(ICONOGRAPH_UID)
+        .storage()
+
+      await assertFails(deleteObject(ref(iconoStorage, "sphericals/test.jpg")))
+    })
   })
 
   describe("map-thumbnails", () => {
@@ -361,6 +449,47 @@ describe("firebase Storage Rules", () => {
 
       await assertSucceeds(
         deleteObject(ref(adminStorage, "map-thumbnails/test.png")),
+      )
+    })
+
+    it.skip("should allow iconograph create", async () => {
+      const iconoStorage = testEnv
+        .authenticatedContext(ICONOGRAPH_UID)
+        .storage()
+
+      await assertSucceeds(
+        uploadBytes(ref(iconoStorage, "map-thumbnails/test.png"), testFile),
+      )
+    })
+
+    it.skip("should allow iconograph update", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "map-thumbnails/test.png"), testFile)
+      })
+
+      const iconoStorage = testEnv
+        .authenticatedContext(ICONOGRAPH_UID)
+        .storage()
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+
+      await assertSucceeds(
+        uploadBytes(ref(iconoStorage, "map-thumbnails/test.png"), updatedFile),
+      )
+    })
+
+    it.skip("should deny iconograph delete", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "map-thumbnails/test.png"), testFile)
+      })
+
+      const iconoStorage = testEnv
+        .authenticatedContext(ICONOGRAPH_UID)
+        .storage()
+
+      await assertFails(
+        deleteObject(ref(iconoStorage, "map-thumbnails/test.png")),
       )
     })
   })

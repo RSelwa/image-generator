@@ -21,42 +21,87 @@ service cloud.firestore {
       return (!request.resource.data.diff(resource.data).affectedKeys().hasAny(fields))
     }
     
-    function signedInAdmin() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.rights == "admin";
+    function signedInIconograph() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/rights/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/rights/$(request.auth.uid)).data.right == "iconograph";
     }
+
+    function signedInAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/rights/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/rights/$(request.auth.uid)).data.right == "admin";
+    }
+
+    match /rights/{right} {
+      allow write: if signedInAdmin();
+     
+      allow read: if isDocOwner(right);
+    } 
 
     match /users/{user} {
       allow create: if isSignedIn();
 
-      allow update: if (request.auth.uid == user && !request.resource.data.diff(resource.data).affectedKeys()
-        .hasAny(['rights'])) || signedInAdmin();
-      allow  delete: if request.auth.uid == user;
+      allow update: if isDocOwner(user) || signedInAdmin();
+      allow delete: if request.auth.uid == user;
      
       allow read: if true;
     } 
 
     match /games/{game} {
-      allow write: if signedInAdmin() && isSignedIn();
+      allow create, update: if signedInIconograph();
+      allow write: if signedInAdmin();
+
       allow read: if true;
 
       match /spherical/{spherical} {
-        allow write: if signedInAdmin() && isSignedIn();
+        allow write: if signedInAdmin();
+        allow create, update: if signedInIconograph();
+
         allow read: if true;
-        }
+      }
+
+      match /flat/{flatId} {
+        allow write: if signedInAdmin();
+        allow create, update: if signedInIconograph();
+
+        allow read: if true;
+      }
 
       match /maps/{map} {
-        allow write: if signedInAdmin() && isSignedIn();
+        allow write: if signedInAdmin();
+        allow create, update: if signedInIconograph();
+
         allow read: if true;
       }
     }
 
+    match /spherical/{spherical} {
+      allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
+      allow read: if true;
+    }
+
     // CollectionGroup queries
     match /{path=**}/spherical/{spherical} {
-      allow write: if signedInAdmin() && isSignedIn();
+      allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
       allow read: if true;
-    } 
+    }
+
+    match /{path=**}/flat/{flatId} {
+      allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
+      allow read: if true;
+    }
+
     match /{path=**}/maps/{map} {
-      allow write: if signedInAdmin() && isSignedIn();
+      allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
       allow read: if true;
     } 
 

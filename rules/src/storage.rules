@@ -6,32 +6,46 @@ service firebase.storage {
       return request.auth != null;
     }
 
-    function isSignedInAdmin() {
-      return isSignedIn() && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.rights == "admin";
+    function signedInIconograph() {
+      return isSignedIn() &&
+        firestore.exists(/databases/(default)/documents/rights/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/rights/$(request.auth.uid)).data.right == "iconograph";
+    }
+
+    function signedInAdmin() {
+      return isSignedIn() &&
+        firestore.exists(/databases/(default)/documents/rights/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/rights/$(request.auth.uid)).data.right == "admin";
     }
 
     // Game thumbnails - public read, admin write only
     match /game-thumbnails/{allPaths=**} {
+      allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
       allow read: if true;
-      allow write: if isSignedInAdmin();
     }
 
     // Sphericals - public read, admin write only
     match /sphericals/{allPaths=**} {
+      allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
       allow read: if true;
-      allow write: if isSignedInAdmin();
     }
 
     // Map thumbnails - public read, admin write only
     match /map-thumbnails/{allPaths=**} {
+      allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
       allow read: if true;
-      allow write: if isSignedInAdmin();
     }
 
     // Deny all other paths
     match /{allPaths=**} {
       // Admin
-      allow read, write: if isSignedInAdmin();
+      allow read, write: if signedInAdmin();
 
       allow read, write: if false;
     }
