@@ -21,7 +21,7 @@ const GameCard = ({ game }: { game: GameEntity, index?: number }) => {
       className="relative h-64 cursor-pointer overflow-hidden rounded-xl border border-grey-100"
     >
       <Image
-        src={game.thumbnailUrl || FALL_BACK_IMAGE}
+        src={game.image || FALL_BACK_IMAGE}
         alt={game.title}
         height={200}
         loading="eager"

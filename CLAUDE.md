@@ -8,6 +8,7 @@
 # Code style
 
 - Use pnpm instead of npm
+- use {condition && <code>} and {!condition && <fallback>} instead of {condition ? <code> : <fallback> }
 - use || instead of ??
 - use if instead of switch
 - use () => x instead of () => { return x } when possible

@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { getImageUrl, TABLES } from "@repo/common"
+import { TABLES } from "@repo/common"
 import {
   type CreateGameInput,
   gameDocSchema,
@@ -223,7 +223,6 @@ export const gameApi = createApi({
               const { data, error } = sphericalDocWithIdSchema.safeParse({
                 id: doc.id,
                 ...doc.data(),
-                image: getImageUrl(doc.data().image),
               })
 
               if (error) return null

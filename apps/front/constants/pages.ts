@@ -9,4 +9,5 @@ export const PAGES = {
   ADMIN_GAMES: "/admin/games",
   ADMIN_SPHERICAL: "/admin/sphericals",
   ADMIN_TEST: "/admin/test",
+  ADMIN_SPHERICAL_FULLSCREEN: "/admin/spherical-full-screen",
 } as const

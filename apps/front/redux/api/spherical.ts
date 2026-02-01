@@ -67,7 +67,7 @@ export const sphericalApi = createApi({
 
           const spherical = await Promise.all(
             snapshot.docs.map(async (doc) => {
-              const gameId = getIdFromFirestoreRef(doc.data().gameRef)
+              const gameId = getIdFromFirestoreRef(doc.data().gameId)
 
               const game = await dispatch(
                 gameApi.endpoints.getGameById.initiate({

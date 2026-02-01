@@ -2,7 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DIFFICULTIES, DOCUMENTS_STATUS, STORAGE_PATHS } from "@repo/common"
-import { createSphericalInputSchema } from "@repo/schemas"
+import { createSphericalInputSchema, sphericalFormSchema } from "@repo/schemas"
+import { SquareArrowOutUpRight } from "lucide-react"
+import Link from "next/link"
 import { useQueryState } from "nuqs"
 import { useCallback, useEffect, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
@@ -30,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
+import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
 import { useGetMapsInfiniteQuery } from "@/redux/api/maps"
 import {
@@ -39,7 +42,7 @@ import {
 } from "@/redux/api/spherical"
 import { uploadFileToBucket } from "@/utils/file"
 
-type SphericalFormSchema = z.input<typeof createSphericalInputSchema>
+type SphericalFormSchema = z.input<typeof sphericalFormSchema>
 
 const KEY = MODAL_KEYS.SPHERICAL_ID
 
@@ -105,22 +108,25 @@ const SphericalForm = ({
     watch,
     formState: { errors, isDirty, dirtyFields },
   } = useForm<SphericalFormSchema>({
-    resolver: zodResolver(createSphericalInputSchema),
+    resolver: zodResolver(sphericalFormSchema),
     defaultValues: {
-      gameRef: `games/${gameId}`,
-      gameId,
       image: "",
       mapId: "",
       mapPosition: { x: 50, y: 50 },
       difficulty: DIFFICULTIES.EASY,
       status: DOCUMENTS_STATUS.NEED_VERIFICATION,
-      mosaics: [],
+      thumbnail: "",
     },
   })
 
   const image = watch("image")
   const selectedMapId = watch("mapId")
   const mapPosition = watch("mapPosition")
+  const thumbnail = watch("thumbnail")
+
+  // Mutual exclusivity: mapId disables thumbnail, thumbnail disables mapId
+  const hasMapId = !!selectedMapId
+  const hasThumbnail = !!thumbnail
 
   // Find the selected map
   const selectedMap = maps.find((map) => map.id === selectedMapId)
@@ -141,14 +147,12 @@ const SphericalForm = ({
   useEffect(() => {
     if (data) {
       reset({
-        gameRef: data.gameRef,
-        gameId: data.gameId,
-        image: data.image ?? "",
-        mapId: data.mapId ?? "",
-        mapPosition: data.mapPosition ?? { x: 50, y: 50 },
-        difficulty: data.difficulty ?? DIFFICULTIES.EASY,
-        status: data.status ?? DOCUMENTS_STATUS.NEED_VERIFICATION,
-        mosaics: data.mosaics ?? [],
+        image: data.image || "",
+        mapId: data.mapId || "",
+        mapPosition: data.mapPosition || { x: 50, y: 50 },
+        difficulty: data.difficulty || DIFFICULTIES.EASY,
+        status: data.status || DOCUMENTS_STATUS.NEED_VERIFICATION,
+        thumbnail: data.thumbnail || "",
       })
     }
   }, [data, reset])
@@ -178,7 +182,8 @@ const SphericalForm = ({
   }
 
   const onSubmit: SubmitHandler<SphericalFormSchema> = async (formData) => {
-    const parsedData = createSphericalInputSchema.parse(formData)
+    const dataWithGameId = { ...formData, gameId }
+    const parsedData = createSphericalInputSchema.parse(dataWithGameId)
 
     if (isNew) {
       const { data: createdSpherical, error } = await createSpherical({
@@ -236,6 +241,23 @@ const SphericalForm = ({
         </div>
         <div className="grid grid-cols-[1fr_220px] gap-6">
           <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="thumbnail">Thumbnail URL</FieldLabel>
+              <Input
+                id="thumbnail"
+                placeholder="Enter thumbnail URL"
+                {...register("thumbnail")}
+                disabled={hasMapId}
+                aria-invalid={!!errors.thumbnail}
+              />
+              <FieldDescription>
+                {hasMapId ? "Disabled when a map is selected" : "Direct thumbnail URL (alternative to map)"}
+              </FieldDescription>
+              {errors.thumbnail && (
+                <FieldError>{errors.thumbnail.message}</FieldError>
+              )}
+            </Field>
+
             <div className="grid grid-cols-2 gap-2">
               <Field>
                 <FieldLabel htmlFor="mapId">Map</FieldLabel>
@@ -247,7 +269,7 @@ const SphericalForm = ({
                       value={field.value || NO_MAP_VALUE}
                       onValueChange={(value) =>
                         field.onChange(value === NO_MAP_VALUE ? "" : value)}
-                      disabled={isMapsLoading}
+                      disabled={isMapsLoading || hasThumbnail}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="No map selected" />
@@ -267,6 +289,9 @@ const SphericalForm = ({
                 />
                 {isMapsLoading && (
                   <FieldDescription>Loading maps...</FieldDescription>
+                )}
+                {hasThumbnail && (
+                  <FieldDescription>Disabled when thumbnail is set</FieldDescription>
                 )}
               </Field>
               <Field>
@@ -293,8 +318,12 @@ const SphericalForm = ({
               </Field>
             </div>
 
-            {/* Map Position Picker */}
-            {selectedMap?.imageUrl &&
+            {/* Map Position Picker - hidden when thumbnail is set */}
+            {hasThumbnail ? (
+              <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-foreground">
+                <p>Map position is disabled when using a thumbnail URL.</p>
+              </div>
+            ) : selectedMap?.imageUrl &&
               selectedMap.width &&
               selectedMap.height ? (
                   <div className="space-y-2">
@@ -437,7 +466,12 @@ const SphericalForm = ({
           </FieldGroup>
 
           <div className="flex flex-col gap-3">
-            <FieldLabel>Spherical Image</FieldLabel>
+
+            <Button variant="ghost" asChild>
+              <Link href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${sphericalId}`} target="_blank" className="flex gap-4 items-center cursor-pointer">
+                Spherical Image <SquareArrowOutUpRight className="size-4" />
+              </Link>
+            </Button>
             <ImageDropzone
               imageUrl={image ?? null}
               onFileSelect={handleFileUpload}
