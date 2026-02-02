@@ -69,8 +69,51 @@ export const ImageDropzone = ({
     e.stopPropagation()
     setIsDragging(false)
 
+    // First try to get file directly (works for local files)
     const file = e.dataTransfer.files?.[0]
-    if (file) await handleFile(file)
+    if (file) {
+      await handleFile(file)
+
+      return
+    }
+
+    // Try to get image from dataTransfer items (for images dragged from websites)
+    const items = e.dataTransfer.items
+    if (items) {
+      for (const item of Array.from(items)) {
+        // Check for image blob
+        if (item.kind === "file" && item.type.startsWith("image/")) {
+          const blob = item.getAsFile()
+          if (blob) {
+            await handleFile(blob)
+
+            return
+          }
+        }
+      }
+    }
+
+    // Fallback: try to get URL and fetch the image
+    const imageUrl = e.dataTransfer.getData("text/uri-list") || e.dataTransfer.getData("text/plain")
+    if (imageUrl && (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))) {
+      try {
+        const response = await fetch(imageUrl)
+        if (!response.ok) throw new Error("Failed to fetch image")
+
+        const blob = await response.blob()
+        if (!blob.type.startsWith("image/")) {
+          toast.error("URL does not point to an image")
+
+          return
+        }
+
+        const filename = imageUrl.split("/").pop() || "image"
+        const imageFile = new File([blob], filename, { type: blob.type })
+        await handleFile(imageFile)
+      } catch {
+        toast.error("Could not fetch image from URL")
+      }
+    }
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

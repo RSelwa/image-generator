@@ -96,6 +96,7 @@ const SphericalForm = ({
   })
 
   const [isUploading, setIsUploading] = useState(false)
+  const [isThumbnailUploading, setIsThumbnailUploading] = useState(false)
   const [, setModalParam] = useQueryState(KEY)
 
   const maps = mapsData ?? []
@@ -131,6 +132,12 @@ const SphericalForm = ({
 
   // Find the selected map
   const selectedMap = maps.find((map) => map.id === selectedMapId)
+
+  // Map position picker display conditions
+  const isMapPositionDisabledByThumbnail = hasThumbnail
+  const hasValidMapWithDimensions = !!selectedMap?.imageUrl && !!selectedMap.width && !!selectedMap.height
+  const hasMapWithoutValidDimensions = hasMapId && !hasValidMapWithDimensions
+  const shouldShowManualPositionInputs = !hasThumbnail && !hasMapId
 
   // Handle map click to set position
   const handleMapClick = useCallback(
@@ -180,6 +187,30 @@ const SphericalForm = ({
 
   const handleRemoveImage = () => {
     setValue("image", "", { shouldDirty: true })
+  }
+
+  const handleThumbnailUpload = async (file: File) => {
+    setIsThumbnailUploading(true)
+    try {
+      const { url } = await uploadFileToBucket({
+        file,
+        bucketPath: STORAGE_PATHS.SPHERICALS,
+        title: `thumbnail-${gameId}`,
+      })
+
+      setValue("thumbnail", url, { shouldDirty: true })
+      toast.success("Thumbnail uploaded successfully")
+    } catch (error) {
+      console.error("Thumbnail upload error:", error)
+      toast.error("Failed to upload thumbnail")
+      throw error
+    } finally {
+      setIsThumbnailUploading(false)
+    }
+  }
+
+  const handleRemoveThumbnail = () => {
+    setValue("thumbnail", "", { shouldDirty: true })
   }
 
   const onSubmit: SubmitHandler<SphericalFormSchema> = async (formData) => {
@@ -246,26 +277,29 @@ const SphericalForm = ({
           </Button>
 
         </div>
-        <div className="grid grid-cols-[1fr_220px] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-6">
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="thumbnail">Thumbnail URL</FieldLabel>
-              <Input
-                id="thumbnail"
-                placeholder="Enter thumbnail URL"
-                {...register("thumbnail")}
-                disabled={hasMapId}
-                aria-invalid={!!errors.thumbnail}
-              />
-              <FieldDescription>
-                {hasMapId ? "Disabled when a map is selected" : "Direct thumbnail URL (alternative to map)"}
-              </FieldDescription>
+              <FieldLabel htmlFor="thumbnail">Thumbnail</FieldLabel>
+              {hasMapId && (
+                <FieldDescription>Disabled when a map is selected</FieldDescription>
+              )}
+              {!hasMapId && (
+                <ImageDropzone
+                  imageUrl={thumbnail || null}
+                  onFileSelect={handleThumbnailUpload}
+                  onRemove={handleRemoveThumbnail}
+                  isUploading={isThumbnailUploading}
+                  alt="Thumbnail image"
+                  className="h-32"
+                />
+              )}
               {errors.thumbnail && (
                 <FieldError>{errors.thumbnail.message}</FieldError>
               )}
             </Field>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <Field>
                 <FieldLabel htmlFor="mapId">Map</FieldLabel>
                 <Controller
@@ -326,98 +360,102 @@ const SphericalForm = ({
             </div>
 
             {/* Map Position Picker - hidden when thumbnail is set */}
-            {hasThumbnail ? (
+            {isMapPositionDisabledByThumbnail && (
               <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-foreground">
                 <p>Map position is disabled when using a thumbnail URL.</p>
               </div>
-            ) : selectedMap?.imageUrl &&
-              selectedMap.width &&
-              selectedMap.height ? (
-                  <div className="space-y-2">
-                    <FieldLabel>Position on Map</FieldLabel>
-                    <FieldDescription>
-                      Click on the map to set the spherical position
-                    </FieldDescription>
-                    <MiniMap
-                      inline
-                      alwaysExpanded
-                      mapData={{
-                        mapImage: selectedMap.imageUrl,
-                        size: {
-                          width: selectedMap.width,
-                          height: selectedMap.height,
-                        },
-                      }}
-                      guessPosition={mapPosition ?? null}
-                      onMapClick={handleMapClick}
-                      showCorrectMarker={false}
-                      showLine={false}
-                      expandedSize={{ width: 400, height: 250 }}
-                      collapsedSize={{ width: 400, height: 250 }}
-                    />
-                    <div className="bg-muted/50 rounded-md p-3 text-sm">
-                      <p className="font-medium mb-1">Position to be stored:</p>
-                      <div className="grid grid-cols-2 gap-2 text-muted-foreground">
-                        <p>
-                          <strong>X:</strong> {mapPosition?.x?.toFixed(2) ?? "—"}%
-                        </p>
-                        <p>
-                          <strong>Y:</strong> {mapPosition?.y?.toFixed(2) ?? "—"}%
-                        </p>
-                      </div>
-                    </div>
-                    {(errors.mapPosition?.x || errors.mapPosition?.y) && (
-                      <FieldError>
-                        {errors.mapPosition?.x?.message ||
-                          errors.mapPosition?.y?.message}
-                      </FieldError>
-                    )}
-                  </div>
-                ) : selectedMapId ? (
-                  <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-foreground">
-                    <p>Selected map has no image or dimensions.</p>
+            )}
+
+            {!isMapPositionDisabledByThumbnail && hasValidMapWithDimensions && selectedMap && (
+              <div className="space-y-2">
+                <FieldLabel>Position on Map</FieldLabel>
+                <FieldDescription>
+                  Click on the map to set the spherical position
+                </FieldDescription>
+                <MiniMap
+                  inline
+                  alwaysExpanded
+                  mapData={{
+                    mapImage: selectedMap.imageUrl!,
+                    size: {
+                      width: selectedMap.width!,
+                      height: selectedMap.height!,
+                    },
+                  }}
+                  guessPosition={mapPosition ?? null}
+                  onMapClick={handleMapClick}
+                  showCorrectMarker={false}
+                  showLine={false}
+                  expandedSize={{ width: 400, height: 250 }}
+                  collapsedSize={{ width: 400, height: 250 }}
+                />
+                <div className="bg-muted/50 rounded-md p-3 text-sm">
+                  <p className="font-medium mb-1">Position to be stored:</p>
+                  <div className="grid grid-cols-2 gap-2 text-muted-foreground">
                     <p>
-                      Upload an image to the map first to enable position picking.
+                      <strong>X:</strong> {mapPosition?.x?.toFixed(2) ?? "—"}%
+                    </p>
+                    <p>
+                      <strong>Y:</strong> {mapPosition?.y?.toFixed(2) ?? "—"}%
                     </p>
                   </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-2">
-                    <Field>
-                      <FieldLabel htmlFor="mapPositionX">Map Position X</FieldLabel>
-                      <Input
-                        id="mapPositionX"
-                        type="number"
-                        min={0}
-                        max={100}
-                        placeholder="X position (0-100)"
-                        {...register("mapPosition.x", { valueAsNumber: true })}
-                        aria-invalid={!!errors.mapPosition?.x}
-                      />
-                      <FieldDescription>Position X (0-100%)</FieldDescription>
-                      {errors.mapPosition?.x && (
-                        <FieldError>{errors.mapPosition.x.message}</FieldError>
-                      )}
-                    </Field>
-                    <Field>
-                      <FieldLabel htmlFor="mapPositionY">Map Position Y</FieldLabel>
-                      <Input
-                        id="mapPositionY"
-                        type="number"
-                        min={0}
-                        max={100}
-                        placeholder="Y position (0-100)"
-                        {...register("mapPosition.y", { valueAsNumber: true })}
-                        aria-invalid={!!errors.mapPosition?.y}
-                      />
-                      <FieldDescription>Position Y (0-100%)</FieldDescription>
-                      {errors.mapPosition?.y && (
-                        <FieldError>{errors.mapPosition.y.message}</FieldError>
-                      )}
-                    </Field>
-                  </div>
+                </div>
+                {(errors.mapPosition?.x || errors.mapPosition?.y) && (
+                  <FieldError>
+                    {errors.mapPosition?.x?.message ||
+                      errors.mapPosition?.y?.message}
+                  </FieldError>
                 )}
+              </div>
+            )}
 
-            <div className="grid grid-cols-2 gap-2">
+            {!isMapPositionDisabledByThumbnail && hasMapWithoutValidDimensions && (
+              <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-foreground">
+                <p>Selected map has no image or dimensions.</p>
+                <p>
+                  Upload an image to the map first to enable position picking.
+                </p>
+              </div>
+            )}
+
+            {shouldShowManualPositionInputs && (
+              <div className="grid grid-cols-2 gap-2">
+                <Field>
+                  <FieldLabel htmlFor="mapPositionX">Map Position X</FieldLabel>
+                  <Input
+                    id="mapPositionX"
+                    type="number"
+                    min={0}
+                    max={100}
+                    placeholder="X position (0-100)"
+                    {...register("mapPosition.x", { valueAsNumber: true })}
+                    aria-invalid={!!errors.mapPosition?.x}
+                  />
+                  <FieldDescription>Position X (0-100%)</FieldDescription>
+                  {errors.mapPosition?.x && (
+                    <FieldError>{errors.mapPosition.x.message}</FieldError>
+                  )}
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="mapPositionY">Map Position Y</FieldLabel>
+                  <Input
+                    id="mapPositionY"
+                    type="number"
+                    min={0}
+                    max={100}
+                    placeholder="Y position (0-100)"
+                    {...register("mapPosition.y", { valueAsNumber: true })}
+                    aria-invalid={!!errors.mapPosition?.y}
+                  />
+                  <FieldDescription>Position Y (0-100%)</FieldDescription>
+                  {errors.mapPosition?.y && (
+                    <FieldError>{errors.mapPosition.y.message}</FieldError>
+                  )}
+                </Field>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <Field>
                 <FieldLabel htmlFor="status">Status</FieldLabel>
                 <Controller
@@ -473,7 +511,6 @@ const SphericalForm = ({
           </FieldGroup>
 
           <div className="flex flex-col gap-3">
-
             <Button variant="ghost" asChild>
               <Link href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${sphericalId}`} target="_blank" className="flex gap-4 items-center cursor-pointer">
                 Spherical Image <SquareArrowOutUpRight className="size-4" />
