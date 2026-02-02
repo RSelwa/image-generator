@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DIFFICULTIES, DOCUMENTS_STATUS, STORAGE_PATHS } from "@repo/common"
 import { createFlatInputSchema, flatFormSchema } from "@repo/schemas"
+import { ArrowLeft } from "lucide-react"
 import { useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
@@ -69,6 +70,7 @@ const FlatForm = ({
   gameId: string
   isNew: boolean
 }) => {
+  const { openModal } = useModal(MODAL_KEYS.FLAT_GALLERY_ID, gameId)
   const { closeModal } = useModal(MODAL_KEYS.FLAT_ID, flatId)
 
   const { data, isLoading } = useGetFlatByIdQuery(
@@ -197,6 +199,11 @@ const FlatForm = ({
     }
   }
 
+  const getBackToFlatGallery = () => {
+    openModal()
+    closeModal()
+  }
+
   if (!isNew && isLoading) {
     return <LoadingModal modalKey={KEY} />
   }
@@ -204,7 +211,10 @@ const FlatForm = ({
   return (
     <ModalBase modalKey={KEY} className="max-w-3xl">
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8">
-        <div className="mb-6">
+        <div className="mb-6 flex items-center gap-4">
+          <Button variant="ghost" onClick={getBackToFlatGallery}>
+            <ArrowLeft className="size-4" />
+          </Button>
           <h2 className="text-2xl font-bold">
             {isNew ? "Create Flat" : "Edit Flat"}
           </h2>

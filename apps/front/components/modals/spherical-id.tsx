@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DIFFICULTIES, DOCUMENTS_STATUS, STORAGE_PATHS } from "@repo/common"
 import { createSphericalInputSchema, sphericalFormSchema } from "@repo/schemas"
-import { SquareArrowOutUpRight } from "lucide-react"
+import { ArrowLeft, SquareArrowOutUpRight } from "lucide-react"
 import Link from "next/link"
 import { useQueryState } from "nuqs"
 import { useCallback, useEffect, useState } from "react"
@@ -79,6 +79,7 @@ const SphericalForm = ({
   gameId: string
   isNew: boolean
 }) => {
+  const { openModal: openSphericalGallery } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID, gameId)
   const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalId)
   const { openModal } = useModal(MODAL_KEYS.MAP_ID, `${gameId}_${NEW_SEARCH_PARAM}`)
 
@@ -217,6 +218,11 @@ const SphericalForm = ({
     }
   }
 
+  const getBackToSphericalGallery = () => {
+    openSphericalGallery()
+    closeModal()
+  }
+
   if (!isNew && isLoading) {
     return <LoadingModal modalKey={KEY} />
   }
@@ -225,7 +231,9 @@ const SphericalForm = ({
     <ModalBase modalKey={KEY} className="max-w-4xl">
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8 ">
         <div className="flex mb-6 items-center gap-6">
-
+          <Button variant="ghost" onClick={getBackToSphericalGallery}>
+            <ArrowLeft className="size-4" />
+          </Button>
           <h2 className=" text-2xl font-bold">
             {isNew ? "Create Spherical" : "Edit Spherical"}
           </h2>

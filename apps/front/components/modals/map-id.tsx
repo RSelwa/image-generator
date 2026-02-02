@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { STORAGE_PATHS } from "@repo/common"
 import { createMapInputSchema } from "@repo/schemas"
+import { ArrowLeft } from "lucide-react"
 import { useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
@@ -21,6 +22,7 @@ import {
 import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { Input } from "@/components/ui/input"
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
+import { useModal } from "@/hooks/use-modal"
 import {
   useCreateMapMutation,
   useGetMapByIdQuery,
@@ -61,6 +63,9 @@ const MapForm = ({
   gameId: string
   isNew: boolean
 }) => {
+  const { openModal } = useModal(MODAL_KEYS.MAPS_GALLERY_ID, gameId)
+  const { closeModal } = useModal(MODAL_KEYS.MAP_ID)
+
   const { data, isLoading } = useGetMapByIdQuery(
     { gameId, id: mapId },
     { skip: isNew },
@@ -167,6 +172,11 @@ const MapForm = ({
     }
   }
 
+  const getBackToMapGallery = () => {
+    openModal()
+    closeModal()
+  }
+
   if (!isNew && isLoading) {
     return <LoadingModal modalKey={KEY} />
   }
@@ -174,9 +184,14 @@ const MapForm = ({
   return (
     <ModalBase modalKey={KEY} className="max-w-3xl">
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8">
-        <h2 className="mb-6 text-2xl font-bold">
-          {isNew ? "Create Map" : "Edit Map"}
-        </h2>
+        <div className="flex mb-6 items-center gap-6">
+          <Button variant="ghost" onClick={getBackToMapGallery}>
+            <ArrowLeft className="size-4" />
+          </Button>
+          <h2 className="text-2xl font-bold">
+            {isNew ? "Create Map" : "Edit Map"}
+          </h2>
+        </div>
 
         <div className="grid grid-cols-[1fr_220px] gap-6">
           <FieldGroup>
