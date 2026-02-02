@@ -32,10 +32,10 @@ const Navbar = () => {
       {user && <NavUser />}
       {!user && (
         <article className="flex items-center gap-3">
-          <Button variant="outline">
+          <Button variant="outline" asChild>
             <Link href={PAGES.LOGIN}>Login</Link>
           </Button>
-          <Button variant="default">
+          <Button variant="default" asChild>
             <Link href={PAGES.SIGNUP}>Join</Link>
           </Button>
         </article>
