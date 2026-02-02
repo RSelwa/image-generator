@@ -27,6 +27,9 @@ export const TABLES_GROUP_REFS = {
   [TABLES.FLAT]: collectionGroup(db, TABLES.FLAT) as CustomCollectionRef<
     typeof TABLES.FLAT
   >,
+  [TABLES.MAPS]: collectionGroup(db, TABLES.MAPS) as CustomCollectionRef<
+    typeof TABLES.MAPS
+  >,
 } as const
 
 export const TABLES_SUB_REFS = {

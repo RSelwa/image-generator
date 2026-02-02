@@ -24,7 +24,7 @@ import {
 import { toast } from "sonner"
 // Need to use the React-specific entry point to import createApi
 import { DEFAULT_SIZE_MAPS } from "@/constants/api"
-import { getMapRef, TABLES_SUB_REFS } from "@/constants/db-refs"
+import { getMapRef, TABLES_GROUP_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
 import { gameApi } from "@/redux/api/games"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
@@ -35,12 +35,11 @@ export const mapApi = createApi({
   endpoints: (builder) => ({
     getMaps: builder.infiniteQuery<
       MapDocWithId[],
-      { gameId: string },
+      void,
       { limit?: number, startAfter?: string }
     >({
-      queryFn: async ({ queryArg, pageParam }) => {
+      queryFn: async ({ pageParam }) => {
         try {
-          const { gameId } = queryArg
           const definedFieldsConstraints: QueryConstraint[] = []
 
           if (pageParam.startAfter) {
@@ -51,7 +50,7 @@ export const mapApi = createApi({
             definedFieldsConstraints.push(limit(pageParam.limit))
 
           const q = query(
-            TABLES_SUB_REFS[TABLES.MAPS](gameId),
+            TABLES_GROUP_REFS[TABLES.MAPS],
             ...definedFieldsConstraints,
           )
 
@@ -100,6 +99,39 @@ export const mapApi = createApi({
           ...result.pages
             .flat()
             .map(({ id }) => ({ type: "Map" as const, id })),
+          { type: "MapList" as const },
+        ] : [{ type: "MapList" as const }],
+    }),
+    getMapsByGameId: builder.query<MapDocWithId[], { gameId: string }>({
+      queryFn: async ({ gameId }) => {
+        try {
+          const q = query(TABLES_SUB_REFS[TABLES.MAPS](gameId))
+          const snapshot = await getDocs(q)
+
+          const maps = snapshot.docs.map((doc) => {
+            const { data, error } = mapDocWithIdSchema.safeParse({
+              id: doc.id,
+              ...doc.data(),
+            })
+
+            if (error || !data)
+              throw new Error(error?.message || "Data parsing error")
+
+            return data
+          })
+
+          return { data: maps }
+        } catch (error) {
+          console.error("Error fetching maps by game ID:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      providesTags: (result) =>
+        result ? [
+          ...result.map(({ id }) => ({ type: "Map" as const, id })),
           { type: "MapList" as const },
         ] : [{ type: "MapList" as const }],
     }),
@@ -289,6 +321,7 @@ export const mapApi = createApi({
 
 export const {
   useGetMapsInfiniteQuery,
+  useGetMapsByGameIdQuery,
   useGetMapByIdQuery,
   useGetTotalMapsCountQuery,
   useDeleteMapMutation,

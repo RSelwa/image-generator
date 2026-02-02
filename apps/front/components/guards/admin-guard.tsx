@@ -5,7 +5,7 @@ import { type ReactNode, useEffect } from "react"
 import { SESSION_STATUS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import {
-  selectIsAdmin,
+  selectHasRightToDashBoard,
   selectSessionStatus,
 } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -17,16 +17,17 @@ type AdminGuardProps = {
 export const AdminGuard = ({ children }: AdminGuardProps) => {
   const router = useRouter()
   const status = useAppSelector(selectSessionStatus)
-  const isAdmin = useAppSelector(selectIsAdmin)
+
+  const hasRights = useAppSelector(selectHasRightToDashBoard)
 
   const isLoading = status === SESSION_STATUS.LOADING
 
   useEffect(() => {
     if (isLoading) return
 
-    if (status === SESSION_STATUS.SUCCESS && !isAdmin)
+    if (status === SESSION_STATUS.SUCCESS && !hasRights)
       router.replace(PAGES.HOME)
-  }, [status, isAdmin, isLoading, router])
+  }, [status, hasRights, isLoading, router])
 
   if (isLoading) {
     return (
@@ -39,7 +40,7 @@ export const AdminGuard = ({ children }: AdminGuardProps) => {
     )
   }
 
-  if (status !== SESSION_STATUS.SUCCESS || !isAdmin) {
+  if (status !== SESSION_STATUS.SUCCESS || !hasRights) {
     return null
   }
 

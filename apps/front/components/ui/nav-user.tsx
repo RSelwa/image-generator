@@ -22,12 +22,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { PAGES } from "@/constants/pages"
 import { useLogoutMutation } from "@/redux/api/auth"
-import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
+import { selectHasRightToDashBoard, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
 export const NavUser = () => {
   const user = useAppSelector(selectUser)
-  const isAdmin = useAppSelector(selectIsAdmin)
+  const hasRights = useAppSelector(selectHasRightToDashBoard)
+
   const [logout] = useLogoutMutation()
 
   if (!user) return null
@@ -72,11 +73,11 @@ export const NavUser = () => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {isAdmin && (
+          {hasRights && (
             <DropdownMenuItem asChild>
               <Link href={PAGES.ADMIN}>
                 <BadgeCheck />
-                Admin
+                Dashboard
               </Link>
             </DropdownMenuItem>
           )}

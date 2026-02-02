@@ -34,7 +34,7 @@ import {
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
-import { useGetMapsInfiniteQuery } from "@/redux/api/maps"
+import { useGetMapsByGameIdQuery } from "@/redux/api/maps"
 import {
   useCreateSphericalMutation,
   useGetSphericalByIdQuery,
@@ -90,14 +90,14 @@ const SphericalForm = ({
     useCreateSphericalMutation()
   const [updateSpherical, { isLoading: isUpdating }] =
     useUpdateSphericalByIdMutation()
-  const { data: mapsData, isLoading: isMapsLoading } = useGetMapsInfiniteQuery({
+  const { data: mapsData, isLoading: isMapsLoading } = useGetMapsByGameIdQuery({
     gameId,
   })
 
   const [isUploading, setIsUploading] = useState(false)
   const [, setModalParam] = useQueryState(KEY)
 
-  const maps = mapsData?.pages.flat() ?? []
+  const maps = mapsData ?? []
 
   const {
     register,
