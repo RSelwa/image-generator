@@ -16,6 +16,7 @@
   - Buy domain name
   - Setup Reels Insta et tiktok
   - Implement a system to interact with twitch chat, maybe to vote for games
+  - Implement a chat room inside
 
 - Front
   - Clean footer

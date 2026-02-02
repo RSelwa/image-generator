@@ -8,6 +8,7 @@
 # Code style
 
 - Use pnpm instead of npm
+- in the libs/schemas, use instead "~/zod" of "../zod"
 - use {condition && <code>} and {!condition && <fallback>} instead of {condition ? <code> : <fallback> }
 - use || instead of ??
 - use mocked urls from "libs/common/src/constants/testing.ts" when need mockedImages in tests

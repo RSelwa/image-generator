@@ -12,3 +12,18 @@ export const DOCUMENTS_STATUS = {
 } as const
 
 export const DEFAULT_NUMBERS_ROUNDS = 18
+
+// Multiplayer game constants
+export const MAX_PLAYERS = 8
+
+export const LOBBY_STATUS = {
+  WAITING: "waiting",
+  STARTING: "starting",
+  PLAYING: "playing",
+  FINISHED: "finished",
+} as const
+
+export const ROUND_TYPE = {
+  SPHERICAL: "spherical",
+  FLAT: "flat",
+} as const
