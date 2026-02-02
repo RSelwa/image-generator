@@ -43,7 +43,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
   const [createGame, { isLoading: isCreating }] = useCreateGameMutation()
   const [updateGame, { isLoading: isUpdating }] = useUpdateGameByIdMutation()
   const [isUploading, setIsUploading] = useState(false)
-  const [createMultiple, setCreateMultiple] = useState(false)
+  const [createMultiple, setCreateMultiple] = useQueryState("createMultiple")
   const [, setGameId] = useQueryState(KEY)
 
   const {
@@ -119,11 +119,9 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
 
       toast.success("Game created successfully")
 
-      if (createMultiple) {
+      if (createMultiple === "true") {
         // Reset form to create another game
-        reset({
-
-        })
+        reset()
       } else {
         // Close modal
         setGameId(null)
@@ -283,8 +281,9 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
           {isNew ? (
             <label className="flex items-center gap-2 text-sm">
               <Checkbox
-                checked={createMultiple}
-                onCheckedChange={(checked) => setCreateMultiple(!!checked)}
+                checked={createMultiple === "true"}
+                onCheckedChange={(checked) =>
+                  setCreateMultiple(checked ? "true" : null)}
               />
               Create multiple
             </label>

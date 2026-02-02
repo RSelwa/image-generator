@@ -199,11 +199,10 @@ const SphericalForm = ({
         setModalParam(buildSphericalModalParam(gameId, createdSpherical.id))
       }
     } else {
-      // Only include image fields if they were actually changed
-      const { image, ...rest } = parsedData
+      // Preserve original image if not changed
       const updateData = {
-        ...rest,
-        ...(dirtyFields.image && { image }),
+        ...parsedData,
+        image: dirtyFields.image ? parsedData.image : data?.image,
       }
 
       const { error } = await updateSpherical({
