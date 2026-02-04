@@ -31,11 +31,17 @@ import {
   updateDoc,
 } from "firebase/firestore"
 import { toast } from "sonner"
+import z from "zod"
 // Need to use the React-specific entry point to import createApi
 import { DEFAULT_SIZE_GAMES } from "@/constants/api"
 import { db } from "@/constants/db"
 import { getGameRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
+
+const allGamesByNames = z.object({
+  id: z.string(),
+  title: z.string(),
+})
 
 export const gameApi = createApi({
   reducerPath: "gameApi",
@@ -176,6 +182,38 @@ export const gameApi = createApi({
         }
       },
       providesTags: (_result, _error, { id }) => [{ type: "Game", id }],
+    }),
+    getAllGamesNames: builder.query<z.infer<typeof allGamesByNames>[], void>({
+      queryFn: async () => {
+        try {
+          const snapshot = await getDocs(
+            query(TABLE_REFS[TABLES.GAMES], orderBy(documentId())),
+          )
+
+          const games = snapshot.docs
+            .map((doc) => {
+              const { data, error } = gameDocWithIdSchema.safeParse({
+                id: doc.id,
+                ...doc.data(),
+              })
+
+              if (error) return null
+
+              return { id: data.id, title: data.title }
+            })
+            .filter((g) => g !== null)
+
+          const data = allGamesByNames.array().parse(games)
+
+          return { data }
+        } catch (error) {
+          console.error("Error fetching games:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      }
     }),
     getTotalGamesCount: builder.query<number, void>({
       queryFn: async () => {
@@ -449,4 +487,5 @@ export const {
   useCreateGameMutation,
   useUpdateGameByIdMutation,
   useDeleteGameByIdMutation,
+  useGetAllGamesNamesQuery,
 } = gameApi

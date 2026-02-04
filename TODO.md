@@ -6,6 +6,8 @@
   - ~~Implement 2D maps~~
   - ~~Change rights into a dedicated table~~
   - ~~Implement Icono roles~~
+  - Allow creation of flats and sphericals from new or gameId
+  - fix when dragging map, it doesn't add the pin
   - Add firebase admin for front libs
   - ~~Add storage tests for Flat images and thumbnails~~
   - Improve the security for the update for lobbies

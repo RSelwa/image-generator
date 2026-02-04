@@ -61,13 +61,13 @@ export const SphericalCard = ({
       </article>
 
       {game && (
-        <div className="absolute w-36 bottom-2 right-2 flex-col items-end text-right">
+        <div className="absolute w-36 group-hover:w-16 bottom-2 right-2 flex-col items-end text-right">
           <Image
             src={game.image || ""}
             height={100}
             width={100}
             alt={game.title}
-            className="w-full max-h-20 aspect-auto object-cover rounded-lg"
+            className="w-full max-h-20 group-hover:max-h-12 aspect-auto object-cover rounded-lg"
           />
           <span className="mt-1 text-sm font-medium text-white drop-shadow-lg">{game.title}</span>
         </div>
