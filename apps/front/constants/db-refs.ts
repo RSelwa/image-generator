@@ -18,6 +18,12 @@ export const TABLE_REFS = {
   [TABLES.GAMES]: collection(db, TABLES.GAMES) as CustomCollectionRef<
     typeof TABLES.GAMES
   >,
+  [TABLES.LOBBIES]: collection(db, TABLES.LOBBIES) as CustomCollectionRef<
+    typeof TABLES.LOBBIES
+  >,
+  [TABLES.SEED]: collection(db, TABLES.SEED) as CustomCollectionRef<
+    typeof TABLES.SEED
+  >,
 } as const
 
 export const TABLES_GROUP_REFS = {
@@ -48,6 +54,10 @@ export const TABLES_SUB_REFS = {
     collection(db, TABLES.GAMES, gameId, TABLES.FLAT) as CustomCollectionRef<
       typeof TABLES.FLAT
     >,
+  [TABLES.ROUND_ANSWERS]: (lobbyId: string) =>
+    collection(db, TABLES.LOBBIES, lobbyId, TABLES.ROUND_ANSWERS) as CustomCollectionRef<
+      typeof TABLES.ROUND_ANSWERS
+    >,
 } as const
 
 export const getUserRef = (uid: string | undefined) =>
@@ -67,3 +77,12 @@ export const getMapRef = (gameId: string, mapId: string) =>
 
 export const getFlatRef = (gameId: string, flatId: string) =>
   doc(TABLES_SUB_REFS[TABLES.FLAT](gameId), flatId)
+
+export const getLobbyRef = (lobbyId: string | undefined) =>
+  lobbyId ? doc(TABLE_REFS[TABLES.LOBBIES], lobbyId) : doc(TABLE_REFS[TABLES.LOBBIES])
+
+export const getSeedRef = (seedId: string | undefined) =>
+  seedId ? doc(TABLE_REFS[TABLES.SEED], seedId) : doc(TABLE_REFS[TABLES.SEED])
+
+export const getRoundAnswerRef = (lobbyId: string, roundAnswerId: string) =>
+  doc(TABLES_SUB_REFS[TABLES.ROUND_ANSWERS](lobbyId), roundAnswerId)

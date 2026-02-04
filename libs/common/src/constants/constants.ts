@@ -11,10 +11,11 @@ export const DOCUMENTS_STATUS = {
   READY: "ready",
 } as const
 
-export const DEFAULT_NUMBERS_ROUNDS = 18
-
 // Multiplayer game constants
+export const DEFAULT_NUMBERS_ROUNDS = 18
 export const MAX_PLAYERS = 8
+export const DEFAULT_TIME_PER_ROUND = 60 // seconds
+export const DEFAULT_LIVES = 3
 
 export const LOBBY_STATUS = {
   WAITING: "waiting",

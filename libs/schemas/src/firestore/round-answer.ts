@@ -2,6 +2,7 @@ import { ROUND_TYPE } from "@repo/common"
 import z from "zod"
 
 import { playerAnswerSchema } from "~/firestore/players.answers"
+import { specialRoundOptionSchema } from "~/firestore/seed.option"
 import { mapPositionSchema } from "~/firestore/spherical"
 import { timestampSchema, WITH_ID } from "../zod"
 
@@ -22,12 +23,17 @@ export const roundAnswerDocSchema = z.object({
 
   // Display fields
   type: z.enum(Object.values(ROUND_TYPE) as [string, ...string[]]),
-  imageUrl: z.string().min(1),
-  thumbnailUrl: z.string().optional().default(""),
+  isSpecial: z.boolean().default(false), // Special mode: 4 images, each player picks one
 
-  // Correct answer
-  correctGameId: z.string().min(1),
-  correctGameTitle: z.string().min(1),
+  // For normal rounds (isSpecial = false)
+  imageUrl: z.string().nullish().default(null),
+  thumbnailUrl: z.string().optional().default(""),
+  correctGameId: z.string().nullish().default(null),
+  correctGameTitle: z.string().nullish().default(null),
+
+  // For special rounds (isSpecial = true) - 4 options to choose from
+  // Each player picks one option, correctness depends on their selection
+  options: z.array(specialRoundOptionSchema).length(4).nullish().default(null),
 
   // Map data (if round has a map)
   hasMap: z.boolean().default(false),

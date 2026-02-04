@@ -7,6 +7,9 @@ export const TABLES = {
   SPHERICAL: "spherical",
   FLAT: "flat",
   RIGHTS: "rights",
+  LOBBIES: "lobbies",
+  SEED: "seed",
+  ROUND_ANSWERS: "roundAnswers",
 } as const
 
 export const STORAGE_PATHS = {

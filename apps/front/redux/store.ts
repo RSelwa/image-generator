@@ -1,19 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { useDispatch, useSelector, useStore } from "react-redux"
-import { pokemonApi } from "@/redux/api"
 import { adminApi } from "@/redux/api/admin"
 import { authApi } from "@/redux/api/auth"
 import { flatApi } from "@/redux/api/flat"
 import { gameApi } from "@/redux/api/games"
+import { lobbyApi } from "@/redux/api/lobby"
 import { localApi } from "@/redux/api/local"
 import { mapApi } from "@/redux/api/maps"
+import { seedApi } from "@/redux/api/seed"
 import { sphericalApi } from "@/redux/api/spherical"
 import { sessionSlice } from "@/redux/session/session.slice"
 
 export const makeStore = () =>
   configureStore({
     reducer: {
-      [pokemonApi.reducerPath]: pokemonApi.reducer,
       [adminApi.reducerPath]: adminApi.reducer,
       [gameApi.reducerPath]: gameApi.reducer,
       [localApi.reducerPath]: localApi.reducer,
@@ -21,12 +21,15 @@ export const makeStore = () =>
       [sphericalApi.reducerPath]: sphericalApi.reducer,
       [flatApi.reducerPath]: flatApi.reducer,
       [authApi.reducerPath]: authApi.reducer,
+      [seedApi.reducerPath]: seedApi.reducer,
+      [lobbyApi.reducerPath]: lobbyApi.reducer,
       [sessionSlice.name]: sessionSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ serializableCheck: false })
-        .concat(pokemonApi.middleware)
         .concat(adminApi.middleware)
+        .concat(seedApi.middleware)
+        .concat(lobbyApi.middleware)
         .concat(gameApi.middleware)
         .concat(localApi.middleware)
         .concat(mapApi.middleware)

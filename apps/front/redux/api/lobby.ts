@@ -1,0 +1,430 @@
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
+import { isEqual, TABLES } from "@repo/common"
+import {
+  type CreateLobbyInput,
+  createLobbyInputSchema,
+  lobbyDocSchema,
+  type LobbyDocWithId,
+  lobbyDocWithIdSchema,
+  type Player,
+  type UpdateLobbyInput,
+  updateLobbyInputSchema,
+} from "@repo/schemas"
+import {
+  addDoc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  Timestamp,
+  type Unsubscribe,
+  updateDoc,
+  where,
+} from "firebase/firestore"
+import { toast } from "sonner"
+import { getLobbyRef, TABLE_REFS } from "@/constants/db-refs"
+import { type GlobalError, globalErrorHandler } from "@/utils/error"
+
+export const lobbyApi = createApi({
+  reducerPath: "lobbyApi",
+  baseQuery: fakeBaseQuery<GlobalError>(),
+  tagTypes: ["Lobby", "LobbyByCode"],
+  endpoints: (builder) => ({
+    getLobbyById: builder.query<LobbyDocWithId, { id: string }>({
+      queryFn: async ({ id }) => {
+        try {
+          const docSnap = await getDoc(getLobbyRef(id))
+
+          if (!docSnap.exists()) {
+            throw new Error("Lobby not found")
+          }
+
+          const { data, error } = lobbyDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error fetching lobby by ID:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      providesTags: (_result, _error, { id }) => [{ type: "Lobby", id }],
+    }),
+    getLobbyByCode: builder.query<LobbyDocWithId | null, { code: string }>({
+      queryFn: async ({ code }) => {
+        try {
+          const q = query(
+            TABLE_REFS[TABLES.LOBBIES],
+            where("code", "==", code.toUpperCase()),
+          )
+
+          const snapshot = await getDocs(q)
+
+          if (snapshot.empty) {
+            return { data: null }
+          }
+
+          const docSnap = snapshot.docs[0]
+
+          const { data, error } = lobbyDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error fetching lobby by code:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      providesTags: (_result, _error, { code }) => [
+        { type: "LobbyByCode", id: code },
+      ],
+    }),
+    subscribeLobby: builder.query<LobbyDocWithId | null, { id: string }>({
+      queryFn: async ({ id }) => {
+        try {
+          const docSnap = await getDoc(getLobbyRef(id))
+
+          if (!docSnap.exists()) {
+            return { data: null }
+          }
+
+          const { data, error } = lobbyDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error fetching lobby:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      onCacheEntryAdded: async (
+        { id },
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) => {
+        let unsubscribe: Unsubscribe | undefined
+
+        try {
+          await cacheDataLoaded
+
+          const lobbyRef = getLobbyRef(id)
+
+          unsubscribe = onSnapshot(
+            lobbyRef,
+            (snapshot) => {
+              if (!snapshot.exists()) {
+                updateCachedData(() => null)
+
+                return
+              }
+
+              const newData = {
+                id: snapshot.id,
+                ...snapshot.data(),
+              }
+
+              const { data, error } = lobbyDocWithIdSchema.safeParse(newData)
+
+              if (error) {
+                console.error("Error parsing lobby data:", error)
+
+                return
+              }
+
+              updateCachedData((draft) => {
+                if (isEqual(draft, data)) return draft
+
+                return data
+              })
+            },
+            (error) => {
+              console.error("Error in lobby snapshot listener:", error)
+            },
+          )
+        } catch (error) {
+          console.error("Error setting up lobby listener:", error)
+        }
+
+        await cacheEntryRemoved
+        unsubscribe?.()
+      },
+      providesTags: (_result, _error, { id }) => [{ type: "Lobby", id }],
+    }),
+    createLobby: builder.mutation<LobbyDocWithId, CreateLobbyInput>({
+      queryFn: async (input) => {
+        try {
+          const now = Timestamp.now()
+          const { data: validatedInput, error: validationError } =
+            createLobbyInputSchema.safeParse(input)
+
+          if (validationError) {
+            throw new Error(validationError.message || "Validation error")
+          }
+
+          const lobbyData = lobbyDocSchema.parse({
+            ...validatedInput,
+            createdAt: now,
+            updatedAt: now,
+          })
+
+          const docRef = await addDoc(TABLE_REFS[TABLES.LOBBIES], lobbyData)
+
+          const docSnap = await getDoc(docRef)
+
+          const { data, error } = lobbyDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error creating lobby:", error)
+          toast.error("Error creating lobby")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: [{ type: "Lobby" }],
+    }),
+    updateLobby: builder.mutation<
+      LobbyDocWithId,
+      { id: string, data: UpdateLobbyInput }
+    >({
+      queryFn: async ({ id, data: input }) => {
+        try {
+          const { data: validatedInput, error: validationError } =
+            updateLobbyInputSchema.safeParse(input)
+
+          if (validationError) {
+            throw new Error(validationError.message || "Validation error")
+          }
+
+          const lobbyRef = getLobbyRef(id)
+          await updateDoc(lobbyRef, {
+            ...validatedInput,
+            updatedAt: Timestamp.now(),
+          })
+
+          const docSnap = await getDoc(lobbyRef)
+
+          if (!docSnap.exists()) {
+            throw new Error("Lobby not found")
+          }
+
+          const { data, error } = lobbyDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error updating lobby:", error)
+          toast.error("Error updating lobby")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [{ type: "Lobby", id }],
+    }),
+    joinLobby: builder.mutation<
+      LobbyDocWithId,
+      { lobbyId: string, player: Player }
+    >({
+      queryFn: async ({ lobbyId, player }) => {
+        try {
+          const lobbyRef = getLobbyRef(lobbyId)
+          const docSnap = await getDoc(lobbyRef)
+
+          if (!docSnap.exists()) {
+            throw new Error("Lobby not found")
+          }
+
+          const currentData = docSnap.data()
+          const currentPlayers = currentData?.players || []
+
+          // Check if player already in lobby
+          const alreadyJoined = currentPlayers.some(
+            (p: Player) => p.uid === player.uid,
+          )
+
+          if (alreadyJoined) {
+            const { data, error } = lobbyDocWithIdSchema.safeParse({
+              id: docSnap.id,
+              ...currentData,
+            })
+
+            if (error) throw new Error(error.message || "Data parsing error")
+
+            return { data }
+          }
+
+          // Add player to lobby
+          const updatedPlayers = [...currentPlayers, player]
+
+          await updateDoc(lobbyRef, {
+            players: updatedPlayers,
+            updatedAt: Timestamp.now(),
+          })
+
+          const updatedDocSnap = await getDoc(lobbyRef)
+
+          const { data, error } = lobbyDocWithIdSchema.safeParse({
+            id: updatedDocSnap.id,
+            ...updatedDocSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error joining lobby:", error)
+          toast.error("Error joining lobby")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: (_result, _error, { lobbyId }) => [
+        { type: "Lobby", id: lobbyId },
+      ],
+    }),
+    leaveLobby: builder.mutation<
+      LobbyDocWithId,
+      { lobbyId: string, playerId: string }
+    >({
+      queryFn: async ({ lobbyId, playerId }) => {
+        try {
+          const lobbyRef = getLobbyRef(lobbyId)
+          const docSnap = await getDoc(lobbyRef)
+
+          if (!docSnap.exists()) {
+            throw new Error("Lobby not found")
+          }
+
+          const currentData = docSnap.data()
+          const currentPlayers = currentData?.players || []
+
+          // Remove player from lobby
+          const updatedPlayers = currentPlayers.filter(
+            (p: Player) => p.uid !== playerId,
+          )
+
+          await updateDoc(lobbyRef, {
+            players: updatedPlayers,
+            updatedAt: Timestamp.now(),
+          })
+
+          const updatedDocSnap = await getDoc(lobbyRef)
+
+          const { data, error } = lobbyDocWithIdSchema.safeParse({
+            id: updatedDocSnap.id,
+            ...updatedDocSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error leaving lobby:", error)
+          toast.error("Error leaving lobby")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: (_result, _error, { lobbyId }) => [
+        { type: "Lobby", id: lobbyId },
+      ],
+    }),
+    updatePlayerReady: builder.mutation<
+      LobbyDocWithId,
+      { lobbyId: string, playerId: string, isReady: boolean }
+    >({
+      queryFn: async ({ lobbyId, playerId, isReady }) => {
+        try {
+          const lobbyRef = getLobbyRef(lobbyId)
+          const docSnap = await getDoc(lobbyRef)
+
+          if (!docSnap.exists()) {
+            throw new Error("Lobby not found")
+          }
+
+          const currentData = docSnap.data()
+          const currentPlayers = currentData?.players || []
+
+          // Update player ready status
+          const updatedPlayers = currentPlayers.map((p: Player) =>
+            p.uid === playerId ? { ...p, isReady } : p,
+          )
+
+          await updateDoc(lobbyRef, {
+            players: updatedPlayers,
+            updatedAt: Timestamp.now(),
+          })
+
+          const updatedDocSnap = await getDoc(lobbyRef)
+
+          const { data, error } = lobbyDocWithIdSchema.safeParse({
+            id: updatedDocSnap.id,
+            ...updatedDocSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error updating player ready status:", error)
+          toast.error("Error updating ready status")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: (_result, _error, { lobbyId }) => [
+        { type: "Lobby", id: lobbyId },
+      ],
+    }),
+  }),
+})
+
+export const {
+  useGetLobbyByIdQuery,
+  useGetLobbyByCodeQuery,
+  useSubscribeLobbyQuery,
+  useCreateLobbyMutation,
+  useUpdateLobbyMutation,
+  useJoinLobbyMutation,
+  useLeaveLobbyMutation,
+  useUpdatePlayerReadyMutation,
+} = lobbyApi

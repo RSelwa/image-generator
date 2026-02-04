@@ -122,7 +122,8 @@ service cloud.firestore {
       }
 
       allow create: if isSignedIn();
-      allow read, update: if isLobbyPlayer() || isLobbyPlayerIncoming();
+      allow read: if isSignedIn();
+      allow update: if isLobbyPlayer() || isLobbyPlayerIncoming();
       allow delete: if signedInAdmin();
 
       // RoundAnswers subcollection

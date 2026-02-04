@@ -11,6 +11,9 @@ export const playerAnswerSchema = z.object({
   answer: z.string().default(""), // The game title they guessed
   isCorrect: z.boolean().default(false), // Calculated by client
 
+  // For special rounds: which of the 4 images they selected (0-3)
+  selectedOptionIndex: z.number().min(0).max(3).nullish().default(null),
+
   // Map position guess (only if round has a map)
   position: mapPositionSchema.nullish().default(null),
   positionDistance: z.number().nullish().default(null), // Calculated by client

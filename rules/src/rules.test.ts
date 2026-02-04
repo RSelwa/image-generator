@@ -1720,7 +1720,7 @@ describe("firebase Security Rules", () => {
       expect(result).toBeDefined()
     })
 
-    it("should not be able to read lobby if not a player", async () => {
+    it("should be able to read lobby as logged in user (for joining by code)", async () => {
       const hostId = "host1"
       const outsiderId = "outsider1"
 
@@ -1733,7 +1733,9 @@ describe("firebase Security Rules", () => {
 
       const outsiderDb = testEnv.authenticatedContext(outsiderId).firestore()
 
-      await assertFails(getDoc(doc(outsiderDb, "lobbies/lobby1")))
+      const result = await assertSucceeds(getDoc(doc(outsiderDb, "lobbies/lobby1")))
+
+      expect(result).toBeDefined()
     })
 
     it("should not be able to read lobby when not logged in", async () => {

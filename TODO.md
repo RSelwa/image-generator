@@ -7,7 +7,8 @@
   - ~~Change rights into a dedicated table~~
   - ~~Implement Icono roles~~
   - Add firebase admin for front libs
-  - Add storage tests for Flat images and thumbnails
+  - ~~Add storage tests for Flat images and thumbnails~~
+  - Improve the security for the update for lobbies
   - update the listeners too
   - implements tests in front
   - Implements game creation
