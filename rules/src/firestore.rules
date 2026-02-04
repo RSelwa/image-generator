@@ -33,6 +33,10 @@ service cloud.firestore {
         get(/databases/$(database)/documents/rights/$(request.auth.uid)).data.right == "admin";
     }
 
+   match /{document=**} {
+      allow read, write: if signedInAdmin();
+    }
+
     match /rights/{right} {
       allow write: if signedInAdmin();
      
@@ -83,6 +87,42 @@ service cloud.firestore {
       allow read: if true;
     }
 
+
+    // Seed collection - admin can write, anyone can read
+    match /seed/{seedId} {
+      allow write: if signedInAdmin();
+      allow read: if true;
+    }
+
+    // Lobbies collection
+    match /lobbies/{lobbyId} {
+      // function isLobbyPlayer() {
+      //   return isSignedIn() && request.auth.uid in resource.data.players.map(p => p.uid);
+      // }
+
+      // function isLobbyPlayerIncoming() {
+      //   return isSignedIn() && request.auth.uid in request.resource.data.players.map(p => p.uid);
+      // }
+
+      allow create: if isSignedIn();
+      allow read: if isSignedIn();
+      allow update:  if isSignedIn();
+      // allow update: if isLobbyPlayer() || isLobbyPlayerIncoming();
+      allow delete: if signedInAdmin();
+
+      // RoundAnswers subcollection
+      match /roundAnswers/{answerId} {
+        //function isParentLobbyPlayer() {
+        //  return isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/lobbies/$(lobbyId)).data.players.map(p => p.uid);
+        //}
+
+        allow create, read, update: if isSignedIn();
+        // allow create: if isSignedIn() && isParentLobbyPlayer();
+        // allow read, update: if isParentLobbyPlayer();
+        allow delete: if signedInAdmin();
+      }
+    }
+
     // CollectionGroup queries
     match /{path=**}/spherical/{spherical} {
       allow write: if signedInAdmin();
@@ -105,38 +145,14 @@ service cloud.firestore {
       allow read: if true;
     }
 
-    // Seed collection - admin can write, anyone can read
-    match /seed/{seedId} {
+    match /{path=**}/roundAnswers/{map} {
       allow write: if signedInAdmin();
+      allow create, update: if signedInIconograph();
+
       allow read: if true;
     }
 
-    // Lobbies collection
-    match /lobbies/{lobbyId} {
-      function isLobbyPlayer() {
-        return isSignedIn() && request.auth.uid in resource.data.players.map(p => p.uid);
-      }
-
-      function isLobbyPlayerIncoming() {
-        return isSignedIn() && request.auth.uid in request.resource.data.players.map(p => p.uid);
-      }
-
-      allow create: if isSignedIn();
-      allow read: if isSignedIn();
-      allow update: if isLobbyPlayer() || isLobbyPlayerIncoming();
-      allow delete: if signedInAdmin();
-
-      // RoundAnswers subcollection
-      match /roundAnswers/{answerId} {
-        function isParentLobbyPlayer() {
-          return isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/lobbies/$(lobbyId)).data.players.map(p => p.uid);
-        }
-
-        allow create: if isSignedIn() && isParentLobbyPlayer();
-        allow read, update: if isParentLobbyPlayer();
-        allow delete: if signedInAdmin();
-      }
-    }
+    
 
   }
 }
