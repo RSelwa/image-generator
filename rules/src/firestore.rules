@@ -103,7 +103,39 @@ service cloud.firestore {
       allow create, update: if signedInIconograph();
 
       allow read: if true;
-    } 
+    }
+
+    // Seed collection - admin can write, anyone can read
+    match /seed/{seedId} {
+      allow write: if signedInAdmin();
+      allow read: if true;
+    }
+
+    // Lobbies collection
+    match /lobbies/{lobbyId} {
+      function isLobbyPlayer() {
+        return isSignedIn() && request.auth.uid in resource.data.players.map(p => p.uid);
+      }
+
+      function isLobbyPlayerIncoming() {
+        return isSignedIn() && request.auth.uid in request.resource.data.players.map(p => p.uid);
+      }
+
+      allow create: if isSignedIn();
+      allow read, update: if isLobbyPlayer() || isLobbyPlayerIncoming();
+      allow delete: if signedInAdmin();
+
+      // RoundAnswers subcollection
+      match /roundAnswers/{answerId} {
+        function isParentLobbyPlayer() {
+          return isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/lobbies/$(lobbyId)).data.players.map(p => p.uid);
+        }
+
+        allow create: if isSignedIn() && isParentLobbyPlayer();
+        allow read, update: if isParentLobbyPlayer();
+        allow delete: if signedInAdmin();
+      }
+    }
 
   }
 }

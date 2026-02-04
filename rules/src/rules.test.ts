@@ -1532,4 +1532,598 @@ describe("firebase Security Rules", () => {
       })
     })
   })
+
+  describe("seed collection", () => {
+    it("should be able to read a doc even if not logged in", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "seed/seed1"), {
+          name: "Test Seed",
+        })
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      const result = await assertSucceeds(getDoc(doc(unauthedDb, "seed/seed1")))
+
+      expect(result).toBeDefined()
+    })
+
+    it("should be able to read a doc as logged in user", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "seed/seed1"), {
+          name: "Test Seed",
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      const result = await assertSucceeds(
+        getDoc(doc(authedUserDb, "seed/seed1")),
+      )
+
+      expect(result).toBeDefined()
+    })
+
+    it("should be able to write as admin", async () => {
+      const uid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${uid}`), {
+          uid,
+          right: "admin",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        setDoc(doc(adminDb, "seed/seed1"), { name: "Test Seed" }),
+      )
+    })
+
+    it("should be able to update as admin", async () => {
+      const uid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${uid}`), {
+          uid,
+          right: "admin",
+        })
+        await setDoc(doc(context.firestore(), "seed/seed1"), {
+          name: "Test Seed",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(adminDb, "seed/seed1"), { name: "Updated Seed" }),
+      )
+    })
+
+    it("should be able to delete as admin", async () => {
+      const uid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${uid}`), {
+          uid,
+          right: "admin",
+        })
+        await setDoc(doc(context.firestore(), "seed/seed1"), {
+          name: "Test Seed",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(deleteDoc(doc(adminDb, "seed/seed1")))
+    })
+
+    it("should not be able to write as regular user", async () => {
+      const uid = "user1"
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        setDoc(doc(authedUserDb, "seed/seed1"), { name: "Test Seed" }),
+      )
+    })
+
+    it("should not be able to write as iconograph", async () => {
+      const uid = "icono1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${uid}`), {
+          uid,
+          right: "iconograph",
+        })
+      })
+
+      const iconoDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        setDoc(doc(iconoDb, "seed/seed1"), { name: "Test Seed" }),
+      )
+    })
+
+    it("should not be able to write when not logged in", async () => {
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(
+        setDoc(doc(unauthedDb, "seed/seed1"), { name: "Test Seed" }),
+      )
+    })
+  })
+
+  describe("lobbies collection", () => {
+    const createLobbyData = (hostId: string, playerUids: string[]) => ({
+      code: "ABC123",
+      hostId,
+      status: "waiting",
+      players: playerUids.map((uid) => ({
+        uid,
+        name: `Player ${uid}`,
+        avatar: "",
+        score: 0,
+        isHost: uid === hostId,
+        isReady: false,
+      })),
+      config: {
+        playersLives: 3,
+        maxPlayers: 8,
+        roundDuration: 30,
+        numberOfRounds: 5,
+      },
+      currentRound: 0,
+    })
+
+    it("should be able to create a lobby when logged in", async () => {
+      const uid = "user1"
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        setDoc(doc(authedUserDb, "lobbies/lobby1"), createLobbyData(uid, [uid])),
+      )
+    })
+
+    it("should not be able to create a lobby when not logged in", async () => {
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(
+        setDoc(
+          doc(unauthedDb, "lobbies/lobby1"),
+          createLobbyData("user1", ["user1"]),
+        ),
+      )
+    })
+
+    it("should be able to read lobby as a player", async () => {
+      const hostId = "host1"
+      const playerId = "player1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "lobbies/lobby1"),
+          createLobbyData(hostId, [hostId, playerId]),
+        )
+      })
+
+      const playerDb = testEnv.authenticatedContext(playerId).firestore()
+
+      const result = await assertSucceeds(
+        getDoc(doc(playerDb, "lobbies/lobby1")),
+      )
+
+      expect(result).toBeDefined()
+    })
+
+    it("should not be able to read lobby if not a player", async () => {
+      const hostId = "host1"
+      const outsiderId = "outsider1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "lobbies/lobby1"),
+          createLobbyData(hostId, [hostId]),
+        )
+      })
+
+      const outsiderDb = testEnv.authenticatedContext(outsiderId).firestore()
+
+      await assertFails(getDoc(doc(outsiderDb, "lobbies/lobby1")))
+    })
+
+    it("should not be able to read lobby when not logged in", async () => {
+      const hostId = "host1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "lobbies/lobby1"),
+          createLobbyData(hostId, [hostId]),
+        )
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(getDoc(doc(unauthedDb, "lobbies/lobby1")))
+    })
+
+    it("should be able to update lobby as a player", async () => {
+      const hostId = "host1"
+      const playerId = "player1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "lobbies/lobby1"),
+          createLobbyData(hostId, [hostId, playerId]),
+        )
+      })
+
+      const playerDb = testEnv.authenticatedContext(playerId).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(playerDb, "lobbies/lobby1"), { status: "playing" }),
+      )
+    })
+
+    it("should be able to join a lobby (update with self added to players)", async () => {
+      const hostId = "host1"
+      const newPlayerId = "newPlayer1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "lobbies/lobby1"),
+          createLobbyData(hostId, [hostId]),
+        )
+      })
+
+      const newPlayerDb = testEnv.authenticatedContext(newPlayerId).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(newPlayerDb, "lobbies/lobby1"), {
+          players: [
+            {
+              uid: hostId,
+              name: "Player host1",
+              avatar: "",
+              score: 0,
+              isHost: true,
+              isReady: false,
+            },
+            {
+              uid: newPlayerId,
+              name: "New Player",
+              avatar: "",
+              score: 0,
+              isHost: false,
+              isReady: false,
+            },
+          ],
+        }),
+      )
+    })
+
+    it("should not be able to update lobby if not a player", async () => {
+      const hostId = "host1"
+      const outsiderId = "outsider1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "lobbies/lobby1"),
+          createLobbyData(hostId, [hostId]),
+        )
+      })
+
+      const outsiderDb = testEnv.authenticatedContext(outsiderId).firestore()
+
+      await assertFails(
+        updateDoc(doc(outsiderDb, "lobbies/lobby1"), { status: "playing" }),
+      )
+    })
+
+    it("should be able to delete lobby as admin", async () => {
+      const adminId = "admin1"
+      const hostId = "host1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
+        await setDoc(
+          doc(context.firestore(), "lobbies/lobby1"),
+          createLobbyData(hostId, [hostId]),
+        )
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+
+      await assertSucceeds(deleteDoc(doc(adminDb, "lobbies/lobby1")))
+    })
+
+    it("should not be able to delete lobby as player (non-admin)", async () => {
+      const hostId = "host1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "lobbies/lobby1"),
+          createLobbyData(hostId, [hostId]),
+        )
+      })
+
+      const hostDb = testEnv.authenticatedContext(hostId).firestore()
+
+      await assertFails(deleteDoc(doc(hostDb, "lobbies/lobby1")))
+    })
+
+    it("should not be able to delete lobby as regular user", async () => {
+      const hostId = "host1"
+      const userId = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "lobbies/lobby1"),
+          createLobbyData(hostId, [hostId]),
+        )
+      })
+
+      const userDb = testEnv.authenticatedContext(userId).firestore()
+
+      await assertFails(deleteDoc(doc(userDb, "lobbies/lobby1")))
+    })
+  })
+
+  describe("roundAnswers subcollection (lobbies/{lobbyId}/roundAnswers)", () => {
+    const createLobbyData = (hostId: string, playerUids: string[]) => ({
+      code: "ABC123",
+      hostId,
+      status: "playing",
+      players: playerUids.map((uid) => ({
+        uid,
+        name: `Player ${uid}`,
+        avatar: "",
+        score: 0,
+        isHost: uid === hostId,
+        isReady: false,
+      })),
+      config: {
+        playersLives: 3,
+        maxPlayers: 8,
+        roundDuration: 30,
+        numberOfRounds: 5,
+      },
+      currentRound: 1,
+    })
+
+    const lobbyId = "lobby1"
+    const answerPath = `lobbies/${lobbyId}/roundAnswers/answer1`
+
+    it("should be able to create a roundAnswer as a player", async () => {
+      const hostId = "host1"
+      const playerId = "player1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId, playerId]),
+        )
+      })
+
+      const playerDb = testEnv.authenticatedContext(playerId).firestore()
+
+      await assertSucceeds(
+        setDoc(doc(playerDb, answerPath), {
+          playerId,
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        }),
+      )
+    })
+
+    it("should not be able to create a roundAnswer if not a player", async () => {
+      const hostId = "host1"
+      const outsiderId = "outsider1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId]),
+        )
+      })
+
+      const outsiderDb = testEnv.authenticatedContext(outsiderId).firestore()
+
+      await assertFails(
+        setDoc(doc(outsiderDb, answerPath), {
+          playerId: outsiderId,
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        }),
+      )
+    })
+
+    it("should not be able to create a roundAnswer when not logged in", async () => {
+      const hostId = "host1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId]),
+        )
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(
+        setDoc(doc(unauthedDb, answerPath), {
+          playerId: "someone",
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        }),
+      )
+    })
+
+    it("should be able to read roundAnswers as a player", async () => {
+      const hostId = "host1"
+      const playerId = "player1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId, playerId]),
+        )
+        await setDoc(doc(context.firestore(), answerPath), {
+          playerId: hostId,
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        })
+      })
+
+      const playerDb = testEnv.authenticatedContext(playerId).firestore()
+
+      const result = await assertSucceeds(getDoc(doc(playerDb, answerPath)))
+
+      expect(result).toBeDefined()
+    })
+
+    it("should not be able to read roundAnswers if not a player", async () => {
+      const hostId = "host1"
+      const outsiderId = "outsider1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId]),
+        )
+        await setDoc(doc(context.firestore(), answerPath), {
+          playerId: hostId,
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        })
+      })
+
+      const outsiderDb = testEnv.authenticatedContext(outsiderId).firestore()
+
+      await assertFails(getDoc(doc(outsiderDb, answerPath)))
+    })
+
+    it("should be able to update roundAnswers as a player", async () => {
+      const hostId = "host1"
+      const playerId = "player1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId, playerId]),
+        )
+        await setDoc(doc(context.firestore(), answerPath), {
+          playerId,
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        })
+      })
+
+      const playerDb = testEnv.authenticatedContext(playerId).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(playerDb, answerPath), {
+          answer: { lat: 51.5074, lng: -0.1278 },
+        }),
+      )
+    })
+
+    it("should not be able to update roundAnswers if not a player", async () => {
+      const hostId = "host1"
+      const outsiderId = "outsider1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId]),
+        )
+        await setDoc(doc(context.firestore(), answerPath), {
+          playerId: hostId,
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        })
+      })
+
+      const outsiderDb = testEnv.authenticatedContext(outsiderId).firestore()
+
+      await assertFails(
+        updateDoc(doc(outsiderDb, answerPath), {
+          answer: { lat: 51.5074, lng: -0.1278 },
+        }),
+      )
+    })
+
+    it("should be able to delete roundAnswers as admin", async () => {
+      const adminId = "admin1"
+      const hostId = "host1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId]),
+        )
+        await setDoc(doc(context.firestore(), answerPath), {
+          playerId: hostId,
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+
+      await assertSucceeds(deleteDoc(doc(adminDb, answerPath)))
+    })
+
+    it("should not be able to delete roundAnswers as player (non-admin)", async () => {
+      const hostId = "host1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId]),
+        )
+        await setDoc(doc(context.firestore(), answerPath), {
+          playerId: hostId,
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        })
+      })
+
+      const hostDb = testEnv.authenticatedContext(hostId).firestore()
+
+      await assertFails(deleteDoc(doc(hostDb, answerPath)))
+    })
+
+    it("should not be able to delete roundAnswers as outsider", async () => {
+      const hostId = "host1"
+      const outsiderId = "outsider1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), `lobbies/${lobbyId}`),
+          createLobbyData(hostId, [hostId]),
+        )
+        await setDoc(doc(context.firestore(), answerPath), {
+          playerId: hostId,
+          round: 1,
+          answer: { lat: 48.8566, lng: 2.3522 },
+        })
+      })
+
+      const outsiderDb = testEnv.authenticatedContext(outsiderId).firestore()
+
+      await assertFails(deleteDoc(doc(outsiderDb, answerPath)))
+    })
+  })
 })
