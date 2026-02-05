@@ -9,7 +9,7 @@ export type DocumentMapping = {
   [TABLES.FLAT]: FlatDoc
   [TABLES.RIGHTS]: RightDoc
   [TABLES.LOBBIES]: LobbyDoc
-  [TABLES.SEED]: SeedDoc
+  [TABLES.SEEDS]: SeedDoc
   [TABLES.ROUND_ANSWERS]: RoundAnswerDoc
 }
 

@@ -1,4 +1,4 @@
-import { ROUND_TYPE } from "@repo/common"
+import { ROUND_TYPE, SPECIAL_ROUND_OPTIONS_COUNT } from "@repo/common"
 import z from "zod"
 
 import { playerAnswerSchema } from "~/firestore/players.answers"
@@ -33,7 +33,7 @@ export const roundAnswerDocSchema = z.object({
 
   // For special rounds (isSpecial = true) - 4 options to choose from
   // Each player picks one option, correctness depends on their selection
-  options: z.array(specialRoundOptionSchema).length(4).nullish().default(null),
+  options: z.array(specialRoundOptionSchema).length(SPECIAL_ROUND_OPTIONS_COUNT).nullish().default(null),
 
   // Map data (if round has a map)
   hasMap: z.boolean().default(false),

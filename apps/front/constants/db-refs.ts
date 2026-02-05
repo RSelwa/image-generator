@@ -21,8 +21,8 @@ export const TABLE_REFS = {
   [TABLES.LOBBIES]: collection(db, TABLES.LOBBIES) as CustomCollectionRef<
     typeof TABLES.LOBBIES
   >,
-  [TABLES.SEED]: collection(db, TABLES.SEED) as CustomCollectionRef<
-    typeof TABLES.SEED
+  [TABLES.SEEDS]: collection(db, TABLES.SEEDS) as CustomCollectionRef<
+    typeof TABLES.SEEDS
   >,
 } as const
 
@@ -82,7 +82,7 @@ export const getLobbyRef = (lobbyId: string | undefined) =>
   lobbyId ? doc(TABLE_REFS[TABLES.LOBBIES], lobbyId) : doc(TABLE_REFS[TABLES.LOBBIES])
 
 export const getSeedRef = (seedId: string | undefined) =>
-  seedId ? doc(TABLE_REFS[TABLES.SEED], seedId) : doc(TABLE_REFS[TABLES.SEED])
+  seedId ? doc(TABLE_REFS[TABLES.SEEDS], seedId) : doc(TABLE_REFS[TABLES.SEEDS])
 
 export const getRoundAnswerRef = (lobbyId: string, roundAnswerId: string) =>
   doc(TABLES_SUB_REFS[TABLES.ROUND_ANSWERS](lobbyId), roundAnswerId)

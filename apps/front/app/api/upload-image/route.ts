@@ -1,9 +1,9 @@
 import { BUCKETS_ACTIONS, type ConstantValues } from "@repo/common"
 import { getNowString, RIGHTS_CREATE_TO_BUCKETS, STORAGE_PATHS } from "@repo/common"
+import { storage } from "@repo/providers/firebase"
 import { type RightDoc } from "@repo/schemas"
 import sharp from "sharp"
 import z from "zod"
-import { storage } from "@/lib/firebase-admin"
 import { getUserRight } from "@/utils/api"
 
 export const payloadSchema = z.object({

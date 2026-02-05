@@ -8,7 +8,7 @@ export const TABLES = {
   FLAT: "flat",
   RIGHTS: "rights",
   LOBBIES: "lobbies",
-  SEED: "seed",
+  SEEDS: "seeds",
   ROUND_ANSWERS: "roundAnswers",
 } as const
 

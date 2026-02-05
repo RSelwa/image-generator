@@ -1,6 +1,6 @@
 import { TABLES } from "@repo/common"
+import { auth, db } from "@repo/providers/firebase"
 import { rightDocSchema } from "@repo/schemas"
-import { auth, db } from "@/lib/firebase-admin"
 
 export const getUserRight = async (request: Request) => {
   const authHeader = request.headers.get("Authorization")

@@ -61,9 +61,7 @@ export function getIdFromFirestoreRef(ref: string) {
   return parts[parts.length - 1] || ""
 }
 
-export function randomElement(array: unknown[]) {
-  return array[Math.floor(Math.random() * array.length)]
-}
+export const randomElement = <T>(array: T[]) => array[Math.floor(Math.random() * array.length)]
 
 // Export Now at format dd-mm-yyyy-hh-mm-ss
 export function getNowString() {
