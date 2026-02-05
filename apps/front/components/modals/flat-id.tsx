@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DIFFICULTIES, DOCUMENTS_STATUS, STORAGE_PATHS } from "@repo/common"
-import { createFlatInputSchema, flatFormSchema } from "@repo/schemas"
+import { createFlatInputSchema } from "@repo/schemas"
 import { ArrowLeft } from "lucide-react"
 import { useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
@@ -34,9 +34,10 @@ import {
   useGetFlatByIdQuery,
   useUpdateFlatByIdMutation,
 } from "@/redux/api/flat"
+import { useGetAllGamesNamesQuery } from "@/redux/api/games"
 import { uploadFileToBucket } from "@/utils/file"
 
-type FlatFormSchema = z.input<typeof flatFormSchema>
+type FlatFormSchema = z.input<typeof createFlatInputSchema>
 
 const KEY = MODAL_KEYS.FLAT_ID
 
@@ -63,27 +64,13 @@ const STATUS_OPTIONS = Object.values(DOCUMENTS_STATUS)
 
 const FlatForm = ({
   flatId,
-  gameId,
+  gameId: initialGameId,
   isNew,
 }: {
   flatId: string
   gameId: string
   isNew: boolean
 }) => {
-  const { openModal } = useModal(MODAL_KEYS.FLAT_GALLERY_ID, gameId)
-  const { closeModal } = useModal(MODAL_KEYS.FLAT_ID, flatId)
-
-  const { data, isLoading } = useGetFlatByIdQuery(
-    { gameId, id: flatId },
-    { skip: isNew },
-  )
-  const [createFlat, { isLoading: isCreating }] = useCreateFlatMutation()
-  const [updateFlat, { isLoading: isUpdating }] = useUpdateFlatByIdMutation()
-
-  const [isUploadingImage, setIsUploadingImage] = useState(false)
-  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false)
-  const [, setModalParam] = useQueryState(KEY)
-
   const {
     handleSubmit,
     control,
@@ -92,8 +79,9 @@ const FlatForm = ({
     watch,
     formState: { errors, isDirty, dirtyFields },
   } = useForm<FlatFormSchema>({
-    resolver: zodResolver(flatFormSchema),
+    resolver: zodResolver(createFlatInputSchema),
     defaultValues: {
+      gameId: initialGameId,
       image: "",
       difficulty: DIFFICULTIES.EASY,
       status: DOCUMENTS_STATUS.WAITING,
@@ -101,12 +89,29 @@ const FlatForm = ({
     },
   })
 
+  const gameId = watch("gameId")
   const image = watch("image")
   const thumbnail = watch("thumbnail")
+
+  const { openModal } = useModal(MODAL_KEYS.FLAT_GALLERY_ID, gameId)
+  const { closeModal } = useModal(MODAL_KEYS.FLAT_ID, flatId)
+
+  const { data: gamesData, isLoading: isGamesLoading } = useGetAllGamesNamesQuery()
+  const { data, isLoading } = useGetFlatByIdQuery(
+    { gameId, id: flatId },
+    { skip: isNew || !gameId },
+  )
+  const [createFlat, { isLoading: isCreating }] = useCreateFlatMutation()
+  const [updateFlat, { isLoading: isUpdating }] = useUpdateFlatByIdMutation()
+
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false)
+  const [, setModalParam] = useQueryState(KEY)
 
   useEffect(() => {
     if (data) {
       reset({
+        gameId: data.gameId,
         image: data.image || "",
         difficulty: data.difficulty || DIFFICULTIES.EASY,
         status: data.status || DOCUMENTS_STATUS.WAITING,
@@ -164,8 +169,7 @@ const FlatForm = ({
   }
 
   const onSubmit: SubmitHandler<FlatFormSchema> = async (formData) => {
-    const dataWithGameId = { ...formData, gameId }
-    const parsedData = createFlatInputSchema.parse(dataWithGameId)
+    const parsedData = createFlatInputSchema.parse(formData)
 
     if (isNew) {
       const { data: createdFlat, error } = await createFlat({
@@ -219,6 +223,39 @@ const FlatForm = ({
             {isNew ? "Create Flat" : "Edit Flat"}
           </h2>
         </div>
+        {isNew && (
+          <Field className="mb-6">
+            <FieldLabel htmlFor="gameId">Game</FieldLabel>
+            <Controller
+              name="gameId"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value || ""}
+                  onValueChange={field.onChange}
+                  disabled={isGamesLoading}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a game" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {gamesData?.map((game) => (
+                      <SelectItem key={game.id} value={game.id}>
+                        {game.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {isGamesLoading && (
+              <FieldDescription>Loading games...</FieldDescription>
+            )}
+            {!gameId && (
+              <FieldDescription>Select a game to create the flat in</FieldDescription>
+            )}
+          </Field>
+        )}
 
         <div className="grid grid-cols-2 gap-6">
           <div className="flex flex-col gap-4">
@@ -337,7 +374,7 @@ const FlatForm = ({
           <Button type="button" variant="outline" onClick={closeModal}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isCreating || isUpdating || !isDirty}>
+          <Button type="submit" disabled={isCreating || isUpdating || !isDirty || (isNew && !gameId)}>
             {isCreating || isUpdating ? (
               <>
                 {isNew ? "Creating" : "Saving"} <Loader />

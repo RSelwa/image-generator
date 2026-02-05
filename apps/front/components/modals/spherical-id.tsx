@@ -2,11 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DIFFICULTIES, DOCUMENTS_STATUS, STORAGE_PATHS } from "@repo/common"
-import { createSphericalInputSchema, sphericalFormSchema } from "@repo/schemas"
+import { createSphericalInputSchema } from "@repo/schemas"
 import { ArrowLeft, SquareArrowOutUpRight } from "lucide-react"
 import Link from "next/link"
 import { useQueryState } from "nuqs"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { type z } from "zod"
@@ -34,6 +34,7 @@ import {
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
+import { useGetAllGamesNamesQuery } from "@/redux/api/games"
 import { useGetMapsByGameIdQuery } from "@/redux/api/maps"
 import {
   useCreateSphericalMutation,
@@ -42,7 +43,7 @@ import {
 } from "@/redux/api/spherical"
 import { uploadFileToBucket } from "@/utils/file"
 
-type SphericalFormSchema = z.input<typeof sphericalFormSchema>
+type SphericalFormSchema = z.input<typeof createSphericalInputSchema>
 
 const KEY = MODAL_KEYS.SPHERICAL_ID
 
@@ -72,35 +73,13 @@ const NO_MAP_VALUE = "__none__"
 
 const SphericalForm = ({
   sphericalId,
-  gameId,
+  gameId: initialGameId,
   isNew,
 }: {
   sphericalId: string
   gameId: string
   isNew: boolean
 }) => {
-  const { openModal: openSphericalGallery } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID, gameId)
-  const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalId)
-  const { openModal } = useModal(MODAL_KEYS.MAP_ID, `${gameId}_${NEW_SEARCH_PARAM}`)
-
-  const { data, isLoading } = useGetSphericalByIdQuery(
-    { gameId, id: sphericalId },
-    { skip: isNew },
-  )
-  const [createSpherical, { isLoading: isCreating }] =
-    useCreateSphericalMutation()
-  const [updateSpherical, { isLoading: isUpdating }] =
-    useUpdateSphericalByIdMutation()
-  const { data: mapsData, isLoading: isMapsLoading } = useGetMapsByGameIdQuery({
-    gameId,
-  })
-
-  const [isUploading, setIsUploading] = useState(false)
-  const [isThumbnailUploading, setIsThumbnailUploading] = useState(false)
-  const [, setModalParam] = useQueryState(KEY)
-
-  const maps = mapsData ?? []
-
   const {
     register,
     handleSubmit,
@@ -110,8 +89,9 @@ const SphericalForm = ({
     watch,
     formState: { errors, isDirty, dirtyFields },
   } = useForm<SphericalFormSchema>({
-    resolver: zodResolver(sphericalFormSchema),
+    resolver: zodResolver(createSphericalInputSchema),
     defaultValues: {
+      gameId: initialGameId,
       image: "",
       mapId: "",
       mapPosition: { x: 50, y: 50 },
@@ -121,10 +101,35 @@ const SphericalForm = ({
     },
   })
 
+  const gameId = watch("gameId")
   const image = watch("image")
   const selectedMapId = watch("mapId")
   const mapPosition = watch("mapPosition")
   const thumbnail = watch("thumbnail")
+
+  const { openModal: openSphericalGallery } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID, gameId)
+  const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalId)
+  const { openModal } = useModal(MODAL_KEYS.MAP_ID, `${gameId}_${NEW_SEARCH_PARAM}`)
+
+  const { data: gamesData, isLoading: isGamesLoading } = useGetAllGamesNamesQuery()
+  const { data, isLoading } = useGetSphericalByIdQuery(
+    { gameId, id: sphericalId },
+    { skip: isNew || !gameId },
+  )
+  const [createSpherical, { isLoading: isCreating }] =
+    useCreateSphericalMutation()
+  const [updateSpherical, { isLoading: isUpdating }] =
+    useUpdateSphericalByIdMutation()
+  const { data: mapsData, isLoading: isMapsLoading } = useGetMapsByGameIdQuery(
+    { gameId },
+    { skip: !gameId },
+  )
+
+  const [isUploading, setIsUploading] = useState(false)
+  const [isThumbnailUploading, setIsThumbnailUploading] = useState(false)
+  const [, setModalParam] = useQueryState(KEY)
+
+  const maps = mapsData ?? []
 
   // Mutual exclusivity: mapId disables thumbnail, thumbnail disables mapId
   const hasMapId = !!selectedMapId
@@ -155,6 +160,7 @@ const SphericalForm = ({
   useEffect(() => {
     if (data) {
       reset({
+        gameId: data.gameId,
         image: data.image || "",
         mapId: data.mapId || "",
         mapPosition: data.mapPosition || { x: 50, y: 50 },
@@ -164,6 +170,15 @@ const SphericalForm = ({
       })
     }
   }, [data, reset])
+
+  // Reset mapId when game changes (only for new items)
+  const prevGameIdRef = useRef(gameId)
+  useEffect(() => {
+    if (isNew && gameId && prevGameIdRef.current !== gameId) {
+      setValue("mapId", "", { shouldDirty: false })
+    }
+    prevGameIdRef.current = gameId
+  }, [gameId, isNew, setValue])
 
   const handleFileUpload = async (file: File) => {
     setIsUploading(true)
@@ -214,8 +229,7 @@ const SphericalForm = ({
   }
 
   const onSubmit: SubmitHandler<SphericalFormSchema> = async (formData) => {
-    const dataWithGameId = { ...formData, gameId }
-    const parsedData = createSphericalInputSchema.parse(dataWithGameId)
+    const parsedData = createSphericalInputSchema.parse(formData)
 
     if (isNew) {
       const { data: createdSpherical, error } = await createSpherical({
@@ -277,6 +291,39 @@ const SphericalForm = ({
           </Button>
 
         </div>
+        {isNew && (
+          <Field className="mb-6">
+            <FieldLabel htmlFor="gameId">Game</FieldLabel>
+            <Controller
+              name="gameId"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value || ""}
+                  onValueChange={field.onChange}
+                  disabled={isGamesLoading}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a game" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {gamesData?.map((game) => (
+                      <SelectItem key={game.id} value={game.id}>
+                        {game.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {isGamesLoading && (
+              <FieldDescription>Loading games...</FieldDescription>
+            )}
+            {!gameId && (
+              <FieldDescription>Select a game to create the spherical in</FieldDescription>
+            )}
+          </Field>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-6">
           <FieldGroup>
             <Field>
@@ -533,7 +580,7 @@ const SphericalForm = ({
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button type="submit" disabled={isCreating || isUpdating || !isDirty}>
+          <Button type="submit" disabled={isCreating || isUpdating || !isDirty || (isNew && !gameId)}>
             {isCreating || isUpdating ? (
               <>
                 {isNew ? "Creating" : "Saving"} <Loader />

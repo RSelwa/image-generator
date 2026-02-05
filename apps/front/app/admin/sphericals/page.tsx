@@ -7,12 +7,15 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Field, FieldContent, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { QUERY_PARAMS, SORT_OPTIONS, SORT_OPTIONS_LABEL } from "@/constants/mapping"
+import { MODAL_KEYS, NEW_SEARCH_PARAM, QUERY_PARAMS, SORT_OPTIONS, SORT_OPTIONS_LABEL } from "@/constants/mapping"
+import { useModal } from "@/hooks/use-modal"
 import { useGetSphericalsInfiniteQuery } from "@/redux/api/spherical"
 
 const Page = () => {
   const [sort, setSort] = useQueryState(QUERY_PARAMS.SORT, { defaultValue: "" })
   const [displayMissingImages, setDisplayMissingImages] = useQueryState(QUERY_PARAMS.MISSING_IMAGE, { defaultValue: "" })
+
+  const { openModal } = useModal(MODAL_KEYS.SPHERICAL_ID, `${NEW_SEARCH_PARAM}_${NEW_SEARCH_PARAM}`)
 
   const { data, isLoading, hasNextPage, fetchNextPage } = useGetSphericalsInfiniteQuery()
 
@@ -58,6 +61,8 @@ const Page = () => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          <Button onClick={() => openModal()}>Add New Spherical</Button>
+
         </div>
       </AdminHeader>
       {isLoading && <p>Loading...</p>}

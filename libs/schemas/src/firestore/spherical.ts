@@ -31,12 +31,8 @@ export const createSphericalInputSchema = sphericalDocSchema.omit({ createdAt: t
 
 export const updateSphericalInputSchema = createSphericalInputSchema.partial()
 
-// Form schema (without gameId, added separately on submit)
-export const sphericalFormSchema = createSphericalInputSchema.omit({ gameId: true })
-
 export type MapPosition = z.infer<typeof mapPositionSchema>
 export type SphericalDoc = z.infer<typeof sphericalDocSchema>
 export type SphericalDocWithId = z.infer<typeof sphericalDocWithIdSchema>
 export type CreateSphericalInput = z.infer<typeof createSphericalInputSchema>
 export type UpdateSphericalInput = z.infer<typeof updateSphericalInputSchema>
-export type SphericalFormInput = z.infer<typeof sphericalFormSchema>
