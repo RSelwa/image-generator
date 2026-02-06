@@ -1,4 +1,4 @@
-import { ROUND_TYPE, TABLES } from "@repo/common"
+import { DEFAULT_MAX_DISTANCE_POINTS, ROUND_TYPE, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { roundSchema, type SphericalDocWithId } from "@repo/schemas"
 
@@ -62,6 +62,7 @@ export const formatSphericalsForNormalRounds = async (sphericals: SphericalDocWi
         mapImage: mapData.imageUrl,
         mapWidth: mapData.width,
         mapHeight: mapData.height,
+        maxDistancePoints: mapData.maxDistancePoints || DEFAULT_MAX_DISTANCE_POINTS,
       })
 
       if (!parsedRound.success) {

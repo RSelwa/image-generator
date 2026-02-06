@@ -53,7 +53,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
     reset,
     setValue,
     watch,
-    formState: { errors, isDirty, dirtyFields },
+    formState: { errors, isDirty },
   } = useForm<GameFormSchema>({
     resolver: zodResolver(createGameInputSchema),
     defaultValues: {
@@ -127,14 +127,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
         setGameId(null)
       }
     } else {
-      // Only include image fields if they were actually changed
-      const { image, ...rest } = parsedData
-      const updateData = {
-        ...rest,
-        ...(dirtyFields.image && { image }),
-      }
-
-      const { error } = await updateGame({ id: gameId, data: updateData })
+      const { error } = await updateGame({ id: gameId, data: parsedData })
 
       if (error) return
 

@@ -1,11 +1,11 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { STORAGE_PATHS } from "@repo/common"
+import { DEFAULT_MAX_DISTANCE_POINTS, STORAGE_PATHS } from "@repo/common"
 import { createMapInputSchema } from "@repo/schemas"
 import { ArrowLeft } from "lucide-react"
 import { useQueryState } from "nuqs"
-import { useEffect, useState } from "react"
+import { type MouseEvent, useCallback, useEffect, useRef, useState } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { type z } from "zod"
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/field"
 import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { Input } from "@/components/ui/input"
+import { Slider } from "@/components/ui/slider"
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import {
@@ -73,6 +74,8 @@ const MapForm = ({
   const [createMap, { isLoading: isCreating }] = useCreateMapMutation()
   const [updateMap, { isLoading: isUpdating }] = useUpdateMapByIdMutation()
   const [isUploading, setIsUploading] = useState(false)
+  const [clickPosition, setClickPosition] = useState<{ x: number, y: number } | null>(null)
+  const overlayRef = useRef<HTMLDivElement>(null)
   const [, setModalParam] = useQueryState(KEY)
 
   const {
@@ -81,7 +84,7 @@ const MapForm = ({
     reset,
     setValue,
     watch,
-    formState: { errors, isDirty, dirtyFields },
+    formState: { errors, isDirty },
   } = useForm<MapFormSchema>({
     resolver: zodResolver(createMapInputSchema),
     defaultValues: {
@@ -89,12 +92,22 @@ const MapForm = ({
       imageUrl: null,
       width: null,
       height: null,
+      maxDistancePoints: DEFAULT_MAX_DISTANCE_POINTS,
       gameId,
     },
   })
 
   const imageUrl = watch("imageUrl")
   const name = watch("name")
+  const maxDistancePoints = watch("maxDistancePoints")
+
+  const handleOverlayClick = useCallback((e: MouseEvent<HTMLDivElement>) => {
+    if (!overlayRef.current) return
+    const rect = overlayRef.current.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    setClickPosition({ x, y })
+  }, [])
 
   useEffect(() => {
     if (data) {
@@ -103,6 +116,7 @@ const MapForm = ({
         imageUrl: data.imageUrl ?? null,
         width: data.width ?? null,
         height: data.height ?? null,
+        maxDistancePoints: data.maxDistancePoints ?? DEFAULT_MAX_DISTANCE_POINTS,
         gameId: data.gameId,
       })
     }
@@ -151,19 +165,10 @@ const MapForm = ({
         setModalParam(buildSubcollectionParam(gameId, createdMap.id))
       }
     } else {
-      // Only include image fields if they were actually changed
-      const { imageUrl, width, height, ...rest } = parsedData
-      const updateData = {
-        ...rest,
-        ...(dirtyFields.imageUrl && { imageUrl }),
-        ...(dirtyFields.width && { width }),
-        ...(dirtyFields.height && { height }),
-      }
-
       const { error } = await updateMap({
         gameId,
         id: mapId,
-        data: updateData,
+        data: parsedData,
       })
 
       if (error) return
@@ -237,6 +242,21 @@ const MapForm = ({
               </Field>
             </div>
 
+            <Field>
+              <FieldLabel>Max Distance Points ({maxDistancePoints || 0}%)</FieldLabel>
+              <Slider
+                min={0}
+                max={100}
+                step={1}
+                value={[maxDistancePoints || 0]}
+                onValueChange={([val]) => setValue("maxDistancePoints", val, { shouldDirty: true })}
+              />
+              <FieldDescription>Max distance (%) beyond which player gets 0 points</FieldDescription>
+              {errors.maxDistancePoints && (
+                <FieldError>{errors.maxDistancePoints.message}</FieldError>
+              )}
+            </Field>
+
             {data && (
               <div className="text-muted-foreground mt-2 space-y-1 text-xs">
                 <p>
@@ -261,13 +281,51 @@ const MapForm = ({
 
           <div className="flex flex-col gap-3">
             <FieldLabel>Map Image</FieldLabel>
-            <ImageDropzone
-              imageUrl={imageUrl ?? null}
-              onFileSelect={handleFileUpload}
-              onRemove={handleRemoveImage}
-              isUploading={isUploading}
-              alt="Map image"
-            />
+            <div className="relative">
+              <ImageDropzone
+                imageUrl={imageUrl ?? null}
+                onFileSelect={handleFileUpload}
+                onRemove={handleRemoveImage}
+                isUploading={isUploading}
+                alt="Map image"
+              />
+              {imageUrl && (
+                <div
+                  ref={overlayRef}
+                  className="absolute inset-0 cursor-crosshair"
+                  onClick={handleOverlayClick}
+                >
+                  {clickPosition && maxDistancePoints && (
+                    <svg className="absolute inset-0 size-full overflow-visible pointer-events-none">
+                      <circle
+                        cx={`${clickPosition.x}%`}
+                        cy={`${clickPosition.y}%`}
+                        r={`${maxDistancePoints}%`}
+                        fill="rgba(239, 68, 68, 0.2)"
+                        stroke="rgba(239, 68, 68, 0.6)"
+                        strokeWidth={1}
+                      />
+                      <circle
+                        cx={`${clickPosition.x}%`}
+                        cy={`${clickPosition.y}%`}
+                        r={`${(maxDistancePoints * 2) / 3}%`}
+                        fill="rgba(234, 179, 8, 0.25)"
+                        stroke="rgba(234, 179, 8, 0.6)"
+                        strokeWidth={1}
+                      />
+                      <circle
+                        cx={`${clickPosition.x}%`}
+                        cy={`${clickPosition.y}%`}
+                        r={`${maxDistancePoints / 3}%`}
+                        fill="rgba(34, 197, 94, 0.3)"
+                        stroke="rgba(34, 197, 94, 0.6)"
+                        strokeWidth={1}
+                      />
+                    </svg>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

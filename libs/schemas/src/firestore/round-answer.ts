@@ -37,6 +37,7 @@ export const roundAnswerDocSchema = z.object({
     mapImage: true,
     mapWidth: true,
     mapHeight: true,
+    maxDistancePoints: true,
 
     options: true,
 
@@ -45,6 +46,8 @@ export const roundAnswerDocSchema = z.object({
 
   roundIndex: z.number().min(1), // 1-based index for easier client display
   // Player answers (clients write here via arrayUnion)
+  pointsGame: z.number().default(0), // Points given for the answer (0 if incorrect, 100 if correct)
+  pointsDistance: z.number().default(0), // Additional points based on distance (for map rounds)
   answers: z.array(playerAnswerSchema).default([]),
   isComplete: z.boolean().default(false), // All players have answered
   createdAt: timestampSchema.nullish().default(() => null),

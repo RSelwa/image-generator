@@ -87,7 +87,7 @@ const SphericalForm = ({
     reset,
     setValue,
     watch,
-    formState: { errors, isDirty, dirtyFields },
+    formState: { errors, isDirty },
   } = useForm<SphericalFormSchema>({
     resolver: zodResolver(createSphericalInputSchema),
     defaultValues: {
@@ -245,16 +245,10 @@ const SphericalForm = ({
         setModalParam(buildSphericalModalParam(gameId, createdSpherical.id))
       }
     } else {
-      // Preserve original image if not changed
-      const updateData = {
-        ...parsedData,
-        image: dirtyFields.image ? parsedData.image : data?.image,
-      }
-
       const { error } = await updateSpherical({
         gameId,
         id: sphericalId,
-        data: updateData,
+        data: parsedData,
       })
 
       if (error) return

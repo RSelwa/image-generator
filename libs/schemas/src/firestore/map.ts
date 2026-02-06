@@ -9,6 +9,7 @@ export const mapDocSchema = z.object({
   gameId: z.string(), // For collectionGroup queries
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
+  maxDistancePoints: z.number().min(0).max(100).nullish().default(null),
 })
 
 export const mapDocWithIdSchema = z.object({

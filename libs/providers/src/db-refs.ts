@@ -54,6 +54,10 @@ export const collectionGroupRefs = {
     FlatDoc,
     FlatDoc
   >,
+  [TABLES.MAPS]: db.collectionGroup(TABLES.MAPS) as CollectionGroup<
+    MapDoc,
+    MapDoc
+  >,
 } as const
 
 export const subRefs = {

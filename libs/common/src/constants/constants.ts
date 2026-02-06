@@ -17,6 +17,7 @@ export const MAX_PLAYERS = 8
 export const DEFAULT_TIME_PER_ROUND = 60 // seconds
 export const SPECIAL_ROUND_OPTIONS_COUNT = 4 // seconds
 export const DEFAULT_LIVES = 3
+export const DEFAULT_MAX_DISTANCE_POINTS = 30 // percentage of max distance
 
 export const LOBBY_STATUS = {
   WAITING: "waiting",
@@ -28,4 +29,11 @@ export const LOBBY_STATUS = {
 export const ROUND_TYPE = {
   SPHERICAL: "spherical",
   FLAT: "flat",
+} as const
+
+export const ROUND_POINTS = {
+  GAME_GUESS: 100,
+  DISTANCE: 100,
+  DISTANCE_ADDITION: 50,
+  DISTANCE_SNAP_THRESHOLD: 10, // If within this many points of max, snap to max
 } as const

@@ -77,7 +77,7 @@ const FlatForm = ({
     reset,
     setValue,
     watch,
-    formState: { errors, isDirty, dirtyFields },
+    formState: { errors, isDirty },
   } = useForm<FlatFormSchema>({
     resolver: zodResolver(createFlatInputSchema),
     defaultValues: {
@@ -184,17 +184,10 @@ const FlatForm = ({
         setModalParam(buildFlatModalParam(gameId, createdFlat.id))
       }
     } else {
-      const { image, thumbnail, ...rest } = parsedData
-      const updateData = {
-        ...rest,
-        ...(dirtyFields.image && { image }),
-        ...(dirtyFields.thumbnail && { thumbnail }),
-      }
-
       const { error } = await updateFlat({
         gameId,
         id: flatId,
-        data: updateData,
+        data: parsedData,
       })
 
       if (error) return

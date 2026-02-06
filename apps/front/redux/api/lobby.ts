@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, isEqual, LOBBY_STATUS, MAX_PLAYERS, TABLES } from "@repo/common"
+import { DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, isEqual, LOBBY_STATUS, MAX_PLAYERS, ROUND_POINTS, TABLES } from "@repo/common"
 import {
   type CreateLobbyInput,
   createLobbyInputSchema,
@@ -9,7 +9,11 @@ import {
   type LobbyDocWithId,
   lobbyDocWithIdSchema,
   type Player,
+  type PlayerAnswer,
+  playerAnswerSchema,
   roundAnswerDocSchema,
+  type RoundAnswerDocWithId,
+  roundAnswerDocWithIdSchema,
   type UpdateLobbyInput,
   updateLobbyInputSchema
 } from "@repo/schemas"
@@ -593,9 +597,9 @@ export const lobbyApi = createApi({
       },
       invalidatesTags: (_result, _error, { lobbyId }) => [{ type: "Lobby", id: lobbyId }],
     }),
-    populateLobbyRounds: builder.mutation<null, { lobbyId: string, seedId: string }>(
+    populateLobbyRounds: builder.mutation<null, { lobbyId: string, seedId: string, players: Player[] }>(
       {
-        queryFn: async ({ lobbyId, seedId }, { dispatch }) => {
+        queryFn: async ({ lobbyId, seedId, players }, { dispatch }) => {
           try {
             const docSnap = await dispatch(seedApi.endpoints.getSeedById.initiate({ id: seedId })).unwrap()
 
@@ -603,14 +607,25 @@ export const lobbyApi = createApi({
 
             const now = Timestamp.now()
 
+            const emptyAnswers = players.map((player) =>
+              playerAnswerSchema.parse({
+                uid: player.uid,
+                playerName: player.name,
+              })
+            )
+
             await Promise.all(
               docSnap.rounds.map((round, i) => {
                 const index = i + 1
+                const difficulty = Math.ceil(i / 6)
 
+                const pointsDistance = round.isSpecial ? 0 : (ROUND_POINTS.DISTANCE + ROUND_POINTS.DISTANCE_ADDITION * difficulty)
                 const roundAnswerDoc = roundAnswerDocSchema.parse({
                   ...round,
                   roundIndex: index,
-                  answers: [],
+                  pointsGame: ROUND_POINTS.GAME_GUESS,
+                  pointsDistance,
+                  answers: emptyAnswers,
                   isComplete: false,
                   createdAt: now,
                 })
@@ -631,7 +646,7 @@ export const lobbyApi = createApi({
         }
       }
     ),
-    startLobby: builder.mutation<LobbyDocWithId, { lobbyId: string }>({
+    startLobby: builder.mutation<null, { lobbyId: string }>({
       queryFn: async ({ lobbyId }, { dispatch }) => {
         try {
           const lobby = await dispatch(lobbyApi.endpoints.getLobbyById.initiate({ id: lobbyId })).unwrap()
@@ -643,6 +658,11 @@ export const lobbyApi = createApi({
           if (lobby.status !== LOBBY_STATUS.WAITING)
             throw new Error("Status need to be 'waiting' to start the game")
 
+          await updateDoc(getLobbyRef(lobbyId), {
+            status: LOBBY_STATUS.STARTING,
+            updatedAt: Timestamp.now(),
+          })
+
           let seedId = lobby.seedId
 
           if (!seedId) {
@@ -651,7 +671,7 @@ export const lobbyApi = createApi({
             seedId = newSeed.seedId
           }
 
-          await dispatch(lobbyApi.endpoints.populateLobbyRounds.initiate({ lobbyId, seedId }))
+          await dispatch(lobbyApi.endpoints.populateLobbyRounds.initiate({ lobbyId, seedId, players: lobby.players }))
 
           await updateDoc(getLobbyRef(lobbyId), {
             seedId,
@@ -660,16 +680,9 @@ export const lobbyApi = createApi({
             updatedAt: Timestamp.now(),
           })
 
-          const updatedDocSnap = await getDoc(getLobbyRef(lobbyId))
+          await dispatch(lobbyApi.endpoints.updateNextRound.initiate({ lobbyId }))
 
-          const { data, error } = lobbyDocWithIdSchema.safeParse({
-            id: updatedDocSnap.id,
-            ...updatedDocSnap.data(),
-          })
-
-          if (error) throw new Error(error.message || "Data parsing error")
-
-          return { data }
+          return { data: null }
         } catch (error) {
           console.error("Error starting lobby:", error)
           toast.error("Error starting lobby")
@@ -681,10 +694,117 @@ export const lobbyApi = createApi({
       },
       invalidatesTags: (_result, _error, { lobbyId }) => [{ type: "Lobby", id: lobbyId }],
     }),
+    submitRoundAnswer: builder.mutation<null, { lobbyId: string, roundIndex: number, uid: string, answer: Partial<PlayerAnswer> }>({
+      queryFn: async ({ lobbyId, roundIndex, uid, answer }) => {
+        try {
+          const roundAnswerRef = getRoundAnswerRef(lobbyId, String(roundIndex))
+          const roundAnswerSnap = await getDoc(roundAnswerRef)
+
+          if (!roundAnswerSnap.exists()) {
+            throw new Error("Round answer not found")
+          }
+
+          const currentAnswers: PlayerAnswer[] = roundAnswerSnap.data()?.answers || []
+
+          const updatedAnswers = currentAnswers.map((a) =>
+            a.uid === uid ? playerAnswerSchema.parse({ ...a, ...answer }) : a
+          )
+
+          await updateDoc(roundAnswerRef, {
+            answers: updatedAnswers,
+          })
+
+          return { data: null }
+        } catch (error) {
+          console.error("Error submitting round answer:", error)
+          toast.error("Error submitting answer")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+    }),
+    listenRoundAnswer: builder.query<RoundAnswerDocWithId | null, { lobbyId: string, roundIndex: number }>({
+      queryFn: async ({ lobbyId, roundIndex }) => {
+        try {
+          const roundAnswerSnap = await getDoc(getRoundAnswerRef(lobbyId, String(roundIndex)))
+
+          if (!roundAnswerSnap.exists()) {
+            return { data: null }
+          }
+
+          const { data, error } = roundAnswerDocWithIdSchema.safeParse({
+            id: roundAnswerSnap.id,
+            ...roundAnswerSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error fetching round answer:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      onCacheEntryAdded: async (
+        { lobbyId, roundIndex },
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) => {
+        let unsubscribe: Unsubscribe | undefined
+
+        try {
+          await cacheDataLoaded
+
+          const roundAnswerRef = getRoundAnswerRef(lobbyId, String(roundIndex))
+
+          unsubscribe = onSnapshot(
+            roundAnswerRef,
+            (snapshot) => {
+              if (!snapshot.exists()) {
+                updateCachedData(() => null)
+
+                return
+              }
+
+              const newData = {
+                id: snapshot.id,
+                ...snapshot.data(),
+              }
+
+              const { data, error } = roundAnswerDocWithIdSchema.safeParse(newData)
+
+              if (error) {
+                console.error("Error parsing round answer data:", error)
+
+                return
+              }
+
+              updateCachedData((draft) => {
+                if (isEqual(draft, data)) return draft
+
+                return data
+              })
+            },
+            (error) => {
+              console.error("Error in round answer snapshot listener:", error)
+            },
+          )
+        } catch (error) {
+          console.error("Error setting up round answer listener:", error)
+        }
+
+        await cacheEntryRemoved
+        unsubscribe?.()
+      },
+    }),
     updateNextRound: builder.mutation<null, { lobbyId: string }>({
       queryFn: async ({ lobbyId }, { dispatch }) => {
         try {
-          const lobby = await dispatch(lobbyApi.endpoints.getLobbyById.initiate({ id: lobbyId })).unwrap()
+          const lobby = await dispatch(lobbyApi.endpoints.getLobbyById.initiate({ id: lobbyId }, { forceRefetch: true })).unwrap()
 
           if (!lobby) throw new Error("Lobby not found")
 
@@ -740,6 +860,8 @@ export const {
   useCreateAndJoinLobbyMutation,
   useExcludePlayerMutation,
   useUpdateLobbyConfigMutation,
+  useSubmitRoundAnswerMutation,
+  useListenRoundAnswerQuery,
   useUpdateNextRoundMutation,
   useStartLobbyMutation
 } = lobbyApi

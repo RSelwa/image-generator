@@ -95,6 +95,7 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
         mapImage: randomSpherical.mapImage,
         mapWidth: randomSpherical.mapWidth,
         mapHeight: randomSpherical.mapHeight,
+        maxDistancePoints: randomSpherical.maxDistancePoints,
 
       })
 

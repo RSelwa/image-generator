@@ -24,6 +24,7 @@ export const roundSchema = z.object({
   mapImage: z.string().nullish().default(null),
   mapWidth: z.number().positive().nullish().default(null),
   mapHeight: z.number().positive().nullish().default(null),
+  maxDistancePoints: z.number().min(0).max(100).nullish().default(null), // Max distance (%) beyond which 0 points
 
   // For special rounds (isSpecial = true) - 4 options to choose from
   options: z.array(specialRoundOptionSchema).length(SPECIAL_ROUND_OPTIONS_COUNT).nullish().default(null),
