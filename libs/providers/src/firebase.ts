@@ -27,12 +27,15 @@ const getCredential = () => {
 }
 
 if (!admin.apps.length) {
-  const credential = getCredential()
-
-  admin.initializeApp({
-    credential,
-    storageBucket: `${PROJECT_ID}.firebasestorage.app`,
-  })
+  if (process.env.FIRESTORE_EMULATOR_HOST) {
+    admin.initializeApp({ projectId: PROJECT_ID })
+  } else {
+    const credential = getCredential()
+    admin.initializeApp({
+      credential,
+      storageBucket: `${PROJECT_ID}.firebasestorage.app`,
+    })
+  }
 
   admin.firestore().settings({ ignoreUndefinedProperties: true, preferRest: true })
 }

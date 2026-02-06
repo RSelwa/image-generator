@@ -1,0 +1,98 @@
+name: 🧪 E2E Tests Front
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/e2e-front.yml
+      - apps/front/**
+      - libs/**
+      - functions/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    name: ⚙️ Initialize Node.js Environment
+    if: github.event_name != 'release'
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+  e2e:
+    needs: init
+    runs-on: ubuntu-latest
+    name: 🧪 E2E Tests
+    environment: prod
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: 🔍 Get Playwright version
+        id: playwright-version
+        shell: bash
+        run: echo "version=$(pnpm --filter @repo/front exec playwright --version | tail -1)" >> "$GITHUB_OUTPUT"
+
+      - name: 📦 Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ steps.playwright-version.outputs.version }}
+
+      - name: 🎭 Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter @repo/front exec playwright install --with-deps chromium
+
+      - name: 🎭 Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --filter @repo/front exec playwright install-deps chromium
+
+      - name: ⚙️ Install Firebase tools
+        run: pnpm install -g firebase-tools
+
+      - name: 📦 Cache Firebase emulators
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ hashFiles('firebase.json') }}
+
+      - name: 📦 Build libs
+        run: pnpm build:libs
+
+      - name: 📦 Build functions
+        run: pnpm build:functions
+
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: 🧪 Run E2E Tests
+        run: firebase emulators:exec --project "$GCLOUD_PROJECT" 'pnpm --filter @repo/front e2e'
+        env:
+          GCLOUD_PROJECT: ${{ secrets.PROJECT_ID }}
+
+      - name: 📊 Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: apps/front/playwright-report/
+          retention-days: 30
+
+      - name: 📄 Upload Report to Pages
+        uses: actions/upload-pages-artifact@v3
+        if: ${{ !cancelled() }}
+        with:
+          path: apps/front/playwright-report/
+

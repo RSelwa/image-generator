@@ -12,6 +12,10 @@
     "./orm": {
       "types": "./dist/orm.d.ts",
       "default": "./dist/orm.js"
+    },
+    "./emulator": {
+      "types": "./dist/emulator.d.ts",
+      "default": "./dist/emulator.js"
     }
   },
   "types": "./dist/index.d.ts",

@@ -35,7 +35,10 @@ export const NavUser = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex w-56 items-center gap-2">
+      <DropdownMenuTrigger
+        data-testid="nav-user-dropdown-trigger"
+        className="flex w-56 items-center gap-2"
+      >
         <Avatar className="h-8 w-8 rounded-lg">
           <AvatarImage src={user.photoUrl} alt={user.email} />
           <AvatarFallback className="rounded-lg">CN</AvatarFallback>

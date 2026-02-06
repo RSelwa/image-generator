@@ -18,11 +18,11 @@ export const formatSessionFromFirebaseUser = ({
     id: uid,
     email,
     photoUrl: photoURL || "",
-    rights: rightsDoc?.right || null,
+    rights: rightsDoc?.right,
   })
 
   if (!sessionUser.success) {
-    throw new Error("Invalid session user data")
+    throw new Error("Invalid session user data", { cause: sessionUser.error })
   }
 
   return sessionUser.data
