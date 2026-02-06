@@ -6,6 +6,8 @@ export const PAGES = {
   PRIVACY: "/privacy",
   TERMS: "/terms",
   ADMIN: "/admin",
+  LOBBY: "/lobby",
+  JOIN_LOBBY: "/join-lobby",
   ADMIN_GAMES: "/admin/games",
   ADMIN_SPHERICAL: "/admin/sphericals",
   ADMIN_MAPS: "/admin/maps",

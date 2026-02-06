@@ -1,14 +1,15 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { isEqual, TABLES } from "@repo/common"
+import { DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, isEqual, LOBBY_STATUS, MAX_PLAYERS, TABLES } from "@repo/common"
 import {
   type CreateLobbyInput,
   createLobbyInputSchema,
+  type LobbyDoc,
   lobbyDocSchema,
   type LobbyDocWithId,
   lobbyDocWithIdSchema,
   type Player,
   type UpdateLobbyInput,
-  updateLobbyInputSchema,
+  updateLobbyInputSchema
 } from "@repo/schemas"
 import {
   addDoc,
@@ -23,7 +24,9 @@ import {
 } from "firebase/firestore"
 import { toast } from "sonner"
 import { getLobbyRef, TABLE_REFS } from "@/constants/db-refs"
+import { type SessionUser } from "@/schemas/session"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
+import { createPlayerFromSessionUser, generateRandomCode } from "@/utils/player"
 
 export const lobbyApi = createApi({
   reducerPath: "lobbyApi",
@@ -94,18 +97,11 @@ export const lobbyApi = createApi({
       ],
     }),
     subscribeLobby: builder.query<LobbyDocWithId | null, { id: string }>({
-      queryFn: async ({ id }) => {
+      queryFn: async ({ id }, { dispatch }) => {
         try {
-          const docSnap = await getDoc(getLobbyRef(id))
+          const docSnap = await dispatch(lobbyApi.endpoints.getLobbyById.initiate({ id })).unwrap()
 
-          if (!docSnap.exists()) {
-            return { data: null }
-          }
-
-          const { data, error } = lobbyDocWithIdSchema.safeParse({
-            id: docSnap.id,
-            ...docSnap.data(),
-          })
+          const { data, error } = lobbyDocWithIdSchema.safeParse(docSnap)
 
           if (error) throw new Error(error.message || "Data parsing error")
 
@@ -224,6 +220,7 @@ export const lobbyApi = createApi({
           }
 
           const lobbyRef = getLobbyRef(id)
+
           await updateDoc(lobbyRef, {
             ...validatedInput,
             updatedAt: Timestamp.now(),
@@ -253,6 +250,56 @@ export const lobbyApi = createApi({
         }
       },
       invalidatesTags: (_result, _error, { id }) => [{ type: "Lobby", id }],
+    }),
+    createAndJoinLobby: builder.mutation<
+      LobbyDocWithId,
+      { user: SessionUser }
+    >({
+      queryFn: async (
+        { user },
+        { dispatch },
+      ) => {
+        try {
+          const code = generateRandomCode()
+
+          const player = createPlayerFromSessionUser(user)
+
+          const createdLobby = await dispatch(
+            lobbyApi.endpoints.createLobby.initiate({
+              code,
+              hostId: player.uid,
+              status: LOBBY_STATUS.WAITING,
+              players: [],
+              config: {
+                playersLives: DEFAULT_LIVES,
+                maxPlayers: MAX_PLAYERS,
+                roundDuration: DEFAULT_TIME_PER_ROUND,
+                numberOfRounds: DEFAULT_NUMBERS_ROUNDS,
+              },
+            }),
+          ).unwrap()
+
+          const joinedLobby: LobbyDocWithId = await dispatch(
+            lobbyApi.endpoints.joinLobby.initiate({
+              lobbyId: createdLobby.id,
+              player,
+            }),
+          ).unwrap()
+
+          dispatch(
+            lobbyApi.endpoints.subscribeLobby.initiate({ id: createdLobby.id }),
+          )
+
+          return { data: joinedLobby }
+        } catch (error) {
+          console.error("Error creating and joining lobby:", error)
+          toast.error("Error creating lobby")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
     }),
     joinLobby: builder.mutation<
       LobbyDocWithId,
@@ -366,6 +413,38 @@ export const lobbyApi = createApi({
         { type: "Lobby", id: lobbyId },
       ],
     }),
+    excludePlayer: builder.mutation <null, { lobbyId: string, playerId: string }>({
+      queryFn: async ({ lobbyId, playerId }, { dispatch }) => {
+        try {
+          const docSnap = await dispatch(lobbyApi.endpoints.getLobbyById.initiate({ id: lobbyId })).unwrap()
+
+          if (!docSnap) {
+            throw new Error("Lobby not found")
+          }
+
+          const currentPlayers = docSnap.players || []
+
+          // Remove player from lobby
+          const updatedPlayers = currentPlayers.filter(
+            (p: Player) => p.uid !== playerId,
+          )
+
+          await updateDoc(getLobbyRef(lobbyId), {
+            players: updatedPlayers,
+            updatedAt: Timestamp.now(),
+          })
+
+          return { data: null }
+        } catch (error) {
+          console.error("Error excluding player from lobby:", error)
+          toast.error("Error excluding player from lobby")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      }
+    }),
     updatePlayerReady: builder.mutation<
       LobbyDocWithId,
       { lobbyId: string, playerId: string, isReady: boolean }
@@ -415,7 +494,50 @@ export const lobbyApi = createApi({
         { type: "Lobby", id: lobbyId },
       ],
     }),
-  }),
+    updateLobbyConfig: builder.mutation<
+      null,
+      { lobbyId: string, config: Partial<LobbyDoc["config"]> }
+    >({
+      queryFn: async ({ lobbyId, config }) => {
+        try {
+          const lobbyRef = getLobbyRef(lobbyId)
+          const docSnap = await getDoc(lobbyRef)
+
+          if (!docSnap.exists()) {
+            throw new Error("Lobby not found")
+          }
+
+          const currentData = docSnap.data()
+
+          const updatedConfig = {
+            ...currentData?.config,
+            ...config,
+          }
+
+          const { data: validatedConfig, error: validationError } =
+            lobbyDocSchema.shape.config.safeParse(updatedConfig)
+
+          if (validationError) {
+            throw new Error(validationError.message || "Validation error")
+          }
+
+          await updateDoc(lobbyRef, {
+            config: validatedConfig,
+            updatedAt: Timestamp.now(),
+          })
+
+          return { data: null }
+        } catch (error) {
+          console.error("Error updating lobby config:", error)
+          toast.error("Error updating lobby config")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      }
+    }),
+  })
 })
 
 export const {
@@ -427,4 +549,7 @@ export const {
   useJoinLobbyMutation,
   useLeaveLobbyMutation,
   useUpdatePlayerReadyMutation,
+  useCreateAndJoinLobbyMutation,
+  useExcludePlayerMutation,
+  useUpdateLobbyConfigMutation
 } = lobbyApi

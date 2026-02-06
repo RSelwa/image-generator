@@ -10,7 +10,7 @@ import { timestampSchema, WITH_ID } from "~/zod"
 export const lobbyDocSchema = z.object({
   code: z.string().min(4).max(6), // Join code (e.g., "ABC123")
   hostId: z.string().min(1),
-  status: z.enum(Object.values(LOBBY_STATUS) as [string, ...string[]]).default(LOBBY_STATUS.WAITING),
+  status: z.enum(LOBBY_STATUS).default(LOBBY_STATUS.WAITING),
   players: z.array(playerSchema).max(MAX_PLAYERS).default([]),
   config: lobbyConfigSchema.default({
     playersLives: DEFAULT_LIVES,
@@ -27,7 +27,10 @@ export const lobbyDocSchema = z.object({
 })
 
 export type LobbyDoc = z.infer<typeof lobbyDocSchema>
-export const lobbyDocWithIdSchema = lobbyDocSchema.merge(WITH_ID)
+export const lobbyDocWithIdSchema = z.object({
+  ...lobbyDocSchema.shape,
+  ...WITH_ID,
+})
 export type LobbyDocWithId = z.infer<typeof lobbyDocWithIdSchema>
 
 // Create lobby input (without auto-generated fields)

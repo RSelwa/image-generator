@@ -95,4 +95,3 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           path: apps/front/playwright-report/
-

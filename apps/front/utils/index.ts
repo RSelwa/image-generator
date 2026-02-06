@@ -14,3 +14,5 @@ export const copy = (text: string) => {
       toast.error(`Could not copy text: ${error}`)
     })
 }
+
+export const firstLetter = (str: string) => str.charAt(0).toUpperCase()

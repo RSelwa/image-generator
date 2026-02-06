@@ -1,5 +1,8 @@
 "use client"
 
+import CreateLobbyButton from "@/components/home-create-lobby"
+import { Button } from "@/components/ui/button"
+
 const Page = () => (
   <main className="min-h-full-height">
     <section className="container mx-auto px-4 py-20 flex flex-col items-center justify-center text-center space-y-8">
@@ -20,18 +23,13 @@ const Page = () => (
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8"
-        >
-          Start Playing
-        </button>
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 px-8"
+        <CreateLobbyButton />
+        <Button
+          variant="outline"
+          size="lg"
         >
           Learn More
-        </button>
+        </Button>
       </div>
     </section>
   </main>
