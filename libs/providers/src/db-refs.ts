@@ -61,6 +61,10 @@ export const subRefs = {
     db.collection(
       `${TABLES.GAMES}/${id}/${TABLES.SPHERICAL}`,
     ) as CollectionReference<SphericalDoc, SphericalDoc>,
+  [TABLES.FLAT]: (id: string) =>
+    db.collection(
+      `${TABLES.GAMES}/${id}/${TABLES.FLAT}`,
+    ) as CollectionReference<FlatDoc, FlatDoc>,
   [TABLES.MAPS]: (id: string) =>
     db.collection(
       `${TABLES.GAMES}/${id}/${TABLES.MAPS}`,

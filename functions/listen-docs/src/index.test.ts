@@ -1,10 +1,10 @@
 import { DIFFICULTIES, DOCUMENTS_STATUS, mockedImageURL, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
-import { gameFactory, sphericalFactory } from "@repo/testing/factory"
+import { flatFactory, gameFactory, sphericalFactory } from "@repo/testing/factory"
 import firebaseFunctionsTest from "firebase-functions-test"
 import { makeDocumentSnapshot } from "firebase-functions-test/lib/providers/firestore"
 import { beforeAll, describe, expect, it } from "vitest"
-import { listen_doc_spherical_written } from "~/index"
+import { listen_doc_flat_written, listen_doc_spherical_written } from "~/index"
 
 beforeAll(() => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
@@ -139,5 +139,132 @@ describe("listen sphericals docs changes for status", () => {
 
     const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).get()
     expect(sphericalSnapshot.data()?.status).toBe("need_verification")
+  })
+})
+
+const getFlatPath = (gameId: string, flatId: string) =>
+  `${TABLES.GAMES}/${gameId}/${TABLES.FLAT}/${flatId}`
+
+describe("listen flats docs changes for status", () => {
+  it("should not update status if new document has not thumbnail", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_flat_written)
+
+    const game = gameFactory({})
+    const flat = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.WAITING,
+      difficulty: DIFFICULTIES.EASY,
+    })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.FLAT](game.id).doc(flat.id).set(flat)
+
+    const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot({ ...flat, difficulty: DIFFICULTIES.MEDIUM }, getFlatPath(game.id, flat.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { flatId: flat.id, gameId: game.id },
+    })
+
+    const flatSnapshot = await subRefs[TABLES.FLAT](game.id).doc(flat.id).get()
+    expect(flatSnapshot.data()?.status).toBe("waiting")
+  })
+
+  it("should not update status to needVerification if document is already ready and has thumbnail", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_flat_written)
+
+    const game = gameFactory({})
+    const flat = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.FLAT](game.id).doc(flat.id).set(flat)
+
+    const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot({ ...flat, thumbnail: mockedImageURL }, getFlatPath(game.id, flat.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { flatId: flat.id, gameId: game.id },
+    })
+
+    const flatSnapshot = await subRefs[TABLES.FLAT](game.id).doc(flat.id).get()
+    expect(flatSnapshot.data()?.status).toBe("ready")
+  })
+
+  it("should update status to needVerification if document has thumbnail", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_flat_written)
+
+    const game = gameFactory({})
+    const flat = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.WAITING,
+    })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.FLAT](game.id).doc(flat.id).set(flat)
+
+    const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot({ ...flat, thumbnail: mockedImageURL }, getFlatPath(game.id, flat.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { flatId: flat.id, gameId: game.id },
+    })
+
+    const flatSnapshot = await subRefs[TABLES.FLAT](game.id).doc(flat.id).get()
+    expect(flatSnapshot.data()?.status).toBe("need_verification")
+  })
+
+  it("should not update status to needVerification if document is already need_verification and has thumbnail", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_flat_written)
+
+    const game = gameFactory({})
+    const flat = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.NEED_VERIFICATION,
+    })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.FLAT](game.id).doc(flat.id).set(flat)
+
+    const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot({ ...flat, thumbnail: mockedImageURL }, getFlatPath(game.id, flat.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { flatId: flat.id, gameId: game.id },
+    })
+
+    const flatSnapshot = await subRefs[TABLES.FLAT](game.id).doc(flat.id).get()
+    expect(flatSnapshot.data()?.status).toBe("need_verification")
+  })
+
+  it("should not update status if document has thumbnail but no image", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_flat_written)
+
+    const game = gameFactory({})
+    const flat = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.WAITING,
+      image: "",
+    })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.FLAT](game.id).doc(flat.id).set(flat)
+
+    const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot({ ...flat, thumbnail: mockedImageURL }, getFlatPath(game.id, flat.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { flatId: flat.id, gameId: game.id },
+    })
+
+    const flatSnapshot = await subRefs[TABLES.FLAT](game.id).doc(flat.id).get()
+    expect(flatSnapshot.data()?.status).toBe("waiting")
   })
 })

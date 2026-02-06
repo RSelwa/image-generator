@@ -23,7 +23,7 @@ const getCredential = () => {
     return admin.credential.cert(JSON.parse(serviceAccountKey))
   }
 
-  return undefined
+  return admin.credential.applicationDefault()
 }
 
 if (!admin.apps.length) {

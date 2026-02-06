@@ -1,8 +1,8 @@
 import { TABLES } from "@repo/common"
-import { type SphericalDoc } from "@repo/schemas"
+import { type FlatDoc, type SphericalDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
-import { updateGameStatus, updateSphericalStatus } from "~/updates-status"
+import { updateFlatStatus, updateGameStatus, updateSphericalStatus } from "~/updates-status"
 
 export const listen_doc_spherical_written = onDocumentWritten(
   `${TABLES.GAMES}/{gameId}/${TABLES.SPHERICAL}/{sphericalId}`,
@@ -25,6 +25,27 @@ export const listen_doc_spherical_written = onDocumentWritten(
       updateGameStatus(gameId),
       updateSphericalStatus(gameId, sphericalId, data),
     ])
+  },
+)
+
+export const listen_doc_flat_written = onDocumentWritten(
+  `${TABLES.GAMES}/{gameId}/${TABLES.FLAT}/{flatId}`,
+  async (event) => {
+    logger.log(`✍ Spherical ${event.document} written`)
+
+    const [, gameId, _, flatId] = event.document.split("/")
+
+    if (!flatId || !gameId) {
+      logger.error(
+        `Spherical ID is undefined in document path: ${event.document}`,
+      )
+
+      return
+    }
+
+    const data = event.data?.after.data() as FlatDoc | undefined
+
+    await updateFlatStatus(gameId, flatId, data)
   },
 )
 
