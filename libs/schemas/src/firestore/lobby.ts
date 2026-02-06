@@ -29,7 +29,7 @@ export const lobbyDocSchema = z.object({
 export type LobbyDoc = z.infer<typeof lobbyDocSchema>
 export const lobbyDocWithIdSchema = z.object({
   ...lobbyDocSchema.shape,
-  ...WITH_ID,
+  ...WITH_ID.shape,
 })
 export type LobbyDocWithId = z.infer<typeof lobbyDocWithIdSchema>
 
@@ -45,5 +45,7 @@ export const createLobbyInputSchema = lobbyDocSchema.omit({
 export type CreateLobbyInput = z.infer<typeof createLobbyInputSchema>
 
 // Update lobby input
-export const updateLobbyInputSchema = createLobbyInputSchema.partial()
+export const updateLobbyInputSchema = createLobbyInputSchema.omit({
+  players: true, // Players are managed separately
+}).partial()
 export type UpdateLobbyInput = z.infer<typeof updateLobbyInputSchema>

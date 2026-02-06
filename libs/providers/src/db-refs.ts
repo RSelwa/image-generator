@@ -1,5 +1,5 @@
 import { TABLES } from "@repo/common"
-import { type FlatDoc, type GameDoc, type MapDoc, type SeedDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
+import { type FlatDoc, type GameDoc, type MapDoc, type RoundAnswerDoc, type SeedDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
 import {
   type CollectionGroup,
   type CollectionReference,
@@ -69,4 +69,8 @@ export const subRefs = {
     db.collection(
       `${TABLES.GAMES}/${id}/${TABLES.MAPS}`,
     ) as CollectionReference<MapDoc, MapDoc>,
+  [TABLES.ROUND_ANSWERS]: (id: string) =>
+    db.collection(
+      `${TABLES.LOBBIES}/${id}/${TABLES.ROUND_ANSWERS}`,
+    ) as CollectionReference<RoundAnswerDoc, RoundAnswerDoc>,
 } as const

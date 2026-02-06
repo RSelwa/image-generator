@@ -54,3 +54,7 @@ export const STATUS_TO_BADGE_VARIANT = {
   [DOCUMENTS_STATUS.READY]: "green",
   [DOCUMENTS_STATUS.WAITING]: "neutral",
 } as const
+
+export const API_ENDPOINTS = {
+  CREATE_SEED: "/api/create-seed",
+} as const

@@ -4,7 +4,7 @@ import { type Round, roundSchema } from "@repo/schemas"
 import { formatSphericalsForNormalRounds } from "@/libs/round-normal"
 import { formatFlatsForSpecialRounds, formatSphericalsForSpecialRounds } from "@/libs/round-special"
 
-export const generateSeedRounds = async ({ numberOfRounds }: { numberOfRounds: number }) => {
+export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: { numberOfRounds: number, hasSpecialRounds: boolean }) => {
   try {
     const [sphericalsWithMap, sphericalsWithThumbnails, flatWithThumbnails] = await Promise.all([
       collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
@@ -33,8 +33,7 @@ export const generateSeedRounds = async ({ numberOfRounds }: { numberOfRounds: n
     const rounds: Round[] = []
 
     for (let index = 0; index < numberOfRounds; index++) {
-      // const isRoundSpecial = (index + 1) % 6 === 0 // Every 6th round is special
-      const isRoundSpecial = false
+      const isRoundSpecial = hasSpecialRounds ? (index + 1) % 6 === 0 : false // Every 6th round is special
 
       const excludedGameIds = (rounds.map((round) => round.gameId || round?.options?.map((option) => option.gameId)).flat())
 

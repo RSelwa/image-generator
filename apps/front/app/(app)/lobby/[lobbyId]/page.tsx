@@ -1,5 +1,5 @@
 import * as React from "react"
-import LobbyMain from "@/components/lobby/lobby-main"
+import LobbyMain, { LobbyDebug } from "@/components/lobby/lobby-main"
 
 const Page = async ({
   params,
@@ -9,7 +9,10 @@ const Page = async ({
   const { lobbyId } = await params
 
   return (
-    <LobbyMain lobbyId={lobbyId} />
+    <>
+      <LobbyMain lobbyId={lobbyId} />
+      <LobbyDebug lobbyId={lobbyId} />
+    </>
   )
 }
 

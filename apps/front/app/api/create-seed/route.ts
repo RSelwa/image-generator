@@ -8,7 +8,7 @@ import { generateSeedRounds } from "@/libs/seed"
 
 export const createSeedPayload = z.object({
   numberOfRounds: z.number().min(1).max(30).default(DEFAULT_NUMBERS_ROUNDS),
-
+  hasSpecialRounds: z.boolean().default(false),
 })
 
 // app/api/create-seed/route.ts
@@ -36,7 +36,7 @@ export const POST = async (request: Request) => {
       return new Response("Invalid payload", { status: 400 })
     }
 
-    const rounds = await generateSeedRounds({ numberOfRounds: parsed.data.numberOfRounds })
+    const rounds = await generateSeedRounds({ numberOfRounds: parsed.data.numberOfRounds, hasSpecialRounds: parsed.data.hasSpecialRounds })
 
     const data = {
       name: "",

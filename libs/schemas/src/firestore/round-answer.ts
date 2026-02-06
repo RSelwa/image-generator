@@ -1,9 +1,7 @@
-import { ROUND_TYPE, SPECIAL_ROUND_OPTIONS_COUNT } from "@repo/common"
 import z from "zod"
 
 import { playerAnswerSchema } from "~/firestore/players.answers"
-import { specialRoundOptionSchema } from "~/firestore/seed.option"
-import { mapPositionSchema } from "~/firestore/spherical"
+import { roundSchema } from "~/firestore/seed.round"
 import { timestampSchema, WITH_ID } from "../zod"
 
 // =============================================================================
@@ -19,28 +17,33 @@ import { timestampSchema, WITH_ID } from "../zod"
 // At game start: copied from seed.rounds[]
 // During game: clients write answers via arrayUnion
 export const roundAnswerDocSchema = z.object({
-  roundIndex: z.number().min(0),
-
   // Display fields
-  type: z.enum(Object.values(ROUND_TYPE) as [string, ...string[]]),
-  isSpecial: z.boolean().default(false), // Special mode: 4 images, each player picks one
+  ...roundSchema.pick({
+    isSpecial: true,
 
-  // For normal rounds (isSpecial = false)
-  imageUrl: z.string().nullish().default(null),
-  thumbnailUrl: z.string().optional().default(""),
-  correctGameId: z.string().nullish().default(null),
-  correctGameTitle: z.string().nullish().default(null),
+    type: true,
+    gameId: true,
+    gameTitle: true,
+    gameThumbnailUrl: true,
 
-  // For special rounds (isSpecial = true) - 4 options to choose from
-  // Each player picks one option, correctness depends on their selection
-  options: z.array(specialRoundOptionSchema).length(SPECIAL_ROUND_OPTIONS_COUNT).nullish().default(null),
+    sphericalId: true,
+    sphericalImageUrl: true,
 
-  // Map data (if round has a map)
-  hasMap: z.boolean().default(false),
-  mapId: z.string().nullish().default(null),
-  mapImageUrl: z.string().nullish().default(null),
-  correctPosition: mapPositionSchema.nullish().default(null),
+    flatId: true,
+    flatImageUrl: true,
 
+    mapId: true,
+    mapPosition: true,
+    mapImage: true,
+    mapWidth: true,
+    mapHeight: true,
+
+    options: true,
+
+    difficulty: true,
+  }).shape,
+
+  roundIndex: z.number().min(1), // 1-based index for easier client display
   // Player answers (clients write here via arrayUnion)
   answers: z.array(playerAnswerSchema).default([]),
   isComplete: z.boolean().default(false), // All players have answered
