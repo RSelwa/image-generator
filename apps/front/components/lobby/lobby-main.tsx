@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { PAGES } from "@/constants/pages"
 import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyMutation, useUpdateNextRoundMutation } from "@/redux/api/lobby"
+import { selectCurrentRoundData } from "@/redux/lobby/lobby.selectors"
 import { selectUser, selectUserRights } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
@@ -45,6 +46,7 @@ export const LobbyDebug = ({ lobbyId }: Props) => {
     skip: !lobbyId,
   })
 
+  const currenRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
   const [startLobby] = useStartLobbyMutation()
 
   const [nextRound] = useUpdateNextRoundMutation()
@@ -54,13 +56,16 @@ export const LobbyDebug = ({ lobbyId }: Props) => {
 
   return (
     <Popover>
+
       <PopoverTrigger asChild>
-        <Button variant="secondary" className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10">
+        <Button variant="secondary" className="absolute bottom-8 right-8 z-10">
           Admin Debug
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto grid grid-cols-2 gap-4">
-
+        <div className="col-span-2">{currenRoundData?.gameTitle}</div>
+        <div className="col-span-2">{lobby?.currentRound}</div>
+        <div className="col-span-2">Points distance{currenRoundData?.pointsDistance}</div>
         <Select
           value={lobby.status}
           onValueChange={(value: any) => {

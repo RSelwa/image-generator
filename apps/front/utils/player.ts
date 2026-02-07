@@ -6,9 +6,16 @@ export const createPlayerFromSessionUser = (sessionUser: SessionUser): Player =>
   name: "FakeName",
   avatar: sessionUser.photoUrl,
   score: 0,
+  livesUsed: 0,
   isHost: false,
   isReady: false,
   joinedAt: null,
 })
 
 export const generateRandomCode = (): string => Math.random().toString(36).substring(2, 8).toUpperCase()
+
+export const getPlayerFromLobby = (lobbyPlayers: Player[], userId: string | undefined): Player | null => {
+  if (!userId) return null
+
+  return lobbyPlayers.find((player) => player.uid === userId) || null
+}

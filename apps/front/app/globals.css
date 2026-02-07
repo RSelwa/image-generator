@@ -47,9 +47,12 @@
 }
 
 @theme {
+  --shadow-glow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25); 
   --admin-header-height: 76px;
-  --header-height: 76px;
-  --footer-height: 85px;
+  --header-height: 73.5px;
+  --footer-height: 0px;
+  /* --header-height: 76px; */
+  /* --footer-height: 85px; */
   --spacing-full-height-admin: calc(100svh - var(--admin-header-height));
   --spacing-full-height: calc(
     100svh -
@@ -91,7 +94,18 @@
       fill: var(--color-gray-900);
     }
   }
+
+  @keyframes text-reveal {
+    0% {
+      transform: translate(0, 100%);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+
   --animate-loading-colors: loadingColors 1s infinite;
+  --animate-text-reveal: text-reveal 1.5s cubic-bezier(0.77, 0, 0.175, 1) 0.5s;
 }
 
 :root {
@@ -169,5 +183,9 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .psv-navbar{
+    @apply h-0!;
   }
 }

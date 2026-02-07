@@ -45,6 +45,7 @@ export const roundAnswerDocSchema = z.object({
   }).shape,
 
   roundIndex: z.number().min(1), // 1-based index for easier client display
+  stage: z.number().default(0), // plaier answers are written in stage 0, then host increments to 1 to trigger answer reveal and scoring
   // Player answers (clients write here via arrayUnion)
   pointsGame: z.number().default(0), // Points given for the answer (0 if incorrect, 100 if correct)
   pointsDistance: z.number().default(0), // Additional points based on distance (for map rounds)

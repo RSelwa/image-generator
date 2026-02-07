@@ -9,6 +9,12 @@
   - ~~update the listeners too~~
   - ~~implements tests in front~~
   - ~~Add storage tests for Flat images and thumbnails~~
+  - fix dragging minimap
+  - display correct answer on the map when showing result
+  - number of points by level is not correct for now
+  - timer on round
+  - everyone should be ready before next round
+  - lives in round answer doc
   - Add tests on api endpoints
   - Allow creation of flats and sphericals from new or gameId
   - fix when dragging map, it doesn't add the pin

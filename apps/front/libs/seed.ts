@@ -1,4 +1,4 @@
-import { DOCUMENTS_STATUS, SPECIAL_ROUND_OPTIONS_COUNT, TABLES } from "@repo/common"
+import { DOCUMENTS_STATUS, NUMBER_OF_ROUNDS_PER_STAGE, SPECIAL_ROUND_OPTIONS_COUNT, TABLES } from "@repo/common"
 import { collectionGroupRefs } from "@repo/providers/db-refs"
 import { type Round, roundSchema } from "@repo/schemas"
 import { formatSphericalsForNormalRounds } from "@/libs/round-normal"
@@ -33,7 +33,7 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
     const rounds: Round[] = []
 
     for (let index = 0; index < numberOfRounds; index++) {
-      const isRoundSpecial = hasSpecialRounds ? (index + 1) % 6 === 0 : false // Every 6th round is special
+      const isRoundSpecial = hasSpecialRounds ? (index + 1) % NUMBER_OF_ROUNDS_PER_STAGE === 0 : false // Every 6th round is special
 
       const excludedGameIds = (rounds.map((round) => round.gameId || round?.options?.map((option) => option.gameId)).flat())
 

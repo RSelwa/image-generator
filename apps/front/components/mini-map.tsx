@@ -90,14 +90,6 @@ const MarkersLayer = ({
 
   return (
     <>
-      {/* Correct position marker */}
-      {showCorrectMarker &&
-        correctPosition &&
-        renderMarker(correctPosition, "green")}
-
-      {/* Guess marker */}
-      {guessPosition && renderMarker(guessPosition, "blue")}
-
       {/* Line connecting guess to correct position */}
       {showLine && guessPosition && correctPosition && (
         <svg
@@ -115,6 +107,15 @@ const MarkersLayer = ({
           />
         </svg>
       )}
+
+      {/* Correct position marker */}
+      {showCorrectMarker &&
+        correctPosition &&
+        renderMarker(correctPosition, "green")}
+
+      {/* Guess marker */}
+      {guessPosition && renderMarker(guessPosition, "blue")}
+
     </>
   )
 }
@@ -134,6 +135,8 @@ export type MiniMapProps = {
   inline?: boolean
   /** When inline, always show expanded (no hover to expand) */
   alwaysExpanded?: boolean
+  isParentHover?: boolean
+  displayControls?: boolean
 }
 
 // Mini Map Component (bottom-right, expands on hover)
@@ -150,11 +153,15 @@ export const MiniMap = ({
   className,
   inline = false,
   alwaysExpanded = false,
+  isParentHover = false,
+  displayControls = false
 }: MiniMapProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const isExpanded = alwaysExpanded || isHovered
+  const isHoveredOrParent = isHovered || isParentHover
+
+  const isExpanded = alwaysExpanded || isHoveredOrParent
   const currentSize = isExpanded ? expandedSize : collapsedSize
 
   // Calculate minimum scale so image always fills the container
@@ -178,7 +185,7 @@ export const MiniMap = ({
 
   return (
     <div
-      className={`${inline ? "relative" : "fixed bottom-6 right-6 z-50"} rounded-lg overflow-hidden border-2 border-white/50 shadow-2xl transition-all duration-300 ease-out ${className ?? ""}`}
+      className={`${inline ? "relative" : "fixed bottom-6 right-6 z-50"} rounded-lg overflow-hidden border-2 border-white/50 shadow-2xl transition-all bg-neutral-950/90 duration-300 ease-out ${className ?? ""}`}
       style={{
         width: currentSize.width,
         height: currentSize.height,
@@ -194,7 +201,7 @@ export const MiniMap = ({
         panning={{ disabled: !isExpanded }}
         doubleClick={{ disabled: true }}
       >
-        <ZoomControls isExpanded={isExpanded} />
+        {displayControls && <ZoomControls isExpanded={isExpanded} />}
         <TransformComponent
           wrapperStyle={{
             width: "100%",

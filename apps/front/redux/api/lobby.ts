@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, isEqual, LOBBY_STATUS, MAX_PLAYERS, ROUND_POINTS, TABLES } from "@repo/common"
+import { DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, isEqual, LOBBY_STATUS, MAX_PLAYERS, NUMBER_OF_ROUNDS_PER_STAGE, ROUND_POINTS, TABLES } from "@repo/common"
 import {
   type CreateLobbyInput,
   createLobbyInputSchema,
@@ -461,22 +461,23 @@ export const lobbyApi = createApi({
       LobbyDocWithId,
       { lobbyId: string, playerId: string, isReady: boolean }
     >({
-      queryFn: async ({ lobbyId, playerId, isReady }) => {
+      queryFn: async ({ lobbyId, playerId, isReady }, { dispatch }) => {
         try {
-          const lobbyRef = getLobbyRef(lobbyId)
-          const docSnap = await getDoc(lobbyRef)
+          const lobby = await dispatch(lobbyApi.endpoints.getLobbyById.initiate({ id: lobbyId })).unwrap()
 
-          if (!docSnap.exists()) {
+          if (!lobby) {
             throw new Error("Lobby not found")
           }
 
-          const currentData = docSnap.data()
+          const currentData = lobby
           const currentPlayers = currentData?.players || []
 
           // Update player ready status
           const updatedPlayers = currentPlayers.map((p: Player) =>
             p.uid === playerId ? { ...p, isReady } : p,
           )
+
+          const lobbyRef = getLobbyRef(lobbyId)
 
           await updateDoc(lobbyRef, {
             players: updatedPlayers,
@@ -505,6 +506,73 @@ export const lobbyApi = createApi({
       invalidatesTags: (_result, _error, { lobbyId }) => [
         { type: "Lobby", id: lobbyId },
       ],
+    }),
+    updatePlayerScore: builder.mutation<null, { lobbyId: string, playerId: string, newPoints: number }>(
+      {
+        queryFn: async ({ lobbyId, playerId, newPoints }, { dispatch }) => {
+          try {
+            const lobby = await dispatch(lobbyApi.endpoints.getLobbyById.initiate({ id: lobbyId })).unwrap()
+
+            if (!lobby) {
+              throw new Error("Lobby not found")
+            }
+
+            const currentData = lobby
+            const currentPlayers = currentData?.players || []
+
+            // Update player ready status
+            const updatedPlayers = currentPlayers.map((p: Player) =>
+              p.uid === playerId ? { ...p, score: p.score + newPoints } : p,
+            )
+
+            const lobbyRef = getLobbyRef(lobbyId)
+
+            await updateDoc(lobbyRef, {
+              players: updatedPlayers,
+              updatedAt: Timestamp.now(),
+            })
+
+            return { data: null }
+          } catch (error) {
+            console.error("Error updating player ready status:", error)
+            toast.error("Error updating ready status")
+
+            return {
+              error: globalErrorHandler(error),
+            }
+          }
+        }
+      }
+    ),
+    incrementPlayerLivesUsed: builder.mutation<null, { lobbyId: string, playerId: string }>({
+      queryFn: async ({ lobbyId, playerId }, { dispatch }) => {
+        try {
+          const lobby = await dispatch(lobbyApi.endpoints.getLobbyById.initiate({ id: lobbyId })).unwrap()
+
+          if (!lobby) {
+            throw new Error("Lobby not found")
+          }
+
+          const updatedPlayers = lobby.players.map((p: Player) =>
+            p.uid === playerId ? { ...p, livesUsed: (p.livesUsed || 0) + 1 } : p,
+          )
+
+          const lobbyRef = getLobbyRef(lobbyId)
+
+          await updateDoc(lobbyRef, {
+            players: updatedPlayers,
+            updatedAt: Timestamp.now(),
+          })
+
+          return { data: null }
+        } catch (error) {
+          console.error("Error incrementing lives used:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
     }),
     updateLobbyConfig: builder.mutation<
       null,
@@ -617,11 +685,12 @@ export const lobbyApi = createApi({
             await Promise.all(
               docSnap.rounds.map((round, i) => {
                 const index = i + 1
-                const difficulty = Math.ceil(i / 6)
+                const stage = Math.ceil(index / NUMBER_OF_ROUNDS_PER_STAGE)
 
-                const pointsDistance = round.isSpecial ? 0 : (ROUND_POINTS.DISTANCE + ROUND_POINTS.DISTANCE_ADDITION * difficulty)
+                const pointsDistance = round.isSpecial ? 0 : (ROUND_POINTS.DISTANCE + ROUND_POINTS.DISTANCE_ADDITION * stage)
                 const roundAnswerDoc = roundAnswerDocSchema.parse({
                   ...round,
+                  stage,
                   roundIndex: index,
                   pointsGame: ROUND_POINTS.GAME_GUESS,
                   pointsDistance,
@@ -811,7 +880,16 @@ export const lobbyApi = createApi({
           const nextRound = lobby.currentRound + 1
 
           if (nextRound > lobby.config.numberOfRounds) {
-            throw new Error("No more rounds available")
+            console.info("All rounds completed, no more rounds to update")
+
+            dispatch(lobbyApi.endpoints.updateLobby.initiate({
+              id: lobbyId,
+              data: {
+                status: LOBBY_STATUS.FINISHED,
+              },
+            }))
+
+            return { data: null }
           }
 
           const roundAnswerSnap = await getDoc(getRoundAnswerRef(lobbyId, String(nextRound)))
@@ -844,7 +922,7 @@ export const lobbyApi = createApi({
         }
       },
       invalidatesTags: (_result, _error, { lobbyId }) => [{ type: "Lobby", id: lobbyId }],
-    })
+    }),
   })
 })
 
@@ -863,5 +941,7 @@ export const {
   useSubmitRoundAnswerMutation,
   useListenRoundAnswerQuery,
   useUpdateNextRoundMutation,
-  useStartLobbyMutation
+  useStartLobbyMutation,
+  useUpdatePlayerScoreMutation,
+  useIncrementPlayerLivesUsedMutation
 } = lobbyApi

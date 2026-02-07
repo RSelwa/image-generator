@@ -20,8 +20,11 @@ export const playerAnswerSchema = z.object({
 
   // Scoring (all calculated by client)
   timeMs: z.number().default(0), // Time taken in milliseconds
+  gamePoints: z.number().default(0), // Points from guessing the game name
+  distancePoints: z.number().default(0), // Points from map distance
   points: z.number().default(0), // Total points earned this round
   submittedAt: timestampSchema.nullish().default(() => null),
+  isReadyForNextRound: z.boolean().default(false),
 })
 
 export type PlayerAnswer = z.infer<typeof playerAnswerSchema>
