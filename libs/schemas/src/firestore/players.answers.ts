@@ -24,6 +24,7 @@ export const playerAnswerSchema = z.object({
   distancePoints: z.number().default(0), // Points from map distance
   points: z.number().default(0), // Total points earned this round
   submittedAt: timestampSchema.nullish().default(() => null),
+  livesUsed: z.number().default(0),
   isReadyForNextRound: z.boolean().default(false),
 })
 

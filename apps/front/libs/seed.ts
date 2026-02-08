@@ -10,14 +10,12 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
       collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
         .where("mapId", ">", "")
         .get(),
-
-      collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
+      hasSpecialRounds ? collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
         .where("thumbnail", ">", "")
-        .get(),
-
-      collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
+        .get() : { docs: [] },
+      hasSpecialRounds ? collectionGroupRefs[TABLES.FLAT].where("status", "==", DOCUMENTS_STATUS.READY)
         .where("thumbnail", ">", "")
-        .get(),
+        .get() : { docs: [] },
     ])
 
     const sphericalsWithMapData = sphericalsWithMap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
@@ -34,15 +32,17 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
 
     for (let index = 0; index < numberOfRounds; index++) {
       const isRoundSpecial = hasSpecialRounds ? (index + 1) % NUMBER_OF_ROUNDS_PER_STAGE === 0 : false // Every 6th round is special
-
       const excludedGameIds = (rounds.map((round) => round.gameId || round?.options?.map((option) => option.gameId)).flat())
 
       if (isRoundSpecial) {
         const options: Round["options"] = []
 
         for (let i = 0; i < SPECIAL_ROUND_OPTIONS_COUNT; i++) {
+          const excludedOptionIds = options.map((option) => option.gameId)
+          const allExcludedIds = [...new Set([...excludedGameIds, ...excludedOptionIds])]
+
           const specialRoundOptions = [...formattedSphericalsForSpecialRounds, ...formattedFlatsForSpecialRounds].filter(
-            (option) => option && !excludedGameIds.includes(option.gameId)
+            (option) => option && !allExcludedIds.includes(option.gameId)
           )
 
           if (specialRoundOptions.length === 0) {
@@ -67,6 +67,8 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
         }
 
         rounds.push(round.data)
+
+        continue
       }
 
       const sphericalFiltered = formattedSphericalsForNormalRounds.filter((spherical) => spherical.gameId && !excludedGameIds.includes(spherical.gameId))
@@ -107,6 +109,8 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
 
       rounds.push(round.data)
     }
+
+    console.log(rounds.length)
 
     return rounds
   } catch (error) {

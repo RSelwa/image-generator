@@ -1,5 +1,5 @@
-import * as React from "react"
-import LobbyMain, { LobbyDebug } from "@/components/lobby/lobby-main"
+import { LobbyDebug } from "@/components/lobby/lobby-debug"
+import LobbyMain from "@/components/lobby/lobby-main"
 
 const Page = async ({
   params,

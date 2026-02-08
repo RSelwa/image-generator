@@ -41,6 +41,10 @@ export const selectLobbyConfig = (lobbyId: string) =>
 export const selectCurrentRoundData = (lobbyId: string) =>
   createSelector(selectLobby(lobbyId), (lobby) => lobby?.currentRoundData)
 
+// Current round index
+export const selectCurrentRoundIndex = (lobbyId: string) =>
+  createSelector(selectLobby(lobbyId), (lobby) => lobby?.currentRound || 0)
+
 // Lobby status
 export const selectLobbyStatus = (lobbyId: string) =>
   createSelector(selectLobby(lobbyId), (lobby) => lobby?.status)
@@ -63,6 +67,26 @@ export const selectCurrentPlayerRoundAnswer = (lobbyId: string, roundIndex: numb
     },
   )
 
+// Has the current player selected an option
+export const selectHasSelectedOption = (lobbyId: string, roundIndex: number) =>
+  createSelector(
+    selectCurrentPlayerRoundAnswer(lobbyId, roundIndex),
+    (answer) => answer?.selectedOptionIndex !== null && answer?.selectedOptionIndex !== undefined,
+  )
+
+// Selected option for the current player
+export const selectSelectedOption = (lobbyId: string, roundIndex: number) =>
+  createSelector(
+    selectCurrentPlayerRoundAnswer(lobbyId, roundIndex),
+    selectCurrentRoundData(lobbyId),
+    (answer, roundData) => {
+      const index = answer?.selectedOptionIndex
+      if (index === null || index === undefined) return null
+
+      return roundData?.options?.[index] || null
+    },
+  )
+
 // Are all players ready for next round
 export const selectAllPlayersReady = (lobbyId: string, roundIndex: number) =>
   createSelector(
@@ -76,21 +100,32 @@ export const selectAllPlayersReady = (lobbyId: string, roundIndex: number) =>
     },
   )
 
-// Current player's remaining lives (null if lives mode is disabled)
-export const selectMyLivesRemaining = (lobbyId: string) =>
+// Current player's remaining lives (0 if lives mode is disabled)
+export const selectMyLivesRemaining = (lobbyId: string, roundIndex: number) =>
   createSelector(
     selectLobbyConfig(lobbyId),
-    selectPlayerMyself(lobbyId),
-    (config, player) => {
+    selectCurrentPlayerRoundAnswer(lobbyId, roundIndex),
+    (config, answer) => {
       if (!config?.playersLives) return 0
 
-      return config.playersLives - (player?.livesUsed || 0)
+      return config.playersLives - (answer?.livesUsed || 0)
     },
   )
 
 // Is the current player eliminated
-export const selectIsPlayerEliminated = (lobbyId: string) =>
+export const selectIsPlayerEliminated = (lobbyId: string, roundIndex: number) =>
   createSelector(
-    selectMyLivesRemaining(lobbyId),
-    (livesRemaining) => livesRemaining !== null && livesRemaining <= 0,
+    selectMyLivesRemaining(lobbyId, roundIndex),
+    selectLobbyConfig(lobbyId),
+    (livesRemaining, config) => {
+      if (!config?.playersLives) return false
+
+      return livesRemaining !== null && livesRemaining <= 0
+    },
   )
+
+export const selectCurrentRoundGameTitle = (lobbyId: string, roundIndex: number) =>
+  createSelector(selectCurrentRoundData(lobbyId), selectSelectedOption(lobbyId, roundIndex), (roundData, selectedOption) => selectedOption?.gameTitle || roundData?.gameTitle || "")
+
+export const selectCurrentRoundInfos = (lobbyId: string, roundIndex: number) =>
+  createSelector(selectLobby(lobbyId), selectSelectedOption(lobbyId, roundIndex), (lobby, selectedOption) => lobby?.currentRoundData?.isSpecial ? selectedOption : lobby?.currentRoundData)

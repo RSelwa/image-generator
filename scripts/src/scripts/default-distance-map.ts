@@ -21,7 +21,7 @@ await Promise.all(
         maxDistancePoints: DEFAULT_MAX_DISTANCE_POINTS,
       })
 
-      console.log(`Updated map ${map.id} with maxDistancePoints`)
+      console.info(`Updated map ${map.id} with maxDistancePoints`)
     }
   })
 )

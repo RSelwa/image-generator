@@ -7,7 +7,6 @@ export const playerSchema = z.object({
   name: z.string().min(1),
   avatar: z.string().optional().default(""),
   score: z.number().default(0),
-  livesUsed: z.number().default(0),
   isHost: z.boolean().default(false),
   isReady: z.boolean().default(false),
   joinedAt: timestampSchema.nullish().default(() => null),

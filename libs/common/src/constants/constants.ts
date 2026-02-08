@@ -19,6 +19,11 @@ export const DEFAULT_TIME_PER_ROUND = 60 // seconds
 export const SPECIAL_ROUND_OPTIONS_COUNT = 4 // seconds
 export const DEFAULT_LIVES = 3
 export const DEFAULT_MAX_DISTANCE_POINTS = 30 // percentage of max distance
+export const DEFAULT_HAS_SPECIAL_ROUNDS = false
+
+export const OPTIONS_NUMBER_OF_ROUNDS = [1, 2, 3, 4].map((multiplier) => multiplier * NUMBER_OF_ROUNDS_PER_STAGE)
+export const OPTIONS_PLAYERS_LIVES = [null, 1, 3, 5]
+export const OPTIONS_ROUND_DURATIONS = [30, 60, 90, 120]
 
 export const LOBBY_STATUS = {
   WAITING: "waiting",

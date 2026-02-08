@@ -6,7 +6,6 @@ export const createPlayerFromSessionUser = (sessionUser: SessionUser): Player =>
   name: "FakeName",
   avatar: sessionUser.photoUrl,
   score: 0,
-  livesUsed: 0,
   isHost: false,
   isReady: false,
   joinedAt: null,

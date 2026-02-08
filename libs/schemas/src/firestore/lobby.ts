@@ -1,4 +1,4 @@
-import { DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, LOBBY_STATUS, MAX_PLAYERS } from "@repo/common"
+import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, LOBBY_STATUS, MAX_PLAYERS } from "@repo/common"
 import z from "zod"
 import { lobbyConfigSchema } from "~/firestore/lobby.config"
 
@@ -14,6 +14,7 @@ export const lobbyDocSchema = z.object({
   players: z.array(playerSchema).max(MAX_PLAYERS).default([]),
   config: lobbyConfigSchema.default({
     playersLives: DEFAULT_LIVES,
+    hasSpecialRounds: DEFAULT_HAS_SPECIAL_ROUNDS,
     maxPlayers: MAX_PLAYERS,
     roundDuration: DEFAULT_TIME_PER_ROUND,
     numberOfRounds: DEFAULT_NUMBERS_ROUNDS,

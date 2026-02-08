@@ -3,9 +3,10 @@ import { Separator } from "@radix-ui/react-separator"
 import { calculateDistancePoints, getDistance, isSameNormalized, ROUND_POINTS, ROUND_TYPE } from "@repo/common"
 import { type PlayerAnswer } from "@repo/schemas"
 import Image from "next/image"
-import { type FormEvent, Fragment } from "react"
+import { type FormEvent, Fragment, useRef } from "react"
 import * as React from "react"
 import { useEffect, useState } from "react"
+import PlayingSpecialRound from "@/components/lobby/lobby-playing.special-round"
 import { type Position } from "@/components/mini-map"
 import MiniMap from "@/components/mini-map"
 import { ReactSphere } from "@/components/providers/react-sphere"
@@ -16,7 +17,7 @@ import { Progress } from "@/components/ui/progress"
 import { TextRevealTW } from "@/components/ui/text-reveal"
 import { useCountdown } from "@/hooks/use-countdown"
 import { useIncrementPlayerLivesUsedMutation, useListenRoundAnswerQuery, useSubmitRoundAnswerMutation, useSubscribeLobbyQuery, useUpdateNextRoundMutation, useUpdatePlayerScoreMutation } from "@/redux/api/lobby"
-import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectIsPlayerEliminated, selectMyLivesRemaining, selectPlayerMyself } from "@/redux/lobby/lobby.selectors"
+import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectCurrentRoundInfos, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining, selectPlayerMyself, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
@@ -38,9 +39,11 @@ const DisplayGame = ({ lobbyId }: Props) => {
 
   const isEveryOneReady = useAppSelector(selectAllPlayersReady(lobbyId, roundIndex))
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
+  const currentRoundInfos = useAppSelector(selectCurrentRoundInfos(lobbyId, roundIndex))
   const currentAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
 
   const hasGuessedGame = Boolean(currentAnswer?.isCorrect)
+  const isRoundSpecial = currentRoundData?.isSpecial
   const percentagePoints = currentRoundData?.pointsDistance ? ((currentAnswer?.distancePoints || 0) / (currentRoundData.pointsDistance || 1)) * 100 : 0
 
   useEffect(() => {
@@ -83,11 +86,11 @@ const DisplayGame = ({ lobbyId }: Props) => {
 
           ))}
         </article>
-        <TextRevealTW text={currentRoundData?.gameTitle || ""} className="text-white font-bold text-2xl" />
-        {!hasGuessedGame && (<Image src={currentRoundData?.gameThumbnailUrl || ""} height={300} width={300} alt={currentRoundData?.gameTitle || ""} />
+        <TextRevealTW text={currentRoundInfos?.gameTitle || "Game title"} className="text-white font-bold text-2xl" />
+        {(!hasGuessedGame || isRoundSpecial) && (<Image src={currentRoundInfos?.gameThumbnailUrl || ""} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} />
         )}
 
-        {hasGuessedGame && (
+        {hasGuessedGame && !isRoundSpecial && (
           <MiniMap
             mapData={{
               mapImage: currentRoundData.mapImage || "",
@@ -105,16 +108,20 @@ const DisplayGame = ({ lobbyId }: Props) => {
           />
         )}
         <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-white text-lg" initialDelay={1.5} />
-        <div className="text-white text-lg text-shadow flex items-center gap-2 transition-opacity duration-500 delay-[2s] ">
-          <span>
-            0
-          </span>
-          <Progress value={percentagePoints} indicatorClassName="bg-white" className="bg-neutral-500/50 w-52" />
-          <span>
+        {!isRoundSpecial &&
+          (
+            <div className="text-white text-lg text-shadow flex items-center gap-2 transition-opacity duration-500 delay-[2s] ">
+              <span>
+                0
+              </span>
+              <Progress value={percentagePoints} indicatorClassName="bg-white" className="bg-neutral-500/50 w-52" />
+              <span>
 
-            {currentRoundData.pointsDistance}
-          </span>
-        </div>
+                {currentRoundData.pointsDistance}
+              </span>
+            </div>
+          )}
+
         <TextRevealTW initialDelay={4} text={`Total: +${currentAnswer?.points} Pts`} className="text-white text-lg" />
         <HoverCard>
           <HoverCardTrigger asChild>
@@ -137,30 +144,37 @@ const LobbyPlaying = ({ lobbyId }: Props) => {
   const [playPosition, setPlayerPosition] = useState<Position>({ x: 50, y: 50 })
   const [isHovered, setIsHovered] = useState(false)
 
+  const gameFormRef = useRef<HTMLFormElement>(null)
+
   const [submitRoundAnswer] = useSubmitRoundAnswerMutation()
   const [incrementLivesUsed] = useIncrementPlayerLivesUsedMutation()
 
   const { data: lobby, isLoading: isLobbyLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {
     skip: !lobbyId,
   })
-  const { data: roundAnswer, isLoading: isLoadingRoundAnswer } = useListenRoundAnswerQuery({ lobbyId, roundIndex: lobby?.currentRound || 0 }, {
+  const { isLoading: isLoadingRoundAnswer } = useListenRoundAnswerQuery({ lobbyId, roundIndex: lobby?.currentRound || 0 }, {
     skip: !lobbyId || !lobby || !lobby.currentRound || lobby.currentRound === 0,
 
   })
   const player = useAppSelector(selectPlayerMyself(lobbyId))
-  const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId))
-  const isEliminated = useAppSelector(selectIsPlayerEliminated(lobbyId))
-  const myAnswer = roundAnswer?.answers?.find((answer) => answer.uid === user?.id)
+  const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
+  const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
+  const isEliminated = useAppSelector(selectIsPlayerEliminated(lobbyId, roundIndex))
+  const myAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
+  const config = useAppSelector(selectLobbyConfig(lobbyId))
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
+  const selectedOption = useAppSelector(selectSelectedOption(lobbyId, roundIndex))
+  const gameTitle = useAppSelector(selectCurrentRoundGameTitle(lobbyId, roundIndex))
+
   const isMapPhase = myAnswer?.isCorrect && currentRoundData?.mapPosition
   const timerStart = (isMapPhase && myAnswer?.submittedAt) || lobby?.roundStartedAt
 
-  const { timeRemaining, isExpired } = useCountdown(timerStart, (lobby?.config.roundDuration || 60))
+  const { timeRemaining, isExpired } = useCountdown(timerStart, (config?.roundDuration || 60))
 
-  const hasSubmittedAnswer = Boolean((currentRoundData?.gameTitle && myAnswer?.isCorrect))
+  const hasSubmittedAnswer = Boolean((gameTitle && myAnswer?.isCorrect))
   const hasFinishedRound = (hasSubmittedAnswer && !currentRoundData?.mapId) || (hasSubmittedAnswer && (currentRoundData?.mapId && myAnswer?.position))
 
-  const isDisplayGame = !isLoadingRoundAnswer && Boolean(hasFinishedRound || isExpired || (!livesRemaining && lobby?.config.playersLives))
+  const isDisplayGame = !isLoadingRoundAnswer && Boolean(hasFinishedRound || isExpired || (!livesRemaining && config?.playersLives))
 
   if (isLobbyLoading || !lobby) {
     return <div>Loading...</div>
@@ -188,7 +202,9 @@ const LobbyPlaying = ({ lobbyId }: Props) => {
     if (!currentRoundData) return
     const playerAnswerValue = input?.toString() || ""
 
-    const isCorrect = Boolean(currentRoundData.gameTitle && isSameNormalized(currentRoundData.gameTitle, playerAnswerValue))
+    const correctGameName = selectedOption?.gameTitle || currentRoundData.gameTitle || ""
+
+    const isCorrect = Boolean(correctGameName && isSameNormalized(correctGameName, playerAnswerValue))
 
     if (isCorrect) {
       await updatingRoundAnswerDoc({
@@ -199,7 +215,8 @@ const LobbyPlaying = ({ lobbyId }: Props) => {
         points: ROUND_POINTS.GAME_GUESS,
       })
     } else {
-      incrementLivesUsed({ lobbyId, playerId: user?.id || "" })
+      incrementLivesUsed({ lobbyId, playerId: user?.id || "", roundIndex })
+      gameFormRef.current?.reset()
     }
   }
 
@@ -226,33 +243,30 @@ const LobbyPlaying = ({ lobbyId }: Props) => {
     <main className="min-h-full-height relative">
 
       {!isDisplayGame && (
-        <p className="absolute z-10 top-4 left-1/2 -translate-x-1/2 font-bold text-white drop-shadow-2xl text-center text-6xl">
+        <span className="absolute z-10 top-4 left-1/2 -translate-x-1/2 font-bold text-white drop-shadow-2xl text-center text-6xl">
           {timeRemaining}
-        </p>
+        </span>
       )}
+      {(isDisplayGame) && (<DisplayGame lobbyId={lobbyId} />)}
       <div className=" absolute z-10 top-4 right-8 flex flex-col items-end pr-8 text-white text-shadow-black text-shadow">
         <p>
           Stage: {currentRoundData?.stage}
         </p>
         <p>
-          Level: {lobby.currentRound}/{lobby.config.numberOfRounds}
+          Level: {lobby.currentRound}/{config?.numberOfRounds}
         </p>
         <p>
           Your score: {player?.score} pts
         </p>
       </div>
 
-      {
-        (isDisplayGame) && (<DisplayGame lobbyId={lobbyId} />)
-      }
-
       {!myAnswer?.isCorrect && !isExpired && !isEliminated && (
-        <form onSubmit={verifyGameName} autoComplete="off" className="absolute z-10 left-1/2 -translate-1/2 bottom-8 flex flex-col items-center gap-4">
-          {lobby.config?.playersLives && (
+        <form ref={gameFormRef} onSubmit={verifyGameName} autoComplete="off" className="absolute z-10 left-1/2 -translate-1/2 bottom-8 flex flex-col items-center gap-4">
+          {config?.playersLives && (
 
             <div className=" mx-auto w-3/4 flex items-center gap-2">
               {
-                Array.from({ length: lobby.config.playersLives }, (_, i) => (
+                Array.from({ length: config.playersLives }, (_, i) => (
                   <div
                     key={i}
                     data-is-filled={i < livesRemaining}
@@ -272,7 +286,44 @@ const LobbyPlaying = ({ lobbyId }: Props) => {
         </form>
       )}
 
-      {currentRoundData && (
+      {isMapPhase && !isDisplayGame && !isEliminated && currentRoundData.mapPosition && (
+        <form
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onSubmit={submitDistance}
+          className="fixed bottom-6 right-6 z-50 flex flex-col gap-2"
+        >
+          <p className="w-full bg-neutral-100 text-neutral-900 rounded-sm py-1 text-center text-shadow text-xl font-semibold">
+            {currentRoundData.gameTitle}
+          </p>
+
+          <MiniMap
+            mapData={{
+              mapImage: currentRoundData.mapImage || "",
+              size: {
+                width: currentRoundData.mapWidth || 0,
+                height: currentRoundData.mapHeight || 0,
+              },
+              correctPosition: currentRoundData.mapPosition,
+
+            }}
+            showCorrectMarker={false}
+            guessPosition={playPosition}
+            onMapClick={setPlayerPosition}
+            inline
+            isParentHover={isHovered}
+          />
+
+          <Button type="submit" className="w-full">
+            Guess
+          </Button>
+        </form>
+      )}
+
+      {currentRoundData && (currentRoundData.isSpecial ? (
+        <PlayingSpecialRound lobbyId={lobbyId} />
+
+      ) : (
         <article>
           {currentRoundData.type === ROUND_TYPE.SPHERICAL && currentRoundData.sphericalImageUrl && (
             <div className="h-full-height">
@@ -283,41 +334,8 @@ const LobbyPlaying = ({ lobbyId }: Props) => {
             <Image src={currentRoundData.flatImageUrl || ""} alt="Current round image" width={1920} height={1080} />
           )}
 
-          {isMapPhase && !isDisplayGame && !isEliminated && currentRoundData.mapPosition && (
-            <form
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              onSubmit={submitDistance}
-              className=" fixed bottom-6 right-6 z-50 flex flex-col gap-2"
-            >
-              <p className="w-full bg-neutral-100 text-neutral-900 rounded-sm py-1 text-center text-shadow text-xl font-semibold">
-                {currentRoundData.gameTitle}
-              </p>
-
-              <MiniMap
-                mapData={{
-                  mapImage: currentRoundData.mapImage || "",
-                  size: {
-                    width: currentRoundData.mapWidth || 0,
-                    height: currentRoundData.mapHeight || 0,
-                  },
-                  correctPosition: currentRoundData.mapPosition,
-
-                }}
-                showCorrectMarker={false}
-                guessPosition={playPosition}
-                onMapClick={setPlayerPosition}
-                inline
-                isParentHover={isHovered}
-              />
-
-              <Button type="submit" className="w-full">
-                Guess
-              </Button>
-            </form>
-          )}
         </article>
-      )}
+      ))}
     </main>
   )
 }
