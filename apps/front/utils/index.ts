@@ -16,3 +16,9 @@ export const copy = (text: string) => {
 }
 
 export const firstLetter = (str: string) => str.charAt(0).toUpperCase()
+
+export const getLobbyIdFromPathname = (pathname: string) => {
+  const match = pathname.match(/\/lobby\/([^/]+)/)
+
+  return match ? match[1] : ""
+}

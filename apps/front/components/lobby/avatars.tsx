@@ -1,15 +1,12 @@
 import { type Player } from "@repo/schemas"
+import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarImage } from "@/components/ui/avatar"
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
 import { useExcludePlayerMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { firstLetter } from "@/utils"
-
-type Props = {
-  lobbyId: string
-}
+import { firstLetter, getLobbyIdFromPathname } from "@/utils"
 
 const AvatarPlayer = ({ p, isOwner}: { p: Player, isOwner?: boolean }) => (
   <Avatar>
@@ -19,7 +16,10 @@ const AvatarPlayer = ({ p, isOwner}: { p: Player, isOwner?: boolean }) => (
   </Avatar>
 )
 
-export const LobbyAvatars = ({ lobbyId }: Props) => {
+export const LobbyAvatars = () => {
+  const pathname = usePathname()
+  const lobbyId = getLobbyIdFromPathname(pathname)
+
   const user = useAppSelector(selectUser)
 
   const [excludeUser] = useExcludePlayerMutation()

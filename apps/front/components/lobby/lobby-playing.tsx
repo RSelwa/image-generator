@@ -3,6 +3,7 @@ import { Separator } from "@radix-ui/react-separator"
 import { calculateDistancePoints, getDistance, isSameNormalized, ROUND_POINTS, ROUND_TYPE } from "@repo/common"
 import { type PlayerAnswer } from "@repo/schemas"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 import { type FormEvent, Fragment, useRef } from "react"
 import * as React from "react"
 import { useEffect, useState } from "react"
@@ -20,12 +21,12 @@ import { useIncrementPlayerLivesUsedMutation, useListenRoundAnswerQuery, useSubm
 import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectCurrentRoundInfos, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining, selectPlayerMyself, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import { getLobbyIdFromPathname } from "@/utils"
 
-type Props = {
-  lobbyId: string
-}
+const DisplayGame = () => {
+  const pathname = usePathname()
+  const lobbyId = getLobbyIdFromPathname(pathname)
 
-const DisplayGame = ({ lobbyId }: Props) => {
   const user = useAppSelector(selectUser)
   const [nextRound] = useUpdateNextRoundMutation()
   const [updatePlayerScore] = useUpdatePlayerScoreMutation()
@@ -139,8 +140,10 @@ const DisplayGame = ({ lobbyId }: Props) => {
   )
 }
 
-const LobbyPlaying = ({ lobbyId }: Props) => {
-  const user = useAppSelector(selectUser)
+const LobbyPlaying = () => {
+  const pathname = usePathname()
+  const lobbyId = getLobbyIdFromPathname(pathname)
+
   const [playPosition, setPlayerPosition] = useState<Position>({ x: 50, y: 50 })
   const [isHovered, setIsHovered] = useState(false)
 
@@ -156,6 +159,8 @@ const LobbyPlaying = ({ lobbyId }: Props) => {
     skip: !lobbyId || !lobby || !lobby.currentRound || lobby.currentRound === 0,
 
   })
+
+  const user = useAppSelector(selectUser)
   const player = useAppSelector(selectPlayerMyself(lobbyId))
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
   const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
@@ -247,7 +252,7 @@ const LobbyPlaying = ({ lobbyId }: Props) => {
           {timeRemaining}
         </span>
       )}
-      {(isDisplayGame) && (<DisplayGame lobbyId={lobbyId} />)}
+      {(isDisplayGame) && (<DisplayGame />)}
       <div className=" absolute z-10 top-4 right-8 flex flex-col items-end pr-8 text-white text-shadow-black text-shadow">
         <p>
           Stage: {currentRoundData?.stage}
@@ -321,7 +326,7 @@ const LobbyPlaying = ({ lobbyId }: Props) => {
       )}
 
       {currentRoundData && (currentRoundData.isSpecial ? (
-        <PlayingSpecialRound lobbyId={lobbyId} />
+        <PlayingSpecialRound />
 
       ) : (
         <article>

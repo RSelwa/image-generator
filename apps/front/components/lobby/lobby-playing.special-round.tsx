@@ -1,5 +1,6 @@
 import { ROUND_TYPE } from "@repo/common"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 import * as React from "react"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { Button } from "@/components/ui/button"
@@ -7,12 +8,12 @@ import { useSelectOptionIndexMutation, useSubscribeLobbyQuery } from "@/redux/ap
 import { selectCurrentRoundData, selectCurrentRoundIndex, selectHasSelectedOption, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import { getLobbyIdFromPathname } from "@/utils"
 
-type Props = {
-  lobbyId: string
-}
+const PlayingSpecialRound = () => {
+  const pathname = usePathname()
+  const lobbyId = getLobbyIdFromPathname(pathname)
 
-const PlayingSpecialRound = ({ lobbyId }: Props) => {
   const [selectOptionIndex] = useSelectOptionIndexMutation()
 
   const { data: lobby } = useSubscribeLobbyQuery({ id: lobbyId }, {

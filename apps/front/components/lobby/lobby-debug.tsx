@@ -1,6 +1,7 @@
 "use client"
 
 import { getDateString, LOBBY_STATUS, USER_RIGHT } from "@repo/common"
+import { usePathname } from "next/navigation"
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -9,12 +10,12 @@ import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyMutation, 
 import { selectCurrentRoundData } from "@/redux/lobby/lobby.selectors"
 import { selectUserRights } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import { getLobbyIdFromPathname } from "@/utils"
 
-type Props = {
-  lobbyId: string
-}
+export const LobbyDebug = () => {
+  const pathname = usePathname()
+  const lobbyId = getLobbyIdFromPathname(pathname)
 
-export const LobbyDebug = ({ lobbyId }: Props) => {
   const rights = useAppSelector(selectUserRights)
 
   const { data: lobby, isLoading: isLobbyLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {

@@ -1,5 +1,6 @@
 import { OPTIONS_NUMBER_OF_ROUNDS, OPTIONS_PLAYERS_LIVES, OPTIONS_ROUND_DURATIONS } from "@repo/common"
 import { type LobbyDoc } from "@repo/schemas"
+import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { LobbyAvatars } from "@/components/lobby/avatars"
 import { Button } from "@/components/ui/button"
@@ -10,12 +11,12 @@ import { PAGES } from "@/constants/pages"
 import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyConfigMutation } from "@/redux/api/lobby"
 import { selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
+import { getLobbyIdFromPathname } from "@/utils"
 
-type Props = {
-  lobbyId: string
-}
+const LobbyWaiting = () => {
+  const pathname = usePathname()
+  const lobbyId = getLobbyIdFromPathname(pathname)
 
-const LobbyWaiting = ({ lobbyId }: Props) => {
   const { data: lobby } = useSubscribeLobbyQuery({ id: lobbyId }, {
     skip: !lobbyId,
   })
@@ -52,7 +53,7 @@ const LobbyWaiting = ({ lobbyId }: Props) => {
         <Button onClick={copyUrl}>Copy Lobby url</Button>
         <p className="text-lg text-muted-foreground">Players in lobby: {lobby.players.length}/{lobby.config.maxPlayers}</p>
         <p>Seed: {lobby.seedId}</p>
-        <LobbyAvatars lobbyId={lobby.id} />
+        <LobbyAvatars />
         <article className="p-8">
           <p>Config</p>
           <div>

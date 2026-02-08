@@ -1,10 +1,11 @@
+import { usePathname } from "next/navigation"
 import * as React from "react"
+import { getLobbyIdFromPathname } from "@/utils"
 
-type Props = {
-  lobbyId: string
-}
+const LobbyStarting = () => {
+  const pathname = usePathname()
+  const _ = getLobbyIdFromPathname(pathname)
 
-const LobbyStarting = (_: Props) => {
   return (
     <main className="min-h-full-height flex items-center justify-center">
       <p className="text-lg text-muted-foreground">Game in progress...</p>

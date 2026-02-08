@@ -1,7 +1,7 @@
 "use client"
 
 import { LOBBY_STATUS } from "@repo/common"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import * as React from "react"
 import LobbyFinished from "@/components/lobby/lobby-finished"
 import LobbyPlaying from "@/components/lobby/lobby-playing"
@@ -12,6 +12,7 @@ import { PAGES } from "@/constants/pages"
 import { useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import { getLobbyIdFromPathname } from "@/utils"
 
 const LoadingLobby = () => (
   <main className="min-h-full-height flex items-center justify-center">
@@ -32,11 +33,10 @@ const NoLobby = () => {
   )
 }
 
-type Props = {
-  lobbyId: string
-}
+const LobbyMain = () => {
+  const pathname = usePathname()
+  const lobbyId = getLobbyIdFromPathname(pathname)
 
-const LobbyMain = ({ lobbyId }: Props) => {
   const user = useAppSelector(selectUser)
 
   const { data: lobby, isLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {
@@ -49,10 +49,10 @@ const LobbyMain = ({ lobbyId }: Props) => {
 
   if (!lobby || !isUserInLobby) return <NoLobby />
 
-  if (lobby.status === LOBBY_STATUS.WAITING) return <LobbyWaiting lobbyId={lobbyId} />
-  if (lobby.status === LOBBY_STATUS.STARTING) return <LobbyStarting lobbyId={lobbyId} />
-  if (lobby.status === LOBBY_STATUS.PLAYING) return <LobbyPlaying lobbyId={lobbyId} />
-  if (lobby.status === LOBBY_STATUS.FINISHED) return <LobbyFinished lobbyId={lobbyId} />
+  if (lobby.status === LOBBY_STATUS.WAITING) return <LobbyWaiting />
+  if (lobby.status === LOBBY_STATUS.STARTING) return <LobbyStarting />
+  if (lobby.status === LOBBY_STATUS.PLAYING) return <LobbyPlaying />
+  if (lobby.status === LOBBY_STATUS.FINISHED) return <LobbyFinished />
 
   return (
     <main className="min-h-full-height flex items-center justify-center">

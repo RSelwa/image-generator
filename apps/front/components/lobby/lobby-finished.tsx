@@ -1,10 +1,11 @@
+import { usePathname } from "next/navigation"
 import * as React from "react"
+import { getLobbyIdFromPathname } from "@/utils"
 
-type Props = {
-  lobbyId: string
-}
+const LobbyFinished = () => {
+  const pathname = usePathname()
+  const _ = getLobbyIdFromPathname(pathname)
 
-const LobbyFinished = (_: Props) => {
   return (
     <div>LobbyFinished</div>
   )
