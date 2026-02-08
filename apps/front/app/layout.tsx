@@ -5,6 +5,7 @@ import { Suspense } from "react"
 import { ModalProvider } from "@/components/modals"
 import StoreProvider from "@/components/providers/redux-provider"
 import { Toaster } from "@/components/ui/sonner"
+import { APP_NAME } from "@/constants/mapping"
 import "@photo-sphere-viewer/core/index.css"
 import "./globals.css"
 
@@ -19,7 +20,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Geo gamers",
+  title: APP_NAME,
   description: "The geo-guessr for games",
 }
 

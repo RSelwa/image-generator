@@ -3,6 +3,8 @@ import { type RootState } from "@/redux/store"
 
 export const selectUser = ({ session }: RootState) => session.user
 
+export const selectUserId = ({ session }: RootState) => session.user?.id || ""
+
 export const selectSessionStatus = ({ session }: RootState) => session.status
 
 export const selectUserRights = ({ session }: RootState) =>

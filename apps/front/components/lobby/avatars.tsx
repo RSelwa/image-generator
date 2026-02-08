@@ -1,7 +1,9 @@
 import { type Player } from "@repo/schemas"
+import { Crown } from "lucide-react"
 import { usePathname } from "next/navigation"
+import { Fragment } from "react/jsx-runtime"
 import { toast } from "sonner"
-import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
 import { useExcludePlayerMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -12,7 +14,9 @@ const AvatarPlayer = ({ p, isOwner}: { p: Player, isOwner?: boolean }) => (
   <Avatar>
     <AvatarImage src={p.avatar} />
     <AvatarFallback className="font-bold">{firstLetter(p.name)}</AvatarFallback>
-    {isOwner && <AvatarBadge className="bg-amber-600 dark:bg-amber-800" />}
+    {isOwner && <Crown fill="black" className="absolute -top-4 left-1/2 -translate-x-1/2 stroke-0" size={16} />}
+    {!p.isReady && <AvatarBadge className="bg-amber-600 dark:bg-amber-800" />}
+    {p.isReady && <AvatarBadge className="bg-green-600 dark:bg-green-800" />}
   </Avatar>
 )
 
@@ -31,41 +35,42 @@ export const LobbyAvatars = () => {
 
   const isOwner = lobby.hostId === user?.id
 
-  if (!isOwner) {
-    return (
-      <AvatarGroup className="grayscale">
-        {lobby.players.map((p) => (
-          <AvatarPlayer key={p.uid} {...{ p }} />
-        )
-        )}
-      </AvatarGroup>
-    )
-  }
-
   const handleExcludePlayer = async (playerId: string) => {
     await excludeUser({ lobbyId, playerId })
     toast.success("Player excluded")
   }
 
   return (
-    <AvatarGroup>
-      {lobby.players.map((p) => {
-        const isPlayerOwner = lobby.hostId === p.uid
+    <div className="flex gap-4 items-center justify-center">
+
+      {Array.from({ length: lobby.config.maxPlayers }, (_, i) => {
+        const player = lobby.players?.[i]
+
+        if (!player) {
+          return (
+            <Avatar key={i} className="opacity-25">
+              <AvatarFallback className="font-bold">?</AvatarFallback>
+            </Avatar>
+          )
+        }
+
+        const isPlayerOwner = lobby.hostId === player.uid
 
         return (
-          <ContextMenu key={p.uid}>
-            <ContextMenuTrigger>
-              <AvatarPlayer p={p} isOwner={isPlayerOwner} />
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuItem disabled={isPlayerOwner} onClick={() => handleExcludePlayer(p.uid)}>
-                Exclude
-              </ContextMenuItem>
-            </ContextMenuContent>
-          </ContextMenu>
+          <Fragment key={player.uid}>
+            <ContextMenu>
+              <ContextMenuTrigger disabled={!isOwner}>
+                <AvatarPlayer p={player} isOwner={isPlayerOwner} />
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem disabled={isPlayerOwner} onClick={() => handleExcludePlayer(player.uid)}>
+                  Exclude
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
+          </Fragment>
         )
-      }
-      )}
-    </AvatarGroup>
+      })}
+    </div>
   )
 }

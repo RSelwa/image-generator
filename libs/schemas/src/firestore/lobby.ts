@@ -20,6 +20,7 @@ export const lobbyDocSchema = z.object({
     numberOfRounds: DEFAULT_NUMBERS_ROUNDS,
   }),
   seedId: z.string().nullish().default(null), // Reference to seed document (backend only)
+  maximumPossiblePoints: z.number().nullish().default(0), // Calculated on backend based on seed and config
   currentRound: z.number().default(0),
   currentRoundData: currentRoundDataSchema.nullish().default(null), // Safe data for clients
   roundStartedAt: timestampSchema.nullish().default(() => null),

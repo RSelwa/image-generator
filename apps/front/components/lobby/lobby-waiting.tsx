@@ -1,15 +1,20 @@
 import { OPTIONS_NUMBER_OF_ROUNDS, OPTIONS_PLAYERS_LIVES, OPTIONS_ROUND_DURATIONS } from "@repo/common"
 import { type LobbyDoc } from "@repo/schemas"
+import { ArrowUpRightFromSquareIcon } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { LobbyAvatars } from "@/components/lobby/avatars"
 import { Button } from "@/components/ui/button"
+import { Field, FieldDescription } from "@/components/ui/field"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { PAGES } from "@/constants/pages"
-import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyConfigMutation } from "@/redux/api/lobby"
+import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyConfigMutation, useUpdatePlayerReadyMutation } from "@/redux/api/lobby"
 import { selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
+import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 
@@ -23,10 +28,16 @@ const LobbyWaiting = () => {
 
   const [updateLobbyConfig, { isLoading: isLoadingUpdate }] = useUpdateLobbyConfigMutation()
   const [startLobby] = useStartLobbyMutation()
+  const [updatePlayerReady] = useUpdatePlayerReadyMutation()
 
+  const userId = useAppSelector(selectUserId)
   const isOwner = useAppSelector(selectIsLobbyHost(lobbyId))
 
   if (!lobby) return null
+
+  const disabled = !isOwner || isLoadingUpdate
+  const areAllPlayersReady = lobby.players.length > 1 && lobby.players.every((p) => p.isReady)
+  const isMeReady = lobby.players.find((p) => p.uid === userId)?.isReady
 
   const changeConfig = (newConfig: Partial<LobbyDoc["config"]>) => {
     if (!isOwner) {
@@ -47,23 +58,33 @@ const LobbyWaiting = () => {
   }
 
   return (
-    <main className="min-h-full-height">
-      <section>
-        <h1 className="text-2xl font-bold mb-4">Join this lobby: {lobby.code}  </h1>
-        <Button onClick={copyUrl}>Copy Lobby url</Button>
-        <p className="text-lg text-muted-foreground">Players in lobby: {lobby.players.length}/{lobby.config.maxPlayers}</p>
-        <p>Seed: {lobby.seedId}</p>
+    <main className="min-h-full-height w-3/4 mx-auto space-y-8">
+      <section className="w-full flex flex-col border border-dashed items-center gap-4 p-6 rounded-xl text-muted-foreground">
+        <p className="text-lg ">Players in lobby: {lobby.players.length}/{lobby.config.maxPlayers}</p>
         <LobbyAvatars />
-        <article className="p-8">
-          <p>Config</p>
-          <div>
-            Number of rounds:
+        <p>
+          Ready:
+          {" "}
+          {lobby.players.filter((p) => p.isReady).length}
+          /
+          {lobby.players.length}
+        </p>
+      </section>
+      <section className="w-full flex flex-col border border-dashed items-center gap-4 p-6 rounded-xl">
+        <h2 className="mb-8">Config</h2>
+        <div className="flex flex-col items-center gap-4">
+          <Separator orientation="horizontal" />
+          <Field orientation="horizontal" className="justify-between">
+            <FieldDescription>
+              Number of rounds:
+            </FieldDescription>
+
             <Select
               value={lobby.config.numberOfRounds.toString()}
               onValueChange={(value) => changeConfig({ numberOfRounds: Number.parseInt(value) })}
-              disabled={isLoadingUpdate || !isOwner}
+              disabled={disabled}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-20">
                 <SelectValue placeholder={`Number of rounds: ${lobby.config.numberOfRounds}`} />
               </SelectTrigger>
               <SelectContent>
@@ -74,16 +95,21 @@ const LobbyWaiting = () => {
                 ))}
               </SelectContent>
             </Select>
-          </div>
 
-          <div>
-            Players lives:
+          </Field>
+          <Separator orientation="horizontal" />
+
+          <Field orientation="horizontal" className="justify-between">
+            <FieldDescription>
+              Players lives:
+            </FieldDescription>
             <Select
               value={lobby.config.playersLives?.toString()}
               onValueChange={(value) => changeConfig({ playersLives: value !== "null" ? Number.parseInt(value) : null })}
-              disabled={isLoadingUpdate || !isOwner}
+              disabled={disabled}
+
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-20">
                 <SelectValue placeholder={`Players lives: ${lobby.config.playersLives || "Unlimited"}`} />
               </SelectTrigger>
               <SelectContent>
@@ -94,15 +120,19 @@ const LobbyWaiting = () => {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div>
-            Round duration:
+          </Field>
+          <Separator orientation="horizontal" />
+
+          <Field orientation="horizontal" className="justify-between">
+            <FieldDescription>
+              Round duration:
+            </FieldDescription>
             <Select
               value={lobby.config.roundDuration?.toString()}
               onValueChange={(value) => changeConfig({ roundDuration: Number.parseInt(value) })}
-              disabled={isLoadingUpdate || !isOwner}
+              disabled={disabled}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-20">
                 <SelectValue placeholder={`Rounds duration: ${lobby.config.roundDuration}`} />
               </SelectTrigger>
               <SelectContent>
@@ -113,26 +143,58 @@ const LobbyWaiting = () => {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div>
+          </Field>
+          <Separator orientation="horizontal" />
+
+          <Field orientation="horizontal" className="justify-between">
             <Switch
               id="special-rounds"
               checked={lobby.config.hasSpecialRounds}
               onCheckedChange={(checked) =>
-
                 changeConfig({ hasSpecialRounds: checked })}
+              disabled={disabled}
             />
-            <Label htmlFor="special-rounds">Has special Rounds </Label>
+            <FieldDescription>
 
-          </div>
-        </article>
-        <Button
-          variant="secondary"
-          onClick={() => startLobby({ lobbyId })}
-        >
-          Start Lobby
-        </Button>
+              <Label htmlFor="special-rounds">Has special Rounds </Label>
+            </FieldDescription>
+
+          </Field>
+        </div>
+
       </section>
+      <section className="w-full flex justify-center border border-dashed items-center gap-4 p-6 rounded-xl">
+        <Button variant="secondary" onClick={copyUrl}>
+          Join this lobby: {lobby.code} <ArrowUpRightFromSquareIcon className="size-4" />
+        </Button>
+
+        <Button
+          variant={isMeReady ? "outline" : "default"}
+          onClick={() => updatePlayerReady({
+            lobbyId,
+            playerId: userId,
+            isReady: !isMeReady
+          })}
+        >
+          {isMeReady ? "Cancel ready" : "I'm ready"}
+        </Button>
+        <HoverCard>
+          <HoverCardTrigger>
+            <Button
+              variant={areAllPlayersReady ? "default" : "outline"}
+              disabled={disabled || !areAllPlayersReady}
+              onClick={() => startLobby({ lobbyId })}
+            >
+              Start Lobby
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="text-white bg-neutral-800/50 text-center">
+            Only the host can start the lobby
+          </HoverCardContent>
+
+        </HoverCard>
+      </section>
+
     </main>
   )
 }

@@ -9,15 +9,18 @@
   - ~~update the listeners too~~
   - ~~implements tests in front~~
   - ~~Add storage tests for Flat images and thumbnails~~
+  - ~~display correct answer on the map when showing result~~
+  - ~~number of points by level is not correct for now~~
+  - ~~timer on round~~
+  - ~~lives in round answer doc~~
+  - Pseudo
+  - end game screen
+  - clean special round select
+  - when joining a game when not logged, should redirect to login/join and then get back
   - fix dragging minimap
-  - display correct answer on the map when showing result
-  - number of points by level is not correct for now
-  - timer on round
   - everyone should be ready before next round
-  - lives in round answer doc
   - Add tests on api endpoints
   - Allow creation of flats and sphericals from new or gameId
-  - fix when dragging map, it doesn't add the pin
   - Add firebase admin for front libs
   - Improve the security for the update for lobbies
   - Implements game creation

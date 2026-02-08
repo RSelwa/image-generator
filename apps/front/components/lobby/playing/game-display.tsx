@@ -9,7 +9,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Progress } from "@/components/ui/progress"
 import { TextRevealTW } from "@/components/ui/text-reveal"
 import { useSubmitRoundAnswerMutation, useSubscribeLobbyQuery, useUpdateNextRoundMutation, useUpdatePlayerScoreMutation } from "@/redux/api/lobby"
-import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectCurrentRoundInfos } from "@/redux/lobby/lobby.selectors"
+import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectCurrentRoundInfos, selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -89,7 +89,7 @@ const InfosRoundNormal = () => {
 
   return (
 
-    <>
+    <div className="flex flex-col items-center gap-4">
       {(!hasGuessedGame) && (<Image src={currentRoundInfos?.gameThumbnailUrl || ""} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} />
       )}
 
@@ -113,7 +113,8 @@ const InfosRoundNormal = () => {
 
       <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-white text-lg" initialDelay={1.5} />
 
-      <div className="text-white text-lg text-shadow flex items-center gap-2 transition-opacity duration-500 delay-[2s] ">
+      <TextRevealTW text={targetPoints.toString()} className="text-white text-lg" initialDelay={2} />
+      <div className="text-white text-lg text-shadow flex items-center gap-2 transition-opacity duration-500 delay-[2s]">
         <span>
           0
         </span>
@@ -125,7 +126,7 @@ const InfosRoundNormal = () => {
 
       <TextRevealTW initialDelay={4} text={`Total: +${currentAnswer?.points} Pts`} className="text-white text-lg" />
 
-    </>
+    </div>
   )
 }
 
@@ -147,6 +148,7 @@ export const DisplayGame = () => {
   const isEveryOneReady = useAppSelector(selectAllPlayersReady(lobbyId, roundIndex))
   const currentRoundInfos = useAppSelector(selectCurrentRoundInfos(lobbyId, roundIndex))
   const currentAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
+  const isOwner = useAppSelector(selectIsLobbyHost(lobbyId))
 
   const isRoundSpecial = currentRoundData?.isSpecial
 
@@ -180,17 +182,19 @@ export const DisplayGame = () => {
 
         {isRoundSpecial && <InfoRoundSpecial /> }
         {!isRoundSpecial && <InfosRoundNormal /> }
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <Button disabled={!isEveryOneReady} variant="outline" onClick={() => nextRound({ lobbyId })}>
-              Next round
-            </Button>
+        {isOwner && (
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button disabled={!isEveryOneReady} variant="outline" onClick={() => nextRound({ lobbyId })}>
+                Next round
+              </Button>
 
-          </HoverCardTrigger>
-          <HoverCardContent className="text-white bg-neutral-800/50 text-center">
-            {isEveryOneReady ? "All players are ready for the next round!" : "Waiting for all players to be ready..."}
-          </HoverCardContent>
-        </HoverCard>
+            </HoverCardTrigger>
+            <HoverCardContent className="text-white bg-neutral-800/50 text-center">
+              {isEveryOneReady ? "All players are ready for the next round!" : "Waiting for all players to be ready..."}
+            </HoverCardContent>
+          </HoverCard>
+        )}
       </div>
     </section>
   )

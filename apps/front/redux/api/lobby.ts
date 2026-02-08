@@ -281,6 +281,7 @@ export const lobbyApi = createApi({
               hostId: player.uid,
               status: LOBBY_STATUS.WAITING,
               players: [],
+              maximumPossiblePoints: 0,
               config: {
                 hasSpecialRounds: DEFAULT_HAS_SPECIAL_ROUNDS,
                 playersLives: DEFAULT_LIVES,
@@ -688,6 +689,21 @@ export const lobbyApi = createApi({
               })
             )
 
+            const maximumPossiblePoints = docSnap.rounds.reduce((acc, round, i) => {
+              const index = i + 1
+              const stage = Math.ceil(index / NUMBER_OF_ROUNDS_PER_STAGE)
+
+              const pointsGame = ROUND_POINTS.GAME_GUESS * (round.isSpecial ? 2 : 1)
+              const pointsDistance = round.isSpecial ? 0 : (ROUND_POINTS.DISTANCE + ROUND_POINTS.DISTANCE_ADDITION * stage)
+
+              return acc + pointsGame + pointsDistance
+            }, 0)
+
+            await updateDoc(getLobbyRef(lobbyId), {
+              maximumPossiblePoints,
+              updatedAt: now,
+            })
+
             await Promise.all(
               docSnap.rounds.map((round, i) => {
                 const index = i + 1
@@ -957,7 +973,38 @@ export const lobbyApi = createApi({
           }
         }
       }
-    })
+    }),
+    getNumberGameFoundByPlayer: builder.query<{ numberGameFound: number }, { lobbyId: string, playerId: string }>({
+      queryFn: async ({ lobbyId, playerId }, { dispatch }) => {
+        try {
+          const lobby = await dispatch(lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId })).unwrap()
+
+          if (!lobby) throw new Error("Lobby not found")
+
+          let numberGameFound = 0
+
+          for (let i = 1; i <= lobby.config.numberOfRounds; i++) {
+            const roundAnswer = await dispatch(lobbyApi.endpoints.listenRoundAnswer.initiate({ lobbyId, roundIndex: i })).unwrap()
+
+            if (!roundAnswer) continue
+
+            const playerAnswer = roundAnswer.answers.find((a) => a.uid === playerId)
+
+            if (playerAnswer?.isCorrect) {
+              numberGameFound++
+            }
+          }
+
+          return { data: { numberGameFound } }
+        } catch (error) {
+          console.error("Error getting number of games found by player:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+    }),
   })
 })
 
@@ -979,5 +1026,6 @@ export const {
   useStartLobbyMutation,
   useUpdatePlayerScoreMutation,
   useIncrementPlayerLivesUsedMutation,
-  useSelectOptionIndexMutation
+  useSelectOptionIndexMutation,
+  useGetNumberGameFoundByPlayerQuery
 } = lobbyApi
