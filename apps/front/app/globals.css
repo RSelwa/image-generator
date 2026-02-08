@@ -48,6 +48,7 @@
 
 @theme {
   --shadow-glow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25); 
+  --shadow-glow-xs: 0px 0px 10px 5px rgba(0, 0, 0, 0.25); 
   --admin-header-height: 76px;
   --header-height: 73.5px;
   --footer-height: 0px;
@@ -187,5 +188,9 @@
 
   .psv-navbar{
     @apply h-0!;
+  }
+
+  .psv-overlay {
+    @apply hidden!;
   }
 }

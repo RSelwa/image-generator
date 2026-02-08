@@ -103,7 +103,7 @@ export const formatFlatsForSpecialRounds = async (flats: FlatDocWithId[]) => {
       }
 
       const parsedRoundOption = specialRoundOptionSchema.safeParse({
-        type: ROUND_TYPE.SPHERICAL,
+        type: ROUND_TYPE.FLAT,
 
         gameId,
         gameTitle: gameData.title,

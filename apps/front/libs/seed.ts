@@ -110,8 +110,6 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
       rounds.push(round.data)
     }
 
-    console.log(rounds.length)
-
     return rounds
   } catch (error) {
     console.error("Error generating seed rounds:", error instanceof Error ? error.message : error)
