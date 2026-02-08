@@ -14,7 +14,7 @@ const AvatarPlayer = ({ p, isOwner}: { p: Player, isOwner?: boolean }) => (
   <Avatar>
     <AvatarImage src={p.avatar} />
     <AvatarFallback className="font-bold">{firstLetter(p.name)}</AvatarFallback>
-    {isOwner && <Crown fill="black" className="absolute -top-4 left-1/2 -translate-x-1/2 stroke-0" size={16} />}
+    {isOwner && <Crown className="absolute fill-foreground -top-4 left-1/2 -translate-x-1/2 stroke-0" size={16} />}
     {!p.isReady && <AvatarBadge className="bg-amber-600 dark:bg-amber-800" />}
     {p.isReady && <AvatarBadge className="bg-green-600 dark:bg-green-800" />}
   </Avatar>

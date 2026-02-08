@@ -10,7 +10,7 @@ import PlayingSpecialRound from "@/components/lobby/playing/special-round"
 import Timer from "@/components/lobby/playing/timer"
 import { useCountdown } from "@/hooks/use-countdown"
 import { useListenRoundAnswerQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining } from "@/redux/lobby/lobby.selectors"
+import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectHasSelectedOption, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining } from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 
@@ -34,8 +34,10 @@ const LobbyPlaying = () => {
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
   const gameTitle = useAppSelector(selectCurrentRoundGameTitle(lobbyId, roundIndex))
 
+  const hasSelectedOption = useAppSelector(selectHasSelectedOption(lobbyId, roundIndex))
   const isMapPhase = myAnswer?.isCorrect && currentRoundData?.mapPosition
-  const timerStart = (isMapPhase && myAnswer?.submittedAt) || lobby?.roundStartedAt
+  const isWaitingForSelection = currentRoundData?.isSpecial && !hasSelectedOption
+  const timerStart = isWaitingForSelection ? null : ((isMapPhase && myAnswer?.submittedAt) || lobby?.roundStartedAt)
 
   const { isExpired } = useCountdown(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
 

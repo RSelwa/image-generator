@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   turbopack: {},
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

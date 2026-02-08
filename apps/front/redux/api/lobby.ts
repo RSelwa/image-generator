@@ -672,7 +672,7 @@ export const lobbyApi = createApi({
       },
       invalidatesTags: (_result, _error, { lobbyId }) => [{ type: "Lobby", id: lobbyId }],
     }),
-    populateLobbyRounds: builder.mutation<null, { lobbyId: string, seedId: string, players: Player[] }>(
+    populateLobbyRounds: builder.mutation<{ maximumPossiblePoints: number }, { lobbyId: string, seedId: string, players: Player[] }>(
       {
         queryFn: async ({ lobbyId, seedId, players }, { dispatch }) => {
           try {
@@ -699,11 +699,6 @@ export const lobbyApi = createApi({
               return acc + pointsGame + pointsDistance
             }, 0)
 
-            await updateDoc(getLobbyRef(lobbyId), {
-              maximumPossiblePoints,
-              updatedAt: now,
-            })
-
             await Promise.all(
               docSnap.rounds.map((round, i) => {
                 const index = i + 1
@@ -726,7 +721,7 @@ export const lobbyApi = createApi({
               })
             )
 
-            return { data: null }
+            return { data: { maximumPossiblePoints } }
           } catch (error) {
             console.error("Error populating lobby rounds:", error)
             toast.error("Error populating lobby rounds")
@@ -763,11 +758,12 @@ export const lobbyApi = createApi({
             seedId = newSeed.seedId
           }
 
-          await dispatch(lobbyApi.endpoints.populateLobbyRounds.initiate({ lobbyId, seedId, players: lobby.players }))
+          const { maximumPossiblePoints } = await dispatch(lobbyApi.endpoints.populateLobbyRounds.initiate({ lobbyId, seedId, players: lobby.players })).unwrap()
 
           await updateDoc(getLobbyRef(lobbyId), {
             seedId,
             currentRound: 0,
+            maximumPossiblePoints,
             status: LOBBY_STATUS.PLAYING,
             updatedAt: Timestamp.now(),
           })

@@ -92,7 +92,7 @@ const MapGuesser = () => {
     <div className="relative min-h-screen bg-gray-900">
       {/* Main game area - this would be your panorama/image view */}
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-white text-center">
+        <div className="text-foreground text-center">
           <h1 className="text-4xl font-bold mb-4">Map Guesser</h1>
           <p className="text-xl mb-2">
             Round {currentRound + 1} of {EXAMPLE_ROUNDS.length}

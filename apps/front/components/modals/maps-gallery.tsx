@@ -32,7 +32,7 @@ export const MapsGallery = () => {
   const hasMaps = maps && maps.length > 0
 
   return (
-    <ModalBase className="h-125" modalKey={MODAL_KEYS.MAPS_GALLERY_ID}>
+    <ModalBase className="max-h-125" modalKey={MODAL_KEYS.MAPS_GALLERY_ID}>
       <header className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <h2>

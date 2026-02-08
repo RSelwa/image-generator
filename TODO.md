@@ -14,6 +14,7 @@
   - ~~timer on round~~
   - ~~lives in round answer doc~~
   - Pseudo
+  - change
   - end game screen
   - clean special round select
   - when joining a game when not logged, should redirect to login/join and then get back
@@ -26,6 +27,7 @@
   - Implements game creation
   - Implement suggestion
   - friends invitations
+  - fix game thumbnail image when fail
   - Buy domain name
   - Setup Reels Insta et tiktok
   - Implement a system to interact with twitch chat, maybe to vote for games

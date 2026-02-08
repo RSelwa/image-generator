@@ -13,7 +13,7 @@ const AdminHeader = ({ children, title, numberOfElements }: Props) => {
   const [search, setSearch] = useQueryState(QUERY_PARAMS.SEARCH, { defaultValue: "" })
 
   return (
-    <header className="py-4 sticky top-0 flex flex-col md:flex-row items-center w-full justify-between bg-white z-20">
+    <header className="py-4 sticky top-0 flex flex-col md:flex-row items-center w-full justify-between z-20">
       <div className="flex flex-col md:flex-row items-center justify-end gap-4">
         <h1 className="text-2xl font-semibold whitespace-nowrap">
           {title}

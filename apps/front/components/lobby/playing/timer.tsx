@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation"
 import * as React from "react"
 import { useCountdown } from "@/hooks/use-countdown"
 import { useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectLobbyConfig } from "@/redux/lobby/lobby.selectors"
+import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectHasSelectedOption, selectLobbyConfig } from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 
@@ -20,8 +20,10 @@ const Timer = () => {
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
   const config = useAppSelector(selectLobbyConfig(lobbyId))
 
+  const hasSelectedOption = useAppSelector(selectHasSelectedOption(lobbyId, roundIndex))
   const isMapPhase = myAnswer?.isCorrect && currentRoundData?.mapPosition
-  const timerStart = (isMapPhase && myAnswer?.submittedAt) || lobby?.roundStartedAt
+  const isWaitingForSelection = currentRoundData?.isSpecial && !hasSelectedOption
+  const timerStart = isWaitingForSelection ? null : ((isMapPhase && myAnswer?.submittedAt) || lobby?.roundStartedAt)
 
   const { timeRemaining } = useCountdown(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
 

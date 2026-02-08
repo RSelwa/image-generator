@@ -6,6 +6,7 @@ import * as React from "react"
 import MiniMap from "@/components/mini-map"
 import { Button } from "@/components/ui/button"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { ImageGlow } from "@/components/ui/image-glow"
 import { Progress } from "@/components/ui/progress"
 import { TextRevealTW } from "@/components/ui/text-reveal"
 import { useSubmitRoundAnswerMutation, useSubscribeLobbyQuery, useUpdateNextRoundMutation, useUpdatePlayerScoreMutation } from "@/redux/api/lobby"
@@ -42,7 +43,9 @@ const InfoRoundSpecial = () => {
 
   return (
     <>
-      <Image src={currentRoundInfos?.gameThumbnailUrl || ""} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} />
+      <ImageGlow>
+        <Image src={currentRoundInfos?.gameThumbnailUrl || ""} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} />
+      </ImageGlow>
       <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-white text-lg" initialDelay={1.5} />
     </>
   )
@@ -90,7 +93,10 @@ const InfosRoundNormal = () => {
   return (
 
     <div className="flex flex-col items-center gap-4">
-      {(!hasGuessedGame) && (<Image src={currentRoundInfos?.gameThumbnailUrl || ""} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} />
+      {(!hasGuessedGame) && (
+        <ImageGlow>
+          <Image src={currentRoundInfos?.gameThumbnailUrl || ""} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} />
+        </ImageGlow>
       )}
 
       {hasGuessedGame && (

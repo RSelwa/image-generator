@@ -36,7 +36,7 @@ const LobbyWaiting = () => {
   if (!lobby) return null
 
   const disabled = !isOwner || isLoadingUpdate
-  const areAllPlayersReady = lobby.players.length > 1 && lobby.players.every((p) => p.isReady)
+  const areAllPlayersReady = lobby.players.every((p) => p.isReady)
   const isMeReady = lobby.players.find((p) => p.uid === userId)?.isReady
 
   const changeConfig = (newConfig: Partial<LobbyDoc["config"]>) => {

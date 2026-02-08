@@ -78,7 +78,7 @@ const MarkersLayer = ({
       >
         <div className="relative">
           <div
-            className={`size-4 rounded-full ${bgColor} border-2 border-white shadow-lg`}
+            className={`size-4 rounded-full ${bgColor} border-2 border-foreground shadow-lg`}
           />
           <div
             className={`absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent ${borderColor}`}
@@ -158,6 +158,7 @@ export const MiniMap = ({
 }: MiniMapProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const mouseDownPos = useRef<{ x: number, y: number } | null>(null)
 
   const isHoveredOrParent = isHovered || isParentHover
 
@@ -170,9 +171,21 @@ export const MiniMap = ({
     currentSize.height / mapData.size.height,
   )
 
+  const DRAG_THRESHOLD = 5
+
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    mouseDownPos.current = { x: e.clientX, y: e.clientY }
+  }, [])
+
   const handleMapClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (disabled || hasSubmitted || !containerRef.current) return
+
+      if (mouseDownPos.current) {
+        const dx = e.clientX - mouseDownPos.current.x
+        const dy = e.clientY - mouseDownPos.current.y
+        if (dx * dx + dy * dy > DRAG_THRESHOLD * DRAG_THRESHOLD) return
+      }
 
       const rect = containerRef.current.getBoundingClientRect()
       const x = ((e.clientX - rect.left) / rect.width) * 100
@@ -212,6 +225,7 @@ export const MiniMap = ({
           <div
             ref={containerRef}
             className={`relative ${disabled || hasSubmitted ? "cursor-default" : "cursor-crosshair"}`}
+            onMouseDown={handleMouseDown}
             onClick={handleMapClick}
             style={{
               width: mapData.size.width,

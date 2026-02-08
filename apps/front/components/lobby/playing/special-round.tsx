@@ -3,7 +3,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import * as React from "react"
 import { ReactSphere } from "@/components/providers/react-sphere"
-import { Button } from "@/components/ui/button"
+import { ImageGlow } from "@/components/ui/image-glow"
 import { useSelectOptionIndexMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectCurrentRoundData, selectCurrentRoundIndex, selectHasSelectedOption, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -29,45 +29,53 @@ const PlayingSpecialRound = () => {
   if (!currentRoundData) return null
 
   return (
-    <article>
-      <div className="h-full-height bg-primary ">
-
-        {!hasSelectedOption && (
-          <div className="grid grid-cols-2 pt-52 gap-4 w-1/2 mx-auto">
+    <section className="h-full-height bg-primary ">
+      {!hasSelectedOption && (
+        <article className="flex h-full pb-20 flex-col items-center gap-14 justify-center text-background">
+          <p className="text-center font-bold text-2xl"> Bonus Round </p>
+          <div className="grid grid-cols-2 gap-0 mx-auto">
             {currentRoundData.options?.map((option, index) => (
-              <Button
-                key={option.gameId}
-                onClick={async () => await selectOptionIndex({
-                  lobbyId,
-                  playerId: user?.id || "",
-                  roundIndex: lobby?.currentRound || 0,
-                  selectedOptionIndex: index,
-                })}
-                className="mb-8"
-              >
-                <Image src={option.thumbnailUrl || ""} alt={`Option ${index + 1}`} width={100} height={100} className="mb-4" />
-              </Button>
+              <ImageGlow key={option.gameId} isBlurOnHover>
+                <Image
+                  onClick={async () => await selectOptionIndex({
+                    lobbyId,
+                    playerId: user?.id || "",
+                    roundIndex: lobby?.currentRound || 0,
+                    selectedOptionIndex: index,
+                  })}
+                  src={option.thumbnailUrl || ""}
+                  alt={`Option ${index + 1}`}
+                  width={300}
+                  height={300}
+                  className="aspect-square size-32 scale-75 hover:scale-100 transition-transform cursor-pointer rounded-lg object-cover"
+                />
+              </ImageGlow>
+
             ))}
           </div>
-        )}
+          <div className="flex items-center gap-8 font-semibold text-lg">
+            <span>X2</span>
+            <span>No map</span>
+          </div>
+        </article>
+      )}
 
-        {hasSelectedOption && selectedOption && (
-          <>
+      {hasSelectedOption && selectedOption && (
+        <>
 
-            {selectedOption?.type === ROUND_TYPE.FLAT && (
-              <Image src={selectedOption.flatImage || ""} alt="Selected option" width={1920} height={1080} className=" size-full" />
-            )}
-            {selectedOption?.type === ROUND_TYPE.SPHERICAL && (
-              <div className="size-full">
-                <ReactSphere src={selectedOption.sphericalImage || ""} />
-              </div>
-            )}
-          </>
+          {selectedOption?.type === ROUND_TYPE.FLAT && (
+            <Image src={selectedOption.flatImage || ""} alt="Selected option" width={1920} height={1080} className=" size-full" />
+          )}
+          {selectedOption?.type === ROUND_TYPE.SPHERICAL && (
+            <div className="size-full">
+              <ReactSphere src={selectedOption.sphericalImage || ""} />
+            </div>
+          )}
+        </>
 
-        )}
+      )}
 
-      </div>
-    </article>
+    </section>
   )
 }
 
