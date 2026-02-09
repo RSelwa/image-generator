@@ -8,6 +8,8 @@
 # Code style
 
 - Use pnpm instead of npm
+- in test, use firebase admin sdk instead of custom helpers
+- in tests, use page instead of browser
 - use container in css if possible
 - in the libs/schemas, use instead "~/zod" of "../zod"
 - use {condition && <code>} and {!condition && <fallback>} instead of {condition ? <code> : <fallback> }

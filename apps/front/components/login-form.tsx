@@ -140,7 +140,7 @@ export const LoginForm = ({
               <FieldDescription className="text-center">
                 Don&apos;t have an account?
                 {" "}
-                <Link href={PAGES.SIGNUP}>Sign up</Link>
+                <Link href={redirect ? `${PAGES.SIGNUP}?${QUERY_PARAMS.REDIRECT}=${encodeURIComponent(redirect)}` : PAGES.SIGNUP}>Sign up</Link>
               </FieldDescription>
             </FieldGroup>
           </form>

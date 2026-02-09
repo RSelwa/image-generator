@@ -26,7 +26,7 @@ export const seedApi = createApi({
 
           return { data }
         } catch (error) {
-          console.error("Error fetching lobby by ID:", error)
+          console.error(`Error fetching seed by ID: ${id}`, error)
 
           return {
             error: globalErrorHandler(error),

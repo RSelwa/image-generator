@@ -169,6 +169,7 @@ const LobbyWaiting = () => {
         </Button>
 
         <Button
+          data-testid="ready-button"
           variant={isMeReady ? "outline" : "default"}
           onClick={() => updatePlayerReady({
             lobbyId,
@@ -181,6 +182,7 @@ const LobbyWaiting = () => {
         <HoverCard>
           <HoverCardTrigger>
             <Button
+              data-testid="start-lobby-button"
               variant={areAllPlayersReady ? "default" : "outline"}
               disabled={disabled || !areAllPlayersReady}
               onClick={() => startLobby({ lobbyId })}

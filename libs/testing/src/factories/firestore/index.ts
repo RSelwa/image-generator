@@ -1,5 +1,6 @@
 export * from "./flat"
 export * from "./game"
+export * from "./lobby"
 export * from "./map"
 export * from "./spherical"
 export * from "./user"

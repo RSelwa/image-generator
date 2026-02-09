@@ -29,8 +29,6 @@ const JoinLobbyHandler = ({ code }: Props) => {
   const isSessionReady = sessionStatus === SESSION_STATUS.SUCCESS
 
   useEffect(() => {
-    console.log(isSessionReady, user)
-
     if (isLoading || hasHandled.current || (!user && !isSessionReady)) return
 
     hasHandled.current = true

@@ -1,7 +1,7 @@
-import { PROJECT_ID } from "@repo/common"
+import { type CollectionReference, type WithFieldValue } from "firebase-admin/firestore"
 
 const AUTH_EMULATOR_URL = "http://localhost:9099"
-const FIRESTORE_EMULATOR_URL = "http://localhost:8080"
+// const FIRESTORE_EMULATOR_URL = "http://localhost:8080"
 
 export const createAuthUser = async (email: string, password: string) => {
   const response = await fetch(
@@ -18,12 +18,12 @@ export const createAuthUser = async (email: string, password: string) => {
 }
 
 export type FirestoreFieldValue =
-  | { stringValue: string }
-  | { booleanValue: boolean }
-  | { integerValue: string }
-  | { doubleValue: number }
-  | { timestampValue: string }
-  | { nullValue: null }
+  | { stringValue: string } |
+  { booleanValue: boolean } |
+  { integerValue: string } |
+  { doubleValue: number } |
+  { timestampValue: string } |
+  { nullValue: null }
 
 export const toFirestoreFields = (
   obj: Record<string, unknown>,
@@ -46,20 +46,26 @@ export const toFirestoreFields = (
       fields[key] = { timestampValue: (value as { toDate: () => Date }).toDate().toISOString() }
     }
   }
+
   return fields
 }
 
 export const createFirestoreDoc = async (
-  collection: string,
-  documentId: string,
-  fields: Record<string, FirestoreFieldValue>,
+  collectionRef: CollectionReference,
+  data: WithFieldValue<Record<string, unknown>>,
 ) => {
-  await fetch(
-    `${FIRESTORE_EMULATOR_URL}/v1/projects/${PROJECT_ID}/databases/(default)/documents/${collection}?documentId=${documentId}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fields }),
-    },
-  )
+  const id = (data as { id?: string }).id
+
+  console.info(`Creating Firestore doc with data: ${collectionRef.path} - ${data.id || "no-id"}`)
+
+  if ("id" in data && id) {
+    const ref = collectionRef.doc(id)
+    await ref.set(data)
+
+    return { data, id: ref.id, ref }
+  }
+
+  const ref = await collectionRef.add(data)
+
+  return { data, id: ref.id, ref }
 }

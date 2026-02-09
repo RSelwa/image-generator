@@ -89,7 +89,7 @@ service cloud.firestore {
 
 
     // Seed collection - admin can write, anyone can read
-    match /seed/{seedId} {
+    match /seeds/{seedId} {
       allow write: if signedInAdmin();
       allow read: if true;
     }

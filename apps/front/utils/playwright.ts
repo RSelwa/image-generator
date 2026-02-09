@@ -1,73 +1,74 @@
 import { DOCUMENTS_STATUS, mockedGameImageURL, mockedSphericalImageURL, TABLES } from "@repo/common"
-import { createFirestoreDoc, toFirestoreFields } from "@repo/testing/emulator"
+import { refs, subRefs } from "@repo/providers/db-refs"
+import { createFirestoreDoc } from "@repo/testing/emulator"
 import { flatFactory, gameFactory, mapFactory, sphericalFactory } from "@repo/testing/factory"
 
 const GAME_TITLES = [
-  "Minecraft",
-  "Fortnite",
-  "The Legend of Zelda",
-  "Super Mario Bros",
-  "Grand Theft Auto",
-  "Red Dead Redemption",
-  "The Witcher",
-  "Skyrim",
-  "Dark Souls",
-  "Elden Ring",
-  "God of War",
-  "Halo",
-  "Call of Duty",
-  "Overwatch",
-  "League of Legends",
-  "Valorant",
-  "Counter Strike",
-  "Apex Legends",
-  "Rocket League",
-  "Among Us",
-  "Fall Guys",
-  "Pokemon",
-  "Animal Crossing",
-  "Stardew Valley",
-  "Hollow Knight",
-  "Celeste",
-  "Hades",
-  "Cuphead",
-  "Terraria",
-  "Roblox",
-  "World of Warcraft",
-  "Final Fantasy",
-  "Resident Evil",
-  "Silent Hill",
-  "Metal Gear Solid",
-  "Uncharted",
-  "The Last of Us",
-  "Horizon Zero Dawn",
-  "Spider Man",
-  "Batman Arkham",
-  "Assassins Creed",
-  "Far Cry",
-  "Bioshock",
-  "Portal",
-  "Half Life",
-  "Team Fortress",
-  "Doom",
-  "Cyberpunk",
-  "Starfield",
-  "Baldurs Gate",
+  "TEST-Minecraft",
+  "TEST-Fortnite",
+  "TEST-The Legend of Zelda",
+  "TEST-Super Mario Bros",
+  "TEST-Grand Theft Auto",
+  "TEST-Red Dead Redemption",
+  "TEST-The Witcher",
+  "TEST-Skyrim",
+  "TEST-Dark Souls",
+  "TEST-Elden Ring",
+  "TEST-God of War",
+  "TEST-Halo",
+  "TEST-Call of Duty",
+  "TEST-Overwatch",
+  "TEST-League of Legends",
+  "TEST-Valorant",
+  "TEST-Counter Strike",
+  "TEST-Apex Legends",
+  "TEST-Rocket League",
+  "TEST-Among Us",
+  "TEST-Fall Guys",
+  "TEST-Pokemon",
+  "TEST-Animal Crossing",
+  "TEST-Stardew Valley",
+  "TEST-Hollow Knight",
+  "TEST-Celeste",
+  "TEST-Hades",
+  "TEST-Cuphead",
+  "TEST-Terraria",
+  "TEST-Roblox",
+  "TEST-World of Warcraft",
+  "TEST-Final Fantasy",
+  "TEST-Resident Evil",
+  "TEST-Silent Hill",
+  "TEST-Metal Gear Solid",
+  "TEST-Uncharted",
+  "TEST-The Last of Us",
+  "TEST-Horizon Zero Dawn",
+  "TEST-Spider Man",
+  "TEST-Batman Arkham",
+  "TEST-Assassins Creed",
+  "TEST-Far Cry",
+  "TEST-Bioshock",
+  "TEST-Portal",
+  "TEST-Half Life",
+  "TEST-Team Fortress",
+  "TEST-Doom",
+  "TEST-Cyberpunk",
+  "TEST-Starfield",
+  "TEST-Baldurs Gate",
 ]
 
 export const generateGameData = async () => {
   const games = GAME_TITLES.map((title) => {
     const game = gameFactory({ title })
     const map = mapFactory({ gameId: game.id })
-    const sphericalWithMap = sphericalFactory({ gameId: game.id, mapId: map.id })
-    const sphericalWithThumbnail = sphericalFactory({ gameId: game.id, thumbnail: mockedSphericalImageURL })
+    const sphericalWithMap = sphericalFactory({ gameId: game.id, mapId: map.id, status: DOCUMENTS_STATUS.READY })
+    const sphericalWithThumbnail = sphericalFactory({ gameId: game.id, thumbnail: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
     const flat = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY, thumbnail: mockedGameImageURL })
 
     return { game, map, sphericalWithMap, sphericalWithThumbnail, flat }
   })
 
   await Promise.all(
-    games.map(({ game: { id, ...fields } }) => createFirestoreDoc(TABLES.GAMES, id, toFirestoreFields(fields))),
+    games.map(({ game: fields }) => createFirestoreDoc(refs[TABLES.GAMES], fields)),
   )
 
   await Promise.all(
@@ -78,18 +79,16 @@ export const generateGameData = async () => {
       const { id: flatId, ...flatFields } = flat
 
       return [
-        createFirestoreDoc(`${TABLES.GAMES}/${game.id}/${TABLES.MAPS}`, mapId, toFirestoreFields(mapFields)),
+        createFirestoreDoc(subRefs[TABLES.MAPS](game.id), { id: mapId, ...mapFields }),
         createFirestoreDoc(
-          `${TABLES.GAMES}/${game.id}/${TABLES.SPHERICAL}`,
-          sphericalMapId,
-          toFirestoreFields(sphericalMapFields),
+          subRefs[TABLES.SPHERICAL](game.id),
+          { ...sphericalMapFields, id: sphericalMapId },
         ),
         createFirestoreDoc(
-          `${TABLES.GAMES}/${game.id}/${TABLES.SPHERICAL}`,
-          sphericalThumbId,
-          toFirestoreFields(sphericalThumbFields),
+          subRefs[TABLES.SPHERICAL](game.id),
+          { id: sphericalThumbId, ...sphericalThumbFields },
         ),
-        createFirestoreDoc(`${TABLES.GAMES}/${game.id}/${TABLES.FLAT}`, flatId, toFirestoreFields(flatFields)),
+        createFirestoreDoc(subRefs[TABLES.FLAT](game.id), { id: flatId, ...flatFields }),
       ]
     }),
   )

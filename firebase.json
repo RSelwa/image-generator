@@ -4,38 +4,59 @@
       "source": "functions/http-base",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": ["pnpm build:http"],
+      "predeploy": [
+        "pnpm build:http"
+      ],
       "codebase": "http-base"
     },
     {
       "source": "functions/create-user-document",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": ["pnpm build:create-user-document"],
+      "predeploy": [
+        "pnpm build:create-user-document"
+      ],
       "codebase": "create-user-document"
     },
     {
       "source": "functions/create-party-doc",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": ["pnpm build:create-party-doc"],
+      "predeploy": [
+        "pnpm build:create-party-doc"
+      ],
       "codebase": "create-party-doc"
     },
     {
       "source": "functions/listen-docs",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": ["pnpm build:listen-docs"],
+      "predeploy": [
+        "pnpm build:listen-docs"
+      ],
       "codebase": "listen-docs"
     }
   ],
   "emulators": {
-    "ui": { "enabled": true },
-    "auth": { "port": 9099 },
-    "functions": { "port": 5001 },
-    "firestore": { "port": 8080 },
-    "storage": { "port": 9199 },
-    "pubsub": { "port": 8085 }
+    "ui": {
+      "enabled": true
+    },
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "storage": {
+      "port": 9199
+    },
+    "pubsub": {
+      "port": 8085
+    },
+    "singleProjectMode": true
   },
   "firestore": {
     "database": "(default)",

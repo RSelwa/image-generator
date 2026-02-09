@@ -14,4 +14,4 @@ export const userDocWithIdSchema = z.object({
 })
 
 export type UserDoc = z.infer<typeof userDocSchema>
-export type userDocSchemaWithId = z.infer<typeof userDocWithIdSchema>
+export type userDocWithId = z.infer<typeof userDocWithIdSchema>

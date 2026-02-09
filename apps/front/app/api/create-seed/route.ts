@@ -52,7 +52,7 @@ export const POST = async (request: Request) => {
     if (!newSeedDoc.success) {
       console.error("Failed to create seed doc:", newSeedDoc.error)
 
-      return new Response("Failed to create seed", { status: 500 })
+      return new Response(`Failed to create seed ${newSeedDoc.error}`, { status: 500 })
     }
 
     const seedWithId = await refs[TABLES.SEEDS].add(newSeedDoc.data)

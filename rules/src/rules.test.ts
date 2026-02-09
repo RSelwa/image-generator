@@ -1533,7 +1533,7 @@ describe("firebase Security Rules", () => {
     })
   })
 
-  describe("seed collection", () => {
+  describe("seeds collection", () => {
     it("should be able to read a doc even if not logged in", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
         await setDoc(doc(context.firestore(), "seed/seed1"), {
