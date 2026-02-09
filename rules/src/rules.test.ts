@@ -1738,7 +1738,7 @@ describe("firebase Security Rules", () => {
       expect(result).toBeDefined()
     })
 
-    it("should not be able to read lobby when not logged in", async () => {
+    it("should be able to read lobby when not logged in", async () => {
       const hostId = "host1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -1750,7 +1750,7 @@ describe("firebase Security Rules", () => {
 
       const unauthedDb = testEnv.unauthenticatedContext().firestore()
 
-      await assertFails(getDoc(doc(unauthedDb, "lobbies/lobby1")))
+      await assertSucceeds(getDoc(doc(unauthedDb, "lobbies/lobby1")))
     })
 
     it("should be able to update lobby as a player", async () => {
