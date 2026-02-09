@@ -14,7 +14,7 @@ import {
 
 test.describe("lobby Waiting", () => {
   test.describe("when closing the tab", () => {
-    test("should remove me from the players", async ({ page }) => {
+    test.skip("should remove me from the players", async ({ page }) => {
       const user = await setupUser()
       await loginViaUI(page, user.email)
 

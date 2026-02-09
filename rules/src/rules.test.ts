@@ -1536,14 +1536,14 @@ describe("firebase Security Rules", () => {
   describe("seeds collection", () => {
     it("should be able to read a doc even if not logged in", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), "seed/seed1"), {
+        await setDoc(doc(context.firestore(), "seeds/seed1"), {
           name: "Test Seed",
         })
       })
 
       const unauthedDb = testEnv.unauthenticatedContext().firestore()
 
-      const result = await assertSucceeds(getDoc(doc(unauthedDb, "seed/seed1")))
+      const result = await assertSucceeds(getDoc(doc(unauthedDb, "seeds/seed1")))
 
       expect(result).toBeDefined()
     })
@@ -1552,7 +1552,7 @@ describe("firebase Security Rules", () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), "seed/seed1"), {
+        await setDoc(doc(context.firestore(), "seeds/seed1"), {
           name: "Test Seed",
         })
       })
@@ -1560,7 +1560,7 @@ describe("firebase Security Rules", () => {
       const authedUserDb = testEnv.authenticatedContext(uid).firestore()
 
       const result = await assertSucceeds(
-        getDoc(doc(authedUserDb, "seed/seed1")),
+        getDoc(doc(authedUserDb, "seeds/seed1")),
       )
 
       expect(result).toBeDefined()
@@ -1579,7 +1579,7 @@ describe("firebase Security Rules", () => {
       const adminDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertSucceeds(
-        setDoc(doc(adminDb, "seed/seed1"), { name: "Test Seed" }),
+        setDoc(doc(adminDb, "seeds/seed1"), { name: "Test Seed" }),
       )
     })
 
@@ -1591,7 +1591,7 @@ describe("firebase Security Rules", () => {
           uid,
           right: "admin",
         })
-        await setDoc(doc(context.firestore(), "seed/seed1"), {
+        await setDoc(doc(context.firestore(), "seeds/seed1"), {
           name: "Test Seed",
         })
       })
@@ -1599,7 +1599,7 @@ describe("firebase Security Rules", () => {
       const adminDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertSucceeds(
-        updateDoc(doc(adminDb, "seed/seed1"), { name: "Updated Seed" }),
+        updateDoc(doc(adminDb, "seeds/seed1"), { name: "Updated Seed" }),
       )
     })
 
@@ -1611,14 +1611,14 @@ describe("firebase Security Rules", () => {
           uid,
           right: "admin",
         })
-        await setDoc(doc(context.firestore(), "seed/seed1"), {
+        await setDoc(doc(context.firestore(), "seeds/seed1"), {
           name: "Test Seed",
         })
       })
 
       const adminDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertSucceeds(deleteDoc(doc(adminDb, "seed/seed1")))
+      await assertSucceeds(deleteDoc(doc(adminDb, "seeds/seed1")))
     })
 
     it("should not be able to write as regular user", async () => {
@@ -1627,7 +1627,7 @@ describe("firebase Security Rules", () => {
       const authedUserDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertFails(
-        setDoc(doc(authedUserDb, "seed/seed1"), { name: "Test Seed" }),
+        setDoc(doc(authedUserDb, "seeds/seed1"), { name: "Test Seed" }),
       )
     })
 
@@ -1644,7 +1644,7 @@ describe("firebase Security Rules", () => {
       const iconoDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertFails(
-        setDoc(doc(iconoDb, "seed/seed1"), { name: "Test Seed" }),
+        setDoc(doc(iconoDb, "seeds/seed1"), { name: "Test Seed" }),
       )
     })
 
@@ -1652,7 +1652,7 @@ describe("firebase Security Rules", () => {
       const unauthedDb = testEnv.unauthenticatedContext().firestore()
 
       await assertFails(
-        setDoc(doc(unauthedDb, "seed/seed1"), { name: "Test Seed" }),
+        setDoc(doc(unauthedDb, "seeds/seed1"), { name: "Test Seed" }),
       )
     })
   })
