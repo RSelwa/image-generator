@@ -188,7 +188,7 @@ const LobbyWaiting = () => {
               Start Lobby
             </Button>
           </HoverCardTrigger>
-          <HoverCardContent className="text-white bg-neutral-800/50 text-center">
+          <HoverCardContent className="text-foreground bg-background/50 text-center">
             Only the host can start the lobby
           </HoverCardContent>
 

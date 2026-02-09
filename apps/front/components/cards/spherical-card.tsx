@@ -69,7 +69,7 @@ export const SphericalCard = ({
             alt={game.title}
             className="w-full max-h-20 group-hover:max-h-12 aspect-auto object-cover rounded-lg"
           />
-          <span className="mt-1 text-sm font-medium text-white drop-shadow-lg">{game.title}</span>
+          <span className="mt-1 text-sm font-medium text-foreground drop-shadow-lg">{game.title}</span>
         </div>
       )}
     </section>

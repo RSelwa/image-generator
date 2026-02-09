@@ -34,15 +34,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
       >
-        <NuqsAdapter>
-          <StoreProvider>
-            <Toaster />
-            <Suspense>
-              <ModalProvider />
-            </Suspense>
-            {children}
-          </StoreProvider>
-        </NuqsAdapter>
+        <Suspense>
+          <NuqsAdapter>
+            <StoreProvider>
+              <Toaster />
+              <Suspense>
+                <ModalProvider />
+              </Suspense>
+              {children}
+            </StoreProvider>
+          </NuqsAdapter>
+        </Suspense>
       </body>
     </html>
   )

@@ -123,7 +123,7 @@ const MapGuesser = () => {
       {/* Submit button - fixed bottom center */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-2">
         {hasSubmitted && guessPosition && (
-          <div className="bg-black/80 text-white px-4 py-2 rounded-lg text-center">
+          <div className="bg-background/80 text-foreground px-4 py-2 rounded-lg text-center">
             <p>
               Distance:
               {" "}
@@ -150,7 +150,7 @@ const MapGuesser = () => {
           </Button>
         ) : isGameOver ? (
           <div className="flex flex-col items-center gap-2">
-            <p className="text-white text-xl font-bold">
+            <p className="text-foreground text-xl font-bold">
               Game Over! Final Score:
               {" "}
               {totalScore}

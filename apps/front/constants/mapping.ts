@@ -10,7 +10,8 @@ export const QUERY_PARAMS = {
   SORT: "sort",
   SEARCH: "search",
   MISSING_IMAGE: "missing_image",
-  LOBBY_CODE: "code"
+  LOBBY_CODE: "code",
+  REDIRECT: "redirect"
 } as const
 
 export const MODAL_KEYS = {

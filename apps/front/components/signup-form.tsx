@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useRef } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import z from "zod"
 import { GoogleIcon } from "@/components/icons"
@@ -17,11 +18,14 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import {
   useCreateUserAuthMutation,
   useLoginWithGoogleMutation,
 } from "@/redux/api/auth"
+import { selectUser } from "@/redux/session/session.selectors"
+import { useAppSelector } from "@/redux/store"
 import { cn } from "@/utils"
 
 const signupSchema = z.object({
@@ -34,7 +38,12 @@ export const SignupForm = ({
   className,
   ...props
 }: React.ComponentProps<"div">) => {
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get(QUERY_PARAMS.REDIRECT)
+
   const router = useRouter()
+  const user = useAppSelector(selectUser)
+  const pendingRedirect = useRef(false)
 
   const [createAuthUser, { isLoading }] = useCreateUserAuthMutation()
   const [loginWithGoogle, { isLoading: isLoadingGoogle }] =
@@ -45,13 +54,20 @@ export const SignupForm = ({
     defaultValues: {},
   })
 
+  useEffect(() => {
+    if (!pendingRedirect.current || !user) return
+
+    pendingRedirect.current = false
+    router.push(redirect || PAGES.HOME)
+  }, [user, redirect, router])
+
   const onSubmit: SubmitHandler<SignupSchema> = async (data) => {
     const { error } = await createAuthUser(data)
 
     if (error) return
 
     reset()
-    router.push(PAGES.HOME)
+    pendingRedirect.current = true
   }
 
   const onLoginWithGoogle = async () => {
@@ -60,7 +76,7 @@ export const SignupForm = ({
     if (error) return
 
     reset()
-    router.push(PAGES.HOME)
+    pendingRedirect.current = true
   }
 
   return (
