@@ -1,9 +1,25 @@
 ## Tests todo
- - tests seed generation
- - test populate rounds
- - test joining a lobby as not connected, signup with password and be redirected in the lobby
- - test joining a lobby as not connected, signup with google and be redirected in the lobby
- - test joining a lobby as not connected, login with password and be redirected in the lobby
- - test joining a lobby as not connected, login with google and be redirected in the lobby
- - when leaving the lobby while waiting, should be removed
- - tests the lobby leaving / removal ONLY when lobby is in waiting
+ - lobby Waiting
+   - when closing the tab
+     - should remove me from the players
+   - when changing tab
+     - should remove me from the players
+   - When lobby host
+     - Can create a lobby when logged
+     - can modify a lobby config if host
+     - can start a game if everyone is ready
+     - can not start if not everyone is ready
+   - When not lobby host
+     - can not modify a lobby config
+     - can put my self ready
+     - have the config changes in UI when the lobbyDoc is changing
+   - When joining a lobby with the url
+     - Should be redirected to the lobby page if already connected
+     - should be redirected to login page if not connected
+     - after being redirected to login, login and should be redirected and visible in the lobby
+     - after being redirected to login, click on signup, create an account and should be redirected and visible in the lobby
+
+ - Test seed generation
+   - When clicking on play in lobby
+     - Should create seed based on config of the lobby
+     - should have populated roundAnswers correctly
