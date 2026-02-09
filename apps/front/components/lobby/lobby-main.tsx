@@ -2,14 +2,16 @@
 
 import { LOBBY_STATUS } from "@repo/common"
 import { usePathname, useRouter } from "next/navigation"
-import * as React from "react"
+import { useEffect, useRef } from "react"
 import LobbyFinished from "@/components/lobby/lobby-finished"
 import LobbyStarting from "@/components/lobby/lobby-starting"
 import LobbyWaiting from "@/components/lobby/lobby-waiting"
 import LobbyPlaying from "@/components/lobby/playing/lobby-playing"
 import { Button } from "@/components/ui/button"
+import { auth } from "@/constants/db"
+import { API_ENDPOINTS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
-import { useSubscribeLobbyQuery } from "@/redux/api/lobby"
+import { useLeaveLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -38,10 +40,61 @@ const LobbyMain = () => {
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const user = useAppSelector(selectUser)
+  const [leaveLobby] = useLeaveLobbyMutation()
 
   const { data: lobby, isLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {
     skip: !lobbyId,
   })
+
+  const statusRef = useRef(lobby?.status)
+  statusRef.current = lobby?.status
+
+  const tokenRef = useRef("")
+  const cleanupTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  useEffect(() => {
+    auth.currentUser?.getIdToken().then((token) => {
+      tokenRef.current = token
+    })
+  }, [user?.id])
+
+  useEffect(() => {
+    clearTimeout(cleanupTimeoutRef.current)
+
+    const tabCountKey = `lobby-${lobbyId}-tabs`
+    const current = Number(localStorage.getItem(tabCountKey) || 0)
+    localStorage.setItem(tabCountKey, String(current + 1))
+
+    const handleBeforeUnload = () => {
+      const count = Number(localStorage.getItem(tabCountKey) || 0)
+      const remaining = Math.max(0, count - 1)
+      localStorage.setItem(tabCountKey, String(remaining))
+
+      if (remaining === 0 && statusRef.current === LOBBY_STATUS.WAITING) {
+        const blob = new Blob(
+          [JSON.stringify({ lobbyId, playerId: user?.id, token: tokenRef.current })],
+          { type: "application/json" },
+        )
+        navigator.sendBeacon(API_ENDPOINTS.LEAVE_LOBBY, blob)
+      }
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+
+      const count = Number(localStorage.getItem(tabCountKey) || 0)
+      const remaining = Math.max(0, count - 1)
+      localStorage.setItem(tabCountKey, String(remaining))
+
+      if (remaining === 0 && statusRef.current === LOBBY_STATUS.WAITING) {
+        cleanupTimeoutRef.current = setTimeout(() => {
+          leaveLobby({ lobbyId, playerId: user?.id || "" })
+        }, 200)
+      }
+    }
+  }, [lobbyId, user?.id, leaveLobby])
 
   const isUserInLobby = lobby?.players.some((p) => p.uid === user?.id)
 

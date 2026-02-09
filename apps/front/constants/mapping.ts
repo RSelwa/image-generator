@@ -58,4 +58,5 @@ export const STATUS_TO_BADGE_VARIANT = {
 
 export const API_ENDPOINTS = {
   CREATE_SEED: "/api/create-seed",
+  LEAVE_LOBBY: "/api/leave-lobby",
 } as const

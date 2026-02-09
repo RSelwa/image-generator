@@ -13,18 +13,17 @@
   - ~~number of points by level is not correct for now~~
   - ~~timer on round~~
   - ~~lives in round answer doc~~
-  - Pseudo
-  - change
-  - end game screen
-  - clean special round select
-  - when joining a game when not logged, should redirect to login/join and then get back
-  - fix dragging minimap
-  - everyone should be ready before next round
+  - ~~fix dragging minimap~~
+  - ~~when joining a game when not logged, should redirect to login/join and then get back~~
+  - ~~everyone should be ready before next round~~
+  - ~~Implements game creation~~
+  - clean special round select ⌛️
+  - end game screen⌛️
+  - Pseudo, when signup redirect to a modal with just an input to update the player pseudo
   - Add tests on api endpoints
   - Allow creation of flats and sphericals from new or gameId
   - Add firebase admin for front libs
   - Improve the security for the update for lobbies
-  - Implements game creation
   - Implement suggestion
   - friends invitations
   - fix game thumbnail image when fail
