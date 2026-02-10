@@ -1,0 +1,14 @@
+export const SELECTORS = {
+  GAME_INPUT_GUESS: "game-input-guess",
+  GAME_MAP_GUESS_FORM: "game-map-guess-form",
+  MINIMAP: "mini-map-container",
+  MAP_SUBMIT: "map-submit",
+  NEXT_ROUND_BUTTON: "next-round-button",
+  NEXT_ROUND_BUTTON_CONFIRM: "next-round-button-confirm",
+  LIVES_CONTAINER: "lives-container",
+  SPECIAL_ROUND: "special-round",
+  LOBBY_FINISHED: "lobby-finished",
+  GAME_THUMBNAIL_OPTION: (index?: string) => `game-thumbnail-option-${index}`,
+  GAME_THUMBNAIL_TITLE: (gameTitle?: string) => `game-thumbnail-${gameTitle}`,
+  GAME_MAP: (gameTitle?: string) => `game-map-${gameTitle}`,
+} as const

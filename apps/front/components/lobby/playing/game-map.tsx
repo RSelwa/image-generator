@@ -52,12 +52,13 @@ const GameMapGuess = () => {
 
   return (
     <form
+      data-testId="game-map-guess-form"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onSubmit={submitDistance}
       className="fixed bottom-6 right-6 z-50 flex flex-col gap-2"
     >
-      <p className="w-full bg-neutral-100 text-neutral-900 rounded-sm py-1 text-center text-shadow text-xl font-semibold">
+      <p className="w-full bg-background text-foreground rounded-sm py-1 text-center text-shadow text-xl font-semibold">
         {currentRoundData.gameTitle}
       </p>
 
@@ -78,7 +79,7 @@ const GameMapGuess = () => {
         isParentHover={isHovered}
       />
 
-      <Button type="submit" className="w-full">
+      <Button data-testId="map-submit" type="submit" className="w-full">
         Guess
       </Button>
     </form>

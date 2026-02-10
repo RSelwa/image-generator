@@ -29,7 +29,7 @@ const PlayingSpecialRound = () => {
   if (!currentRoundData) return null
 
   return (
-    <section className="h-full-height ">
+    <section data-testId="special-round" className="h-full-height ">
       {!hasSelectedOption && (
         <article className="flex h-full pb-20 flex-col items-center gap-14 justify-center text-primary">
           <p className="text-center font-bold text-2xl"> Bonus Round </p>
@@ -37,6 +37,7 @@ const PlayingSpecialRound = () => {
             {currentRoundData.options?.map((option, index) => (
               <ImageGlow key={option.gameId} isBlurOnHover>
                 <Image
+                  data-testId={`game-thumbnail-option-${index}`}
                   onClick={async () => await selectOptionIndex({
                     lobbyId,
                     playerId: user?.id || "",

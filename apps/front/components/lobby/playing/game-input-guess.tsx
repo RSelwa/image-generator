@@ -63,7 +63,7 @@ const GameInputGuess = () => {
     <form ref={gameFormRef} onSubmit={verifyGameName} autoComplete="off" className="absolute z-10 left-1/2 -translate-1/2 bottom-8 flex flex-col items-center gap-4">
       {config?.playersLives && (
 
-        <div className="w-full flex justify-center items-center gap-8">
+        <div data-testId="lives-container" className="w-full flex justify-center items-center gap-8">
           {
             Array.from({ length: config.playersLives }, (_, i) => (
               <div
@@ -76,11 +76,12 @@ const GameInputGuess = () => {
         </div>
       )}
       <Input
+        data-testId="game-input-guess"
         name="input"
         type="text"
         placeholder="Your answer"
         autoFocus
-        className="bg-neutral-600/50 text-2xl! font-bold placeholder:text-neutral-100 text-neutral-50 min-w-96 py-6"
+        className="bg-background/50! text-2xl! font-bold placeholder:text-foreground/70 text-foreground min-w-96 py-6"
       />
     </form>
   )

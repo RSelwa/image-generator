@@ -13,6 +13,7 @@
     "lint:errors": "eslint --quiet",
     "lint:fix": "eslint --fix",
     "check-circular": "turbo check-circular --continue",
+    "emulators:test": "firebase emulators:start --only firestore,functions,storage,auth",
     "build": "turbo run build",
     "create:function": "npx tsx cli/create-function.mts",
     "build:functions": "turbo run build --filter=@repo/http --filter=@repo/create-user-document --filter=@repo/create-party-doc --filter=@repo/listen-docs",

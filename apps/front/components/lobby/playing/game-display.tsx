@@ -28,7 +28,7 @@ const NextRoundButton = () => {
 
   if (isEveryoneReady) {
     return (
-      <Button variant="outline" onClick={() => nextRound({ lobbyId })}>
+      <Button data-testId="next-round-button" variant="outline" onClick={() => nextRound({ lobbyId })}>
         Next round
       </Button>
     )
@@ -37,7 +37,7 @@ const NextRoundButton = () => {
   return (
     <Popover open={popOverOpen} onOpenChange={setPopOverOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline">
+        <Button data-testId="next-round-button-popover" variant="outline">
           Next round
         </Button>
 
@@ -45,7 +45,7 @@ const NextRoundButton = () => {
       <PopoverContent className="text-white bg-primary text-center flex flex-col items-center justify-center gap-2 w-96">
         <span className="text-sm text-muted-primary-foreground">Not all players have finished the round. <br /> Are you sure to go next round ? (they will loose their points on this round)</span>
         <div className="flex gap-2 items-center justify-center">
-          <Button onClick={() => nextRound({ lobbyId })}>
+          <Button data-testId="next-round-button-confirm" onClick={() => nextRound({ lobbyId })}>
             Yes, go next round
           </Button>
           <Button variant="ghost" onClick={() => setPopOverOpen(false)}>
@@ -86,7 +86,7 @@ const InfoRoundSpecial = () => {
   return (
     <>
       <ImageGlow>
-        <Image src={currentRoundInfos?.gameThumbnailUrl || ""} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} />
+        <Image data-testId={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || ""} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
       </ImageGlow>
       <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-white text-lg" initialDelay={1.5} />
     </>
@@ -137,12 +137,13 @@ const InfosRoundNormal = () => {
     <div className="flex flex-col items-center gap-2">
       {(!hasGuessedGame) && (
         <ImageGlow>
-          <Image src={currentRoundInfos?.gameThumbnailUrl || ""} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} />
+          <Image data-testId={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || ""} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
         </ImageGlow>
       )}
 
       {hasGuessedGame && (
         <MiniMap
+          data-testId={`game-map-${currentRoundInfos?.gameTitle}`}
           mapData={{
             mapImage: currentRoundData.mapImage || "",
             size: {
@@ -192,7 +193,6 @@ export const DisplayGame = () => {
 
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
-  const isEveryOneReady = useAppSelector(selectAllPlayersReady(lobbyId, roundIndex))
   const currentRoundInfos = useAppSelector(selectCurrentRoundInfos(lobbyId, roundIndex))
   const currentAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
   const isOwner = useAppSelector(selectIsLobbyHost(lobbyId))
@@ -218,12 +218,10 @@ export const DisplayGame = () => {
   if (!currentRoundData) return <div className="min-h-full-height">Loading round data...</div>
 
   return (
-    <section className="h-full-height absolute z-10 bg-primary/90 w-full">
+    <section className="h-full-height absolute z-10 bg-background/90 w-full">
       <div className="flex flex-col gap-8 justify-center items-center size-full">
         <Rounds currentRound={lobby?.currentRound || 0} numberOfRounds={lobby?.config?.numberOfRounds || 0} />
         <TextRevealTW text={currentRoundInfos?.gameTitle || "Game title"} className="text-white font-bold text-2xl" />
-        {isEveryOneReady ? "ready" : "not"}
-
         {isRoundSpecial && <InfoRoundSpecial /> }
 
         {!isRoundSpecial && <InfosRoundNormal /> }

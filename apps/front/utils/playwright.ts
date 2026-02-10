@@ -60,7 +60,7 @@ export const generateGameData = async () => {
   const games = GAME_TITLES.map((title) => {
     const game = gameFactory({ title })
     const map = mapFactory({ gameId: game.id })
-    const sphericalWithMap = sphericalFactory({ gameId: game.id, mapId: map.id, status: DOCUMENTS_STATUS.READY })
+    const sphericalWithMap = sphericalFactory({ gameId: game.id, mapId: map.id, status: DOCUMENTS_STATUS.READY, mapPosition: { x: 50, y: 50 } })
     const sphericalWithThumbnail = sphericalFactory({ gameId: game.id, thumbnail: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
     const flat = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY, thumbnail: mockedGameImageURL })
 

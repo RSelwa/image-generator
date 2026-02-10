@@ -5,6 +5,7 @@ import { refs } from "@repo/providers/db-refs"
 import { type LobbyDoc, type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
 import { createAuthUser, createFirestoreDoc } from "@repo/testing/emulator"
 import { userFactory } from "@repo/testing/factory"
+import { SELECTORS } from "@/constants/testing"
 import { createPlayerFromSessionUser } from "@/utils/player"
 
 export const PASSWORD = "cacayolo"
@@ -35,12 +36,18 @@ export const loginViaUI = async (page: Page, email: string) => {
   await page.getByLabel("Email").fill(email)
   await page.getByLabel("Password").fill(PASSWORD)
   await page.getByRole("button", { name: "Login" }).click()
+
   await expect(page).toHaveURL("/")
   await expect(page.getByTestId("nav-user-dropdown-trigger")).toBeVisible()
 }
 
+export const waitToBeLogged = async (page: Page) => {
+  await expect(page.getByTestId("nav-user-dropdown-trigger")).toBeVisible()
+}
+
 export const createLobbyViaUI = async (page: Page) => {
-  await page.getByRole("button", { name: "Play now!" }).click()
+  await page.getByTestId("create-lobby-button").click()
+
   await page.waitForURL(/\/lobby\//)
   const url = page.url()
   const lobbyId = url.split("/lobby/")[1]
@@ -57,8 +64,63 @@ export const startLobbyViaUI = async (page: Page) => {
   await page.getByTestId("start-lobby-button").click()
 }
 
+export const waitForInputToBeVisible = async (page: Page) =>
+  await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10000 })
+
 export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, photoUrl: "" })
 
 export const createFirestoreLobbyDoc = async (
   lobby: LobbyDoc,
 ) => await createFirestoreDoc(refs[TABLES.LOBBIES], lobby)
+
+export const retrieveGamesFromLobby = async (lobbyId: string) => {
+  const lobby = await refs[TABLES.LOBBIES].doc(lobbyId).get()
+
+  if (!lobby.exists) throw new Error("Lobby document does not exist")
+
+  const lobbyData = lobby.data()
+
+  const seedId = lobbyData?.seedId
+
+  if (!seedId) throw new Error("Lobby document does not have a seedId")
+
+  const seed = await refs[TABLES.SEEDS].doc(seedId).get()
+
+  const rounds = seed.data()?.rounds
+
+  if (!rounds) throw new Error("Seed document does not have rounds")
+
+  const allGamesIds = rounds.map((round) => {
+    if (round.gameId) return { gameId: round.gameId, options: null }
+
+    if (round.options) return { gameId: null, options: round.options.map((option) => ({ gameId: option.gameId })) }
+
+    return { gameId: null, options: null }
+  })
+
+  const allGames = []
+
+  for (const round of allGamesIds) {
+    const { gameId, options } = round
+
+    if (gameId) {
+      const gameDoc = await refs[TABLES.GAMES].doc(gameId).get()
+
+      allGames.push({ game: { id: gameDoc.id, ...gameDoc.data() }, options: null })
+    }
+
+    if (options) {
+      const optionsGames = []
+
+      for (const option of options) {
+        const gameDoc = await refs[TABLES.GAMES].doc(option.gameId).get()
+
+        optionsGames.push({ game: { id: gameDoc.id, ...gameDoc.data() } })
+      }
+
+      allGames.push({ game: null, options: optionsGames })
+    }
+  }
+
+  return allGames
+}

@@ -46,7 +46,7 @@ const LobbyPlaying = () => {
   const isDisplayGame = !isLoadingRoundAnswer && Boolean(hasFinishedRound || isExpired || (!livesRemaining && config?.playersLives))
   const isDisplayTimer = !isDisplayGame && Boolean(timerStart)
   const isDisplayInput = !myAnswer?.isCorrect && !isExpired && !isEliminated
-  const isDisplayMap = isMapPhase && !isDisplayGame && !isEliminated && currentRoundData.mapPosition
+  const isDisplayMap = isMapPhase && !isDisplayGame && !isEliminated && currentRoundData?.mapPosition
 
   if (isLobbyLoading || !lobby) return <div>Loading...</div>
 

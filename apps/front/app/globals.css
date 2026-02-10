@@ -193,4 +193,8 @@
   .psv-overlay {
     @apply hidden!;
   }
+
+  .firebase-emulator-warning {
+    @apply hidden!;
+  }
 }

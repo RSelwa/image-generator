@@ -154,7 +154,8 @@ export const MiniMap = ({
   inline = false,
   alwaysExpanded = false,
   isParentHover = false,
-  displayControls = false
+  displayControls = false,
+  ...props
 }: MiniMapProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -205,6 +206,7 @@ export const MiniMap = ({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      {...props}
     >
       <TransformWrapper
         initialScale={minScale}
@@ -223,6 +225,7 @@ export const MiniMap = ({
         >
           {/* Map container with markers - uses actual image dimensions */}
           <div
+            data-testId="mini-map-container"
             ref={containerRef}
             className={`relative ${disabled || hasSubmitted ? "cursor-default" : "cursor-crosshair"}`}
             onMouseDown={handleMouseDown}

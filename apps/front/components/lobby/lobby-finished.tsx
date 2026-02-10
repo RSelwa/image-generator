@@ -29,7 +29,7 @@ const LobbyFinished = () => {
   const percentageValueGamesFound = numberGameFound && config ? (numberGameFound.numberGameFound / config.numberOfRounds) * 100 : 0
 
   return (
-    <main className="min-h-full-height w-1/2 mx-auto bg-primary text-primary-foreground flex flex-col items-center justify-center gap-8">
+    <main data-testId="lobby-finished" className="min-h-full-height w-1/2 mx-auto bg-background text-foreground flex flex-col items-center justify-center gap-8">
       <Logo />
       <h1>{APP_NAME}</h1>
       <Field className="w-full max-w-sm">
@@ -37,7 +37,7 @@ const LobbyFinished = () => {
           <span>Final Score </span>
           <span className="ml-auto text-lg font-semibold">{player?.score}</span>
         </FieldLabel>
-        <FieldLabel className="flex items-center gap-3 text-primary-foreground/50">
+        <FieldLabel className="flex items-center gap-3 text-foreground/50">
           <span>0</span>
           <Progress value={percentageValuePoints} id="progress-points" />
           <span>{lobby?.maximumPossiblePoints}</span>
@@ -48,7 +48,7 @@ const LobbyFinished = () => {
           <span>Number game found</span>
           <span className="ml-auto text-lg font-semibold">{numberGameFound?.numberGameFound.toString()}</span>
         </FieldLabel>
-        <FieldLabel className="flex items-center gap-3 text-primary-foreground/50">
+        <FieldLabel className="flex items-center gap-3 text-foreground/50">
           <span>0</span>
           <Progress value={percentageValueGamesFound} id="progress-rounds" />
           <span>{config?.numberOfRounds}</span>

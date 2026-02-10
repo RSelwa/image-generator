@@ -33,7 +33,7 @@ const CreateLobbyButton = () => {
   }
 
   return (
-    <Button size="lg" onClick={handleCreateLobby} disabled={isLoading}>
+    <Button data-testId="create-lobby-button" onClick={handleCreateLobby} disabled={isLoading}>
       Play now!
       {" "}
       {isLoading && <Loader className="size-4" />}

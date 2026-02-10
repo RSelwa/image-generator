@@ -8,7 +8,7 @@
     "start": "next start",
     "build:test": "env-cmd -f .env.test next build",
     "e2e": "dotenv -e .env.test -- playwright test",
-    "e2e:ui": "dotenv -e .env.test -- playwright test --ui"
+    "e2e:ui": "dotenv -e .env.test -- playwright test --ui --project=chromium"
   },
   "browser": {
     "child_process": false

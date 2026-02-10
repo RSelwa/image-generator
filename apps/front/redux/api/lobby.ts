@@ -892,6 +892,7 @@ export const lobbyApi = createApi({
     updateNextRound: builder.mutation<null, { lobbyId: string }>({
       queryFn: async ({ lobbyId }, { dispatch }) => {
         try {
+          console.log("Updating next round for lobby:", lobbyId)
           const lobby = await dispatch(lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId })).unwrap()
 
           if (!lobby) throw new Error("Lobby not found")

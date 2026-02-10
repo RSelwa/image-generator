@@ -24,10 +24,7 @@ const Page = () => (
 
       <div className="flex flex-col sm:flex-row gap-4">
         <CreateLobbyButton />
-        <Button
-          variant="outline"
-          size="lg"
-        >
+        <Button variant="secondary">
           Learn More
         </Button>
       </div>
