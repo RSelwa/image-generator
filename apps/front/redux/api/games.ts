@@ -31,17 +31,11 @@ import {
   updateDoc,
 } from "firebase/firestore"
 import { toast } from "sonner"
-import z from "zod"
 // Need to use the React-specific entry point to import createApi
 import { DEFAULT_SIZE_GAMES } from "@/constants/api"
 import { db } from "@/constants/db"
 import { getGameRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
-
-const allGamesByNames = z.object({
-  id: z.string(),
-  title: z.string(),
-})
 
 export const gameApi = createApi({
   reducerPath: "gameApi",
@@ -57,7 +51,7 @@ export const gameApi = createApi({
     "GameFlatCount",
   ],
   endpoints: (builder) => ({
-    getGames: builder.infiniteQuery<
+    getGamesEntity: builder.infiniteQuery<
       GameEntity[],
       void,
       { limit?: number, startAfter?: string }
@@ -183,7 +177,7 @@ export const gameApi = createApi({
       },
       providesTags: (_result, _error, { id }) => [{ type: "Game", id }],
     }),
-    getAllGamesNames: builder.query<z.infer<typeof allGamesByNames>[], void>({
+    getAllGames: builder.query<GameDocWithId[], void>({
       queryFn: async () => {
         try {
           const snapshot = await getDocs(
@@ -203,7 +197,7 @@ export const gameApi = createApi({
             })
             .filter((g) => g !== null)
 
-          const data = allGamesByNames.array().parse(games)
+          const data = gameDocWithIdSchema.array().parse(games)
 
           return { data }
         } catch (error) {
@@ -477,7 +471,7 @@ export const gameApi = createApi({
 })
 
 export const {
-  useGetGamesInfiniteQuery,
+  useGetGamesEntityInfiniteQuery,
   useGetGameByIdQuery,
   useGetTotalGamesCountQuery,
   useGetGameSphericalCountQuery,
@@ -487,5 +481,5 @@ export const {
   useCreateGameMutation,
   useUpdateGameByIdMutation,
   useDeleteGameByIdMutation,
-  useGetAllGamesNamesQuery,
+  useGetAllGamesQuery,
 } = gameApi

@@ -1,10 +1,10 @@
-import { type GameEntity } from "@repo/schemas"
+import { type GameDocWithId } from "@repo/schemas"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { FALL_BACK_IMAGE, MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 
-const GameCard = ({ game }: { game: GameEntity, index?: number }) => {
+const GameCard = ({ game }: { game: GameDocWithId, index?: number }) => {
   const { openModal: openGallery } = useModal(
     MODAL_KEYS.SPHERICAL_GALLERY_ID,
     game.id,
@@ -44,7 +44,7 @@ const GameCard = ({ game }: { game: GameEntity, index?: number }) => {
               }}
               className="cursor-pointer"
             >
-              {game.sphericalsCount} Sphericals
+              Sphericals
             </button>
           </Badge>
           <Badge asChild variant="blur" className="mr-1">
@@ -57,7 +57,7 @@ const GameCard = ({ game }: { game: GameEntity, index?: number }) => {
               }}
               className="cursor-pointer"
             >
-              {game.mapsCount} Maps
+              Maps
             </button>
           </Badge>
           <Badge asChild variant="blur" className="mr-1">
@@ -70,7 +70,7 @@ const GameCard = ({ game }: { game: GameEntity, index?: number }) => {
               }}
               className="cursor-pointer"
             >
-              {game.flatsCount} Flats
+              Flats
             </button>
           </Badge>
         </div>

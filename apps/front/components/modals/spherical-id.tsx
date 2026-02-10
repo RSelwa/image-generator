@@ -34,7 +34,7 @@ import {
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
-import { useGetAllGamesNamesQuery } from "@/redux/api/games"
+import { useGetAllGamesQuery } from "@/redux/api/games"
 import { useGetMapsByGameIdQuery } from "@/redux/api/maps"
 import {
   useCreateSphericalMutation,
@@ -111,7 +111,7 @@ const SphericalForm = ({
   const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalId)
   const { openModal } = useModal(MODAL_KEYS.MAP_ID, `${gameId}_${NEW_SEARCH_PARAM}`)
 
-  const { data: gamesData, isLoading: isGamesLoading } = useGetAllGamesNamesQuery()
+  const { data: gamesData, isLoading: isGamesLoading } = useGetAllGamesQuery()
   const { data, isLoading } = useGetSphericalByIdQuery(
     { gameId, id: sphericalId },
     { skip: isNew || !gameId },

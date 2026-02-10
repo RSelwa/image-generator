@@ -34,7 +34,7 @@ import {
   useGetFlatByIdQuery,
   useUpdateFlatByIdMutation,
 } from "@/redux/api/flat"
-import { useGetAllGamesNamesQuery } from "@/redux/api/games"
+import { useGetAllGamesQuery } from "@/redux/api/games"
 import { uploadFileToBucket } from "@/utils/file"
 
 type FlatFormSchema = z.input<typeof createFlatInputSchema>
@@ -96,7 +96,7 @@ const FlatForm = ({
   const { openModal } = useModal(MODAL_KEYS.FLAT_GALLERY_ID, gameId)
   const { closeModal } = useModal(MODAL_KEYS.FLAT_ID, flatId)
 
-  const { data: gamesData, isLoading: isGamesLoading } = useGetAllGamesNamesQuery()
+  const { data: gamesData, isLoading: isGamesLoading } = useGetAllGamesQuery()
   const { data, isLoading } = useGetFlatByIdQuery(
     { gameId, id: flatId },
     { skip: isNew || !gameId },

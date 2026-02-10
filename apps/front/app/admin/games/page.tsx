@@ -10,7 +10,7 @@ import { Field, FieldContent, FieldGroup, FieldLabel } from "@/components/ui/fie
 import { MODAL_KEYS, NEW_SEARCH_PARAM, QUERY_PARAMS, SORT_OPTIONS, SORT_OPTIONS_LABEL } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import {
-  useGetGamesInfiniteQuery,
+  useGetAllGamesQuery,
   useGetTotalGamesCountQuery,
 } from "@/redux/api/games"
 
@@ -22,10 +22,10 @@ const Page = () => {
   const { openModal } = useModal(MODAL_KEYS.GAME_ID, NEW_SEARCH_PARAM)
 
   const { data: gameCount } = useGetTotalGamesCountQuery()
-  const { data, isLoading, fetchNextPage, hasNextPage } =
-    useGetGamesInfiniteQuery()
+  const { data, isLoading } =
+    useGetAllGamesQuery()
 
-  const games = data?.pages.flat() || []
+  const games = data || []
 
   const isOnlyDisplayMissingImages = displayMissingImages === "true"
 
@@ -87,11 +87,6 @@ const Page = () => {
           <GameCard key={game.id} game={game} />
         ))}
       </ul>
-      {hasNextPage && (
-        <Button className="w-full" disabled={isLoading} onClick={fetchNextPage}>
-          Load more
-        </Button>
-      )}
     </main>
   )
 }
