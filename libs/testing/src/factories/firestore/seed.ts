@@ -1,19 +1,16 @@
 import { faker } from "@faker-js/faker"
 import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
-import { DEFAULT_MAX_DISTANCE_POINTS, mockedMapImageURL } from "@repo/common"
-import { type MapDoc } from "@repo/schemas"
+import { type SeedDocWithId } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
 import { type FactoryDoc } from "~/orm"
 
-export const mapFactory: FactoryDoc<MapDoc & { id: string }> = (item = {}) => ({
+export const seedFactory: FactoryDoc<SeedDocWithId> = (item = {}) => ({
   id: faker.database.mongodbObjectId(),
-  gameId: faker.database.mongodbObjectId(),
+  name: "",
+  createdBy: null,
+  timesUsed: 0,
   createdAt: Timestamp.fromDate(faker.date.past()) as unknown as ClientTimestamp,
   updatedAt: Timestamp.fromDate(faker.date.recent()) as unknown as ClientTimestamp,
-  imageUrl: mockedMapImageURL,
-  width: 828,
-  height: 828,
-  name: faker.lorem.words(2),
-  maxDistancePoints: DEFAULT_MAX_DISTANCE_POINTS,
+  rounds: [],
   ...item
 })

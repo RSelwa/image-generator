@@ -1,25 +1,8 @@
 ## Tests todo
- - lobby Waiting
-   - when closing the tab
-     - should remove me from the players
-   - when changing tab
-     - should remove me from the players
-   - When lobby host
-     - Can create a lobby when logged
-     - can modify a lobby config if host
-     - can start a game if everyone is ready
-     - can not start if not everyone is ready
-   - When not lobby host
-     - can not modify a lobby config
-     - can put my self ready
-     - have the config changes in UI when the lobbyDoc is changing
-   - When joining a lobby with the url
-     - Should be redirected to the lobby page if already connected
-     - should be redirected to login page if not connected
-     - after being redirected to login, login and should be redirected and visible in the lobby
-     - after being redirected to login, click on signup, create an account and should be redirected and visible in the lobby
-
- - Test seed generation
-   - When clicking on play in lobby
-     - Should create seed based on config of the lobby
-     - should have populated roundAnswers correctly
+ - Full game workflow
+ - when in special round
+   - Timer should not start before option selected
+   - timer should start only when player has selected an option
+ - When game display
+   - should increment player score in lobbyDoc
+   - when reload in game display, should not increment points twice
