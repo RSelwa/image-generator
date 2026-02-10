@@ -200,6 +200,8 @@ export const DisplayGame = () => {
   const isRoundSpecial = currentRoundData?.isSpecial
 
   useEffect(() => {
+    if (currentAnswer?.isReadyForNextRound) return
+
     const newPoint = currentAnswer?.points || 0
     submitRoundAnswer({
       lobbyId,
@@ -213,7 +215,7 @@ export const DisplayGame = () => {
       playerId: user?.id || "",
       newPoints: newPoint,
     })
-  }, [])
+  }, [currentAnswer?.isReadyForNextRound])
 
   if (!currentRoundData) return <div className="min-h-full-height">Loading round data...</div>
 
