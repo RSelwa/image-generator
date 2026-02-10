@@ -26,7 +26,7 @@ const NoLobby = () => {
   const router = useRouter()
 
   return (
-    <main className="min-h-full-height flex items-center justify-center text-primary-foreground bg-primary">
+    <main className="min-h-full-height flex items-center justify-center text-foreground bg-primary">
       <p className="text-lg text-muted-primary-foreground">Lobby not found</p>
       <Button variant="outline" className="ml-4" onClick={() => router.push(PAGES.HOME)}>
         Go back home

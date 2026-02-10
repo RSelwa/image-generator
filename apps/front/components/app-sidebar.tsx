@@ -63,7 +63,7 @@ export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =
             <SidebarGroup>
               <SidebarGroupLabel
                 asChild
-                className="group/label text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-primary-foreground text-sm"
+                className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-primary-foreground text-sm"
               >
                 <CollapsibleTrigger>
                   {item.title}
