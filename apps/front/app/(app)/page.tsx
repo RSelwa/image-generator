@@ -16,7 +16,7 @@ const Page = () => (
           {" "}
           Images
         </h1>
-        <p className="text-lg text-muted-foreground sm:text-xl md:text-2xl max-w-2xl mx-auto">
+        <p className="text-lg text-muted-primary-foreground sm:text-xl md:text-2xl max-w-2xl mx-auto">
           Challenge yourself to guess locations from stunning AI-created
           imagery. Explore the world like never before.
         </p>

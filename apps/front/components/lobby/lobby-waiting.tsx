@@ -59,7 +59,7 @@ const LobbyWaiting = () => {
 
   return (
     <main className="min-h-full-height w-3/4 mx-auto space-y-8">
-      <section className="w-full flex flex-col border border-dashed items-center gap-4 p-6 rounded-xl text-muted-foreground">
+      <section className="w-full flex flex-col border border-dashed items-center gap-4 p-6 rounded-xl text-muted-primary-foreground">
         <p className="text-lg ">Players in lobby: {lobby.players.length}/{lobby.config.maxPlayers}</p>
         <LobbyAvatars />
         <p>
@@ -215,7 +215,7 @@ const LobbyWaiting = () => {
               Start Lobby
             </Button>
           </HoverCardTrigger>
-          <HoverCardContent className="text-foreground bg-background/50 text-center">
+          <HoverCardContent className="text-primary-foreground bg-primary/50 text-center">
             Only the host can start the lobby
           </HoverCardContent>
 

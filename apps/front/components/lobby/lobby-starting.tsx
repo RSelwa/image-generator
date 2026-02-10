@@ -8,7 +8,7 @@ const LobbyStarting = () => {
 
   return (
     <main className="min-h-full-height flex items-center justify-center">
-      <p className="text-lg text-muted-foreground">Game in progress...</p>
+      <p className="text-lg text-muted-primary-foreground">Game in progress...</p>
     </main>
   )
 }

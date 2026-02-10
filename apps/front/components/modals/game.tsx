@@ -236,7 +236,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
             </div>
 
             {data && (
-              <div className="text-muted-foreground mt-2 space-y-1 text-xs">
+              <div className="text-muted-primary-foreground mt-2 space-y-1 text-xs">
                 <p>
                   <strong>ID:</strong> {data.id}
                 </p>

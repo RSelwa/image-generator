@@ -31,7 +31,7 @@ const PlayingSpecialRound = () => {
   return (
     <section className="h-full-height ">
       {!hasSelectedOption && (
-        <article className="flex h-full pb-20 flex-col items-center gap-14 justify-center text-background">
+        <article className="flex h-full pb-20 flex-col items-center gap-14 justify-center text-primary">
           <p className="text-center font-bold text-2xl"> Bonus Round </p>
           <div className="grid grid-cols-2 gap-0 mx-auto">
             {currentRoundData.options?.map((option, index) => (

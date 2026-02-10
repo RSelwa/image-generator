@@ -16,9 +16,7 @@ const CreateLobbyButton = () => {
 
   if (!user) {
     return (
-      <Button
-        disabled
-      >
+      <Button disabled>
         Start Playing
       </Button>
     )

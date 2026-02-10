@@ -92,7 +92,7 @@ const MapGuesser = () => {
     <div className="relative min-h-screen bg-gray-900">
       {/* Main game area - this would be your panorama/image view */}
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-foreground text-center">
+        <div className="text-primary-foreground text-center">
           <h1 className="text-4xl font-bold mb-4">Map Guesser</h1>
           <p className="text-xl mb-2">
             Round {currentRound + 1} of {EXAMPLE_ROUNDS.length}
@@ -123,7 +123,7 @@ const MapGuesser = () => {
       {/* Submit button - fixed bottom center */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-2">
         {hasSubmitted && guessPosition && (
-          <div className="bg-background/80 text-foreground px-4 py-2 rounded-lg text-center">
+          <div className="bg-primary/80 text-primary-foreground px-4 py-2 rounded-lg text-center">
             <p>
               Distance:
               {" "}
@@ -150,7 +150,7 @@ const MapGuesser = () => {
           </Button>
         ) : isGameOver ? (
           <div className="flex flex-col items-center gap-2">
-            <p className="text-foreground text-xl font-bold">
+            <p className="text-primary-foreground text-xl font-bold">
               Game Over! Final Score:
               {" "}
               {totalScore}

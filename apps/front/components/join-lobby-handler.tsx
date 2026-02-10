@@ -71,7 +71,7 @@ const JoinLobbyHandler = ({ code }: Props) => {
 
   return (
     <main className="min-h-full-height flex items-center justify-center">
-      <p className="text-lg text-muted-foreground">Joining lobby...</p>
+      <p className="text-lg text-muted-primary-foreground">Joining lobby...</p>
     </main>
   )
 }

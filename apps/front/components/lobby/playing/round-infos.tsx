@@ -18,7 +18,7 @@ export const RoundInfos = () => {
   const player = useAppSelector(selectPlayerMyself(lobbyId))
 
   return (
-    <div className=" absolute z-10 top-4 right-8 flex flex-col items-end pr-8 text-foreground text-shadow-background text-shadow">
+    <div className=" absolute z-10 top-4 right-8 flex flex-col items-end pr-8 text-primary-foreground text-shadow-primary text-shadow">
       <p>
         Stage: {currentRoundData?.stage}
       </p>

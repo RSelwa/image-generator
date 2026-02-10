@@ -78,7 +78,7 @@ const MarkersLayer = ({
       >
         <div className="relative">
           <div
-            className={`size-4 rounded-full ${bgColor} border-2 border-foreground shadow-lg`}
+            className={`size-4 rounded-full ${bgColor} border-2 border-primary-foreground shadow-lg`}
           />
           <div
             className={`absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent ${borderColor}`}

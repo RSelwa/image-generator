@@ -18,7 +18,7 @@ import { getLobbyIdFromPathname } from "@/utils"
 
 const LoadingLobby = () => (
   <main className="min-h-full-height flex items-center justify-center">
-    <p className="text-lg text-muted-foreground">Loading...</p>
+    <p className="text-lg text-muted-primary-foreground">Loading...</p>
   </main>
 )
 
@@ -26,8 +26,8 @@ const NoLobby = () => {
   const router = useRouter()
 
   return (
-    <main className="min-h-full-height flex items-center justify-center text-foreground bg-background">
-      <p className="text-lg text-muted-foreground">Lobby not found</p>
+    <main className="min-h-full-height flex items-center justify-center text-primary-foreground bg-primary">
+      <p className="text-lg text-muted-primary-foreground">Lobby not found</p>
       <Button variant="outline" className="ml-4" onClick={() => router.push(PAGES.HOME)}>
         Go back home
       </Button>
@@ -109,7 +109,7 @@ const LobbyMain = () => {
 
   return (
     <main className="min-h-full-height flex items-center justify-center">
-      <p className="text-lg text-muted-foreground">Game in progress...</p>
+      <p className="text-lg text-muted-primary-foreground">Game in progress...</p>
     </main>
   )
 }

@@ -42,8 +42,8 @@ const NextRoundButton = () => {
         </Button>
 
       </PopoverTrigger>
-      <PopoverContent className="text-white bg-background text-center flex flex-col items-center justify-center gap-2 w-96">
-        <span className="text-sm text-muted-foreground">Not all players have finished the round. <br /> Are you sure to go next round ? (they will loose their points on this round)</span>
+      <PopoverContent className="text-white bg-primary text-center flex flex-col items-center justify-center gap-2 w-96">
+        <span className="text-sm text-muted-primary-foreground">Not all players have finished the round. <br /> Are you sure to go next round ? (they will loose their points on this round)</span>
         <div className="flex gap-2 items-center justify-center">
           <Button onClick={() => nextRound({ lobbyId })}>
             Yes, go next round
@@ -200,29 +200,25 @@ export const DisplayGame = () => {
   const isRoundSpecial = currentRoundData?.isSpecial
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      const newPoint = currentAnswer?.points || 0
-      submitRoundAnswer({
-        lobbyId,
-        roundIndex: lobby?.currentRound || 0,
-        uid: user?.id || "",
-        answer: { isReadyForNextRound: true },
-      })
+    const newPoint = currentAnswer?.points || 0
+    submitRoundAnswer({
+      lobbyId,
+      roundIndex: lobby?.currentRound || 0,
+      uid: user?.id || "",
+      answer: { isReadyForNextRound: true },
+    })
 
-      updatePlayerScore({
-        lobbyId,
-        playerId: user?.id || "",
-        newPoints: newPoint,
-      })
-    }, 6_000)
-
-    return () => clearTimeout(timeout)
+    updatePlayerScore({
+      lobbyId,
+      playerId: user?.id || "",
+      newPoints: newPoint,
+    })
   }, [])
 
   if (!currentRoundData) return <div className="min-h-full-height">Loading round data...</div>
 
   return (
-    <section className="h-full-height absolute z-10 bg-background/90 w-full">
+    <section className="h-full-height absolute z-10 bg-primary/90 w-full">
       <div className="flex flex-col gap-8 justify-center items-center size-full">
         <Rounds currentRound={lobby?.currentRound || 0} numberOfRounds={lobby?.config?.numberOfRounds || 0} />
         <TextRevealTW text={currentRoundInfos?.gameTitle || "Game title"} className="text-white font-bold text-2xl" />

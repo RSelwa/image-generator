@@ -32,7 +32,7 @@ export const AdminGuard = ({ children }: AdminGuardProps) => {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="text-muted-foreground">
+        <div className="text-muted-primary-foreground">
           {status}
           ...
         </div>

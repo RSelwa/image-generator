@@ -402,7 +402,7 @@ const SphericalForm = ({
 
             {/* Map Position Picker - hidden when thumbnail is set */}
             {isMapPositionDisabledByThumbnail && (
-              <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-foreground">
+              <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-primary-foreground">
                 <p>Map position is disabled when using a thumbnail URL.</p>
               </div>
             )}
@@ -432,7 +432,7 @@ const SphericalForm = ({
                 />
                 <div className="bg-muted/50 rounded-md p-3 text-sm">
                   <p className="font-medium mb-1">Position to be stored:</p>
-                  <div className="grid grid-cols-2 gap-2 text-muted-foreground">
+                  <div className="grid grid-cols-2 gap-2 text-muted-primary-foreground">
                     <p>
                       <strong>X:</strong> {mapPosition?.x?.toFixed(2) ?? "—"}%
                     </p>
@@ -451,7 +451,7 @@ const SphericalForm = ({
             )}
 
             {!isMapPositionDisabledByThumbnail && hasMapWithoutValidDimensions && (
-              <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-foreground">
+              <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-primary-foreground">
                 <p>Selected map has no image or dimensions.</p>
                 <p>
                   Upload an image to the map first to enable position picking.
@@ -530,7 +530,7 @@ const SphericalForm = ({
             </div>
 
             {data && (
-              <div className="text-muted-foreground mt-2 space-y-1 text-xs">
+              <div className="text-muted-primary-foreground mt-2 space-y-1 text-xs">
                 <p>
                   <strong>ID:</strong> {data.id}
                 </p>

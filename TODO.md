@@ -1,39 +1,39 @@
 ## TODO
 
 - Global
-  - ~~Change gameRef into gameId in spherical + maps~~
-  - ~~Update schema to allow sphericals to have mapId and coordinates or not depending on types~~
-  - ~~Implement 2D maps~~
-  - ~~Change rights into a dedicated table~~
-  - ~~Implement Icono roles~~
-  - ~~update the listeners too~~
-  - ~~implements tests in front~~
-  - ~~Add storage tests for Flat images and thumbnails~~
-  - ~~display correct answer on the map when showing result~~
-  - ~~number of points by level is not correct for now~~
-  - ~~timer on round~~
-  - ~~lives in round answer doc~~
-  - ~~fix dragging minimap~~
-  - ~~when joining a game when not logged, should redirect to login/join and then get back~~
-  - ~~everyone should be ready before next round~~
-  - ~~Implements game creation~~
-  - ~~Fix timer on special round, should start only when user has selected a game~~
-  - ~~add a force next round for host~~
-  - ~~clean special round select ⌛️~~
-  - When changing round, a listener should update players points instead of client side
-  - end game screen⌛️
-  - Pseudo, when signup redirect to a modal with just an input to update the player pseudo
-  - Add tests on api endpoints
-  - Allow creation of flats and sphericals from new or gameId
-  - Add firebase admin for front libs
-  - Improve the security for the update for lobbies
-  - Implement suggestion
-  - friends invitations
-  - fix game thumbnail image when fail
-  - Buy domain name
-  - Setup Reels Insta et tiktok
-  - Implement a system to interact with twitch chat, maybe to vote for games
-  - Implement a chat room inside
+  - [X]  Change gameRef into gameId in spherical + maps
+  - [X] Update schema to allow sphericals to have mapId and coordinates or not depending on types
+  - [X] Implement 2D maps
+  - [X] Change rights into a dedicated table
+  - [X] Implement Icono roles
+  - [X] update the listeners too
+  - [X] implements tests in front
+  - [X] Add storage tests for Flat images and thumbnails
+  - [X] display correct answer on the map when showing result
+  - [X] number of points by level is not correct for now
+  - [x] timer on round
+  - [x] lives in round answer doc
+  - [x] fix dragging minimap
+  - [x] when joining a game when not logged, should redirect to login/join and then get back
+  - [x] everyone should be ready before next round
+  - [x] Implements game creation
+  - [x] Fix timer on special round, should start only when user has selected a game
+  - [x] add a force next round for host
+  - [x] clean special round select ⌛️
+  - [ ] Fix when reload when gameDisplay it should not re add other points to the score
+  - [ ] end game screen⌛️
+  - [ ] Pseudo, when signup redirect to a modal with just an input to update the player pseudo
+  - [ ] Add tests on api endpoints
+  - [ ] Allow creation of flats and sphericals from new or gameId
+  - [ ] Add firebase admin for front libs
+  - [ ] Improve the security for the update for lobbies
+  - [ ] Implement suggestion
+  - [ ] friends invitations
+  - [ ] fix game thumbnail image when fail
+  - [ ] Buy domain name
+  - [ ] Setup Reels Insta et tiktok
+  - [ ] Implement a system to interact with twitch chat, maybe to vote for games
+  - [ ] Implement a chat room inside
 
 - Front
   - Clean footer
