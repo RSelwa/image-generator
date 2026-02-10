@@ -84,12 +84,22 @@ const LobbyWaiting = () => {
               onValueChange={(value) => changeConfig({ numberOfRounds: Number.parseInt(value) })}
               disabled={disabled}
             >
-              <SelectTrigger className="w-20">
-                <SelectValue placeholder={`Number of rounds: ${lobby.config.numberOfRounds}`} />
+              <SelectTrigger
+                data-testId="select-number-rounds-trigger"
+                className="w-20"
+              >
+                <SelectValue
+                  placeholder={`Number of rounds: ${lobby.config.numberOfRounds}`}
+                />
               </SelectTrigger>
               <SelectContent>
                 {OPTIONS_NUMBER_OF_ROUNDS.map((roundNumber) => (
-                  <SelectItem key={roundNumber} value={roundNumber.toString()}>
+                  <SelectItem
+                    data-testId={`select-number-rounds-${roundNumber}-item`}
+
+                    key={roundNumber}
+                    value={roundNumber.toString()}
+                  >
                     {roundNumber}
                   </SelectItem>
                 ))}
@@ -109,13 +119,20 @@ const LobbyWaiting = () => {
               disabled={disabled}
 
             >
-              <SelectTrigger className="w-20">
+              <SelectTrigger
+                data-testId="select-player-live-trigger"
+                className="w-20"
+              >
                 <SelectValue placeholder={`Players lives: ${lobby.config.playersLives || "Unlimited"}`} />
               </SelectTrigger>
               <SelectContent>
-                {OPTIONS_PLAYERS_LIVES.map((roundNumber) => (
-                  <SelectItem key={roundNumber} value={roundNumber?.toString() || "null"}>
-                    {roundNumber || "Unlimited"}
+                {OPTIONS_PLAYERS_LIVES.map((playerLive) => (
+                  <SelectItem
+                    data-testId={`select-player-live-${playerLive}-item`}
+                    key={playerLive}
+                    value={playerLive?.toString() || "null"}
+                  >
+                    {playerLive || "Unlimited"}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -132,12 +149,19 @@ const LobbyWaiting = () => {
               onValueChange={(value) => changeConfig({ roundDuration: Number.parseInt(value) })}
               disabled={disabled}
             >
-              <SelectTrigger className="w-20">
+              <SelectTrigger
+                data-testId="select-round-duration-trigger"
+                className="w-20"
+              >
                 <SelectValue placeholder={`Rounds duration: ${lobby.config.roundDuration}`} />
               </SelectTrigger>
               <SelectContent>
                 {OPTIONS_ROUND_DURATIONS.map((roundDuration) => (
-                  <SelectItem key={roundDuration} value={roundDuration.toString()}>
+                  <SelectItem
+                    data-testId={`select-round-duration-${roundDuration}-item`}
+                    key={roundDuration}
+                    value={roundDuration.toString()}
+                  >
                     {roundDuration}s
                   </SelectItem>
                 ))}
@@ -149,6 +173,7 @@ const LobbyWaiting = () => {
           <Field orientation="horizontal" className="justify-between">
             <Switch
               id="special-rounds"
+              data-testId="special-rounds"
               checked={lobby.config.hasSpecialRounds}
               onCheckedChange={(checked) =>
                 changeConfig({ hasSpecialRounds: checked })}

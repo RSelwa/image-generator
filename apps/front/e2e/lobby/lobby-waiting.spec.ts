@@ -66,13 +66,12 @@ test.describe("lobby Waiting", () => {
       await loginViaUI(page, user.email)
       await createLobbyViaUI(page)
 
-      const numberOfRoundsSelect = page.locator("select, [role='combobox']").first()
-      await numberOfRoundsSelect.click()
-      await page.getByRole("option", { name: "6" }).click()
+      await page.getByTestId("select-number-rounds-trigger").click()
+      await page.getByTestId("select-number-rounds-6-item").click()
 
-      await expect(page.getByText("6")).toBeVisible()
+      await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText("6")
 
-      const specialRoundsSwitch = page.locator("#special-rounds")
+      const specialRoundsSwitch = page.getByTestId("special-rounds")
       await specialRoundsSwitch.click()
 
       await expect(specialRoundsSwitch).toBeChecked()
