@@ -37,7 +37,7 @@ const LobbyPlaying = () => {
   const hasSelectedOption = useAppSelector(selectHasSelectedOption(lobbyId, roundIndex))
   const isMapPhase = myAnswer?.isCorrect && currentRoundData?.mapPosition
   const isWaitingForSelection = currentRoundData?.isSpecial && !hasSelectedOption
-  const timerStart = isWaitingForSelection ? null : ((isMapPhase && myAnswer?.submittedAt) || lobby?.roundStartedAt)
+  const timerStart = isWaitingForSelection ? null : ((isMapPhase && myAnswer?.submittedAt) || myAnswer?.selectedOptionAt || lobby?.roundStartedAt)
 
   const { isExpired } = useCountdown(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
 

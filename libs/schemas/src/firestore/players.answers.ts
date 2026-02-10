@@ -13,6 +13,7 @@ export const playerAnswerSchema = z.object({
 
   // For special rounds: which of the 4 images they selected (0-3)
   selectedOptionIndex: z.number().min(0).max(3).nullish().default(null),
+  selectedOptionAt: timestampSchema.nullish().default(() => null),
 
   // Map position guess (only if round has a map)
   position: mapPositionSchema.nullish().default(null),

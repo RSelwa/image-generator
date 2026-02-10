@@ -950,7 +950,7 @@ export const lobbyApi = createApi({
           const currentAnswers: PlayerAnswer[] = roundAnswer?.answers || []
 
           const updatedAnswers = currentAnswers.map((answer) =>
-            answer.uid === playerId ? playerAnswerSchema.parse({ ...answer, selectedOptionIndex }) : answer
+            answer.uid === playerId ? playerAnswerSchema.parse({ ...answer, selectedOptionIndex, selectedOptionAt: Timestamp.now() }) : answer
           )
 
           const roundAnswerRef = getRoundAnswerRef(lobbyId, String(roundIndex))

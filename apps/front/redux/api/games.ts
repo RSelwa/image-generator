@@ -193,7 +193,7 @@ export const gameApi = createApi({
 
               if (error) return null
 
-              return { id: data.id, title: data.title }
+              return data
             })
             .filter((g) => g !== null)
 
