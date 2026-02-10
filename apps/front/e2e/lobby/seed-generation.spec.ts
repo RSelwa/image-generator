@@ -88,6 +88,9 @@ test.describe("Test seed generation", () => {
       await page.waitForTimeout(7000)
 
       const roundAnswersCollection = await subRefs[TABLES.ROUND_ANSWERS](lobby.id).get()
+      const lobbyUpdated = await refs[TABLES.LOBBIES].doc(lobby.id).get()
+
+      expect(lobbyUpdated?.data()?.maximumPossiblePoints).toBe(1500)
 
       expect(roundAnswersCollection).toBeTruthy()
 

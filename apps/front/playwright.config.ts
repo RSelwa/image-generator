@@ -19,6 +19,7 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      testMatch: "**/e2e/**/*.spec.{js,ts,jsx,tsx}",
       dependencies: ["setup db"],
     },
   ],

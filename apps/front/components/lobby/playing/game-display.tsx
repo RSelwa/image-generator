@@ -5,8 +5,8 @@ import { Fragment, useEffect, useState } from "react"
 import * as React from "react"
 import MiniMap from "@/components/mini-map"
 import { Button } from "@/components/ui/button"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { ImageGlow } from "@/components/ui/image-glow"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Progress } from "@/components/ui/progress"
 import { TextRevealTW } from "@/components/ui/text-reveal"
 import { useSubmitRoundAnswerMutation, useSubscribeLobbyQuery, useUpdateNextRoundMutation, useUpdatePlayerScoreMutation } from "@/redux/api/lobby"
@@ -14,6 +14,48 @@ import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRou
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
+
+const NextRoundButton = () => {
+  const pathname = usePathname()
+  const lobbyId = getLobbyIdFromPathname(pathname)
+
+  const [popOverOpen, setPopOverOpen] = useState(false)
+
+  const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
+  const isEveryoneReady = useAppSelector(selectAllPlayersReady(lobbyId, roundIndex))
+
+  const [nextRound] = useUpdateNextRoundMutation()
+
+  if (isEveryoneReady) {
+    return (
+      <Button variant="outline" onClick={() => nextRound({ lobbyId })}>
+        Next round
+      </Button>
+    )
+  }
+
+  return (
+    <Popover open={popOverOpen} onOpenChange={setPopOverOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline">
+          Next round
+        </Button>
+
+      </PopoverTrigger>
+      <PopoverContent className="text-white bg-background text-center flex flex-col items-center justify-center gap-2 w-96">
+        <span className="text-sm text-muted-foreground">Not all players have finished the round. <br /> Are you sure to go next round ? (they will loose their points on this round)</span>
+        <div className="flex gap-2 items-center justify-center">
+          <Button onClick={() => nextRound({ lobbyId })}>
+            Yes, go next round
+          </Button>
+          <Button variant="ghost" onClick={() => setPopOverOpen(false)}>
+            No, wait for players
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
 
 const Rounds = ({ currentRound, numberOfRounds }: { currentRound: number, numberOfRounds: number }) => (
   <article className="flex items-center gap-3 text-white font-bold">
@@ -92,7 +134,7 @@ const InfosRoundNormal = () => {
 
   return (
 
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-2">
       {(!hasGuessedGame) && (
         <ImageGlow>
           <Image src={currentRoundInfos?.gameThumbnailUrl || ""} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} />
@@ -141,7 +183,6 @@ export const DisplayGame = () => {
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const user = useAppSelector(selectUser)
-  const [nextRound] = useUpdateNextRoundMutation()
   const [updatePlayerScore] = useUpdatePlayerScoreMutation()
   const [submitRoundAnswer] = useSubmitRoundAnswerMutation()
 
@@ -181,26 +222,17 @@ export const DisplayGame = () => {
   if (!currentRoundData) return <div className="min-h-full-height">Loading round data...</div>
 
   return (
-    <section className="h-full-height absolute z-10 bg-neutral-900/70 w-full">
+    <section className="h-full-height absolute z-10 bg-background/90 w-full">
       <div className="flex flex-col gap-8 justify-center items-center size-full">
         <Rounds currentRound={lobby?.currentRound || 0} numberOfRounds={lobby?.config?.numberOfRounds || 0} />
         <TextRevealTW text={currentRoundInfos?.gameTitle || "Game title"} className="text-white font-bold text-2xl" />
+        {isEveryOneReady ? "ready" : "not"}
 
         {isRoundSpecial && <InfoRoundSpecial /> }
-        {!isRoundSpecial && <InfosRoundNormal /> }
-        {isOwner && (
-          <HoverCard>
-            <HoverCardTrigger asChild>
-              <Button disabled={!isEveryOneReady} variant="outline" onClick={() => nextRound({ lobbyId })}>
-                Next round
-              </Button>
 
-            </HoverCardTrigger>
-            <HoverCardContent className="text-white bg-neutral-800/50 text-center">
-              {isEveryOneReady ? "All players are ready for the next round!" : "Waiting for all players to be ready..."}
-            </HoverCardContent>
-          </HoverCard>
-        )}
+        {!isRoundSpecial && <InfosRoundNormal /> }
+
+        {isOwner && <NextRoundButton />}
       </div>
     </section>
   )

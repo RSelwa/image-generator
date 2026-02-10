@@ -17,10 +17,11 @@
   - ~~when joining a game when not logged, should redirect to login/join and then get back~~
   - ~~everyone should be ready before next round~~
   - ~~Implements game creation~~
-  - clean special round select ⌛️
+  - ~~Fix timer on special round, should start only when user has selected a game~~
+  - ~~add a force next round for host~~
+  - ~~clean special round select ⌛️~~
+  - When changing round, a listener should update players points instead of client side
   - end game screen⌛️
-  - Fix timer on special round, should start only when user has selected a game
-  - add a force next round for host
   - Pseudo, when signup redirect to a modal with just an input to update the player pseudo
   - Add tests on api endpoints
   - Allow creation of flats and sphericals from new or gameId

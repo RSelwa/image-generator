@@ -50,7 +50,7 @@ export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <LogoHeader href={PAGES.ADMIN} className="p-4" />
+        <LogoHeader href={PAGES.HOME} className="p-4" />
       </SidebarHeader>
       <SidebarContent className="gap-0">
         {navMain.map((item) => (

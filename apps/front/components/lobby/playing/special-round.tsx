@@ -29,7 +29,7 @@ const PlayingSpecialRound = () => {
   if (!currentRoundData) return null
 
   return (
-    <section className="h-full-height bg-primary ">
+    <section className="h-full-height ">
       {!hasSelectedOption && (
         <article className="flex h-full pb-20 flex-col items-center gap-14 justify-center text-background">
           <p className="text-center font-bold text-2xl"> Bonus Round </p>
@@ -64,7 +64,7 @@ const PlayingSpecialRound = () => {
         <>
 
           {selectedOption?.type === ROUND_TYPE.FLAT && (
-            <Image src={selectedOption.flatImage || ""} alt="Selected option" width={1920} height={1080} className=" size-full" />
+            <Image src={selectedOption.flatImage || ""} alt="Selected option" width={1920} height={1080} className="aspect-video size-full object-contain" />
           )}
           {selectedOption?.type === ROUND_TYPE.SPHERICAL && (
             <div className="size-full">
