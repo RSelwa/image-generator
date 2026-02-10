@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test"
 import { TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { lobbyFactory } from "@repo/testing/factory"
-import { generateGameData } from "@/utils/playwright"
 import {
   createFirestoreLobbyDoc,
   createPlayerFromUserDoc,
@@ -11,10 +10,6 @@ import {
   setupUser,
   startLobbyViaUI,
 } from "../helpers/lobby"
-
-test.beforeAll(async () => {
-  await generateGameData()
-})
 
 test.describe("Test seed generation", () => {
   test.describe("When clicking on play in lobby", () => {
