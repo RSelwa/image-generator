@@ -280,6 +280,7 @@ export const lobbyApi = createApi({
               code,
               hostId: player.uid,
               status: LOBBY_STATUS.WAITING,
+              seedId: "",
               players: [],
               maximumPossiblePoints: 0,
               config: {
@@ -329,6 +330,10 @@ export const lobbyApi = createApi({
 
           const currentData = docSnap.data()
           const currentPlayers = currentData?.players || []
+
+          if (currentData.status !== LOBBY_STATUS.WAITING) {
+            throw new Error("Lobby is not accepting players")
+          }
 
           // Check if player already in lobby
           const alreadyJoined = currentPlayers.some(

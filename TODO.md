@@ -28,18 +28,18 @@
   - [x] Fix all colors for theming in future
   - [x] Seed maker
   - [x] Change google icon colored
-  - [ ] paste seed  -> call api to verify, the seed exists, if yes, increment the seedDoc.usedTimes and change lobbyDoc to use it + change the config number of rounds
-  - [ ] lock the number of rounds if seed already selected
+  - [x] paste seed  -> call api to verify, the seed exists, if yes, increment the seedDoc.usedTimes and change lobbyDoc to use it + change the config number of rounds
+  - [x] lock the number of rounds if seed already selected
+  - [x] Allow seed application in a lobby
+  - [ ] Allow flats to have maps
   - [ ] the listen docs should changes games if they contains a ready or not, when they are changed, should call another cf (maybe on request) that will fetch all games spehrical/flat to check if they have ready
   - [ ] Fix: if selected 6 rounds, in end screen, still have 18 displayed
   - [ ] Account settings
   - [ ] Change icons on minimap
   - [ ] Fix starting screen when game is Loading
-  - [ ] Allow seed application in a lobby
   - [ ] Share seed at the end of a lobby
   - [ ] end game screen⌛️
   - [ ] Add tests on api endpoints
-  - [ ] Allow flats to have maps
   - [ ] Allow creation of flats and sphericals from new or gameId
   - [ ] Add firebase admin for front libs
   - [ ] Improve the security for the update for lobbies

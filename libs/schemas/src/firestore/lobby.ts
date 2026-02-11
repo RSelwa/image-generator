@@ -42,7 +42,6 @@ export const createLobbyInputSchema = lobbyDocSchema.omit({
   currentRound: true,
   currentRoundData: true,
   roundStartedAt: true,
-  seedId: true,
 })
 export type CreateLobbyInput = z.infer<typeof createLobbyInputSchema>
 

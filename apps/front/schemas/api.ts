@@ -10,3 +10,8 @@ export const uploadImagePayloadSchema = z.object({
     error: "Invalid storage path",
   }),
 })
+
+export const applySeedPayload = z.object({
+  lobbyId: z.string().min(1),
+  seedId: z.string(),
+})

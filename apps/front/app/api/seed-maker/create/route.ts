@@ -12,13 +12,11 @@ export const POST = async (request: Request) => {
     const authHeader = headers.get("Authorization")
     const token = authHeader?.split(" ")[1]
 
-    if (token) {
-      const verifiedToken = await auth.verifyIdToken(token || "").catch((error) => {
-        console.error("Token verification failed:", error)
-      })
+    if (!token) return new Response("You need to be logged", { status: 401 })
 
-      userId = verifiedToken?.uid || null
-    }
+    const verifiedToken = await auth.verifyIdToken(token || "")
+
+    userId = verifiedToken?.uid || null
 
     const body = await request.json()
 

@@ -2,6 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { type ConstantValues, type STORAGE_PATHS } from "@repo/common"
 import { ENDPOINTS_BASE } from "@/constants/api"
 import { auth } from "@/constants/db"
+import { lobbyApi } from "@/redux/api/lobby"
+import { applySeedPayload } from "@/schemas/api"
 
 type UploadImageInput = {
   file: File
@@ -87,7 +89,50 @@ export const localApi = createApi({
         }
       },
     }),
+    applySeedToLobby: builder.mutation<null, { lobbyId: string, seedId: string }>({
+      queryFn: async (b, { dispatch }) => {
+        try {
+          const body = applySeedPayload.parse(b)
+
+          if (!body.seedId && body.lobbyId) {
+            await dispatch(lobbyApi.endpoints.updateLobby.initiate({
+              id: body.lobbyId,
+              data: {
+                seedId: ""
+              }
+            }))
+
+            return { data: null }
+          }
+
+          const response = await fetch(ENDPOINTS_BASE.APPLY_SEED, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${await auth.currentUser?.getIdToken()}`,
+            },
+            body: JSON.stringify(body),
+          })
+
+          if (!response.ok) {
+            throw new Error("Failed to apply seed")
+          }
+
+          return { data: null }
+        } catch (error) {
+          console.error("Error applying seed:", error)
+
+          return {
+            error: {
+              status: 500,
+              data:
+                error instanceof Error ? error.message : "Failed to apply seed",
+            },
+          }
+        }
+      }
+    })
   }),
 })
 
-export const { useUploadImageMutation, useProxyImageQuery } = localApi
+export const { useUploadImageMutation, useProxyImageQuery, useApplySeedToLobbyMutation } = localApi

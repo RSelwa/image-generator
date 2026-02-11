@@ -4,10 +4,10 @@ import { LOBBY_STATUS } from "@repo/common"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { QUERY_PARAMS, SESSION_STATUS } from "@/constants/mapping"
+import { QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useGetLobbyByCodeQuery, useJoinLobbyMutation } from "@/redux/api/lobby"
-import { selectSessionStatus, selectUser } from "@/redux/session/session.selectors"
+import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { createPlayerFromSessionUser } from "@/utils/player"
 
@@ -19,14 +19,12 @@ const JoinLobbyHandler = ({ code }: Props) => {
   const router = useRouter()
 
   const user = useAppSelector(selectUser)
-  const sessionStatus = useAppSelector(selectSessionStatus)
+  const isSessionReady = useAppSelector(selectSessionIsReady)
 
   const hasHandled = useRef(false)
 
   const { data: lobby, isLoading, isError } = useGetLobbyByCodeQuery({ code })
   const [joinLobby] = useJoinLobbyMutation()
-
-  const isSessionReady = sessionStatus === SESSION_STATUS.SUCCESS
 
   useEffect(() => {
     if (isLoading || hasHandled.current || (!user && !isSessionReady)) return

@@ -3,18 +3,20 @@
 import { LOBBY_STATUS } from "@repo/common"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef } from "react"
+import { toast } from "sonner"
 import LobbyFinished from "@/components/lobby/lobby-finished"
 import LobbyStarting from "@/components/lobby/lobby-starting"
 import LobbyWaiting from "@/components/lobby/lobby-waiting"
 import LobbyPlaying from "@/components/lobby/playing/lobby-playing"
 import { Button } from "@/components/ui/button"
 import { auth } from "@/constants/db"
-import { API_ENDPOINTS } from "@/constants/mapping"
+import { API_ENDPOINTS, QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
-import { useLeaveLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { selectUser } from "@/redux/session/session.selectors"
+import { useJoinLobbyMutation, useLeaveLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
+import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
+import { createPlayerFromSessionUser } from "@/utils/player"
 
 const LoadingLobby = () => (
   <main className="min-h-full-height flex items-center justify-center">
@@ -36,11 +38,15 @@ const NoLobby = () => {
 }
 
 const LobbyMain = () => {
+  const router = useRouter()
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const user = useAppSelector(selectUser)
+  const isSessionReady = useAppSelector(selectSessionIsReady)
+
   const [leaveLobby] = useLeaveLobbyMutation()
+  const [joinLobby] = useJoinLobbyMutation()
 
   const { data: lobby, isLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {
     skip: !lobbyId,
@@ -96,11 +102,35 @@ const LobbyMain = () => {
     }
   }, [lobbyId, user?.id, leaveLobby])
 
+  useEffect(() => {
+    if (isLoading || !lobby) return
+    if (lobby.status !== LOBBY_STATUS.WAITING) {
+      toast.error("This lobby is no longer accepting players")
+      router.replace(PAGES.HOME)
+
+      return
+    }
+
+    if ((isSessionReady && !user) || !user) {
+      toast.error("You need to be logged to join the lobby")
+      const searchParams = new URLSearchParams({ [QUERY_PARAMS.REDIRECT]: `${PAGES.JOIN_LOBBY}/${lobby.code}` })
+      const url = new URL(`${PAGES.LOGIN}?${searchParams.toString()}`, window.location.origin)
+      router.replace(url.href)
+
+      return
+    }
+
+    const player = createPlayerFromSessionUser(user)
+
+    joinLobby({ lobbyId: lobby.id, player })
+      .unwrap()
+  }, [isSessionReady, user])
+
   const isUserInLobby = lobby?.players.some((p) => p.uid === user?.id)
 
   if (isLoading) return <LoadingLobby />
 
-  if (!lobby || !isUserInLobby) return <NoLobby />
+  if ((!lobby || !isUserInLobby)) return <NoLobby />
 
   if (lobby.status === LOBBY_STATUS.WAITING) return <LobbyWaiting />
   if (lobby.status === LOBBY_STATUS.STARTING) return <LobbyStarting />

@@ -1,4 +1,5 @@
 import { USER_RIGHT } from "@repo/common"
+import { SESSION_STATUS } from "@/constants/mapping"
 import { type RootState } from "@/redux/store"
 
 export const selectUser = ({ session }: RootState) => session.user
@@ -6,6 +7,7 @@ export const selectUser = ({ session }: RootState) => session.user
 export const selectUserId = ({ session }: RootState) => session.user?.id || ""
 
 export const selectSessionStatus = ({ session }: RootState) => session.status
+export const selectSessionIsReady = ({ session }: RootState) => session.status === SESSION_STATUS.SUCCESS
 
 export const selectUserRights = ({ session }: RootState) =>
   session.user?.rights

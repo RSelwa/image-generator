@@ -6,6 +6,7 @@ export const DEFAULT_SIZE_FLATS = 20
 export const ENDPOINTS_BASE = {
   UPLOAD_IMAGE: "/api/upload-image",
   PROXY_IMAGE: "/api/proxy-image",
+  APPLY_SEED: "/api/apply-seed",
 } as const
 
 export const UPLOAD_GAME_IMAGE_PAYLOAD = {
