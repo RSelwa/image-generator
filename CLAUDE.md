@@ -27,4 +27,5 @@
 
 - Always launch commands from root directory and use '--filter <package>' when launching commands
 - Be sure to typecheck when you’re done making a series of code changes
+- do not build the front for typecheck
 <!-- - Be sure to format everything with 'pnpm lint:fix' -->

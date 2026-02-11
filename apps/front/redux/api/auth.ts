@@ -1,3 +1,4 @@
+import { type Action } from "@reduxjs/toolkit"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { isEqual } from "@repo/common"
 import { type UserDoc } from "@repo/schemas"
@@ -11,6 +12,7 @@ import {
   type Unsubscribe,
 } from "firebase/auth"
 import { type DocumentReference, getDoc, onSnapshot } from "firebase/firestore"
+import { REHYDRATE } from "redux-persist"
 import { toast } from "sonner"
 import { z } from "zod"
 import { type SignupSchema } from "@/components/signup-form"
@@ -51,9 +53,29 @@ const sendPasswordResetEmailSchema = z.email()
 const googleProvider = new GoogleAuthProvider()
 googleProvider.addScope("https://www.googleapis.com/auth/userinfo.profile")
 
+const isHydrateAction = (action: Action): action is Action<typeof REHYDRATE> & {
+  key: string
+  payload: RootState
+  err: unknown
+} => {
+  return action.type === REHYDRATE
+}
+
 export const authApi = createApi({
   reducerPath: "auth",
   baseQuery: fakeBaseQuery(),
+  // to prevent circular type issues, the return type needs to be annotated as any
+  extractRehydrationInfo(action, { reducerPath }): any {
+    if (isHydrateAction(action)) {
+      // when persisting the api reducer
+      if (action.key === "key used with redux-persist") {
+        return action.payload
+      }
+
+      // When persisting the root reducer
+      return action.payload[reducerPath]
+    }
+  },
   tagTypes: ["auth"],
   endpoints: (builder) => ({
     createUserAuth: builder.mutation<null, SignupSchema>({
