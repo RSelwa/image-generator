@@ -29,7 +29,7 @@ const NextRoundButton = () => {
 
   if (isEveryoneReady) {
     return (
-      <Button data-testId="next-round-button" onClick={() => nextRound({ lobbyId })}>
+      <Button data-testid="next-round-button" onClick={() => nextRound({ lobbyId })}>
         Next round
       </Button>
     )
@@ -38,7 +38,7 @@ const NextRoundButton = () => {
   return (
     <Popover open={popOverOpen} onOpenChange={setPopOverOpen}>
       <PopoverTrigger asChild>
-        <Button data-testId="next-round-button-popover">
+        <Button data-testid="next-round-button-popover">
           Next round
         </Button>
 
@@ -46,7 +46,7 @@ const NextRoundButton = () => {
       <PopoverContent sideOffset={12} className="text-foreground bg-background text-center flex flex-col items-center justify-center gap-2 w-96">
         <span className="text-sm text-muted-primary-foreground">Not all players have finished the round. <br /> Are you sure to go next round ? (they will loose their points on this round)</span>
         <div className="flex gap-2 items-center justify-center">
-          <Button data-testId="next-round-button-confirm" onClick={() => nextRound({ lobbyId })}>
+          <Button data-testid="next-round-button-confirm" onClick={() => nextRound({ lobbyId })}>
             Yes, go next round
           </Button>
           <Button variant="ghost" onClick={() => setPopOverOpen(false)}>
@@ -87,7 +87,7 @@ const InfoRoundSpecial = () => {
   return (
     <>
       <ImageGlow>
-        <Image data-testId={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || FALL_BACK_IMAGE} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
+        <Image data-testid={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || FALL_BACK_IMAGE} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
       </ImageGlow>
       <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-white text-lg" initialDelay={1.5} />
     </>
@@ -138,13 +138,13 @@ const InfosRoundNormal = () => {
     <div className="flex flex-col items-center gap-2">
       {(!hasGuessedGame) && (
         <ImageGlow>
-          <Image data-testId={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || FALL_BACK_IMAGE} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
+          <Image data-testid={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || FALL_BACK_IMAGE} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
         </ImageGlow>
       )}
 
       {hasGuessedGame && (
         <MiniMap
-          data-testId={`game-map-${currentRoundInfos?.gameTitle}`}
+          data-testid={`game-map-${currentRoundInfos?.gameTitle}`}
           mapData={{
             mapImage: currentRoundData.mapImage || "",
             size: {

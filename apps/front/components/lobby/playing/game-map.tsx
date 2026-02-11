@@ -52,7 +52,7 @@ const GameMapGuess = () => {
 
   return (
     <form
-      data-testId="game-map-guess-form"
+      data-testid="game-map-guess-form"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onSubmit={submitDistance}
@@ -79,7 +79,7 @@ const GameMapGuess = () => {
         isParentHover={isHovered}
       />
 
-      <Button data-testId="map-submit" type="submit" className="w-full">
+      <Button data-testid="map-submit" type="submit" className="w-full">
         Guess
       </Button>
     </form>

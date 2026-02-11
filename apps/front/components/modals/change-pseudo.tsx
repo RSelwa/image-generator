@@ -57,7 +57,7 @@ const ChangePseudoModal = () => {
 
   return (
     <AlertDialog open>
-      <AlertDialogContent data-testId="change-pseudo-modal" className="max-h-[80vh] overflow-y-auto" asChild>
+      <AlertDialogContent data-testid="change-pseudo-modal" className="max-h-[80vh] overflow-y-auto" asChild>
         <form onSubmit={handleSubmit(onSubmit)}>
           <AlertDialogHeader>
             <AlertDialogTitle>Select a new pseudo</AlertDialogTitle>

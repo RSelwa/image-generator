@@ -225,7 +225,7 @@ export const MiniMap = ({
         >
           {/* Map container with markers - uses actual image dimensions */}
           <div
-            data-testId="mini-map-container"
+            data-testid="mini-map-container"
             ref={containerRef}
             className={`relative ${disabled || hasSubmitted ? "cursor-default" : "cursor-crosshair"}`}
             onMouseDown={handleMouseDown}

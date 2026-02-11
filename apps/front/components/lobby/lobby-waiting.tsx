@@ -85,7 +85,7 @@ const LobbyWaiting = () => {
               disabled={disabled}
             >
               <SelectTrigger
-                data-testId="select-number-rounds-trigger"
+                data-testid="select-number-rounds-trigger"
                 className="w-20"
               >
                 <SelectValue
@@ -95,7 +95,7 @@ const LobbyWaiting = () => {
               <SelectContent>
                 {OPTIONS_NUMBER_OF_ROUNDS.map((roundNumber) => (
                   <SelectItem
-                    data-testId={`select-number-rounds-${roundNumber}-item`}
+                    data-testid={`select-number-rounds-${roundNumber}-item`}
 
                     key={roundNumber}
                     value={roundNumber.toString()}
@@ -120,7 +120,7 @@ const LobbyWaiting = () => {
 
             >
               <SelectTrigger
-                data-testId="select-player-live-trigger"
+                data-testid="select-player-live-trigger"
                 className="w-20"
               >
                 <SelectValue placeholder={`Players lives: ${lobby.config.playersLives || "Unlimited"}`} />
@@ -128,7 +128,7 @@ const LobbyWaiting = () => {
               <SelectContent>
                 {OPTIONS_PLAYERS_LIVES.map((playerLive) => (
                   <SelectItem
-                    data-testId={`select-player-live-${playerLive}-item`}
+                    data-testid={`select-player-live-${playerLive}-item`}
                     key={playerLive}
                     value={playerLive?.toString() || "null"}
                   >
@@ -150,7 +150,7 @@ const LobbyWaiting = () => {
               disabled={disabled}
             >
               <SelectTrigger
-                data-testId="select-round-duration-trigger"
+                data-testid="select-round-duration-trigger"
                 className="w-20"
               >
                 <SelectValue placeholder={`Rounds duration: ${lobby.config.roundDuration}`} />
@@ -158,7 +158,7 @@ const LobbyWaiting = () => {
               <SelectContent>
                 {OPTIONS_ROUND_DURATIONS.map((roundDuration) => (
                   <SelectItem
-                    data-testId={`select-round-duration-${roundDuration}-item`}
+                    data-testid={`select-round-duration-${roundDuration}-item`}
                     key={roundDuration}
                     value={roundDuration.toString()}
                   >
@@ -173,7 +173,7 @@ const LobbyWaiting = () => {
           <Field orientation="horizontal" className="justify-between">
             <Switch
               id="special-rounds"
-              data-testId="special-rounds"
+              data-testid="special-rounds"
               checked={lobby.config.hasSpecialRounds}
               onCheckedChange={(checked) =>
                 changeConfig({ hasSpecialRounds: checked })}

@@ -29,7 +29,7 @@ const LobbyFinished = () => {
   const percentageValueGamesFound = numberGameFound && config ? (numberGameFound.numberGameFound / config.numberOfRounds) * 100 : 0
 
   return (
-    <main data-testId="lobby-finished" className="min-h-full-height w-1/2 mx-auto bg-background text-foreground flex flex-col items-center justify-center gap-8">
+    <main data-testid="lobby-finished" className="min-h-full-height w-1/2 mx-auto bg-background text-foreground flex flex-col items-center justify-center gap-8">
       <Logo />
       <h1>{APP_NAME}</h1>
       <Field className="w-full max-w-sm">
