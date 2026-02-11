@@ -29,7 +29,11 @@ const Navbar = () => {
   return (
     <nav className="flex justify-between mb-2 p-4">
       <LogoHeader />
-      {user && <NavUser />}
+      {user && (
+        <article className="flex items-center gap-3">
+          <NavUser />
+        </article>
+      )}
       {!user && (
         <article className="flex items-center gap-3">
           <Button variant="outline" asChild>

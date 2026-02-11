@@ -2,6 +2,7 @@
 
 import {
   ChevronsUpDown,
+  Gamepad2,
   LayoutDashboard,
   LogOut,
   User,
@@ -36,9 +37,9 @@ export const NavUser = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         data-testid="nav-user-dropdown-trigger"
-        className="flex w-56 items-center gap-2"
+        className="flex w-56 items-center gap-2 outline-none"
       >
-        <Avatar className="h-8 w-8 rounded-lg">
+        <Avatar className="size-9 rounded-lg">
           <AvatarImage src={user.photoUrl} alt={user.email} />
           <AvatarFallback className="rounded-lg">{firstLetter(user.pseudo)}</AvatarFallback>
         </Avatar>
@@ -79,6 +80,13 @@ export const NavUser = () => {
           <DropdownMenuItem>
             <User />
             Account
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={PAGES.SEED_MAKER} className="cursor-pointer">
+
+              <Gamepad2 />
+              Make a round
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

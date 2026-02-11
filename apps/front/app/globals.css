@@ -50,7 +50,7 @@
   --shadow-glow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25); 
   --shadow-glow-xs: 0px 0px 10px 5px rgba(0, 0, 0, 0.25); 
   --admin-header-height: 76px;
-  --header-height: 73.5px;
+  --header-height: 76px;
   --footer-height: 0px;
   /* --header-height: 76px; */
   /* --footer-height: 85px; */
@@ -197,4 +197,42 @@
   .firebase-emulator-warning {
     @apply hidden!;
   }
+
+    /* ::-webkit-scrollbar {
+      @apply w-2.5 h-2.5;
+  
+    }
+  
+    ::-webkit-scrollbar-track {
+      @apply bg-transparent
+    }
+  
+    ::-webkit-scrollbar-thumb {
+      @apply rounded-full bg-transparent border-0 bg-clip-padding;
+    }
+
+    *:hover > ::-webkit-scrollbar-thumb,
+    ::-webkit-scrollbar-thumb:hover,
+    ::-webkit-scrollbar-thumb:active {
+      @apply bg-border;
+    } */
+         .scrollbar::-webkit-scrollbar {
+           width: 20px;
+           height: 20px;
+         }
+    
+         .scrollbar::-webkit-scrollbar-track {
+           border-radius: 100vh;
+           background: #f7f4ed;
+         }
+    
+         .scrollbar::-webkit-scrollbar-thumb {
+           background: #e0cbcb;
+           border-radius: 100vh;
+           border: 3px solid #f6f7ed;
+         }
+    
+         .scrollbar::-webkit-scrollbar-thumb:hover {
+           background: #c0a0b9;
+         }
 }

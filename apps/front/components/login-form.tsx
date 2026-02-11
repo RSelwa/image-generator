@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useRef } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import z from "zod"
-import { GoogleIcon } from "@/components/icons"
+import { ColoredGoogleIcon } from "@/components/icons"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -132,7 +132,7 @@ export const LoginForm = ({
                   type="button"
                   onClick={onLoginWithGoogle}
                 >
-                  <GoogleIcon />
+                  <ColoredGoogleIcon />
                   <span className="sr-only">Sign up with Google</span>
                   {isLoadingGoogle && <Loader />}
                 </Button>

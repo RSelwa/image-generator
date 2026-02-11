@@ -8,6 +8,7 @@ import { lobbyApi } from "@/redux/api/lobby"
 import { localApi } from "@/redux/api/local"
 import { mapApi } from "@/redux/api/maps"
 import { seedApi } from "@/redux/api/seed"
+import { seedMakerApi } from "@/redux/api/seed-maker"
 import { sphericalApi } from "@/redux/api/spherical"
 import { userApi } from "@/redux/api/user"
 import { sessionSlice } from "@/redux/session/session.slice"
@@ -25,6 +26,7 @@ export const makeStore = () =>
       [authApi.reducerPath]: authApi.reducer,
       [seedApi.reducerPath]: seedApi.reducer,
       [lobbyApi.reducerPath]: lobbyApi.reducer,
+      [seedMakerApi.reducerPath]: seedMakerApi.reducer,
       [sessionSlice.name]: sessionSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -38,7 +40,8 @@ export const makeStore = () =>
         .concat(mapApi.middleware)
         .concat(sphericalApi.middleware)
         .concat(flatApi.middleware)
-        .concat(authApi.middleware),
+        .concat(authApi.middleware)
+        .concat(seedMakerApi.middleware),
   })
 
 // Infer the type of makeStore

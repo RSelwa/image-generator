@@ -36,22 +36,24 @@ const PlayingSpecialRound = () => {
           <p className="text-center font-bold text-2xl"> Bonus Round </p>
           <div className="grid grid-cols-2 gap-0 mx-auto">
             {currentRoundData.options?.map((option, index) => (
-              <ImageGlow key={option.gameId} isBlurOnHover>
-                <Image
-                  data-testid={`game-thumbnail-option-${index}`}
-                  onClick={async () => await selectOptionIndex({
-                    lobbyId,
-                    playerId: user?.id || "",
-                    roundIndex: lobby?.currentRound || 0,
-                    selectedOptionIndex: index,
-                  })}
-                  src={option.thumbnailUrl || ""}
-                  alt={`Option ${index + 1}`}
-                  width={300}
-                  height={300}
-                  className="aspect-square size-32 scale-75 hover:scale-100 transition-transform cursor-pointer rounded-lg object-cover"
-                />
-              </ImageGlow>
+              <div key={option.gameId} className="size-48">
+                <ImageGlow isBlurOnHover>
+                  <Image
+                    data-testid={`game-thumbnail-option-${index}`}
+                    onClick={async () => await selectOptionIndex({
+                      lobbyId,
+                      playerId: user?.id || "",
+                      roundIndex: lobby?.currentRound || 0,
+                      selectedOptionIndex: index,
+                    })}
+                    src={option.thumbnailUrl || ""}
+                    alt={`Option ${index + 1}`}
+                    width={300}
+                    height={300}
+                    className="aspect-square scale-75 hover:scale-100 transition-transform cursor-pointer rounded-lg object-cover"
+                  />
+                </ImageGlow>
+              </div>
 
             ))}
           </div>

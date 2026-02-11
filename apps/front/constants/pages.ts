@@ -15,4 +15,5 @@ export const PAGES = {
   ADMIN_TEST: "/admin/test",
   ADMIN_FULLSCREEN: "/admin/full-screen",
   ADMIN_SPHERICAL_FULLSCREEN: "/admin/spherical-full-screen",
+  SEED_MAKER: "/seed-maker",
 } as const

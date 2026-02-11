@@ -7,6 +7,7 @@
 
 # Code style
 
+- In front, if you want to have a page that take the full height, use the class `h-full-height` instead of `h-[calc(...)]`
 - Use pnpm instead of npm
 - in test, use firebase admin sdk instead of custom helpers
 - in tests, use page instead of browser
