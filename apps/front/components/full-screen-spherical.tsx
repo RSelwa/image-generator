@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { ReactSphere } from "@/components/providers/react-sphere"
+import { FALL_BACK_IMAGE } from "@/constants/mapping"
 import { useGetFlatByIdQuery } from "@/redux/api/flat"
 import { useGetSphericalByIdQuery } from "@/redux/api/spherical"
 
@@ -10,7 +11,7 @@ export const FlatFullScreen = (props: { id: string, gameId: string }) => {
 
   return (
     <div className="size-full">
-      <Image src={data?.image || ""} height={1080} width={1920} alt="Flat Fullscreen" className="size-full object-cover" />
+      <Image src={data?.image || FALL_BACK_IMAGE} height={1080} width={1920} alt="Flat Fullscreen" className="size-full object-cover" />
     </div>
   )
 }

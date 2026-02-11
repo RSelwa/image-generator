@@ -150,7 +150,7 @@ export const SignupForm = ({
             <img
               src="/signup.png"
               alt="Singup"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              className="absolute inset-0 h-full w-full object-cover dark:grayscale"
             />
           </div>
         </CardContent>

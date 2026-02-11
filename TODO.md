@@ -22,10 +22,17 @@
   - [x] clean special round select ⌛️
   - [x] Fix when reload when gameDisplay it should not re add other points to the score
   - [x] Pseudo, when signup redirect to a modal with just an input to update the player pseudo
+  - [x] Persist auth when reloading
+  - [x] fix game thumbnail image when fail
+  - [x] Fix fall back
+  - [ ] Fix all colors for theming in future
+  - [ ] Fix starting screen
+  - [ ] Seed maker
+  - [ ] Allow seed application in a lobby
+  - [ ] Share seed at the end of a lobby
   - [ ] end game screen⌛️
-  - [ ] Persist auth when reloading
-  - [ ] fix game thumbnail image when fail
   - [ ] Add tests on api endpoints
+  - [ ] Allow flats to have maps
   - [ ] Allow creation of flats and sphericals from new or gameId
   - [ ] Add firebase admin for front libs
   - [ ] Improve the security for the update for lobbies

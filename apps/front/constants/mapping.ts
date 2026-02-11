@@ -40,7 +40,7 @@ export const SORT_OPTIONS_LABEL = {
 } as const
 
 export const NEW_SEARCH_PARAM = "new"
-export const FALL_BACK_IMAGE = "/signup.png"
+export const FALL_BACK_IMAGE = "/placeholder.svg"
 export const APP_NAME = "Geo gamer"
 export const CONTACT_EMAIL = "selwa.raphael@gmail.com"
 

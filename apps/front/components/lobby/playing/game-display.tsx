@@ -9,6 +9,7 @@ import { ImageGlow } from "@/components/ui/image-glow"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Progress } from "@/components/ui/progress"
 import { TextRevealTW } from "@/components/ui/text-reveal"
+import { FALL_BACK_IMAGE } from "@/constants/mapping"
 import { useSubmitRoundAnswerMutation, useSubscribeLobbyQuery, useUpdateNextRoundMutation, useUpdatePlayerScoreMutation } from "@/redux/api/lobby"
 import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectCurrentRoundInfos, selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -28,7 +29,7 @@ const NextRoundButton = () => {
 
   if (isEveryoneReady) {
     return (
-      <Button data-testId="next-round-button" variant="outline" onClick={() => nextRound({ lobbyId })}>
+      <Button data-testId="next-round-button" onClick={() => nextRound({ lobbyId })}>
         Next round
       </Button>
     )
@@ -37,12 +38,12 @@ const NextRoundButton = () => {
   return (
     <Popover open={popOverOpen} onOpenChange={setPopOverOpen}>
       <PopoverTrigger asChild>
-        <Button data-testId="next-round-button-popover" variant="outline">
+        <Button data-testId="next-round-button-popover">
           Next round
         </Button>
 
       </PopoverTrigger>
-      <PopoverContent className="text-white bg-primary text-center flex flex-col items-center justify-center gap-2 w-96">
+      <PopoverContent sideOffset={12} className="text-foreground bg-background text-center flex flex-col items-center justify-center gap-2 w-96">
         <span className="text-sm text-muted-primary-foreground">Not all players have finished the round. <br /> Are you sure to go next round ? (they will loose their points on this round)</span>
         <div className="flex gap-2 items-center justify-center">
           <Button data-testId="next-round-button-confirm" onClick={() => nextRound({ lobbyId })}>
@@ -86,7 +87,7 @@ const InfoRoundSpecial = () => {
   return (
     <>
       <ImageGlow>
-        <Image data-testId={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || ""} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
+        <Image data-testId={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || FALL_BACK_IMAGE} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
       </ImageGlow>
       <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-white text-lg" initialDelay={1.5} />
     </>
@@ -137,7 +138,7 @@ const InfosRoundNormal = () => {
     <div className="flex flex-col items-center gap-2">
       {(!hasGuessedGame) && (
         <ImageGlow>
-          <Image data-testId={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || ""} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
+          <Image data-testId={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || FALL_BACK_IMAGE} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
         </ImageGlow>
       )}
 

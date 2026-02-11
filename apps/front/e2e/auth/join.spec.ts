@@ -12,7 +12,7 @@ test("signup and redirect to home", async ({ page }) => {
   await page.getByLabel("Password").fill("cacayolo")
   await page.getByRole("button", { name: "Create Account" }).click()
 
-  await expect(page).toHaveURL("/")
+  await expect(page).toHaveURL("/?new-pseudo=")
   await expect(page.getByRole("link", { name: "Join" })).toHaveCount(0)
 
   await expect(page.getByTestId(SELECTORS.CHANGE_PSEUDO_MODAL)).toBeVisible()
