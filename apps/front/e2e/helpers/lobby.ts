@@ -67,7 +67,7 @@ export const startLobbyViaUI = async (page: Page) => {
 export const waitForInputToBeVisible = async (page: Page) =>
   await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10000 })
 
-export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, photoUrl: "" })
+export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", photoUrl: "" })
 
 export const createFirestoreLobbyDoc = async (
   lobby: LobbyDoc,

@@ -1,6 +1,7 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
+import ChangePseudoModal from "@/components/modals/change-pseudo"
 import { ModalFlatId } from "@/components/modals/flat-id"
 import { FlatsGallery } from "@/components/modals/flats-gallery"
 import { ModalGame } from "@/components/modals/game"
@@ -15,6 +16,7 @@ export const ModalProvider = () => {
 
   const type = Object.values(MODAL_KEYS).find((key) => searchParams.has(key))
 
+  if (type === MODAL_KEYS.CHANGE_PSEUDO) return <ChangePseudoModal />
   if (type === MODAL_KEYS.GAME_ID) return <ModalGame />
 
   if (type === MODAL_KEYS.SPHERICAL_GALLERY_ID)

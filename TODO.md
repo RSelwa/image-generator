@@ -20,16 +20,17 @@
   - [x] Fix timer on special round, should start only when user has selected a game
   - [x] add a force next round for host
   - [x] clean special round select ⌛️
-  - [ ] Fix when reload when gameDisplay it should not re add other points to the score
+  - [x] Fix when reload when gameDisplay it should not re add other points to the score
+  - [x] Pseudo, when signup redirect to a modal with just an input to update the player pseudo
   - [ ] end game screen⌛️
-  - [ ] Pseudo, when signup redirect to a modal with just an input to update the player pseudo
+  - [ ] Persist auth when reloading
+  - [ ] fix game thumbnail image when fail
   - [ ] Add tests on api endpoints
   - [ ] Allow creation of flats and sphericals from new or gameId
   - [ ] Add firebase admin for front libs
   - [ ] Improve the security for the update for lobbies
   - [ ] Implement suggestion
   - [ ] friends invitations
-  - [ ] fix game thumbnail image when fail
   - [ ] Buy domain name
   - [ ] Setup Reels Insta et tiktok
   - [ ] Implement a system to interact with twitch chat, maybe to vote for games

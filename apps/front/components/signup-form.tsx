@@ -18,7 +18,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { QUERY_PARAMS } from "@/constants/mapping"
+import { MODAL_KEYS, QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import {
   useCreateUserAuthMutation,
@@ -58,7 +58,11 @@ export const SignupForm = ({
     if (!pendingRedirect.current || !user) return
 
     pendingRedirect.current = false
-    router.push(redirect || PAGES.HOME)
+
+    const searchParams = new URLSearchParams(MODAL_KEYS.CHANGE_PSEUDO)
+    const redirectUrl = redirect ? new URL(redirect, window.location.origin) : new URL(`${PAGES.HOME}?${searchParams}`, window.location.origin)
+
+    router.push(redirectUrl.href)
   }, [user, redirect, router])
 
   const onSubmit: SubmitHandler<SignupSchema> = async (data) => {

@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { expect, test } from "@playwright/test"
+import { SELECTORS } from "@/constants/testing"
 
 test("signup and redirect to home", async ({ page }) => {
   const email = faker.internet.email({
@@ -14,5 +15,6 @@ test("signup and redirect to home", async ({ page }) => {
   await expect(page).toHaveURL("/")
   await expect(page.getByRole("link", { name: "Join" })).toHaveCount(0)
 
+  await expect(page.getByTestId(SELECTORS.CHANGE_PSEUDO_MODAL)).toBeVisible()
   await expect(page.getByTestId("nav-user-dropdown-trigger")).toBeVisible()
 })

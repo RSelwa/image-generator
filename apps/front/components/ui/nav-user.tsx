@@ -1,12 +1,10 @@
 "use client"
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
+  LayoutDashboard,
   LogOut,
-  Sparkles,
+  User,
 } from "lucide-react"
 
 import Link from "next/link"
@@ -24,6 +22,7 @@ import { PAGES } from "@/constants/pages"
 import { useLogoutMutation } from "@/redux/api/auth"
 import { selectHasRightToDashBoard, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import { firstLetter } from "@/utils"
 
 export const NavUser = () => {
   const user = useAppSelector(selectUser)
@@ -41,10 +40,10 @@ export const NavUser = () => {
       >
         <Avatar className="h-8 w-8 rounded-lg">
           <AvatarImage src={user.photoUrl} alt={user.email} />
-          <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+          <AvatarFallback className="rounded-lg">{firstLetter(user.pseudo)}</AvatarFallback>
         </Avatar>
         <div className="grid flex-1 text-left text-sm leading-tight">
-          <span className="truncate font-medium">{user.email}</span>
+          <span className="truncate font-medium">{user.pseudo}</span>
           <span className="truncate text-xs">{user.email}</span>
         </div>
         <ChevronsUpDown className="ml-auto size-4" />
@@ -59,42 +58,27 @@ export const NavUser = () => {
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar className="h-8 w-8 rounded-lg">
               <AvatarImage src={user.photoUrl} alt={user.email} />
-              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <AvatarFallback className="rounded-lg">{firstLetter(user.pseudo)}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{user.email}</span>
+              <span className="truncate font-medium">{user.pseudo}</span>
               <span className="truncate text-xs">{user.email}</span>
             </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Sparkles />
-            Upgrade to Pro
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
           {hasRights && (
             <DropdownMenuItem asChild>
-              <Link href={PAGES.ADMIN}>
-                <BadgeCheck />
+              <Link href={PAGES.ADMIN} className="cursor-pointer">
+                <LayoutDashboard />
                 Dashboard
               </Link>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem>
-            <BadgeCheck />
+            <User />
             Account
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

@@ -3,7 +3,7 @@ import { type SessionUser } from "@/schemas/session"
 
 export const createPlayerFromSessionUser = (sessionUser: SessionUser): Player => ({
   uid: sessionUser.id,
-  name: "FakeName",
+  name: sessionUser.pseudo,
   avatar: sessionUser.photoUrl,
   score: 0,
   isHost: false,

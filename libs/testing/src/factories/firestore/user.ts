@@ -8,6 +8,7 @@ export const userFactory: FactoryDoc<UserDoc & { id: string }> = (item = {}) => 
   id: faker.database.mongodbObjectId(),
   createdAt: Timestamp.fromDate(faker.date.past()) as unknown as ClientTimestamp,
   updatedAt: Timestamp.fromDate(faker.date.recent()) as unknown as ClientTimestamp,
+  photoUrl: null,
   email: faker.internet.email(),
   pseudo: faker.person.fullName(),
   ...item

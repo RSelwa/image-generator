@@ -9,6 +9,7 @@ import { localApi } from "@/redux/api/local"
 import { mapApi } from "@/redux/api/maps"
 import { seedApi } from "@/redux/api/seed"
 import { sphericalApi } from "@/redux/api/spherical"
+import { userApi } from "@/redux/api/user"
 import { sessionSlice } from "@/redux/session/session.slice"
 
 export const makeStore = () =>
@@ -16,6 +17,7 @@ export const makeStore = () =>
     reducer: {
       [adminApi.reducerPath]: adminApi.reducer,
       [gameApi.reducerPath]: gameApi.reducer,
+      [userApi.reducerPath]: userApi.reducer,
       [localApi.reducerPath]: localApi.reducer,
       [mapApi.reducerPath]: mapApi.reducer,
       [sphericalApi.reducerPath]: sphericalApi.reducer,
@@ -28,6 +30,7 @@ export const makeStore = () =>
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ serializableCheck: false })
         .concat(adminApi.middleware)
+        .concat(userApi.middleware)
         .concat(seedApi.middleware)
         .concat(lobbyApi.middleware)
         .concat(gameApi.middleware)

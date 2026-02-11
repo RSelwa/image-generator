@@ -3,6 +3,7 @@
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { type ConstantValues } from "@repo/common"
 import { XIcon } from "lucide-react"
+import { AlertDialog, AlertDialogContent, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -15,12 +16,27 @@ import { type MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import { cn } from "@/utils"
 
-type Props = {
-  modalKey: ConstantValues<typeof MODAL_KEYS>
+export const AlertDialogBase = ({
+  children,
+  className,
+  customClose,
+  ...props
+}: {
   alertDialog?: boolean
-  customClose?: () => void
   className?: string
-} & DialogProps
+  customClose?: () => void
+} & DialogProps) => {
+  return (
+    <AlertDialog open onOpenChange={customClose} {...props}>
+      <AlertDialogContent className={cn("max-h-[80vh] overflow-y-auto", className)}>
+        <VisuallyHidden>
+          <AlertDialogTitle />
+        </VisuallyHidden>
+        {children}
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
 
 export const ModalBase = ({
   modalKey,
@@ -28,7 +44,12 @@ export const ModalBase = ({
   className,
   customClose,
   ...props
-}: Props) => {
+}: {
+  modalKey: ConstantValues<typeof MODAL_KEYS>
+  alertDialog?: boolean
+  customClose?: () => void
+  className?: string
+} & DialogProps) => {
   const { closeModal } = useModal(modalKey)
 
   return (
