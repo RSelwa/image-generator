@@ -24,7 +24,7 @@ const PlayingNormalRound = () => {
         </div>
       )}
       {currentRoundData.type === ROUND_TYPE.FLAT && (
-        <Image src={currentRoundData.flatImageUrl || FALL_BACK_IMAGE} alt="Current round image" width={1920} height={1080} className="aspect-video size-full object-contain" />
+        <Image src={currentRoundData.flatImageUrl || FALL_BACK_IMAGE} alt="Current round image" width={1920} height={1080} className="aspect-video size-full max-h-full-height object-contain" />
       )}
 
     </article>

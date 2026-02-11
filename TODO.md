@@ -39,6 +39,8 @@
   - [ ] Fix starting screen when game is Loading
   - [ ] Share seed at the end of a lobby
   - [ ] end game screen⌛️
+  - [ ] Integrate ads
+  - [ ] bug minimap when first hover
   - [ ] Add tests on api endpoints
   - [ ] Allow creation of flats and sphericals from new or gameId
   - [ ] Add firebase admin for front libs

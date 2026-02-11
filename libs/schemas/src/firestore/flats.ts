@@ -1,5 +1,6 @@
 import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
 import z from "zod"
+import { mapPositionSchema } from "~/firestore/spherical"
 import { timestampSchema, WITH_ID } from "~/zod"
 
 export const flatDocSchema = z.object({
@@ -12,6 +13,8 @@ export const flatDocSchema = z.object({
     .enum(DOCUMENTS_STATUS)
     .optional()
     .default(DOCUMENTS_STATUS.WAITING),
+  mapId: z.string().optional(), //* Flats with map
+  mapPosition: mapPositionSchema.optional(), //* Flats with map
   thumbnail: z.string().optional(),
 
 })

@@ -906,12 +906,10 @@ export const lobbyApi = createApi({
           if (nextRound > lobby.config.numberOfRounds) {
             console.info("All rounds completed, no more rounds to update")
 
-            dispatch(lobbyApi.endpoints.updateLobby.initiate({
-              id: lobbyId,
-              data: {
-                status: LOBBY_STATUS.FINISHED,
-              },
-            }))
+            await updateDoc(getLobbyRef(lobbyId), {
+              status: LOBBY_STATUS.FINISHED,
+              updatedAt: Timestamp.now(),
+            })
 
             return { data: null }
           }

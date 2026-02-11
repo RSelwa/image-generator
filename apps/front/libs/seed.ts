@@ -1,13 +1,16 @@
 import { DOCUMENTS_STATUS, NUMBER_OF_ROUNDS_PER_STAGE, SPECIAL_ROUND_OPTIONS_COUNT, TABLES } from "@repo/common"
 import { collectionGroupRefs } from "@repo/providers/db-refs"
 import { type Round, roundSchema } from "@repo/schemas"
-import { formatSphericalsForNormalRounds } from "@/libs/round-normal"
+import { formatFlatsForNormalRounds, formatSphericalsForNormalRounds } from "@/libs/round-normal"
 import { formatFlatsForSpecialRounds, formatSphericalsForSpecialRounds } from "@/libs/round-special"
 
 export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: { numberOfRounds: number, hasSpecialRounds: boolean }) => {
   try {
-    const [sphericalsWithMap, sphericalsWithThumbnails, flatWithThumbnails] = await Promise.all([
+    const [sphericalsWithMap, flatsWithMap, sphericalsWithThumbnails, flatWithThumbnails] = await Promise.all([
       collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
+        .where("mapId", ">", "")
+        .get(),
+      collectionGroupRefs[TABLES.FLAT].where("status", "==", DOCUMENTS_STATUS.READY)
         .where("mapId", ">", "")
         .get(),
       hasSpecialRounds ? collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
@@ -19,11 +22,13 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
     ])
 
     const sphericalsWithMapData = sphericalsWithMap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    const flatsWithMapData = flatsWithMap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
     const sphericalsWithThumbnailsData = sphericalsWithThumbnails.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
     const flatsWithThumbnailsData = flatWithThumbnails.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
 
-    const [formattedSphericalsForNormalRounds, formattedSphericalsForSpecialRounds, formattedFlatsForSpecialRounds] = await Promise.all([
+    const [formattedSphericalsForNormalRounds, formattedFlatsForNormalRounds, formattedSphericalsForSpecialRounds, formattedFlatsForSpecialRounds] = await Promise.all([
       formatSphericalsForNormalRounds(sphericalsWithMapData),
+      formatFlatsForNormalRounds(flatsWithMapData),
       formatSphericalsForSpecialRounds(sphericalsWithThumbnailsData),
       formatFlatsForSpecialRounds(flatsWithThumbnailsData),
     ])
@@ -71,33 +76,37 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
         continue
       }
 
-      const sphericalFiltered = formattedSphericalsForNormalRounds.filter((spherical) => spherical.gameId && !excludedGameIds.includes(spherical.gameId))
+      const allNormalRounds = [...formattedSphericalsForNormalRounds, ...formattedFlatsForNormalRounds]
+      const normalRoundsFiltered = allNormalRounds.filter((round) => round.gameId && !excludedGameIds.includes(round.gameId))
 
-      if (sphericalFiltered.length === 0) {
+      if (normalRoundsFiltered.length === 0) {
         console.warn("No more suitable round found for round generation.")
 
         continue
       }
 
-      const randomSpherical = sphericalFiltered[Math.floor(Math.random() * sphericalFiltered.length)]
+      const randomRound = normalRoundsFiltered[Math.floor(Math.random() * normalRoundsFiltered.length)]
 
       const round = roundSchema.safeParse({
         isSpecial: false,
 
-        type: randomSpherical.type,
-        gameId: randomSpherical.gameId,
-        gameTitle: randomSpherical.gameTitle,
-        gameThumbnailUrl: randomSpherical.gameThumbnailUrl,
+        type: randomRound.type,
+        gameId: randomRound.gameId,
+        gameTitle: randomRound.gameTitle,
+        gameThumbnailUrl: randomRound.gameThumbnailUrl,
 
-        sphericalId: randomSpherical.sphericalId,
-        sphericalImageUrl: randomSpherical.sphericalImageUrl,
+        sphericalId: randomRound.sphericalId,
+        sphericalImageUrl: randomRound.sphericalImageUrl,
 
-        mapId: randomSpherical.mapId,
-        mapPosition: randomSpherical.mapPosition,
-        mapImage: randomSpherical.mapImage,
-        mapWidth: randomSpherical.mapWidth,
-        mapHeight: randomSpherical.mapHeight,
-        maxDistancePoints: randomSpherical.maxDistancePoints,
+        flatId: randomRound.flatId,
+        flatImageUrl: randomRound.flatImageUrl,
+
+        mapId: randomRound.mapId,
+        mapPosition: randomRound.mapPosition,
+        mapImage: randomRound.mapImage,
+        mapWidth: randomRound.mapWidth,
+        mapHeight: randomRound.mapHeight,
+        maxDistancePoints: randomRound.maxDistancePoints,
 
       })
 

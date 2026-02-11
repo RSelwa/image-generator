@@ -20,7 +20,7 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps)
   const flats = data?.flats || []
   const maps = data?.maps || []
 
-  const getMapForSpherical = (mapId: string | undefined) => {
+  const getMapById = (mapId: string | undefined) => {
     if (!mapId) return null
 
     return maps.find((m) => m.id === mapId) || null
@@ -48,7 +48,7 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps)
           </p>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-1.5">
             {sphericals.map((spherical) => {
-              const map = getMapForSpherical(spherical.mapId)
+              const map = getMapById(spherical.mapId)
               const dragData: DragData = {
                 type: ROUND_TYPE.SPHERICAL,
                 imageId: spherical.id,
@@ -84,6 +84,7 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps)
           </p>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-1.5">
             {flats.map((flat) => {
+              const map = getMapById(flat.mapId)
               const dragData: DragData = {
                 type: ROUND_TYPE.FLAT,
                 imageId: flat.id,
@@ -92,12 +93,12 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps)
                 gameId,
                 gameTitle,
                 gameImage,
-                mapId: null,
-                mapPosition: null,
-                mapImage: null,
-                mapWidth: null,
-                mapHeight: null,
-                maxDistancePoints: null,
+                mapId: flat.mapId || null,
+                mapPosition: flat.mapPosition || null,
+                mapImage: map?.imageUrl || null,
+                mapWidth: map?.width || null,
+                mapHeight: map?.height || null,
+                maxDistancePoints: map?.maxDistancePoints || DEFAULT_MAX_DISTANCE_POINTS,
               }
 
               return (

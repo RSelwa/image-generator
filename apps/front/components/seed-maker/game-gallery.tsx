@@ -1,9 +1,9 @@
 "use client"
 
-import { Search } from "lucide-react"
+import { RefreshCcw, Search } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
-import { Input } from "@/components/ui/input"
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group"
 import { Skeleton } from "@/components/ui/skeleton"
 import { FALL_BACK_IMAGE } from "@/constants/mapping"
 import { useGetSeedMakerGamesQuery } from "@/redux/api/seed-maker"
@@ -14,7 +14,7 @@ type GameGalleryProps = {
 
 const GameGallery = ({ onSelectGame }: GameGalleryProps) => {
   const [search, setSearch] = useState("")
-  const { data: games, isLoading } = useGetSeedMakerGamesQuery()
+  const { data: games, isLoading, refetch } = useGetSeedMakerGamesQuery()
 
   const filteredGames = (games || []).filter((game) =>
     game.title.toLowerCase().includes(search.toLowerCase()),
@@ -22,21 +22,25 @@ const GameGallery = ({ onSelectGame }: GameGalleryProps) => {
 
   return (
     <div className="flex flex-col gap-3 h-full">
-      <div className="relative">
-        <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-        <Input
+      <InputGroup className="relative">
+        <InputGroupAddon>
+          <Search className="size-4" />
+        </InputGroupAddon>
+        <InputGroupInput
           placeholder="Search games..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
         />
-      </div>
+        <InputGroupButton onClick={async () => await refetch()}>
+          <RefreshCcw className="size-4" />
+        </InputGroupButton>
+      </InputGroup>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-2 overflow-y-auto flex-1">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-2 overflow-y-auto">
         {isLoading && Array.from({ length: 28 }).map((_, idx) => (
           <Skeleton key={idx} className="h-28 rounded-lg border border-border hover:border-primary" />
         ))}
-        {filteredGames.map((game) => (
+        {!isLoading && filteredGames.map((game) => (
           <button
             key={game.id}
             type="button"

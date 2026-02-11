@@ -104,7 +104,7 @@ const LobbyMain = () => {
 
   useEffect(() => {
     if (isLoading || !lobby) return
-    if (lobby.status !== LOBBY_STATUS.WAITING) {
+    if (lobby.status !== LOBBY_STATUS.WAITING && lobby.status !== LOBBY_STATUS.FINISHED) {
       toast.error("This lobby is no longer accepting players")
       router.replace(PAGES.HOME)
 

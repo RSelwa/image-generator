@@ -52,6 +52,7 @@ export const seedMakerApi = createApi({
 
 export const {
   useGetSeedMakerGamesQuery,
+  useLazyGetSeedMakerGamesQuery,
   useGetGameReadyDataQuery,
   useCreateManualSeedMutation,
 } = seedMakerApi

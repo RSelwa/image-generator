@@ -81,10 +81,10 @@ export const updateFlatStatus = async (
   }
 
   const hasFlatImage = Boolean(data.image && data.image !== "")
-  const isSphericalThumbnailReady = Boolean(data.thumbnail && data.thumbnail !== "")
-  const isSPhericalMapIdReady = Boolean(data.thumbnail && data.thumbnail !== "")
+  const isFlatThumbnailReady = Boolean(data.thumbnail && data.thumbnail !== "")
+  const isFlatMapIdReady = Boolean(data.mapId && data.mapId !== "" && data.mapPosition && data.mapPosition.x !== undefined && data.mapPosition.y !== undefined)
 
-  const isReady = hasFlatImage && (isSphericalThumbnailReady || isSPhericalMapIdReady)
+  const isReady = hasFlatImage && (isFlatThumbnailReady || isFlatMapIdReady)
 
   if (!isReady) {
     logger.info(`No need to update flat ${flatId} in game ${gameId}`)
