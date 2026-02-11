@@ -1,3 +1,4 @@
+import { generateUsername } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { userDocSchema } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
@@ -22,10 +23,13 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
     )
 
     const now = Timestamp.now()
+    const pseudo = generateUsername()
+
     const userDoc = userDocSchema.parse({
       email: user.email,
       createdAt: now,
       updatedAt: now,
+      pseudo,
     })
 
     try {

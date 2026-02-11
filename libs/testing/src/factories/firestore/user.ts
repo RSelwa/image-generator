@@ -9,6 +9,6 @@ export const userFactory: FactoryDoc<UserDoc & { id: string }> = (item = {}) => 
   createdAt: Timestamp.fromDate(faker.date.past()) as unknown as ClientTimestamp,
   updatedAt: Timestamp.fromDate(faker.date.recent()) as unknown as ClientTimestamp,
   email: faker.internet.email(),
-  name: faker.person.fullName(),
+  pseudo: faker.person.fullName(),
   ...item
 })

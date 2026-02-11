@@ -63,5 +63,6 @@ describe("createUserDocument", () => {
     expect(userDoc).toHaveProperty("email", email)
     expect(userDoc).toHaveProperty("createdAt")
     expect(userDoc).toHaveProperty("updatedAt")
+    expect(userDoc?.pseudo).toBeTruthy()
   })
 })

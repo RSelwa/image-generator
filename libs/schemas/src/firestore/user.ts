@@ -3,7 +3,7 @@ import { timestampSchema, WITH_ID } from "~/zod"
 
 export const userDocSchema = z.object({
   email: z.email(),
-  name: z.string().nullish().default(""),
+  pseudo: z.string().nullish().default(""),
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
 })
