@@ -37,7 +37,7 @@ const GameGallery = ({ onSelectGame }: GameGalleryProps) => {
       </InputGroup>
 
       <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-2 overflow-y-auto">
-        {isLoading && Array.from({ length: 28 }).map((_, idx) => (
+        {isLoading && Array.from({ length: 24 }).map((_, idx) => (
           <Skeleton key={idx} className="h-28 rounded-lg border border-border hover:border-primary" />
         ))}
         {!isLoading && filteredGames.map((game) => (

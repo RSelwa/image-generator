@@ -5,6 +5,7 @@ import { ROUND_TYPE } from "@repo/common"
 import { Globe, Map } from "lucide-react"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { FALL_BACK_IMAGE } from "@/constants/mapping"
 
 export type DragData = {
@@ -28,6 +29,8 @@ type DraggableImageCardProps = {
   data: DragData
 }
 
+export const DraggableSkeleton = () => (<Skeleton className="h-28 rounded-md border border-border" />)
+
 const DraggableImageCard = ({ id, data }: DraggableImageCardProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id,
@@ -46,7 +49,7 @@ const DraggableImageCard = ({ id, data }: DraggableImageCardProps) => {
       style={style}
       {...listeners}
       {...attributes}
-      className={`relative z-50 h-20 cursor-grab overflow-hidden rounded-md border border-border hover:border-primary transition-colors ${isDragging ? "opacity-50 z-50" : ""}`}
+      className={`relative z-50 h-28 cursor-grab overflow-hidden rounded-md border border-border hover:border-primary transition-colors ${isDragging ? "opacity-50 z-50" : ""}`}
     >
       <Image
         src={displayImage}

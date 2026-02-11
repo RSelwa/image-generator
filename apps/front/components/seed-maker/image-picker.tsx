@@ -2,7 +2,7 @@
 
 import { DEFAULT_MAX_DISTANCE_POINTS, ROUND_TYPE } from "@repo/common"
 import { ArrowLeft } from "lucide-react"
-import DraggableImageCard, { type DragData } from "@/components/seed-maker/draggable-image-card"
+import DraggableImageCard, { type DragData, DraggableSkeleton } from "@/components/seed-maker/draggable-image-card"
 import { Button } from "@/components/ui/button"
 import { useGetGameReadyDataQuery } from "@/redux/api/seed-maker"
 
@@ -35,7 +35,13 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps)
         <h3 className="font-medium text-sm truncate">{gameTitle}</h3>
       </div>
 
-      {isLoading && <p className="text-sm text-muted-foreground">Loading images...</p>}
+      {isLoading && (
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
+          { Array.from({ length: 24 }).map((_, idx) => (
+            <DraggableSkeleton key={idx} />
+          ))}
+        </div>
+      )}
 
       {!isLoading && sphericals.length === 0 && flats.length === 0 && (
         <p className="text-sm text-muted-foreground text-center">No ready images for this game</p>
@@ -46,7 +52,7 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps)
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Sphericals ({sphericals.length})
           </p>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-1.5">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
             {sphericals.map((spherical) => {
               const map = getMapById(spherical.mapId)
               const dragData: DragData = {
@@ -82,7 +88,7 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps)
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Flats ({flats.length})
           </p>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-1.5">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
             {flats.map((flat) => {
               const map = getMapById(flat.mapId)
               const dragData: DragData = {

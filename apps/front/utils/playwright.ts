@@ -63,8 +63,9 @@ export const generateGameData = async () => {
     const sphericalWithMap = sphericalFactory({ gameId: game.id, mapId: map.id, status: DOCUMENTS_STATUS.READY, mapPosition: { x: 50, y: 50 } })
     const sphericalWithThumbnail = sphericalFactory({ gameId: game.id, thumbnail: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
     const flat = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY, thumbnail: mockedGameImageURL })
+    const flatWithMap = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY, thumbnail: mockedGameImageURL, mapId: map.id, mapPosition: { x: 50, y: 50 } })
 
-    return { game, map, sphericalWithMap, sphericalWithThumbnail, flat }
+    return { game, map, sphericalWithMap, sphericalWithThumbnail, flat, flatWithMap }
   })
 
   await Promise.all(
@@ -72,11 +73,12 @@ export const generateGameData = async () => {
   )
 
   await Promise.all(
-    games.flatMap(({ game, map, sphericalWithMap, sphericalWithThumbnail, flat }) => {
+    games.flatMap(({ game, map, sphericalWithMap, sphericalWithThumbnail, flat, flatWithMap }) => {
       const { id: mapId, ...mapFields } = map
       const { id: sphericalMapId, ...sphericalMapFields } = sphericalWithMap
       const { id: sphericalThumbId, ...sphericalThumbFields } = sphericalWithThumbnail
       const { id: flatId, ...flatFields } = flat
+      const { id: flatMapId, ...flatMapFields } = flatWithMap
 
       return [
         createFirestoreDoc(subRefs[TABLES.MAPS](game.id), { id: mapId, ...mapFields }),
@@ -89,6 +91,7 @@ export const generateGameData = async () => {
           { id: sphericalThumbId, ...sphericalThumbFields },
         ),
         createFirestoreDoc(subRefs[TABLES.FLAT](game.id), { id: flatId, ...flatFields }),
+        createFirestoreDoc(subRefs[TABLES.FLAT](game.id), { id: flatMapId, ...flatMapFields }),
       ]
     }),
   )

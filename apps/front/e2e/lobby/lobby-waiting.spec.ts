@@ -2,7 +2,8 @@ import { faker } from "@faker-js/faker"
 import { expect, test } from "@playwright/test"
 import { TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { lobbyFactory } from "@repo/testing/factory"
+import { createFirestoreDoc } from "@repo/testing/emulator"
+import { lobbyFactory, roundFactory, seedFactory } from "@repo/testing/factory"
 import {
   createFirestoreLobbyDoc,
   createLobbyViaUI,
@@ -77,7 +78,7 @@ test.describe("lobby Waiting", () => {
       await expect(specialRoundsSwitch).toBeChecked()
     })
 
-    test("can start a game if everyone is ready", async ({ browser }) => {
+    test("can start a game if everyone is ready", async ({ page }) => {
       const host = await setupUser()
       const player2 = await setupUser()
 
@@ -94,9 +95,6 @@ test.describe("lobby Waiting", () => {
 
       await createFirestoreLobbyDoc(lobby)
 
-      const context = await browser.newContext()
-      const page = await context.newPage()
-
       await loginViaUI(page, host.email)
       await page.goto(`/lobby/${lobby.id}`)
 
@@ -104,11 +102,9 @@ test.describe("lobby Waiting", () => {
 
       const startButton = page.getByRole("button", { name: "Start Lobby" })
       await expect(startButton).toBeEnabled()
-
-      await context.close()
     })
 
-    test("can not start if not everyone is ready", async ({ browser }) => {
+    test("can not start if not everyone is ready", async ({ page }) => {
       const host = await setupUser()
       const player2 = await setupUser()
 
@@ -121,9 +117,6 @@ test.describe("lobby Waiting", () => {
       })
 
       await createFirestoreLobbyDoc(lobby)
-
-      const context = await browser.newContext()
-      const page = await context.newPage()
 
       await loginViaUI(page, host.email)
       await page.goto(`/lobby/${lobby.id}`)
@@ -132,13 +125,47 @@ test.describe("lobby Waiting", () => {
 
       const startButton = page.getByRole("button", { name: "Start Lobby" })
       await expect(startButton).toBeDisabled()
+    })
 
-      await context.close()
+    test("can paste a seedId and have config updated", async ({ page }) => {
+      const host = await setupUser()
+
+      const rounds = Array.from({ length: 6 }, (_, i) =>
+        roundFactory({ isSpecial: i === 0 || i === 3 }))
+
+      const seed = seedFactory({ rounds })
+      await createFirestoreDoc(refs[TABLES.SEEDS], seed)
+
+      await loginViaUI(page, host.email)
+      await createLobbyViaUI(page)
+
+      const seedInput = page.getByTestId("seed-input")
+      await seedInput.fill(seed.id)
+      await seedInput.press("Control+a")
+      await seedInput.evaluate((el, value) => {
+        const input = el as HTMLInputElement
+        input.value = value
+        const event = new Event("input", { bubbles: true })
+        input.dispatchEvent(event)
+        const clipboardData = new DataTransfer()
+        clipboardData.setData("text/plain", value)
+        const pasteEvent = new ClipboardEvent("paste", { bubbles: true, clipboardData })
+        input.dispatchEvent(pasteEvent)
+      }, seed.id)
+
+      await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText("6", { timeout: 10000 })
+      await expect(page.getByTestId("select-number-rounds-trigger")).toBeDisabled()
+
+      const specialRoundsSwitch = page.getByTestId("special-rounds")
+      await expect(specialRoundsSwitch).toBeChecked()
+      await expect(specialRoundsSwitch).toBeDisabled()
+
+      await expect(seedInput).toHaveValue(seed.id)
     })
   })
 
   test.describe("When not lobby host", () => {
-    test("can not modify a lobby config", async ({ browser }) => {
+    test("can not modify a lobby config", async ({ page }) => {
       const host = await setupUser()
       const player2 = await setupUser()
 
@@ -151,9 +178,6 @@ test.describe("lobby Waiting", () => {
       })
 
       await createFirestoreLobbyDoc(lobby)
-
-      const context = await browser.newContext()
-      const page = await context.newPage()
 
       await loginViaUI(page, player2.email)
       await page.goto(`/lobby/${lobby.id}`)
@@ -168,8 +192,6 @@ test.describe("lobby Waiting", () => {
       }
 
       await expect(page.locator("#special-rounds")).toBeDisabled()
-
-      await context.close()
     })
 
     test("can put my self ready", async ({ browser }) => {

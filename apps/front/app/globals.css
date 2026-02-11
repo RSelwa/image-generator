@@ -198,7 +198,7 @@
     @apply hidden!;
   }
 
-    /* ::-webkit-scrollbar {
+    ::-webkit-scrollbar {
       @apply w-2.5 h-2.5;
   
     }
@@ -215,7 +215,7 @@
     ::-webkit-scrollbar-thumb:hover,
     ::-webkit-scrollbar-thumb:active {
       @apply bg-border;
-    } */
+    }
          .scrollbar::-webkit-scrollbar {
            width: 20px;
            height: 20px;

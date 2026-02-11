@@ -234,6 +234,7 @@ const LobbyWaiting = () => {
             <InputGroup>
               <InputGroupInput
                 placeholder="Paste seed here"
+                data-testid="seed-input"
                 disabled={isLoading || disabled}
                 {...register("seed")}
                 onPaste={(e) => {

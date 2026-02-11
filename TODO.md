@@ -31,10 +31,11 @@
   - [x] paste seed  -> call api to verify, the seed exists, if yes, increment the seedDoc.usedTimes and change lobbyDoc to use it + change the config number of rounds
   - [x] lock the number of rounds if seed already selected
   - [x] Allow seed application in a lobby
-  - [ ] Allow flats to have maps
+  - [x] Allow flats to have maps
   - [ ] the listen docs should changes games if they contains a ready or not, when they are changed, should call another cf (maybe on request) that will fetch all games spehrical/flat to check if they have ready
-  - [ ] Fix: if selected 6 rounds, in end screen, still have 18 displayed
+  - [x] Fix: if selected 6 rounds, in end screen, still have 18 displayed
   - [ ] Account settings
+  - [ ] can copy the seedId in the maker
   - [ ] Change icons on minimap
   - [ ] Fix starting screen when game is Loading
   - [ ] Share seed at the end of a lobby
