@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  signInAnonymously,
   signInWithEmailAndPassword,
   signInWithPopup,
   type Unsubscribe,
@@ -294,6 +295,20 @@ export const authApi = createApi({
         unsubscribe?.()
       },
     }),
+    loginAnonymously: builder.mutation<null, void>({
+      queryFn: async () => {
+        try {
+          await signInAnonymously(auth)
+
+          return { data: null }
+        } catch (error) {
+          console.error(error)
+          toast.error("Failed to sign in anonymously.")
+
+          return { error: error as unknown }
+        }
+      },
+    }),
     sendPasswordResetEmail: builder.mutation<
       null,
       z.infer<typeof sendPasswordResetEmailSchema>
@@ -344,4 +359,5 @@ export const {
   useLogoutMutation,
   useLoginMutation,
   useLoginWithGoogleMutation,
+  useLoginAnonymouslyMutation,
 } = authApi

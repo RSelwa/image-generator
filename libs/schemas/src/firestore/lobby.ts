@@ -19,6 +19,7 @@ export const lobbyDocSchema = z.object({
     roundDuration: DEFAULT_TIME_PER_ROUND,
     numberOfRounds: DEFAULT_NUMBERS_ROUNDS,
   }),
+  isDemo: z.boolean().default(false), // Demo lobby: 1 player, forced seed, auto-start
   seedId: z.string().nullish().default(null), // Reference to seed document (backend only)
   maximumPossiblePoints: z.number().nullish().default(0), // Calculated on backend based on seed and config
   currentRound: z.number().default(0),

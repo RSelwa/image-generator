@@ -13,19 +13,16 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
 
     const user = event.data
 
-    if (!user.email) {
-      logger.error("User email is required")
-      throw new HttpsError("invalid-argument", "User email is required")
-    }
+    const email = user.email || `anonymous-${user.uid}@demo.geogamer`
 
     logger.info(
-      `Creating user document for uid: ${user.uid} email: ${user.email}`,
+      `Creating user document for uid: ${user.uid} email: ${email}`,
     )
 
     const now = Timestamp.now()
     const pseudo = user?.displayName || generateUsername()
     const userDoc = userDocSchema.parse({
-      email: user.email,
+      email,
       createdAt: now,
       photoUrl: user.photoURL || null,
       updatedAt: now,

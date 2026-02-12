@@ -33,6 +33,7 @@ import { toast } from "sonner"
 import z from "zod"
 import { auth } from "@/constants/db"
 import { getLobbyRef, getRoundAnswerRef, TABLE_REFS } from "@/constants/db-refs"
+import { DEMO_SEED_ID } from "@/constants/demo"
 import { API_ENDPOINTS } from "@/constants/mapping"
 import { seedApi } from "@/redux/api/seed"
 import { type SessionUser } from "@/schemas/session"
@@ -280,6 +281,7 @@ export const lobbyApi = createApi({
               code,
               hostId: player.uid,
               status: LOBBY_STATUS.WAITING,
+              isDemo: false,
               seedId: "",
               players: [],
               maximumPossiblePoints: 0,
@@ -973,6 +975,66 @@ export const lobbyApi = createApi({
         }
       }
     }),
+    createDemoLobby: builder.mutation<LobbyDocWithId, { user: SessionUser }>({
+      queryFn: async ({ user }, { dispatch }): Promise<{ data: LobbyDocWithId } | { error: GlobalError }> => {
+        try {
+          const code = generateRandomCode()
+          const player = createPlayerFromSessionUser(user)
+
+          // Fetch the seed to get round config
+          const seed = await dispatch(seedApi.endpoints.getSeedById.initiate({ id: DEMO_SEED_ID })).unwrap()
+
+          if (!seed) throw new Error("Demo seed not found. Check DEMO_SEED_ID in constants/demo.ts")
+
+          const hasSpecialRounds = seed.rounds.some((r) => r.isSpecial)
+
+          const createdLobby = await dispatch(
+            lobbyApi.endpoints.createLobby.initiate({
+              code,
+              hostId: player.uid,
+              status: LOBBY_STATUS.WAITING,
+              isDemo: true,
+              seedId: DEMO_SEED_ID,
+              players: [],
+              maximumPossiblePoints: 0,
+              config: {
+                hasSpecialRounds,
+                playersLives: DEFAULT_LIVES,
+                maxPlayers: 1,
+                roundDuration: DEFAULT_TIME_PER_ROUND,
+                numberOfRounds: seed.rounds.length,
+              },
+            }),
+          ).unwrap()
+
+          await dispatch(
+            lobbyApi.endpoints.joinLobby.initiate({
+              lobbyId: createdLobby.id,
+              player,
+            }),
+          ).unwrap()
+
+          dispatch(
+            lobbyApi.endpoints.subscribeLobby.initiate({ id: createdLobby.id }),
+          )
+
+          // Auto-start the demo lobby
+          await dispatch(
+            lobbyApi.endpoints.startLobby.initiate({ lobbyId: createdLobby.id }),
+          ).unwrap()
+
+          // Return the lobby — subscription will update cache with the playing state
+          return { data: createdLobby }
+        } catch (error) {
+          console.error("Error creating demo lobby:", error)
+          toast.error("Error creating demo")
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+    }),
     getNumberGameFoundByPlayer: builder.query<{ numberGameFound: number }, { lobbyId: string, playerId: string }>({
       queryFn: async ({ lobbyId, playerId }, { dispatch }) => {
         try {
@@ -1026,5 +1088,6 @@ export const {
   useUpdatePlayerScoreMutation,
   useIncrementPlayerLivesUsedMutation,
   useSelectOptionIndexMutation,
-  useGetNumberGameFoundByPlayerQuery
+  useGetNumberGameFoundByPlayerQuery,
+  useCreateDemoLobbyMutation,
 } = lobbyApi

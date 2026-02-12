@@ -104,6 +104,10 @@ const LobbyMain = () => {
 
   useEffect(() => {
     if (isLoading || !lobby) return
+
+    // Demo lobbies are already started with the player joined — skip join logic
+    if (lobby.isDemo) return
+
     if (lobby.status !== LOBBY_STATUS.WAITING && lobby.status !== LOBBY_STATUS.FINISHED) {
       toast.error("This lobby is no longer accepting players")
       router.replace(PAGES.HOME)
