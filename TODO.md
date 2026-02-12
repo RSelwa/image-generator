@@ -38,7 +38,9 @@
   - [x] Account settings
   - [x] can list the seeds
   - [ ] Implement a demo seed
+  - [ ] Implement modals system for pubing
   - [ ] implement seed that will be featured like flim discover
+  - [ ] Improve the empty card whe no map/no games etc... with shadcn empty components
   - [ ] can copy the seedId in the maker
   - [ ] Change icons on minimap
   - [ ] Fix starting screen when game is Loading

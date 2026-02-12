@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import CreateLobbyButton from "@/components/home-create-lobby"
 import { Button } from "@/components/ui/button"
 
@@ -24,8 +25,10 @@ const Page = () => (
 
       <div className="flex flex-col sm:flex-row gap-4">
         <CreateLobbyButton />
-        <Button variant="secondary">
-          Learn More
+        <Button variant="secondary" asChild>
+          <Link href="/demo">
+            Try Demo
+          </Link>
         </Button>
       </div>
     </section>
