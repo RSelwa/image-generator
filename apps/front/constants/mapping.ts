@@ -62,3 +62,7 @@ export const API_ENDPOINTS = {
   CREATE_SEED: "/api/create-seed",
   LEAVE_LOBBY: "/api/leave-lobby",
 } as const
+
+export const FIREBASE_ERRORS = {
+  EMAIL_ALREADY_USED: "auth/email-already-in-use",
+} as const

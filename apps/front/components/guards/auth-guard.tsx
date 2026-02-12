@@ -21,7 +21,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
   useEffect(() => {
     if (isLoading) return
 
-    if (status === SESSION_STATUS.SUCCESS && !user)
+    if (status === SESSION_STATUS.SUCCESS && (!user || user.isAnonymous))
       router.replace(PAGES.LOGIN)
   }, [status, user, isLoading, router])
 
@@ -36,7 +36,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
     )
   }
 
-  if (status !== SESSION_STATUS.SUCCESS || !user) {
+  if (status !== SESSION_STATUS.SUCCESS || !user || user.isAnonymous) {
     return null
   }
 

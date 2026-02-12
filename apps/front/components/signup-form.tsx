@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import z from "zod"
 import { ColoredGoogleIcon } from "@/components/icons"
@@ -24,7 +24,7 @@ import {
   useCreateUserAuthMutation,
   useLoginWithGoogleMutation,
 } from "@/redux/api/auth"
-import { selectUser } from "@/redux/session/session.selectors"
+import { selectAuthUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { cn } from "@/utils"
 
@@ -42,8 +42,7 @@ export const SignupForm = ({
   const redirect = searchParams.get(QUERY_PARAMS.REDIRECT)
 
   const router = useRouter()
-  const user = useAppSelector(selectUser)
-  const pendingRedirect = useRef(false)
+  const authUser = useAppSelector(selectAuthUser)
 
   const [createAuthUser, { isLoading }] = useCreateUserAuthMutation()
   const [loginWithGoogle, { isLoading: isLoadingGoogle }] =
@@ -55,23 +54,24 @@ export const SignupForm = ({
   })
 
   useEffect(() => {
-    if (!pendingRedirect.current || !user) return
-
-    pendingRedirect.current = false
+    if (!authUser || authUser?.isAnonymous) return
 
     const searchParams = new URLSearchParams(MODAL_KEYS.CHANGE_PSEUDO)
     const redirectUrl = redirect ? new URL(redirect, window.location.origin) : new URL(`${PAGES.HOME}?${searchParams}`, window.location.origin)
 
     router.push(redirectUrl.href)
-  }, [user, redirect, router])
+  }, [authUser?.isAnonymous, redirect, router])
 
   const onSubmit: SubmitHandler<SignupSchema> = async (data) => {
     const { error } = await createAuthUser(data)
 
-    if (error) return
+    if (error) {
+      console.error("Error creating user:", error)
+
+      return
+    }
 
     reset()
-    pendingRedirect.current = true
   }
 
   const onLoginWithGoogle = async () => {
@@ -80,7 +80,6 @@ export const SignupForm = ({
     if (error) return
 
     reset()
-    pendingRedirect.current = true
   }
 
   return (

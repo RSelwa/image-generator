@@ -3,8 +3,11 @@ import { SESSION_STATUS } from "@/constants/mapping"
 import { type RootState } from "@/redux/store"
 
 export const selectUser = ({ session }: RootState) => session.user
+export const selectAuthUser = ({ session }: RootState) => session.authUser
 
 export const selectUserId = ({ session }: RootState) => session.user?.id || ""
+
+export const selectIsAnonymous = ({ session }: RootState) => session.user?.isAnonymous || false
 
 export const selectSessionStatus = ({ session }: RootState) => session.status
 export const selectSessionIsReady = ({ session }: RootState) => session.status === SESSION_STATUS.SUCCESS

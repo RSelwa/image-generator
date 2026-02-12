@@ -116,9 +116,17 @@ const LobbyMain = () => {
     }
 
     if ((isSessionReady && !user) || !user) {
+      console.info("User not logged in, redirecting to login page")
+
+      return
+    }
+
+    if (user.isAnonymous) {
       toast.error("You need to be logged to join the lobby")
+
       const searchParams = new URLSearchParams({ [QUERY_PARAMS.REDIRECT]: `${PAGES.JOIN_LOBBY}/${lobby.code}` })
       const url = new URL(`${PAGES.LOGIN}?${searchParams.toString()}`, window.location.origin)
+
       router.replace(url.href)
 
       return
@@ -126,9 +134,8 @@ const LobbyMain = () => {
 
     const player = createPlayerFromSessionUser(user)
 
-    joinLobby({ lobbyId: lobby.id, player })
-      .unwrap()
-  }, [isSessionReady, user])
+    joinLobby({ lobbyId: lobby.id, player }).unwrap()
+  }, [isSessionReady, user, user?.isAnonymous])
 
   const isUserInLobby = lobby?.players.some((p) => p.uid === user?.id)
 

@@ -11,6 +11,7 @@ import {
   loginViaUI,
   PASSWORD,
   setupUser,
+  waitForAnonymousAuth,
 } from "../helpers/lobby"
 
 test.describe("lobby Waiting", () => {
@@ -347,6 +348,7 @@ test.describe("lobby Waiting", () => {
       })
 
       await createFirestoreLobbyDoc(lobby)
+      await waitForAnonymousAuth(page)
 
       await page.goto(`/join-lobby/${lobby.code}`)
 

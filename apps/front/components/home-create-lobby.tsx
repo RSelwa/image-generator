@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import * as React from "react"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { PAGES } from "@/constants/pages"
 import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -14,13 +15,7 @@ const CreateLobbyButton = () => {
   const user = useAppSelector(selectUser)
   const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
 
-  if (!user) {
-    return (
-      <Button disabled>
-        Start Playing
-      </Button>
-    )
-  }
+  if (!user) return <Skeleton className="h-9 bg-primary w-24" />
 
   const handleCreateLobby = async () => {
     try {
@@ -33,7 +28,7 @@ const CreateLobbyButton = () => {
   }
 
   return (
-    <Button data-testid="create-lobby-button" onClick={handleCreateLobby} disabled={isLoading}>
+    <Button data-testid={user.isAnonymous ? "create-lobby-button-demo" : "create-lobby-button"} onClick={handleCreateLobby} disabled={isLoading}>
       Play now!
       {" "}
       {isLoading && <Loader className="size-4" />}

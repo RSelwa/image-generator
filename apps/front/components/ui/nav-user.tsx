@@ -32,7 +32,7 @@ export const NavUser = () => {
 
   const [logout] = useLogoutMutation()
 
-  if (!user) return null
+  if (!user || user.isAnonymous) return null
 
   return (
     <DropdownMenu>

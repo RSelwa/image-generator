@@ -1,11 +1,14 @@
 import { faker } from "@faker-js/faker"
 import { expect, test } from "@playwright/test"
 import { SELECTORS } from "@/constants/testing"
+import { waitForAnonymousAuth } from "@/e2e/helpers/lobby"
 
 test("signup and redirect to home", async ({ page }) => {
   const email = faker.internet.email({
     provider: "yopmail.com",
   })
+
+  await waitForAnonymousAuth(page)
   await page.goto("/signup")
 
   await page.getByLabel("Email").fill(email)

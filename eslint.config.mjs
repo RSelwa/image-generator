@@ -56,6 +56,7 @@ export default antfu({
 
     // Custom rules
     "react-refresh/only-export-components": "off",
+    "antfu/curly": "off",
     "no-console": ["warn", { allow: ["warn", "error", "info"] }],
   },
 })

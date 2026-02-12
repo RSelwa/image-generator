@@ -37,6 +37,7 @@
   - [x] Allow creation of flats and sphericals from new or gameId
   - [x] Account settings
   - [x] can list the seeds
+  - [ ] when create lobby when anonymous should disable all config, and pick the seed
   - [ ] Implement a demo seed
   - [ ] Implement modals system for pubing
   - [ ] implement seed that will be featured like flim discover

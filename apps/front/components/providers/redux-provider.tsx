@@ -8,6 +8,10 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
   const store = useMemo(() => makeStore(), [])
   const dispatch = store.dispatch
 
+  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_EMULATOR) {
+    ;(window as any).__store__ = store
+  }
+
   import("@/redux/api/auth")
     .then(({ authApi }) => dispatch(authApi.endpoints.listenAuth.initiate()))
     .catch((error) => {

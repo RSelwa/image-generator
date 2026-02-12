@@ -9,6 +9,7 @@ export const sessionUserSchema = z.object({
   photoUrl: z.string(),
   pseudo: z.string().default(""),
   rights: z.enum(USER_RIGHT).nullish(),
+  isAnonymous: z.boolean().default(false),
 })
 
 const authUserSchema = z.custom<User>()

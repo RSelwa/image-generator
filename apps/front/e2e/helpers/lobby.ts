@@ -1,10 +1,12 @@
 import { faker } from "@faker-js/faker"
 import { expect, type Page } from "@playwright/test"
-import { TABLES } from "@repo/common"
+import { generateUsername, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { type LobbyDoc, type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
+import { userDocSchema } from "@repo/schemas"
 import { createAuthUser, createFirestoreDoc } from "@repo/testing/emulator"
 import { userFactory } from "@repo/testing/factory"
+import { Timestamp } from "firebase-admin/firestore"
 import { SELECTORS } from "@/constants/testing"
 import { createPlayerFromSessionUser } from "@/utils/player"
 
@@ -67,7 +69,7 @@ export const startLobbyViaUI = async (page: Page) => {
 export const waitForInputToBeVisible = async (page: Page) =>
   await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10000 })
 
-export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", photoUrl: "" })
+export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", photoUrl: "", isAnonymous: false })
 
 export const createFirestoreLobbyDoc = async (
   lobby: LobbyDoc,
@@ -123,4 +125,33 @@ export const retrieveGamesFromLobby = async (lobbyId: string) => {
   }
 
   return allGames
+}
+
+const getAnonymousUid = async (page: Page) =>
+  page.evaluate(() => (window as any).__store__?.getState()?.session?.user?.id as string | null)
+
+const createAnonymousUserDoc = async (uid: string) => {
+  const now = Timestamp.now()
+  const userDoc = userDocSchema.parse({
+    email: `anonymous-${uid}@demo.geogamer`,
+    createdAt: now,
+    photoUrl: null,
+    updatedAt: now,
+    pseudo: generateUsername(),
+  })
+
+  await refs[TABLES.USERS].doc(uid).set(userDoc)
+}
+
+export const waitForAnonymousAuth = async (page: Page) => {
+  await page.goto("/")
+
+  await expect(page.getByTestId("create-lobby-button-demo")).toBeVisible()
+
+  const anonymousUid = await getAnonymousUid(page)
+  expect(anonymousUid).toBeTruthy()
+
+  await createAnonymousUserDoc(anonymousUid!)
+
+  return anonymousUid || ""
 }

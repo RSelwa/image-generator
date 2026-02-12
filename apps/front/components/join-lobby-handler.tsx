@@ -45,7 +45,7 @@ const JoinLobbyHandler = ({ code }: Props) => {
       return
     }
 
-    if ((isSessionReady && !user) || !user) {
+    if ((isSessionReady && (!user || user.isAnonymous)) || !user) {
       toast.error("You need to be logged to join the lobby")
       const searchParams = new URLSearchParams({ [QUERY_PARAMS.REDIRECT]: `${PAGES.JOIN_LOBBY}/${lobby.code}` })
       const url = new URL(`${PAGES.LOGIN}?${searchParams.toString()}`, window.location.origin)
@@ -65,7 +65,7 @@ const JoinLobbyHandler = ({ code }: Props) => {
         toast.error("Failed to join lobby")
         router.replace(PAGES.HOME)
       })
-  }, [isLoading, isError, lobby, user, router, joinLobby])
+  }, [isLoading, isError, lobby, user, router, joinLobby, user?.isAnonymous])
 
   return (
     <main className="min-h-full-height flex items-center justify-center">

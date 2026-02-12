@@ -3,29 +3,17 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useRef } from "react"
 import { PAGES } from "@/constants/pages"
-import { useLoginAnonymouslyMutation } from "@/redux/api/auth"
 import { useCreateDemoLobbyMutation } from "@/redux/api/lobby"
-import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
+import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
 const Page = () => {
   const router = useRouter()
   const user = useAppSelector(selectUser)
-  const isSessionReady = useAppSelector(selectSessionIsReady)
-
-  const [loginAnonymously] = useLoginAnonymouslyMutation()
   const [createDemoLobby] = useCreateDemoLobbyMutation()
 
   const hasStarted = useRef(false)
 
-  // Step 1: Sign in anonymously if not authenticated
-  useEffect(() => {
-    if (isSessionReady && !user) {
-      loginAnonymously()
-    }
-  }, [isSessionReady, user])
-
-  // Step 2: Create demo lobby once authenticated
   useEffect(() => {
     if (!user || hasStarted.current) return
     hasStarted.current = true

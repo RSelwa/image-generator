@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import z from "zod"
 import { ColoredGoogleIcon } from "@/components/icons"
@@ -25,7 +25,7 @@ import {
   useLoginWithGoogleMutation,
   useSendPasswordResetEmailMutation,
 } from "@/redux/api/auth"
-import { selectUser } from "@/redux/session/session.selectors"
+import { selectAuthUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { cn } from "@/utils"
 
@@ -42,8 +42,7 @@ export const LoginForm = ({
   const searchParams = useSearchParams()
   const redirect = searchParams.get(QUERY_PARAMS.REDIRECT)
   const router = useRouter()
-  const user = useAppSelector(selectUser)
-  const pendingRedirect = useRef(false)
+  const authUser = useAppSelector(selectAuthUser)
 
   const [sendPasswordResetEmail] = useSendPasswordResetEmailMutation()
   const [login, { isLoading }] = useLoginMutation()
@@ -56,18 +55,16 @@ export const LoginForm = ({
   })
 
   useEffect(() => {
-    if (!pendingRedirect.current || !user) return
+    if (!authUser || authUser?.isAnonymous) return
 
-    pendingRedirect.current = false
     router.push(redirect || PAGES.HOME)
-  }, [user, redirect, router])
+  }, [authUser?.isAnonymous, redirect, router])
 
   const onSubmit: SubmitHandler<LoginSchema> = async (data) => {
     const { error } = await login(data)
     if (error) return
 
     reset()
-    pendingRedirect.current = true
   }
 
   const onLoginWithGoogle = async () => {
@@ -76,7 +73,6 @@ export const LoginForm = ({
     if (error) return
 
     reset()
-    pendingRedirect.current = true
   }
 
   return (

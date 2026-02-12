@@ -29,12 +29,12 @@ const Navbar = () => {
   return (
     <nav className="flex justify-between mb-2 p-4">
       <LogoHeader />
-      {user && (
+      {user && !user.isAnonymous && (
         <article className="flex items-center gap-3">
           <NavUser />
         </article>
       )}
-      {!user && (
+      {(!user || user.isAnonymous) && (
         <article className="flex items-center gap-3">
           <Button variant="outline" asChild>
             <Link href={PAGES.LOGIN}>Login</Link>

@@ -22,14 +22,14 @@ import { z } from "zod"
 import { type SignupSchema } from "@/components/signup-form"
 import { auth } from "@/constants/db"
 import { getRightRef, getUserRef } from "@/constants/db-refs"
-import { SESSION_STATUS } from "@/constants/mapping"
+import { FIREBASE_ERRORS, SESSION_STATUS } from "@/constants/mapping"
 import {
   updateSession,
   updateSessionAuthUser,
   updateSessionStatus,
 } from "@/redux/session/session.actions"
 import { type RootState } from "@/redux/store"
-import { formatSessionFromFirebaseUser } from "@/utils/user"
+import { formatSessionFromAnonymousUser, formatSessionFromFirebaseUser } from "@/utils/user"
 
 type User = {
   id: string
@@ -83,14 +83,26 @@ export const authApi = createApi({
   tagTypes: ["auth"],
   endpoints: (builder) => ({
     createUserAuth: builder.mutation<null, SignupSchema>({
-      queryFn: async (data) => {
+      queryFn: async (data, { dispatch }) => {
         try {
           const email = data.email.toLowerCase()
 
           if (auth.currentUser?.isAnonymous) {
-            const credential = EmailAuthProvider.credential(email, data.password)
-            await linkWithCredential(auth.currentUser, credential)
-            await updateDoc(getUserRef(auth.currentUser.uid), { email })
+            try {
+              const credential = EmailAuthProvider.credential(email, data.password)
+              await linkWithCredential(auth.currentUser, credential)
+              await updateDoc(getUserRef(auth.currentUser.uid), { email })
+              await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+            } catch (linkError: unknown) {
+              const firebaseError = linkError as { code?: string }
+              if (firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED) {
+                toast.error("An account with this email already exists. Please log in instead.")
+
+                return { data: null }
+              }
+
+              throw linkError
+            }
           } else {
             await createUserWithEmailAndPassword(auth, email, data.password)
           }
@@ -105,13 +117,25 @@ export const authApi = createApi({
       },
     }),
     loginWithGoogle: builder.mutation<null, void>({
-      queryFn: async () => {
+      queryFn: async (_, { dispatch }) => {
         try {
           if (auth.currentUser?.isAnonymous) {
-            const result = await linkWithPopup(auth.currentUser, googleProvider)
-            const email = result.user.email
-            if (email) {
-              await updateDoc(getUserRef(auth.currentUser.uid), { email })
+            try {
+              const result = await linkWithPopup(auth.currentUser, googleProvider)
+              const email = result.user.email
+              if (email) {
+                await updateDoc(getUserRef(auth.currentUser.uid), { email, photoUrl: auth.currentUser.photoURL, pseudo: auth.currentUser.displayName })
+              }
+              await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+            } catch (linkError: unknown) {
+              const firebaseError = linkError as { code?: string }
+              if (firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED) {
+                toast.error("An account with this email already exists. Please log in instead.")
+
+                return { data: null }
+              }
+
+              throw linkError
             }
           } else {
             await signInWithPopup(auth, googleProvider)
@@ -141,21 +165,27 @@ export const authApi = createApi({
           dispatch(updateSessionStatus(SESSION_STATUS.LOADING))
 
           unsubscribe = onAuthStateChanged(auth, async (user) => {
-            const isSignedIn = !!user
+            const isSignedIn = !!user && !user.isAnonymous
 
             if (!user) {
-              await dispatch(
-                updateSession({
-                  authUser: null,
-                  user: null,
-                  status: SESSION_STATUS.SUCCESS,
-                }),
-              )
+              signInAnonymously(auth)
+
+              return
             }
 
-            if (isSignedIn) {
-              await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+            if (user.isAnonymous) {
+              const sessionUser = formatSessionFromAnonymousUser({ authUser: user })
+
+              dispatch(updateSession({
+                authUser: user,
+                user: sessionUser,
+                status: SESSION_STATUS.SUCCESS,
+              }))
+
+              return
             }
+
+            if (isSignedIn) await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
           })
         } catch (error) {
           dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
