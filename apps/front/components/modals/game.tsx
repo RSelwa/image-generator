@@ -146,10 +146,10 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
           {isNew ? "Create Game" : "Edit Game"}
         </h2>
 
-        <div className="grid grid-cols-[1fr_280px] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-6">
           {/* Left column - Form fields */}
           <FieldGroup>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <Field>
                 <FieldLabel htmlFor="title">Title *</FieldLabel>
                 <Input
@@ -188,7 +188,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
               )}
             </Field>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <Field>
                 <FieldLabel htmlFor="midName">Mid Name</FieldLabel>
                 <Input
@@ -199,7 +199,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
               </Field>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field orientation="horizontal">
                 <Controller
                   name="hasSphericalImagesReady"

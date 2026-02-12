@@ -5,6 +5,7 @@ import { DIFFICULTIES, ROUND_TYPE } from "@repo/common"
 import { type Round } from "@repo/schemas"
 import { Globe, GripVertical, Map, Trash2 } from "lucide-react"
 import Image from "next/image"
+import { memo } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -20,7 +21,7 @@ type RoundSlotProps = {
   dragHandleProps?: Record<string, unknown>
 }
 
-const RoundSlot = ({
+const RoundSlot = memo(({
   index,
   round,
   onClear,
@@ -119,6 +120,6 @@ const RoundSlot = ({
       </div>
     </div>
   )
-}
+})
 
 export default RoundSlot

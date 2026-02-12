@@ -421,6 +421,7 @@ const FlatForm = ({
                   showLine={false}
                   expandedSize={{ width: 400, height: 250 }}
                   collapsedSize={{ width: 400, height: 250 }}
+                  className="max-w-full"
                 />
                 <div className="bg-muted/50 rounded-md p-3 text-sm">
                   <p className="font-medium mb-1">Position to be stored:</p>

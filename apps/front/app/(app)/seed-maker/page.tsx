@@ -25,7 +25,7 @@ import {
   ROUND_TYPE,
 } from "@repo/common"
 import { type Round, roundSchema, type SpecialRoundOption } from "@repo/schemas"
-import { useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { toast } from "sonner"
 import z from "zod"
 import { type DragData } from "@/components/seed-maker/draggable-image-card"
@@ -47,13 +47,13 @@ type SortableRoundProps = {
   index: number
   round: Round | null
   isSpecial: boolean
-  onClear: () => void
-  onClearOption: (optionIndex: number) => void
-  onDifficultyChange: (difficulty: string) => void
-  onToggleSpecial: () => void
+  onClear: (index: number) => void
+  onClearOption: (roundIndex: number, optionIndex: number) => void
+  onDifficultyChange: (index: number, difficulty: string) => void
+  onToggleSpecial: (index: number) => void
 }
 
-const SortableRound = ({
+const SortableRound = memo(({
   id,
   index,
   round,
@@ -80,16 +80,21 @@ const SortableRound = ({
 
   const dragHandleProps = { ...attributes, ...listeners }
 
+  const boundClear = useCallback(() => onClear(index), [onClear, index])
+  const boundClearOption = useCallback((optionIndex: number) => onClearOption(index, optionIndex), [onClearOption, index])
+  const boundDifficultyChange = useCallback((d: string) => onDifficultyChange(index, d), [onDifficultyChange, index])
+  const boundToggleSpecial = useCallback(() => onToggleSpecial(index), [onToggleSpecial, index])
+
   return (
     <div ref={setNodeRef} style={style}>
       {isSpecial && (
         <RoundSlotSpecial
           index={index}
           round={round}
-          onClearOption={onClearOption}
-          onClearAll={onClear}
-          onDifficultyChange={onDifficultyChange}
-          onToggleSpecial={onToggleSpecial}
+          onClearOption={boundClearOption}
+          onClearAll={boundClear}
+          onDifficultyChange={boundDifficultyChange}
+          onToggleSpecial={boundToggleSpecial}
           dragHandleProps={dragHandleProps}
         />
       )}
@@ -97,16 +102,16 @@ const SortableRound = ({
         <RoundSlot
           index={index}
           round={round}
-          onClear={onClear}
-          onDifficultyChange={onDifficultyChange}
-          onToggleSpecial={onToggleSpecial}
+          onClear={boundClear}
+          onDifficultyChange={boundDifficultyChange}
+          onToggleSpecial={boundToggleSpecial}
           isSpecial={isSpecial}
           dragHandleProps={dragHandleProps}
         />
       )}
     </div>
   )
-}
+})
 
 const buildNormalRound = (data: DragData): Round => ({
   isSpecial: false,
@@ -160,7 +165,7 @@ const Page = () => {
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
   )
 
-  const roundIds = rounds.map((_, i) => `sortable-round-${i}`)
+  const roundIds = useMemo(() => rounds.map((_, i) => `sortable-round-${i}`), [rounds.length])
 
   const handleRoundCountChange = (count: number) => {
     setRoundCount(count)
@@ -203,7 +208,7 @@ const Page = () => {
     }
   }
 
-  const handleToggleSpecial = (index: number) => {
+  const handleToggleSpecial = useCallback((index: number) => {
     setSpecialFlags((prev) => {
       const next = [...prev]
       next[index] = !next[index]
@@ -219,18 +224,18 @@ const Page = () => {
 
       return next
     })
-  }
+  }, [])
 
-  const handleClearRound = (index: number) => {
+  const handleClearRound = useCallback((index: number) => {
     setRounds((prev) => {
       const next = [...prev]
       next[index] = null
 
       return next
     })
-  }
+  }, [])
 
-  const handleClearOption = (roundIndex: number, optionIndex: number) => {
+  const handleClearOption = useCallback((roundIndex: number, optionIndex: number) => {
     setRounds((prev) => {
       const next = [...prev]
       const round = next[roundIndex]
@@ -243,9 +248,9 @@ const Page = () => {
 
       return next
     })
-  }
+  }, [])
 
-  const handleDifficultyChange = (index: number, difficulty: string) => {
+  const handleDifficultyChange = useCallback((index: number, difficulty: string) => {
     setRounds((prev) => {
       const next = [...prev]
       const round = next[index]
@@ -255,13 +260,13 @@ const Page = () => {
 
       return next
     })
-  }
+  }, [])
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveDragId(String(event.active.id))
-  }
+  }, [])
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     setActiveDragId(null)
     const { active, over } = event
 
@@ -319,7 +324,7 @@ const Page = () => {
         return next
       })
     }
-  }
+  }, [roundIds])
 
   const handleSave = async () => {
     const validRounds = rounds.filter((r) => {
@@ -415,10 +420,10 @@ const Page = () => {
                     index={index}
                     round={round}
                     isSpecial={specialFlags[index]}
-                    onClear={() => handleClearRound(index)}
-                    onClearOption={(optionIndex) => handleClearOption(index, optionIndex)}
-                    onDifficultyChange={(d) => handleDifficultyChange(index, d)}
-                    onToggleSpecial={() => handleToggleSpecial(index)}
+                    onClear={handleClearRound}
+                    onClearOption={handleClearOption}
+                    onDifficultyChange={handleDifficultyChange}
+                    onToggleSpecial={handleToggleSpecial}
                   />
                 ))}
               </div>

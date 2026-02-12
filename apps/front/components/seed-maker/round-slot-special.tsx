@@ -5,6 +5,7 @@ import { DIFFICULTIES, ROUND_TYPE } from "@repo/common"
 import { type Round, type SpecialRoundOption } from "@repo/schemas"
 import { Globe, GripVertical, Trash2 } from "lucide-react"
 import Image from "next/image"
+import { memo } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -17,7 +18,7 @@ type SpecialOptionSlotProps = {
   onClear: () => void
 }
 
-const SpecialOptionSlot = ({ roundIndex, optionIndex, option, onClear }: SpecialOptionSlotProps) => {
+const SpecialOptionSlot = memo(({ roundIndex, optionIndex, option, onClear }: SpecialOptionSlotProps) => {
   const { isOver, setNodeRef } = useDroppable({
     id: `round-slot-${roundIndex}-option-${optionIndex}`,
     data: { index: roundIndex, optionIndex, isSpecial: true },
@@ -63,7 +64,7 @@ const SpecialOptionSlot = ({ roundIndex, optionIndex, option, onClear }: Special
       )}
     </div>
   )
-}
+})
 
 type RoundSlotSpecialProps = {
   index: number
@@ -75,7 +76,7 @@ type RoundSlotSpecialProps = {
   dragHandleProps?: Record<string, unknown>
 }
 
-const RoundSlotSpecial = ({
+const RoundSlotSpecial = memo(({
   index,
   round,
   onClearOption,
@@ -143,6 +144,6 @@ const RoundSlotSpecial = ({
       </div>
     </div>
   )
-}
+})
 
 export default RoundSlotSpecial

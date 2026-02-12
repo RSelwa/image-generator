@@ -35,8 +35,10 @@
   - [ ] the listen docs should changes games if they contains a ready or not, when they are changed, should call another cf (maybe on request) that will fetch all games spehrical/flat to check if they have ready
   - [x] Fix: if selected 6 rounds, in end screen, still have 18 displayed
   - [x] Allow creation of flats and sphericals from new or gameId
-  - [ ] Account settings
-  - [ ] can list the seeds
+  - [x] Account settings
+  - [x] can list the seeds
+  - [ ] Implement a demo seed
+  - [ ] implement seed that will be featured like flim discover
   - [ ] can copy the seedId in the maker
   - [ ] Change icons on minimap
   - [ ] Fix starting screen when game is Loading
