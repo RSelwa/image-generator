@@ -4,7 +4,10 @@ import { isEqual } from "@repo/common"
 import { type UserDoc } from "@repo/schemas"
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   GoogleAuthProvider,
+  linkWithCredential,
+  linkWithPopup,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInAnonymously,
@@ -12,7 +15,7 @@ import {
   signInWithPopup,
   type Unsubscribe,
 } from "firebase/auth"
-import { type DocumentReference, getDoc, onSnapshot } from "firebase/firestore"
+import { type DocumentReference, getDoc, onSnapshot, updateDoc } from "firebase/firestore"
 import { REHYDRATE } from "redux-persist"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -82,11 +85,15 @@ export const authApi = createApi({
     createUserAuth: builder.mutation<null, SignupSchema>({
       queryFn: async (data) => {
         try {
-          await createUserWithEmailAndPassword(
-            auth,
-            data.email.toLowerCase(),
-            data.password,
-          )
+          const email = data.email.toLowerCase()
+
+          if (auth.currentUser?.isAnonymous) {
+            const credential = EmailAuthProvider.credential(email, data.password)
+            await linkWithCredential(auth.currentUser, credential)
+            await updateDoc(getUserRef(auth.currentUser.uid), { email })
+          } else {
+            await createUserWithEmailAndPassword(auth, email, data.password)
+          }
 
           return { data: null }
         } catch (error) {
@@ -100,7 +107,15 @@ export const authApi = createApi({
     loginWithGoogle: builder.mutation<null, void>({
       queryFn: async () => {
         try {
-          await signInWithPopup(auth, googleProvider)
+          if (auth.currentUser?.isAnonymous) {
+            const result = await linkWithPopup(auth.currentUser, googleProvider)
+            const email = result.user.email
+            if (email) {
+              await updateDoc(getUserRef(auth.currentUser.uid), { email })
+            }
+          } else {
+            await signInWithPopup(auth, googleProvider)
+          }
 
           return { data: null }
         } catch (error) {

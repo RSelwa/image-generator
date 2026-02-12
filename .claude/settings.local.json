@@ -19,7 +19,8 @@
       "Bash(npx vitest:*)",
       "Bash(ls:*)",
       "Bash(xargs:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:firebase.google.com)"
     ]
   }
 }
