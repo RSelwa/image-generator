@@ -1,7 +1,8 @@
-import { getDoc } from "@firebase/firestore"
+import { getDoc, getDocs, orderBy, query, where } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { seedDocWithIdSchema } from "@repo/schemas"
-import { getSeedRef } from "@/constants/db-refs"
+import { TABLES } from "@repo/common"
+import { type SeedDocWithId, seedDocWithIdSchema } from "@repo/schemas"
+import { getSeedRef, TABLE_REFS } from "@/constants/db-refs"
 import { globalErrorHandler } from "@/utils/error"
 
 export const seedApi = createApi({
@@ -33,8 +34,43 @@ export const seedApi = createApi({
           }
         }
       }
-    })
+    }),
+    getMySeeds: _builder.query<SeedDocWithId[], { userId: string }>({
+      queryFn: async ({ userId }) => {
+        try {
+          const q = query(
+            TABLE_REFS[TABLES.SEEDS],
+            where("createdBy", "==", userId),
+            orderBy("createdAt", "desc"),
+          )
+          const snapshot = await getDocs(q)
+
+          const seeds: SeedDocWithId[] = []
+          for (const docSnap of snapshot.docs) {
+            const { data, error } = seedDocWithIdSchema.safeParse({
+              id: docSnap.id,
+              ...docSnap.data(),
+            })
+
+            if (error) {
+              console.error(`Error parsing seed ${docSnap.id}:`, error)
+              continue
+            }
+
+            seeds.push(data)
+          }
+
+          return { data: seeds }
+        } catch (error) {
+          console.error("Error fetching user seeds:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      }
+    }),
   }),
 })
 
-export const { useGetSeedByIdQuery } = seedApi
+export const { useGetSeedByIdQuery, useGetMySeedsQuery } = seedApi

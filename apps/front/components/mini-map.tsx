@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react"
 import {
+  ReactZoomPanPinchRef,
   TransformComponent,
   TransformWrapper,
   useControls,
@@ -159,6 +160,7 @@ export const MiniMap = ({
 }: MiniMapProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const transformRef = useRef<ReactZoomPanPinchRef>(null)
   const mouseDownPos = useRef<{ x: number, y: number } | null>(null)
 
   const isHoveredOrParent = isHovered || isParentHover
@@ -171,6 +173,10 @@ export const MiniMap = ({
     currentSize.width / mapData.size.width,
     currentSize.height / mapData.size.height,
   )
+
+  const handleTransitionEnd = useCallback(() => {
+    transformRef.current?.centerView(minScale, 0)
+  }, [minScale])
 
   const DRAG_THRESHOLD = 5
 
@@ -206,9 +212,11 @@ export const MiniMap = ({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onTransitionEnd={handleTransitionEnd}
       {...props}
     >
       <TransformWrapper
+        ref={transformRef}
         initialScale={minScale}
         minScale={minScale}
         maxScale={4}

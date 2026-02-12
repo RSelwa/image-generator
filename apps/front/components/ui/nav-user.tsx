@@ -5,6 +5,7 @@ import {
   Gamepad2,
   LayoutDashboard,
   LogOut,
+  Sprout,
   User,
 } from "lucide-react"
 
@@ -77,15 +78,22 @@ export const NavUser = () => {
               </Link>
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem>
-            <User />
-            Account
+          <DropdownMenuItem asChild>
+            <Link href={PAGES.ACCOUNT} className="cursor-pointer">
+              <User />
+              Account
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={PAGES.SEED_MAKER} className="cursor-pointer">
-
               <Gamepad2 />
               Make a round
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={PAGES.MY_SEEDS} className="cursor-pointer">
+              <Sprout />
+              My Seeds
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>

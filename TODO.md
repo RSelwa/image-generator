@@ -34,16 +34,18 @@
   - [x] Allow flats to have maps
   - [ ] the listen docs should changes games if they contains a ready or not, when they are changed, should call another cf (maybe on request) that will fetch all games spehrical/flat to check if they have ready
   - [x] Fix: if selected 6 rounds, in end screen, still have 18 displayed
+  - [x] Allow creation of flats and sphericals from new or gameId
   - [ ] Account settings
+  - [ ] can list the seeds
   - [ ] can copy the seedId in the maker
   - [ ] Change icons on minimap
   - [ ] Fix starting screen when game is Loading
   - [ ] Share seed at the end of a lobby
   - [ ] end game screen⌛️
+  - [ ] Analytics
   - [ ] Integrate ads
   - [ ] bug minimap when first hover
   - [ ] Add tests on api endpoints
-  - [ ] Allow creation of flats and sphericals from new or gameId
   - [ ] Add firebase admin for front libs
   - [ ] Improve the security for the update for lobbies
   - [ ] Implement suggestion

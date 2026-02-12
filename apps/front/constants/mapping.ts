@@ -23,6 +23,7 @@ export const MODAL_KEYS = {
   FLAT_GALLERY_ID: "flat-gallery-id",
   FLAT_ID: "flat-id",
   CHANGE_PSEUDO: "new-pseudo",
+  SEED_DETAIL: "seed-detail",
 } as const
 
 export const SORT_OPTIONS = {

@@ -7,6 +7,7 @@ import { FlatsGallery } from "@/components/modals/flats-gallery"
 import { ModalGame } from "@/components/modals/game"
 import { ModalMapId } from "@/components/modals/map-id"
 import { MapsGallery } from "@/components/modals/maps-gallery"
+import { SeedDetailModal } from "@/components/modals/seed-detail"
 import { SphericalGalleryModal } from "@/components/modals/spherical-gallery"
 import { ModalSphericalId } from "@/components/modals/spherical-id"
 import { MODAL_KEYS } from "@/constants/mapping"
@@ -28,6 +29,8 @@ export const ModalProvider = () => {
 
   if (type === MODAL_KEYS.FLAT_GALLERY_ID) return <FlatsGallery />
   if (type === MODAL_KEYS.FLAT_ID) return <ModalFlatId />
+
+  if (type === MODAL_KEYS.SEED_DETAIL) return <SeedDetailModal />
 
   return null
 }

@@ -23,11 +23,11 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
     )
 
     const now = Timestamp.now()
-    const pseudo = generateUsername()
-
+    const pseudo = user?.displayName || generateUsername()
     const userDoc = userDocSchema.parse({
       email: user.email,
       createdAt: now,
+      photoUrl: user.photoURL || null,
       updatedAt: now,
       pseudo,
     })
