@@ -44,3 +44,9 @@ export const ROUND_POINTS = {
   DISTANCE_ADDITION: 50,
   DISTANCE_SNAP_THRESHOLD: 10, // If within this many points of max, snap to max
 } as const
+
+export const SUGGESTIONS_TYPE = {
+  BUG: "bug",
+  SUGGESTIONS: "suggestions",
+  HELP: "help"
+} as const

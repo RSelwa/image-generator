@@ -94,6 +94,14 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    // Suggestions collection
+    match /suggestions/{suggestionId} {
+      allow create: if true;
+      allow read: if isDocOwner(resource.data.createdBy);
+
+      allow read, write: if signedInAdmin();
+    }
+
     // Lobbies collection
     match /lobbies/{lobbyId} {
       // function isLobbyPlayer() {

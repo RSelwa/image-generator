@@ -37,10 +37,10 @@
   - [x] Allow creation of flats and sphericals from new or gameId
   - [x] Account settings
   - [x] can list the seeds
+  - [x] Implement a demo seed
   - [ ] when create lobby when anonymous should disable all config, and pick the seed
-  - [ ] Implement a demo seed
-  - [ ] Implement modals system for pubing
-  - [ ] implement seed that will be featured like flim discover
+  - [ ] Implement modals system for pubing/infos
+  - [ ] implement seeds that will be featured like flim discover
   - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
   - [ ] Improve the empty card whe no map/no games etc... with shadcn empty components
   - [ ] can copy the seedId in the maker

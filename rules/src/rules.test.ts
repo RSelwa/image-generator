@@ -1657,6 +1657,221 @@ describe("firebase Security Rules", () => {
     })
   })
 
+  describe("suggestions collection", () => {
+    const createSuggestionData = (createdBy: string) => ({
+      createdBy,
+      text: "My suggestion",
+      createdAt: new Date().toISOString(),
+    })
+
+    it("should be able to create a suggestion when logged in", async () => {
+      const uid = "user1"
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        setDoc(
+          doc(authedUserDb, "suggestions/suggestion1"),
+          createSuggestionData(uid),
+        ),
+      )
+    })
+
+    it("should be able to create a suggestion when not logged in", async () => {
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertSucceeds(
+        setDoc(
+          doc(unauthedDb, "suggestions/suggestion1"),
+          createSuggestionData("anonymous"),
+        ),
+      )
+    })
+
+    it("should be able to read own suggestion as owner (createdBy)", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData(uid),
+        )
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(
+        getDoc(doc(authedUserDb, "suggestions/suggestion1")),
+      )
+    })
+
+    it("should not be able to read another user's suggestion", async () => {
+      const uid = "user1"
+      const otherUid = "user2"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData(otherUid),
+        )
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        getDoc(doc(authedUserDb, "suggestions/suggestion1")),
+      )
+    })
+
+    it("should not be able to read a suggestion when not logged in", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData("user1"),
+        )
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(
+        getDoc(doc(unauthedDb, "suggestions/suggestion1")),
+      )
+    })
+
+    it("should be able to read any suggestion as admin", async () => {
+      const adminUid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData("user1"),
+        )
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+      await assertSucceeds(
+        getDoc(doc(adminDb, "suggestions/suggestion1")),
+      )
+    })
+
+    it("should be able to update a suggestion as admin", async () => {
+      const adminUid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData("user1"),
+        )
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(adminDb, "suggestions/suggestion1"), {
+          text: "Updated suggestion",
+        }),
+      )
+    })
+
+    it("should be able to delete a suggestion as admin", async () => {
+      const adminUid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData("user1"),
+        )
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+      await assertSucceeds(
+        deleteDoc(doc(adminDb, "suggestions/suggestion1")),
+      )
+    })
+
+    it("should not be able to update a suggestion as regular user", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData(uid),
+        )
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        updateDoc(doc(authedUserDb, "suggestions/suggestion1"), {
+          text: "Updated suggestion",
+        }),
+      )
+    })
+
+    it("should not be able to delete a suggestion as regular user", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData(uid),
+        )
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        deleteDoc(doc(authedUserDb, "suggestions/suggestion1")),
+      )
+    })
+
+    it("should not be able to update a suggestion when not logged in", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData("user1"),
+        )
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(
+        updateDoc(doc(unauthedDb, "suggestions/suggestion1"), {
+          text: "Updated suggestion",
+        }),
+      )
+    })
+
+    it("should not be able to delete a suggestion when not logged in", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(
+          doc(context.firestore(), "suggestions/suggestion1"),
+          createSuggestionData("user1"),
+        )
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(
+        deleteDoc(doc(unauthedDb, "suggestions/suggestion1")),
+      )
+    })
+  })
+
   describe("lobbies collection", () => {
     const createLobbyData = (hostId: string, playerUids: string[]) => ({
       code: "ABC123",

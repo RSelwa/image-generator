@@ -10,6 +10,7 @@ import { mapApi } from "@/redux/api/maps"
 import { seedApi } from "@/redux/api/seed"
 import { seedMakerApi } from "@/redux/api/seed-maker"
 import { sphericalApi } from "@/redux/api/spherical"
+import { suggestionsApi } from "@/redux/api/suggestions"
 import { userApi } from "@/redux/api/user"
 import { sessionSlice } from "@/redux/session/session.slice"
 
@@ -18,6 +19,7 @@ export const makeStore = () =>
     reducer: {
       [adminApi.reducerPath]: adminApi.reducer,
       [gameApi.reducerPath]: gameApi.reducer,
+      [suggestionsApi.reducerPath]: suggestionsApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
       [localApi.reducerPath]: localApi.reducer,
       [mapApi.reducerPath]: mapApi.reducer,
@@ -41,7 +43,8 @@ export const makeStore = () =>
         .concat(sphericalApi.middleware)
         .concat(flatApi.middleware)
         .concat(authApi.middleware)
-        .concat(seedMakerApi.middleware),
+        .concat(seedMakerApi.middleware)
+        .concat(suggestionsApi.middleware),
   })
 
 // Infer the type of makeStore

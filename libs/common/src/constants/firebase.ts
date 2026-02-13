@@ -10,6 +10,7 @@ export const TABLES = {
   LOBBIES: "lobbies",
   SEEDS: "seeds",
   ROUND_ANSWERS: "roundAnswers",
+  SUGGESTIONS: "suggestions"
 } as const
 
 export const STORAGE_PATHS = {
