@@ -16,7 +16,7 @@ const GameMapGuess = () => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
-  const [playPosition, setPlayerPosition] = useState<Position>({ x: 50, y: 50 })
+  const [playPosition, setPlayerPosition] = useState<Position | null>(null)
   const [isHovered, setIsHovered] = useState(false)
 
   const [submitRoundAnswer] = useSubmitRoundAnswerMutation()
@@ -31,7 +31,7 @@ const GameMapGuess = () => {
   const submitDistance = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!currentRoundData || !currentRoundData.mapPosition) return
+    if (!currentRoundData || !currentRoundData.mapPosition || !playPosition) return
 
     const distance = getDistance(currentRoundData.mapPosition, playPosition)
 
@@ -79,7 +79,7 @@ const GameMapGuess = () => {
         isParentHover={isHovered}
       />
 
-      <Button data-testid="map-submit" type="submit" className="w-full">
+      <Button data-testid="map-submit" type="submit" className="w-full" disabled={!playPosition}>
         Guess
       </Button>
     </form>

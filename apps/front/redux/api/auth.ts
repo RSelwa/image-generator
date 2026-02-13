@@ -1,6 +1,6 @@
 import { type Action } from "@reduxjs/toolkit"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { isEqual } from "@repo/common"
+import { generateUsername, isEqual } from "@repo/common"
 import { type UserDoc } from "@repo/schemas"
 import {
   createUserWithEmailAndPassword,
@@ -15,7 +15,7 @@ import {
   signInWithPopup,
   type Unsubscribe,
 } from "firebase/auth"
-import { type DocumentReference, getDoc, onSnapshot, updateDoc } from "firebase/firestore"
+import { type DocumentReference, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
 import { REHYDRATE } from "redux-persist"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -91,7 +91,9 @@ export const authApi = createApi({
             try {
               const credential = EmailAuthProvider.credential(email, data.password)
               await linkWithCredential(auth.currentUser, credential)
-              await updateDoc(getUserRef(auth.currentUser.uid), { email })
+              await updateDoc(getUserRef(auth.currentUser.uid), { email }).catch((error) => {
+                console.error("Error updating user", auth.currentUser?.uid, error)
+              })
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
             } catch (linkError: unknown) {
               const firebaseError = linkError as { code?: string }
@@ -124,7 +126,9 @@ export const authApi = createApi({
               const result = await linkWithPopup(auth.currentUser, googleProvider)
               const email = result.user.email
               if (email) {
-                await updateDoc(getUserRef(auth.currentUser.uid), { email, photoUrl: auth.currentUser.photoURL, pseudo: auth.currentUser.displayName })
+                await updateDoc(getUserRef(auth.currentUser.uid), { email, photoUrl: auth.currentUser.photoURL, pseudo: auth.currentUser.displayName }).catch((error) => {
+                  console.error("Error updating user", auth.currentUser?.uid, error)
+                })
               }
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
             } catch (linkError: unknown) {
@@ -174,6 +178,20 @@ export const authApi = createApi({
             }
 
             if (user.isAnonymous) {
+              // beforeUserCreated blocking function doesn't trigger for anonymous sign-ins,
+              // so we create the user doc client-side if it doesn't exist
+              const userRef = getUserRef(user.uid)
+              const userDoc = await getDoc(userRef)
+              if (!userDoc.exists()) {
+                await setDoc(userRef, {
+                  email: `anonymous-${user.uid}@demo.geogamer`,
+                  createdAt: serverTimestamp(),
+                  updatedAt: serverTimestamp(),
+                  photoUrl: null,
+                  pseudo: generateUsername(),
+                })
+              }
+
               const sessionUser = formatSessionFromAnonymousUser({ authUser: user })
 
               dispatch(updateSession({

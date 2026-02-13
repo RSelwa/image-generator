@@ -50,7 +50,7 @@ test.describe("lobby playing", () => {
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[0].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 10, y: 10 }, force: true })
+    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 10, y: 10 } })
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[0].game?.title))).toBeVisible()
@@ -79,7 +79,7 @@ test.describe("lobby playing", () => {
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[2].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 10, y: 10 }, force: true })
+    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 10, y: 10 } })
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[2].game?.title))).toBeVisible()
@@ -91,7 +91,7 @@ test.describe("lobby playing", () => {
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[3].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 10, y: 10 }, force: true })
+    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 10, y: 10 } })
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[3].game?.title))).toBeVisible()
@@ -103,7 +103,7 @@ test.describe("lobby playing", () => {
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[4].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 10, y: 10 }, force: true })
+    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 10, y: 10 } })
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[4].game?.title))).toBeVisible()

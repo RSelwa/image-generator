@@ -130,7 +130,7 @@ export const retrieveGamesFromLobby = async (lobbyId: string) => {
 const getAnonymousUid = async (page: Page) =>
   page.evaluate(() => (window as any).__store__?.getState()?.session?.user?.id as string | null)
 
-const createAnonymousUserDoc = async (uid: string) => {
+export const createAnonymousUserDoc = async (uid: string) => {
   const now = Timestamp.now()
   const userDoc = userDocSchema.parse({
     email: `anonymous-${uid}@demo.geogamer`,
@@ -151,7 +151,7 @@ export const waitForAnonymousAuth = async (page: Page) => {
   const anonymousUid = await getAnonymousUid(page)
   expect(anonymousUid).toBeTruthy()
 
-  await createAnonymousUserDoc(anonymousUid!)
+  // await createAnonymousUserDoc(anonymousUid!)
 
   return anonymousUid || ""
 }

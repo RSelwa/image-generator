@@ -2,7 +2,9 @@
 
 import { useCallback, useRef, useState } from "react"
 import {
-  ReactZoomPanPinchRef,
+  type ReactZoomPanPinchRef
+} from "react-zoom-pan-pinch"
+import {
   TransformComponent,
   TransformWrapper,
   useControls,
@@ -159,7 +161,7 @@ export const MiniMap = ({
   ...props
 }: MiniMapProps) => {
   const [isHovered, setIsHovered] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const wrapperClickRef = useRef<HTMLDivElement>(null)
   const transformRef = useRef<ReactZoomPanPinchRef>(null)
   const mouseDownPos = useRef<{ x: number, y: number } | null>(null)
 
@@ -184,9 +186,13 @@ export const MiniMap = ({
     mouseDownPos.current = { x: e.clientX, y: e.clientY }
   }, [])
 
+  // Click handler on the outer wrapper — converts wrapper-space coordinates
+  // to map-space percentages using the current transform state.
+  // This avoids clicking inside TransformComponent where the inner container's
+  // bounding box can extend beyond the visible (clipped) area due to CSS transforms.
   const handleMapClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (disabled || hasSubmitted || !containerRef.current) return
+      if (disabled || hasSubmitted || !wrapperClickRef.current || !transformRef.current) return
 
       if (mouseDownPos.current) {
         const dx = e.clientX - mouseDownPos.current.x
@@ -194,24 +200,36 @@ export const MiniMap = ({
         if (dx * dx + dy * dy > DRAG_THRESHOLD * DRAG_THRESHOLD) return
       }
 
-      const rect = containerRef.current.getBoundingClientRect()
-      const x = ((e.clientX - rect.left) / rect.width) * 100
-      const y = ((e.clientY - rect.top) / rect.height) * 100
+      const wrapperRect = wrapperClickRef.current.getBoundingClientRect()
+      const clickX = e.clientX - wrapperRect.left
+      const clickY = e.clientY - wrapperRect.top
+
+      const { scale, positionX, positionY } = transformRef.current.state
+
+      const mapX = (clickX - positionX) / scale
+      const mapY = (clickY - positionY) / scale
+
+      const x = (mapX / mapData.size.width) * 100
+      const y = (mapY / mapData.size.height) * 100
 
       onMapClick({ x, y })
     },
-    [disabled, hasSubmitted, onMapClick],
+    [disabled, hasSubmitted, onMapClick, mapData.size.width, mapData.size.height],
   )
 
   return (
     <div
-      className={`${inline ? "relative" : "fixed bottom-6 right-6 z-50"} rounded-lg overflow-hidden border-2 border-white/50 shadow-2xl transition-all bg-neutral-950/90 duration-300 ease-out ${className ?? ""}`}
+      data-testid="mini-map-container"
+      ref={wrapperClickRef}
+      className={`${inline ? "relative" : "fixed bottom-6 right-6 z-50"} rounded-lg overflow-hidden border-2 border-white/50 shadow-2xl transition-all bg-neutral-950/90 duration-300 ease-out ${disabled || hasSubmitted ? "cursor-default" : "cursor-crosshair"} ${className ?? ""}`}
       style={{
         width: currentSize.width,
         height: currentSize.height,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onMouseDown={handleMouseDown}
+      onClick={handleMapClick}
       onTransitionEnd={handleTransitionEnd}
       {...props}
     >
@@ -233,11 +251,7 @@ export const MiniMap = ({
         >
           {/* Map container with markers - uses actual image dimensions */}
           <div
-            data-testid="mini-map-container"
-            ref={containerRef}
-            className={`relative ${disabled || hasSubmitted ? "cursor-default" : "cursor-crosshair"}`}
-            onMouseDown={handleMouseDown}
-            onClick={handleMapClick}
+            className="relative"
             style={{
               width: mapData.size.width,
               height: mapData.size.height,
