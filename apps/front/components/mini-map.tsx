@@ -71,6 +71,7 @@ const MarkersLayer = ({
 
     return (
       <div
+        data-testid={`marker-${color}`}
         className="absolute pointer-events-none"
         style={{
           left: `${position.x}%`,
@@ -186,10 +187,6 @@ export const MiniMap = ({
     mouseDownPos.current = { x: e.clientX, y: e.clientY }
   }, [])
 
-  // Click handler on the outer wrapper — converts wrapper-space coordinates
-  // to map-space percentages using the current transform state.
-  // This avoids clicking inside TransformComponent where the inner container's
-  // bounding box can extend beyond the visible (clipped) area due to CSS transforms.
   const handleMapClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (disabled || hasSubmitted || !wrapperClickRef.current || !transformRef.current) return
@@ -204,7 +201,7 @@ export const MiniMap = ({
       const clickX = e.clientX - wrapperRect.left
       const clickY = e.clientY - wrapperRect.top
 
-      const { scale, positionX, positionY } = transformRef.current.state
+      const { scale, positionX, positionY } = transformRef.current.instance.transformState
 
       const mapX = (clickX - positionX) / scale
       const mapY = (clickY - positionY) / scale
@@ -228,9 +225,9 @@ export const MiniMap = ({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onTransitionEnd={handleTransitionEnd}
       onMouseDown={handleMouseDown}
       onClick={handleMapClick}
-      onTransitionEnd={handleTransitionEnd}
       {...props}
     >
       <TransformWrapper

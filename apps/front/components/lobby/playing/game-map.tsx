@@ -79,7 +79,7 @@ const GameMapGuess = () => {
         isParentHover={isHovered}
       />
 
-      <Button data-testid="map-submit" type="submit" className="w-full" disabled={!playPosition}>
+      <Button data-testid="map-submit" type="submit" className="w-full">
         Guess
       </Button>
     </form>

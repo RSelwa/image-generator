@@ -12,4 +12,5 @@ export const SELECTORS = {
   GAME_THUMBNAIL_OPTION: (index?: string) => `game-thumbnail-option-${index}`,
   GAME_THUMBNAIL_TITLE: (gameTitle?: string) => `game-thumbnail-${gameTitle}`,
   GAME_MAP: (gameTitle?: string) => `game-map-${gameTitle}`,
+  MAP_MARKER: (color?: string) => `marker-${color}`
 } as const
