@@ -41,6 +41,7 @@
   - [ ] Implement a demo seed
   - [ ] Implement modals system for pubing
   - [ ] implement seed that will be featured like flim discover
+  - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
   - [ ] Improve the empty card whe no map/no games etc... with shadcn empty components
   - [ ] can copy the seedId in the maker
   - [ ] Change icons on minimap

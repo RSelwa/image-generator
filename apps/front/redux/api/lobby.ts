@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, isEqual, LOBBY_STATUS, MAX_PLAYERS, NUMBER_OF_ROUNDS_PER_STAGE, ROUND_POINTS, TABLES } from "@repo/common"
+import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, DEMO_SEED_ID, isEqual, LOBBY_STATUS, MAX_PLAYERS, NUMBER_OF_ROUNDS_PER_STAGE, ROUND_POINTS, TABLES } from "@repo/common"
 import {
   type CreateLobbyInput,
   createLobbyInputSchema,
@@ -33,7 +33,6 @@ import { toast } from "sonner"
 import z from "zod"
 import { auth } from "@/constants/db"
 import { getLobbyRef, getRoundAnswerRef, TABLE_REFS } from "@/constants/db-refs"
-import { DEMO_SEED_ID } from "@/constants/demo"
 import { API_ENDPOINTS } from "@/constants/mapping"
 import { seedApi } from "@/redux/api/seed"
 import { type SessionUser } from "@/schemas/session"
