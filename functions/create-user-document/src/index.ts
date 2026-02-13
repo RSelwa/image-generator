@@ -18,18 +18,17 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
     logger.info(
       `Creating user document for uid: ${user.uid} email: ${email}`,
     )
-
-    const now = Timestamp.now()
-    const pseudo = user?.displayName || generateUsername()
-    const userDoc = userDocSchema.parse({
-      email,
-      createdAt: now,
-      photoUrl: user.photoURL || null,
-      updatedAt: now,
-      pseudo,
-    })
-
     try {
+      const now = Timestamp.now()
+      const pseudo = user?.displayName || generateUsername()
+      const userDoc = userDocSchema.parse({
+        email,
+        createdAt: now,
+        photoUrl: user.photoURL || null,
+        updatedAt: now,
+        pseudo,
+      })
+
       await refs.users.doc(user.uid).set(userDoc)
     } catch (error) {
       logger.error("Error creating user document:", error)

@@ -1,10 +1,19 @@
+packages:
+  - libs/*
+  - functions/*
+  - rules
+  - apps/*
+  - scripts
+
+onlyBuiltDependencies:
+  - '@firebase/util'
+  - esbuild
+  - msw
+  - protobufjs
+  - re2
+  - sharp
+  - unrs-resolver
+
 shellEmulator: true
 
 trustPolicy: no-downgrade
-
-packages:
-  - "libs/*"
-  - "functions/*"
-  - rules
-  - "apps/*"
-  - scripts
