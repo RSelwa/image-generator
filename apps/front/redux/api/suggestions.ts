@@ -1,7 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES } from "@repo/common"
 import { type SuggestionDoc, type SuggestionDocWithId, suggestionsDocWithIdSchema } from "@repo/schemas"
-import { addDoc, deleteDoc, documentId, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, serverTimestamp, startAfter, updateDoc, where } from "firebase/firestore"
+import { addDoc, deleteDoc, documentId, getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, serverTimestamp, startAfter, updateDoc, where } from "firebase/firestore"
 import { DEFAULT_SIZE_SUGGESTIONS } from "@/constants/api"
 import { getSuggestionRef, TABLE_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
@@ -11,6 +11,21 @@ export const suggestionsApi = createApi({
   baseQuery: fakeBaseQuery<GlobalError>(),
   tagTypes: ["Suggestion", "SuggestionList"],
   endpoints: (builder) => ({
+    getSuggestionsCount: builder.query<number, void>({
+      queryFn: async () => {
+        try {
+          const usersCount = await getCountFromServer(TABLE_REFS[TABLES.SUGGESTIONS])
+
+          return { data: usersCount.data().count }
+        } catch (error) {
+          console.error("Error fetching users count", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      }
+    }),
     getSuggestionById: builder.query<SuggestionDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
         try {
@@ -75,7 +90,7 @@ export const suggestionsApi = createApi({
     getAllSuggestions: builder.infiniteQuery<
       SuggestionDocWithId[],
       void,
-      { limit?: number; startAfter?: string }
+      { limit?: number, startAfter?: string }
     >({
       queryFn: async ({ pageParam }) => {
         try {
@@ -141,14 +156,12 @@ export const suggestionsApi = createApi({
         },
       },
       providesTags: (result) =>
-        result
-          ? [
-              ...result.pages
-                .flat()
-                .map(({ id }) => ({ type: "Suggestion" as const, id })),
-              "SuggestionList",
-            ]
-          : ["SuggestionList"],
+        result ? [
+          ...result.pages
+            .flat()
+            .map(({ id }) => ({ type: "Suggestion" as const, id })),
+          "SuggestionList",
+        ] : ["SuggestionList"],
     }),
 
     createSuggestion: builder.mutation<SuggestionDocWithId, Omit<SuggestionDoc, "createdAt" | "updatedAt">>({
