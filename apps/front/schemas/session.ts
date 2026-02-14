@@ -6,8 +6,8 @@ import { SESSION_STATUS } from "@/constants/mapping"
 export const sessionUserSchema = z.object({
   id: z.string(),
   email: z.email(),
-  photoUrl: z.string(),
-  pseudo: z.string().default(""),
+  photoUrl: z.string().nullish().transform((v) => v || ""),
+  pseudo: z.string().nullish().transform((v) => v || ""),
   rights: z.enum(USER_RIGHT).nullish(),
   isAnonymous: z.boolean().default(false),
 })

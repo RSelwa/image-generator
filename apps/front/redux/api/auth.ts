@@ -289,6 +289,8 @@ export const authApi = createApi({
           return { data: userDocument }
         } catch (error) {
           console.error("Error fetching user document:", error)
+          dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
+          await auth.signOut()
 
           return { data: null }
         }
@@ -321,24 +323,30 @@ export const authApi = createApi({
             async (snapshot) => {
               if (!snapshot.exists()) return unsubscribe?.()
 
-              const data = { ...snapshot.data(), id: snapshot.id }
+              try {
+                const data = { ...snapshot.data(), id: snapshot.id }
 
-              const userDocument = data as UserDoc
+                const userDocument = data as UserDoc
 
-              const user = formatSessionFromFirebaseUser({
-                user: userDocument,
-                authUser,
-                rightsDoc
-              })
+                const user = formatSessionFromFirebaseUser({
+                  user: userDocument,
+                  authUser,
+                  rightsDoc
+                })
 
-              dispatch(updateSession({ user, status: SESSION_STATUS.SUCCESS }))
+                dispatch(updateSession({ user, status: SESSION_STATUS.SUCCESS }))
 
-              updateCachedData((draft) => {
-                const isSame = isEqual(draft, data)
-                if (isSame) return draft
+                updateCachedData((draft) => {
+                  const isSame = isEqual(draft, data)
+                  if (isSame) return draft
 
-                return data
-              })
+                  return data
+                })
+              } catch (error) {
+                console.error("Error parsing user document:", error)
+                dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
+                await auth.signOut()
+              }
             },
             (error) => {
               const state = getState() as RootState

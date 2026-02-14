@@ -55,6 +55,7 @@ export default antfu({
     "node/prefer-global/buffer": "off",
 
     // Custom rules
+    "ts/ban-ts-comment": "off",
     "react-refresh/only-export-components": "off",
     "antfu/curly": "off",
     "no-console": ["warn", { allow: ["warn", "error", "info"] }],
