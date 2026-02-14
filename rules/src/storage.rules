@@ -58,6 +58,13 @@ service firebase.storage {
       allow read: if true;
     }
 
+    // Suggestion assets
+    match /suggestions/{allPaths=**} {
+      allow create: if true;
+
+      allow read, write: if signedInAdmin();
+    }
+
     // Deny all other paths
     match /{allPaths=**} {
       // Admin
