@@ -65,4 +65,5 @@ export const API_ENDPOINTS = {
 
 export const FIREBASE_ERRORS = {
   EMAIL_ALREADY_USED: "auth/email-already-in-use",
+  CREDENTIAL_ALREADY_IN_USE: "auth/credential-already-in-use",
 } as const

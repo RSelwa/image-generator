@@ -11,6 +11,7 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInAnonymously,
+  signInWithCredential,
   signInWithEmailAndPassword,
   signInWithPopup,
   type Unsubscribe,
@@ -132,11 +133,20 @@ export const authApi = createApi({
               }
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
             } catch (linkError: unknown) {
-              const firebaseError = linkError as { code?: string }
+              const firebaseError = linkError as { code?: string; customData?: unknown }
               if (firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED) {
                 toast.error("An account with this email already exists. Please log in instead.")
 
                 return { data: null }
+              }
+
+              if (firebaseError?.code === FIREBASE_ERRORS.CREDENTIAL_ALREADY_IN_USE) {
+                const credential = GoogleAuthProvider.credentialFromError(firebaseError as any)
+                if (credential) {
+                  await signInWithCredential(auth, credential)
+
+                  return { data: null }
+                }
               }
 
               throw linkError
