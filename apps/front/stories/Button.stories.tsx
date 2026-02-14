@@ -13,7 +13,7 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "destructive", "outline", "secondary", "ghost", "link"],
+      options: ["default", "destructive", "outline", "secondary", "ghost", "link","marathon", "marathon-white", "marathon-outline"],
     },
     size: {
       control: "select",
@@ -130,5 +130,26 @@ export const Disabled: Story = {
   args: {
     children: "Disabled",
     disabled: true,
+  },
+}
+
+export const Marathon: Story = {
+  args: {
+    variant: "marathon",
+    children: "Marathon",
+  },
+}
+
+export const MarathonWhite: Story = {
+  args: {
+    variant: "marathon-white",
+    children: "Marathon White",
+  },
+}
+
+export const MarathonOutline: Story = {
+  args: {
+    variant: "marathon-outline",
+    children: "Marathon Outline",
   },
 }

@@ -33,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
+        data-marathon
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
       >
         <Suspense>

@@ -47,6 +47,7 @@
 }
 
 @theme {
+  --inset-shadow-marathon: inset 0 0px 0px 2px var(--primary);
   --shadow-glow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25); 
   --shadow-glow-xs: 0px 0px 10px 5px rgba(0, 0, 0, 0.25); 
   --admin-header-height: 76px;
@@ -117,7 +118,8 @@
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.541 0.281 293.009);
+  --primary: oklch(0.9209 0.2325 125.54);
+  /* --primary: oklch(0.541 0.281 293.009); */
   --primary-foreground: oklch(0.969 0.016 293.756);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -176,6 +178,12 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.38 0.189 293.745);
+}
+
+[data-marathon]{
+  --background: oklch(0 0 0);
+  --foreground: oklch(1 0 0);
+  --primary: oklch(0.9209 0.2325 125.54);
 }
 
 @layer base {
