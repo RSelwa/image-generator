@@ -38,6 +38,12 @@
   - [x] Account settings
   - [x] can list the seeds
   - [x] Implement a demo seed
+  - [ ] when user hasn't selected i pin in the map, should not draw line, and always set points to 0
+  - [ ] Remove input le game input quand on est en selection de specials
+  - [ ] When user start a lobby, remove his id from createdBy seedDoc, because he don't really create it
+  - [ ] Seed maker, better tags, which games has sphericals and which has flats, wich means better handling listeners
+  - [ ] ajouter description pour le round special
+  - [ ] ajouter des bouttons back to lobby / new game, when in finished screen
   - [ ] when create lobby when anonymous should disable all config, and pick the seed
   - [ ] Implement modals system for pubing/infos
   - [ ] implement seeds that will be featured like flim discover

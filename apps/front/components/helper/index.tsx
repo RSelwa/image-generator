@@ -1,13 +1,18 @@
 "use client"
 
+import { LobbyDebug } from "@/components/lobby/lobby-debug"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
+import { selectIsAdmin } from "@/redux/session/session.selectors"
+import { useAppSelector } from "@/redux/store"
 
 export const HelperMenu = () => {
   const { openModal: openGameSuggestion } = useModal(MODAL_KEYS.SUGGEST_GAME)
   const { openModal: openReportBug } = useModal(MODAL_KEYS.REPORT_BUG)
+
+  const isAdmin = useAppSelector(selectIsAdmin)
 
   return (
     <DropdownMenu>
@@ -15,11 +20,10 @@ export const HelperMenu = () => {
         <Button variant="outline">
           Need help
         </Button>
-
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end" side="top">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>Help</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => openGameSuggestion()}>
             Suggest a game
           </DropdownMenuItem>
@@ -27,9 +31,10 @@ export const HelperMenu = () => {
             Report a bug
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
+        {isAdmin && (
+          <LobbyDebug />
+        )}
       </DropdownMenuContent>
-
     </DropdownMenu>
   )
 }

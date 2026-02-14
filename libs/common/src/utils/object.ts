@@ -98,7 +98,9 @@ export function getNowString() {
 }
 
 // Export Now at format dd-mm-yyyy-hh-mm-ss
-export function getDateString(now: Date) {
+export function getDateString(now?: Date) {
+  if (!now) return ""
+
   const dateStr = [
     now.getDate().toString().padStart(2, "0"),
     (now.getMonth() + 1).toString().padStart(2, "0"),
