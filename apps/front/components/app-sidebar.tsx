@@ -42,6 +42,14 @@ const navMain = [
         title: "Maps",
         url: PAGES.ADMIN_MAPS,
       },
+      {
+        title: "Users",
+        url: PAGES.ADMIN_USERS,
+      },
+      {
+        title: "Suggestions",
+        url: PAGES.ADMIN_SUGGESTIONS,
+      },
     ],
   },
 ]

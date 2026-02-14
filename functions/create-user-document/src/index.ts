@@ -1,4 +1,4 @@
-import { generateUsername } from "@repo/common"
+import { generateUsername, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { userDocSchema } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
@@ -13,7 +13,7 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
 
     const user = event.data
 
-    const email = user.email || `anonymous-${user.uid}@demo.geogamer`
+    const email = user.email || `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`
 
     logger.info(
       `Creating user document for uid: ${user.uid} email: ${email}`,
@@ -27,6 +27,7 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
         photoUrl: user.photoURL || null,
         updatedAt: now,
         pseudo,
+        isAnonymousUser: Boolean(!user.email),
       })
 
       await refs.users.doc(user.uid).set(userDoc)

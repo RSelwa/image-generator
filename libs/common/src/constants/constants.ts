@@ -22,6 +22,9 @@ export const DEFAULT_LIVES = 3
 export const DEFAULT_MAX_DISTANCE_POINTS = 30 // percentage of max distance
 export const DEFAULT_HAS_SPECIAL_ROUNDS = false
 
+export const PREFIX_ANONYMOUS_USER = "anon_"
+export const SUFFIX_ANONYMOUS_USER = "@demo.geogamer"
+
 export const OPTIONS_NUMBER_OF_ROUNDS = [1, 2, 3, 4].map((multiplier) => multiplier * NUMBER_OF_ROUNDS_PER_STAGE)
 export const OPTIONS_PLAYERS_LIVES = [null, 1, 3, 5]
 export const OPTIONS_ROUND_DURATIONS = [30, 60, 90, 120]

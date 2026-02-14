@@ -12,7 +12,7 @@ export const formatSessionFromFirebaseUser = ({
   rightsDoc: RightDoc | null
 }): SessionUser => {
   const { uid, photoURL, displayName, isAnonymous } = authUser
-  const { email, pseudo, photoUrl } = user
+  const { email, pseudo, photoUrl, isAnonymousUser } = user
 
   const sessionUser = sessionUserSchema.safeParse({
     id: uid,
@@ -20,7 +20,7 @@ export const formatSessionFromFirebaseUser = ({
     photoUrl: photoUrl || photoURL || "",
     rights: rightsDoc?.right,
     pseudo: pseudo || displayName,
-    isAnonymous
+    isAnonymous: isAnonymous || isAnonymousUser
   })
 
   if (!sessionUser.success) {

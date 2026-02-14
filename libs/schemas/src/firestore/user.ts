@@ -1,3 +1,4 @@
+import { USERS_FIELDS } from "@repo/common"
 import z from "zod"
 import { timestampSchema, WITH_ID } from "~/zod"
 
@@ -7,6 +8,7 @@ export const userDocSchema = z.object({
   photoUrl: z.string().nullish().default(""),
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
+  [USERS_FIELDS.IS_ANONYMOUS_USER]: z.boolean().nullish().default(false),
 })
 
 export const userDocWithIdSchema = z.object({

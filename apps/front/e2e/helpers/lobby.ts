@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { expect, type Page } from "@playwright/test"
-import { generateUsername, TABLES } from "@repo/common"
+import { generateUsername, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { type LobbyDoc, type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
 import { userDocSchema } from "@repo/schemas"
@@ -133,7 +133,7 @@ const getAnonymousUid = async (page: Page) =>
 export const createAnonymousUserDoc = async (uid: string) => {
   const now = Timestamp.now()
   const userDoc = userDocSchema.parse({
-    email: `anonymous-${uid}@demo.geogamer`,
+    email: `${PREFIX_ANONYMOUS_USER}${uid}${SUFFIX_ANONYMOUS_USER}`,
     createdAt: now,
     photoUrl: null,
     updatedAt: now,

@@ -1,6 +1,6 @@
 import { type Action } from "@reduxjs/toolkit"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { generateUsername, isEqual } from "@repo/common"
+import { generateUsername, isEqual, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
 import { type UserDoc } from "@repo/schemas"
 import {
   createUserWithEmailAndPassword,
@@ -133,7 +133,7 @@ export const authApi = createApi({
               }
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
             } catch (linkError: unknown) {
-              const firebaseError = linkError as { code?: string; customData?: unknown }
+              const firebaseError = linkError as { code?: string, customData?: unknown }
               if (firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED) {
                 toast.error("An account with this email already exists. Please log in instead.")
 
@@ -194,11 +194,12 @@ export const authApi = createApi({
               const userDoc = await getDoc(userRef)
               if (!userDoc.exists()) {
                 await setDoc(userRef, {
-                  email: `anonymous-${user.uid}@demo.geogamer`,
+                  email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
                   createdAt: serverTimestamp(),
                   updatedAt: serverTimestamp(),
                   photoUrl: null,
                   pseudo: generateUsername(),
+                  isAnonymousUser: true,
                 })
               }
 

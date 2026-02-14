@@ -12,6 +12,8 @@ export const PAGES = {
   ADMIN_SPHERICAL: "/admin/sphericals",
   ADMIN_MAPS: "/admin/maps",
   ADMIN_FLATS: "/admin/flats",
+  ADMIN_SUGGESTIONS: "suggestions",
+  ADMIN_USERS: "/admin/users",
   ADMIN_TEST: "/admin/test",
   ADMIN_FULLSCREEN: "/admin/full-screen",
   ADMIN_SPHERICAL_FULLSCREEN: "/admin/spherical-full-screen",

@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker"
+import { PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { db } from "@repo/providers/firebase"
+import { auth, db } from "@repo/providers/firebase"
 import { beforeAll, describe, expect, it } from "vitest"
 
 async function createAuthUser({
@@ -22,6 +23,12 @@ async function createAuthUser({
   const data = (await res.json()) as { localId: string, email: string }
 
   return { uid: data.localId, email: data.email }
+}
+
+async function createAnonymousAuthUser() {
+  const user = await auth.createUser({})
+
+  return { uid: user.uid }
 }
 
 beforeAll(() => {
@@ -61,6 +68,21 @@ describe("createUserDocument", () => {
     const userDoc = snapshot.data()
 
     expect(userDoc).toHaveProperty("email", email)
+    expect(userDoc).toHaveProperty("createdAt")
+    expect(userDoc).toHaveProperty("updatedAt")
+    expect(userDoc?.pseudo).toBeTruthy()
+    expect(userDoc).toHaveProperty("isAnonymousUser", false)
+  })
+
+  it("should set isAnonymousUser to true when user has no email", async () => {
+    const { uid } = await createAnonymousAuthUser()
+
+    const snapshot = await refs.users.doc(uid).get()
+
+    const userDoc = snapshot.data()
+
+    expect(userDoc).toHaveProperty("isAnonymousUser", true)
+    expect(userDoc).toHaveProperty("email", `${PREFIX_ANONYMOUS_USER}${uid}${SUFFIX_ANONYMOUS_USER}`)
     expect(userDoc).toHaveProperty("createdAt")
     expect(userDoc).toHaveProperty("updatedAt")
     expect(userDoc?.pseudo).toBeTruthy()
