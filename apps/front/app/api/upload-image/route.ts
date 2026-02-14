@@ -17,7 +17,11 @@ export const payloadSchema = z.object({
 })
 
 const hasRightToUpload = (userRight: RightDoc["right"], bucketPath: ConstantValues<typeof STORAGE_PATHS>) => {
-  const bucket = RIGHTS_CREATE_TO_BUCKETS[bucketPath].find(({ role }) => role === userRight)
+  const bucketRights = RIGHTS_CREATE_TO_BUCKETS[bucketPath as keyof typeof RIGHTS_CREATE_TO_BUCKETS]
+
+  if (!bucketRights) return true
+
+  const bucket = bucketRights.find(({ role }) => role === userRight)
 
   if (!bucket) return false
 
@@ -40,14 +44,6 @@ export const POST = async (request: Request) => {
       )
     }
 
-    if (!hasRightToUpload(right.data.right, STORAGE_PATHS.MAP_IMAGES)) {
-      // Authorized
-      return Response.json(
-        { error: "Authorized to write in this bucket" },
-        { status: 401 },
-      )
-    }
-
     const formData = await request.formData()
     const file = formData.get("file")
     const gameName = formData.get("gameName")?.toString() || undefined
@@ -57,6 +53,13 @@ export const POST = async (request: Request) => {
       return Response.json(
         { error: "Missing file or bucketPath" },
         { status: 400 },
+      )
+    }
+
+    if (!hasRightToUpload(right.data.right, bucketPath as ConstantValues<typeof STORAGE_PATHS>)) {
+      return Response.json(
+        { error: "Not authorized to write in this bucket" },
+        { status: 401 },
       )
     }
 
@@ -86,13 +89,14 @@ export const POST = async (request: Request) => {
       },
     })
 
-    await fileRef.makePublic()
+    const [url] = await fileRef.getSignedUrl({
+      action: "read",
+      expires: "01-01-2100",
+    })
 
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${storagePath}`
+    console.info(`Image saved as ${url} (${width}x${height})`)
 
-    console.info(`Image saved as ${publicUrl} (${width}x${height})`)
-
-    return Response.json({ url: publicUrl, width, height })
+    return Response.json({ url, width, height })
   } catch (error) {
     console.error("Upload error:", error)
 

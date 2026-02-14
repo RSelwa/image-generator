@@ -1,4 +1,5 @@
 import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
+import { SUGGESTIONS_TYPE } from "./../../../libs/common/src/constants/constants"
 
 export const SESSION_STATUS = {
   LOADING: "loading",
@@ -11,7 +12,8 @@ export const QUERY_PARAMS = {
   SEARCH: "search",
   MISSING_IMAGE: "missing_image",
   LOBBY_CODE: "code",
-  REDIRECT: "redirect"
+  REDIRECT: "redirect",
+  SUGGESTION_ID: "suggestion-id",
 } as const
 
 export const MODAL_KEYS = {
@@ -24,6 +26,8 @@ export const MODAL_KEYS = {
   FLAT_ID: "flat-id",
   CHANGE_PSEUDO: "new-pseudo",
   SEED_DETAIL: "seed-detail",
+  SUGGEST_GAME: "suggest-game",
+  REPORT_BUG: "report-bug",
 } as const
 
 export const SORT_OPTIONS = {
@@ -45,17 +49,30 @@ export const FALL_BACK_IMAGE = "/placeholder.svg"
 export const APP_NAME = "Geo gamer"
 export const CONTACT_EMAIL = "selwa.raphael@gmail.com"
 
+const BADGE_VARIANTS = {
+  GREEN: "green",
+  ORANGE: "orange",
+  RED: "red",
+  NEUTRAL: "neutral",
+} as const
+
 export const DIFFICULTIES_TO_BADGE_VARIANT = {
-  [DIFFICULTIES.EASY]: "green",
-  [DIFFICULTIES.MEDIUM]: "orange",
-  [DIFFICULTIES.HARD]: "red",
+  [DIFFICULTIES.EASY]: BADGE_VARIANTS.GREEN,
+  [DIFFICULTIES.MEDIUM]: BADGE_VARIANTS.ORANGE,
+  [DIFFICULTIES.HARD]: BADGE_VARIANTS.RED,
 } as const
 
 export const STATUS_TO_BADGE_VARIANT = {
-  [DOCUMENTS_STATUS.ERROR]: "red",
-  [DOCUMENTS_STATUS.NEED_VERIFICATION]: "orange",
-  [DOCUMENTS_STATUS.READY]: "green",
-  [DOCUMENTS_STATUS.WAITING]: "neutral",
+  [DOCUMENTS_STATUS.ERROR]: BADGE_VARIANTS.RED,
+  [DOCUMENTS_STATUS.NEED_VERIFICATION]: BADGE_VARIANTS.ORANGE,
+  [DOCUMENTS_STATUS.READY]: BADGE_VARIANTS.GREEN,
+  [DOCUMENTS_STATUS.WAITING]: BADGE_VARIANTS.NEUTRAL,
+} as const
+
+export const SUGGESTIONS_TYPE_TO_BADGE_VARIANT = {
+  [SUGGESTIONS_TYPE.BUG]: BADGE_VARIANTS.RED,
+  [SUGGESTIONS_TYPE.SUGGESTIONS]: BADGE_VARIANTS.NEUTRAL,
+  [SUGGESTIONS_TYPE.HELP]: BADGE_VARIANTS.ORANGE,
 } as const
 
 export const API_ENDPOINTS = {

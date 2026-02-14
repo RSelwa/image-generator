@@ -110,3 +110,13 @@ export function getDateString(now: Date) {
 
   return dateStr
 }
+
+// Export date at string format dd/mm/yyyy
+export const getDateFromString = (date?: Date) => {
+  if (!date) return ""
+  const day = date.getDate()
+  const month = date.getMonth() + 1
+  const year = date.getFullYear()
+
+  return `${day.toString().padStart(2, "0")}/${month.toString().padStart(2, "0")}/${year}`
+}

@@ -20,7 +20,8 @@
       "Bash(ls:*)",
       "Bash(xargs:*)",
       "Bash(find:*)",
-      "WebFetch(domain:firebase.google.com)"
+      "WebFetch(domain:firebase.google.com)",
+      "Bash(findstr:*)"
     ]
   }
 }

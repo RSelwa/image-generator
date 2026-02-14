@@ -7,9 +7,11 @@ import { FlatsGallery } from "@/components/modals/flats-gallery"
 import { ModalGame } from "@/components/modals/game"
 import { ModalMapId } from "@/components/modals/map-id"
 import { MapsGallery } from "@/components/modals/maps-gallery"
+import { ReportBugModal } from "@/components/modals/report-bug"
 import { SeedDetailModal } from "@/components/modals/seed-detail"
 import { SphericalGalleryModal } from "@/components/modals/spherical-gallery"
 import { ModalSphericalId } from "@/components/modals/spherical-id"
+import { SuggestGameModal } from "@/components/modals/suggest-game"
 import { MODAL_KEYS } from "@/constants/mapping"
 
 export const ModalProvider = () => {
@@ -18,8 +20,11 @@ export const ModalProvider = () => {
   const type = Object.values(MODAL_KEYS).find((key) => searchParams.has(key))
 
   if (type === MODAL_KEYS.CHANGE_PSEUDO) return <ChangePseudoModal />
-  if (type === MODAL_KEYS.GAME_ID) return <ModalGame />
 
+  if (type === MODAL_KEYS.REPORT_BUG) return <ReportBugModal />
+  if (type === MODAL_KEYS.SUGGEST_GAME) return <SuggestGameModal />
+
+  if (type === MODAL_KEYS.GAME_ID) return <ModalGame />
   if (type === MODAL_KEYS.SPHERICAL_GALLERY_ID)
     return <SphericalGalleryModal />
   if (type === MODAL_KEYS.SPHERICAL_ID) return <ModalSphericalId />

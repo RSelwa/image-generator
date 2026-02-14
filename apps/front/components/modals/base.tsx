@@ -2,13 +2,12 @@
 
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { type ConstantValues } from "@repo/common"
-import { XIcon } from "lucide-react"
 import { AlertDialog, AlertDialogContent, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
 import VisuallyHidden from "@/components/ui/visually-hidden"
@@ -43,8 +42,10 @@ export const ModalBase = ({
   children,
   className,
   customClose,
+  title,
   ...props
 }: {
+  title?: React.ReactNode
   modalKey: ConstantValues<typeof MODAL_KEYS>
   alertDialog?: boolean
   customClose?: () => void
@@ -54,17 +55,16 @@ export const ModalBase = ({
 
   return (
     <Dialog open onOpenChange={customClose || closeModal} {...props}>
-      <DialogContent className={cn("max-h-[80vh] overflow-y-auto", className)}>
-        <VisuallyHidden>
-          <DialogTitle />
-        </VisuallyHidden>
-        <section className="absolute top-2 px-2 z-50 flex justify-end w-full gap-2">
-          <DialogClose asChild>
-            <Button variant="ghost" className="size-8 bg-transparent p-0">
-              <XIcon className="size-4" />
-            </Button>
-          </DialogClose>
-        </section>
+      <DialogContent className={cn("max-h-[80vh] overflow-y-auto p-4", className)}>
+        <DialogHeader>
+          <DialogTitle>
+            {title}
+          </DialogTitle>
+
+          <DialogDescription>
+            {title && <span className="text-muted-foreground text-sm">{`This is the ${title} modal`}</span>}
+          </DialogDescription>
+        </DialogHeader>
         {children}
       </DialogContent>
     </Dialog>

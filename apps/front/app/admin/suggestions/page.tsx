@@ -1,0 +1,152 @@
+"use client"
+
+import { getDateFromString } from "@repo/common"
+import { Search } from "lucide-react"
+import Image from "next/image"
+import { useQueryState } from "nuqs"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { Badge } from "@/components/ui/badge"
+import { Checkbox } from "@/components/ui/checkbox"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { QUERY_PARAMS, SUGGESTIONS_TYPE_TO_BADGE_VARIANT } from "@/constants/mapping"
+import { useGetAllSuggestionsInfiniteQuery, useGetSuggestionByIdQuery, useGetSuggestionsCountQuery } from "@/redux/api/suggestions"
+
+const EmptySheet = () => (
+  <SheetContent>
+    <SheetHeader>
+      <SheetTitle>No data found</SheetTitle>
+      <SheetDescription>No data found for the id given.</SheetDescription>
+    </SheetHeader>
+  </SheetContent>
+)
+
+const SuggestionSheet = () => {
+  const [suggestionId, setSuggestionId] = useQueryState(QUERY_PARAMS.SUGGESTION_ID)
+
+  const { data: suggestion } = useGetSuggestionByIdQuery({ id: suggestionId || "" }, { skip: !suggestionId })
+
+  const open = Boolean(suggestionId)
+
+  if (!suggestion) return <Sheet open={open} onOpenChange={(open) => !open && setSuggestionId(null)}><EmptySheet /></Sheet>
+
+  const hasImages = suggestion.imagesUrls && suggestion.imagesUrls.length > 0
+
+  return (
+    <Sheet open={open} onOpenChange={(open) => !open && setSuggestionId(null)}>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>{suggestion.type}</SheetTitle>
+          <SheetDescription>Id of the suggestion {suggestion.id}</SheetDescription>
+        </SheetHeader>
+        <section className="grid flex-1 md:grid-cols-2 grid-cols-1 auto-rows-min gap-6 px-4">
+          {hasImages && suggestion.imagesUrls?.map((url, index) => (
+            <Image key={url} src={url} alt={`Suggestion image ${index + 1}`} width={200} height={200} className="rounded" />
+          ))}
+        </section>
+        <SheetFooter>
+          Test
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+const Page = () => {
+  const [_, setSuggestionId] = useQueryState(QUERY_PARAMS.SUGGESTION_ID)
+
+  const { data: suggestionsCount } = useGetSuggestionsCountQuery()
+  const { data: suggestions, fetchNextPage, hasNextPage, isFetching } = useGetAllSuggestionsInfiniteQuery()
+  const captionRef = useRef<HTMLTableCaptionElement>(null)
+
+  const [input, setInput] = useState("")
+  const [checkedIds, setCheckedIds] = useState<string[]>([])
+  const flatSuggestions = (suggestions?.pages.flat() || []).filter((user) => user.id.includes(input))
+
+  const isAllChecked = flatSuggestions.length > 0 && flatSuggestions.every((user) => checkedIds.includes(user.id))
+
+  const toggleAllChecked = (value: boolean) => {
+    setCheckedIds(value ? flatSuggestions.map((user) => user.id) : [])
+  }
+
+  const handleIntersect = useCallback((entries: IntersectionObserverEntry[]) => {
+    if (entries[0]?.isIntersecting && hasNextPage && !isFetching) {
+      fetchNextPage()
+    }
+  }, [hasNextPage, isFetching, fetchNextPage])
+
+  useEffect(() => {
+    const caption = captionRef.current
+    if (!caption) return
+
+    const observer = new IntersectionObserver(handleIntersect, { threshold: 0.1 })
+    observer.observe(caption)
+
+    return () => observer.disconnect()
+  }, [handleIntersect])
+
+  return (
+    <main className="h-full-height-admin max-h-full-height-admin p-4 space-y-4">
+      <section className="flex items-center gap-8">
+        <h1 className="text-2xl font-bold">
+          Suggestions - <span className="text-primary">{suggestionsCount}</span>
+        </h1>
+        <InputGroup className="w-fit min-w-72">
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search by id" autoComplete="off" />
+        </InputGroup>
+      </section>
+      <ScrollArea className="h-5/6">
+        <Table noWrapper>
+          <TableCaption ref={captionRef}>
+            {isFetching && "Loading..."}
+            {!isFetching && !hasNextPage && "All suggestions loaded"}
+          </TableCaption>
+          <TableHeader className="sticky top-0 bg-background">
+            <TableRow>
+              <TableHead className="w-14"><Checkbox checked={isAllChecked} onCheckedChange={toggleAllChecked} /></TableHead>
+              <TableHead className="w-14">Id</TableHead>
+              <TableHead className="w-25">Title</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Created by</TableHead>
+              <TableHead>Created At</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {flatSuggestions.map((suggestion) => {
+              const checked = checkedIds.includes(suggestion.id)
+              const onCheckedChange = (value: boolean) =>
+                setCheckedIds((prev) => value ? [...prev, suggestion.id] : prev.filter((id) => id !== suggestion.id))
+
+              return (
+                <TableRow key={suggestion.id} onClick={() => setSuggestionId(suggestion.id)}>
+                  <TableCell><Checkbox checked={checked} onCheckedChange={onCheckedChange} /></TableCell>
+                  <TableCell>{suggestion.id}</TableCell>
+                  <TableCell className="font-medium">{suggestion.title}</TableCell>
+                  <TableCell>
+                    {
+                      suggestion.type && (
+                        <Badge variant={SUGGESTIONS_TYPE_TO_BADGE_VARIANT[suggestion.type]}>
+                          {suggestion.type}
+                        </Badge>
+                      )
+                    }
+                  </TableCell>
+                  <TableCell>{suggestion.createdBy}</TableCell>
+                  <TableCell>{getDateFromString(suggestion.createdAt?.toDate())}</TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </ScrollArea>
+      <SuggestionSheet />
+    </main>
+  )
+}
+
+export default Page

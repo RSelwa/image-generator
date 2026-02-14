@@ -3,7 +3,15 @@
 import * as React from "react"
 import { cn } from "@/utils"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({ className, noWrapper = false, ...props }: { noWrapper: boolean } & React.ComponentProps<"table">) {
+  if (noWrapper) return (
+    <table
+      data-slot="table"
+      className={cn("w-full caption-bottom text-sm", className)}
+      {...props}
+    />
+  )
+
   return (
     <div
       data-slot="table-container"

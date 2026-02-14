@@ -240,4 +240,5 @@ export const {
   useCreateSuggestionMutation,
   useUpdateSuggestionMutation,
   useDeleteSuggestionMutation,
+  useGetSuggestionsCountQuery
 } = suggestionsApi

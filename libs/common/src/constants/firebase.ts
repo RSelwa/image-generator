@@ -19,6 +19,7 @@ export const STORAGE_PATHS = {
   MAP_IMAGES: "map-thumbnails",
   FLAT_IMAGES: "flat-images",
   FLAT_THUMBNAILS: "flat-thumbnails",
+  SUGGESTIONS: "suggestions"
 } as const
 
 export const USER_RIGHT = {
