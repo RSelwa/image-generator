@@ -15,8 +15,6 @@ export const sessionUserSchema = z.object({
 const authUserSchema = z.custom<User>()
 
 export const sessionSchema = z.object({
-  disconnected: z.boolean(),
-  token: z.string().nullable(),
   status: z.enum(SESSION_STATUS),
   authUser: authUserSchema.nullable(),
   user: z

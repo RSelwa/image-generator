@@ -30,11 +30,11 @@ export const formatSessionFromFirebaseUser = ({
   return sessionUser.data
 }
 
-export const formatSessionFromAnonymousUser = ({ authUser}: { authUser: User }): SessionUser => ({
+export const formatSessionFromAnonymousUser = ({ authUser, pseudo }: { authUser: User, pseudo: string }): SessionUser => ({
   id: authUser.uid,
   email: "",
   photoUrl: "",
   rights: null,
-  pseudo: `Demo-${authUser.uid.slice(0, 5)}`,
+  pseudo,
   isAnonymous: true
 })

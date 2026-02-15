@@ -22,7 +22,7 @@ export const selectHasRightToDashBoard = ({ session }: RootState) => {
 }
 
 export const selectIsAdmin = ({ session }: RootState) =>
-  session.user?.rights?.includes(USER_RIGHT.ADMIN) ?? false
+  session.user?.rights === USER_RIGHT.ADMIN || false
 
 export const selectIsIconograph = ({ session }: RootState) =>
-  session.user?.rights?.includes(USER_RIGHT.ICONOGRAPH) ?? false
+  session.user?.rights === USER_RIGHT.ICONOGRAPH || false

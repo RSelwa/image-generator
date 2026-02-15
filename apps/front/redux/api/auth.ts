@@ -32,27 +32,6 @@ import {
 import { type RootState } from "@/redux/store"
 import { formatSessionFromAnonymousUser, formatSessionFromFirebaseUser } from "@/utils/user"
 
-type User = {
-  id: string
-  email: string
-  name: string
-}
-
-export type AuthState = {
-  pending: boolean
-  user: User | null
-  isSignedIn: boolean
-}
-
-export const defaultAuth: AuthState = {
-  pending: true,
-  user: null,
-  isSignedIn: false,
-}
-
-export type ResultListenAuth = AuthState
-export type QueryArgsListenAuth = void
-
 const sendPasswordResetEmailSchema = z.email()
 
 const googleProvider = new GoogleAuthProvider()
@@ -92,7 +71,8 @@ export const authApi = createApi({
             try {
               const credential = EmailAuthProvider.credential(email, data.password)
               await linkWithCredential(auth.currentUser, credential)
-              await updateDoc(getUserRef(auth.currentUser.uid), { email }).catch((error) => {
+              await updateDoc(getUserRef(auth.currentUser.uid), { email, isAnonymousUser: false,
+               }).catch((error) => {
                 console.error("Error updating user", auth.currentUser?.uid, error)
               })
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
@@ -127,7 +107,7 @@ export const authApi = createApi({
               const result = await linkWithPopup(auth.currentUser, googleProvider)
               const email = result.user.email
               if (email) {
-                await updateDoc(getUserRef(auth.currentUser.uid), { email, photoUrl: auth.currentUser.photoURL, pseudo: auth.currentUser.displayName }).catch((error) => {
+                await updateDoc(getUserRef(auth.currentUser.uid), { email, photoUrl: auth.currentUser.photoURL, pseudo: auth.currentUser.displayName, isAnonymousUser:false }).catch((error) => {
                   console.error("Error updating user", auth.currentUser?.uid, error)
                 })
               }
@@ -164,9 +144,9 @@ export const authApi = createApi({
         }
       },
     }),
-    listenAuth: builder.query<ResultListenAuth, QueryArgsListenAuth>({
+    listenAuth: builder.query<null, void>({
       keepUnusedDataFor: 10,
-      queryFn: () => ({ data: defaultAuth }),
+      queryFn: () => ({ data: null }),
       providesTags: () => ["auth"],
       onCacheEntryAdded: async (
         _,
@@ -192,18 +172,20 @@ export const authApi = createApi({
               // so we create the user doc client-side if it doesn't exist
               const userRef = getUserRef(user.uid)
               const userDoc = await getDoc(userRef)
+              const pseudo = generateUsername()
+              
               if (!userDoc.exists()) {
                 await setDoc(userRef, {
                   email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
                   createdAt: serverTimestamp(),
                   updatedAt: serverTimestamp(),
                   photoUrl: null,
-                  pseudo: generateUsername(),
+                  pseudo,
                   isAnonymousUser: true,
                 })
               }
 
-              const sessionUser = formatSessionFromAnonymousUser({ authUser: user })
+              const sessionUser = formatSessionFromAnonymousUser({ authUser: user, pseudo: userDoc.data()?.pseudo || pseudo })
 
               dispatch(updateSession({
                 authUser: user,

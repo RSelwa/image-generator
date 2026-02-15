@@ -26,12 +26,4 @@ export const sessionReducers = {
 
     return state
   },
-  populateToken: (
-    state: Session,
-    { payload }: PayloadAction<string | null>,
-  ) => {
-    state.token = payload
-
-    return state
-  },
 }
