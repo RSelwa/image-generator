@@ -18,7 +18,7 @@ import { useAppSelector } from "@/redux/store"
 import { firstLetter } from "@/utils"
 
 const formSchema = z.object({
-  pseudo: z.string().min(3, "Pseudo must be at least 3 characters"),
+  pseudo: z.string().min(3, "Pseudo must be at least 3 characters").max(30, "Pseudo must be at most 30 characters"),
   photoUrl: z.string().url("Must be a valid URL").or(z.literal("")),
 })
 

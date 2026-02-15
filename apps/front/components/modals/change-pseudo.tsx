@@ -17,7 +17,7 @@ import { useAppSelector } from "@/redux/store"
 const key = MODAL_KEYS.CHANGE_PSEUDO
 
 const formSchema = z.object({
-  pseudo: z.string().min(3, "Pseudo must be at least 3 characters"),
+  pseudo: z.string().min(3, "Pseudo must be at least 3 characters").max(30, "Pseudo must be at most 30 characters"),
 })
 type FormSchema = z.infer<typeof formSchema>
 
@@ -42,9 +42,7 @@ const ChangePseudoModal = () => {
   const onSubmit: SubmitHandler<FormSchema> = async (formData) => {
     try {
       if (!user?.id) return
-      const parsedData = formSchema.parse(formData)
-
-      await updateUserDoc({ id: user.id, data: parsedData }).unwrap()
+      await updateUserDoc({ id: user.id, data: formData }).unwrap()
 
       reset()
       closeModal()

@@ -8,5 +8,5 @@ export const generateUsername = () => {
     adjectives[Math.floor(Math.random() * adjectives.length)] ?? ""
   const animal = animals[Math.floor(Math.random() * animals.length)] ?? ""
 
-  return `${adjective}${color}${animal}`.toLowerCase()
+  return `${adjective}-${color}-${animal}`.toLowerCase()
 }
