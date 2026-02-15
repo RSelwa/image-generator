@@ -14,20 +14,6 @@ export const createSeedPayload = z.object({
 // app/api/create-seed/route.ts
 export const POST = async (request: Request) => {
   try {
-    const headers = request.headers
-
-    let userId: string | null = null
-    const authHeader = headers.get("Authorization")
-    const token = authHeader?.split(" ")[1]
-
-    if (token) {
-      const verifiedToken = await auth.verifyIdToken(token || "").catch((error) => {
-        console.error("Token verification failed:", error)
-      })
-
-      userId = verifiedToken?.uid || null
-    }
-
     const body = await request.json()
 
     const parsed = createSeedPayload.safeParse(body)
@@ -41,7 +27,7 @@ export const POST = async (request: Request) => {
     const data = {
       name: "",
       rounds,
-      createdBy: userId,
+      createdBy: null,
       timesUsed: 0,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now()

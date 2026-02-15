@@ -38,29 +38,29 @@
   - [x] Account settings
   - [x] can list the seeds
   - [x] Implement a demo seed
-  - [ ] when user hasn't selected i pin in the map, should not draw line, and always set points to 0
-  - [ ] Remove input le game input quand on est en selection de specials
-  - [ ] When user start a lobby, remove his id from createdBy seedDoc, because he don't really create it
+  - [x] when user hasn't selected a pin in the map, should not draw line, and always set points to 0
+  - [x] Remove game input when in specials round selection
+  - [x] Implement suggestion
+  - [x] bug minimap when first hover
+  - [x] when create lobby when anonymous should disable all config, and pick the seed
+  - [x] When user start a lobby, remove his id from createdBy seedDoc, because he don't really create it
+  - [ ] Implements fonts for tailwinds
   - [ ] Seed maker, better tags, which games has sphericals and which has flats, wich means better handling listeners
   - [ ] ajouter description pour le round special
   - [ ] ajouter des bouttons back to lobby / new game, when in finished screen
-  - [ ] when create lobby when anonymous should disable all config, and pick the seed
   - [ ] Implement modals system for pubing/infos
   - [ ] implement seeds that will be featured like flim discover
   - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
   - [ ] Improve the empty card whe no map/no games etc... with shadcn empty components
   - [ ] can copy the seedId in the maker
   - [ ] Change icons on minimap
-  - [ ] Fix starting screen when game is Loading
   - [ ] Share seed at the end of a lobby
   - [ ] end game screen⌛️
   - [ ] Analytics
   - [ ] Integrate ads
-  - [ ] bug minimap when first hover
   - [ ] Add tests on api endpoints
   - [ ] Add firebase admin for front libs
   - [ ] Improve the security for the update for lobbies
-  - [ ] Implement suggestion
   - [ ] friends invitations
   - [ ] Buy domain name
   - [ ] Setup Reels Insta et tiktok
@@ -68,5 +68,6 @@
   - [ ] Implement a chat room inside
 
 - Front
+  - [ ] Fix starting screen when game is Loading
   - Clean footer
   - Find DA for the website

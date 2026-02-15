@@ -18,7 +18,7 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
-        marathon: "text-background bg-primary hover:text-primary  hover:bg-background inset-shadow-marathon rounded-none transition-all",
+        marathon: "text-background bg-primary hover:text-primary hover:bg-background inset-shadow-marathon rounded-none",
         "marathon-white": "text-primary underline-offset-4 hover:underline",
         "marathon-outline": "text-primary underline-offset-4 hover:underline",
       },
