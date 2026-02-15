@@ -155,7 +155,7 @@ const InfosRoundNormal = () => {
           }}
           isParentHover
           hasSubmitted={true}
-          guessPosition={currentAnswer?.position || { x: 0, y: 0 }}
+          guessPosition={currentAnswer?.position || null}
           onMapClick={() => void 0}
           inline
         />

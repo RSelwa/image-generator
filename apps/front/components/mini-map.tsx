@@ -97,6 +97,7 @@ const MarkersLayer = ({
       {/* Line connecting guess to correct position */}
       {showLine && guessPosition && correctPosition && (
         <svg
+          data-testid="marker-line"
           className="absolute inset-0 size-full pointer-events-none"
           style={{ overflow: "visible" }}
         >

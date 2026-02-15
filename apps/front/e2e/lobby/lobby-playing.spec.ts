@@ -15,7 +15,8 @@ test.describe("lobby playing", () => {
     })
   })
 
-  test("should play a game until the end", async ({ page }) => {
+  test("should play a game until the end",async ({ page }) => {
+    test.setTimeout(120_000)
     const user = await setupUser()
 
     await loginViaUI(page, user.email)
@@ -45,7 +46,7 @@ test.describe("lobby playing", () => {
 
     const games = await retrieveGamesFromLobby(lobbyId)
 
-    // round 1
+    // round 1 - all answers correct
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[0].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
@@ -60,7 +61,7 @@ test.describe("lobby playing", () => {
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
-    // round 2
+    // round 2 - all game answer wrong
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill("wrong answer")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
@@ -77,18 +78,19 @@ test.describe("lobby playing", () => {
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
-    // round 3
+    // round 3 - No pin on map, line should appear and player marker neither but the correct position marker should be visible
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[2].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
-    await page.waitForTimeout(400)
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toBeVisible()
-    await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
+    await page.waitForTimeout(61_000)
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[2].game?.title))).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toHaveCount(0)
+    await expect(page.getByTestId(SELECTORS.MAP_LINE)).toHaveCount(0)
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("green"))).toHaveCount(1)
+
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
 
@@ -124,6 +126,8 @@ test.describe("lobby playing", () => {
 
     // round 6 Special round
     await expect(page.getByTestId(SELECTORS.SPECIAL_ROUND)).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toHaveCount(0)
+
     await page.getByTestId(SELECTORS.GAME_THUMBNAIL_OPTION("0")).click()
 
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[5].options?.[0]?.game?.title || "")
