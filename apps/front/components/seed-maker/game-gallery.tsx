@@ -9,7 +9,7 @@ import { FALL_BACK_IMAGE } from "@/constants/mapping"
 import { useGetSeedMakerGamesQuery } from "@/redux/api/seed-maker"
 
 type GameGalleryProps = {
-  onSelectGame: (gameId: string, gameTitle: string, gameImage: string) => void
+  onSelectGame: (gameId: string, gameTitle: string, gameImage: string, gameAlternateNames: string[]) => void
 }
 
 const GameGallery = ({ onSelectGame }: GameGalleryProps) => {
@@ -44,7 +44,7 @@ const GameGallery = ({ onSelectGame }: GameGalleryProps) => {
           <button
             key={game.id}
             type="button"
-            onClick={() => onSelectGame(game.id, game.title, game.image)}
+            onClick={() => onSelectGame(game.id, game.title, game.image, game.alternateNames || [])}
             className="relative h-28 cursor-pointer overflow-hidden rounded-lg border border-border hover:border-primary transition-colors"
           >
             <Image

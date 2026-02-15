@@ -6,6 +6,7 @@ export const specialRoundOptionSchema = z.object({
   type: z.enum(ROUND_TYPE),
   gameId: z.string().min(1),
   gameTitle: z.string().min(1),
+  gameAlternateNames: z.array(z.string()).nullish().default(null),
   gameThumbnailUrl: z.string().nullish().default(null),
 
   thumbnailUrl: z.string(), // Small thumbnails

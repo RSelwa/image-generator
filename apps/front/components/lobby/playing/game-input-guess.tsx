@@ -37,8 +37,9 @@ const GameInputGuess = () => {
     const playerAnswerValue = input?.toString() || ""
 
     const correctGameName = selectedOption?.gameTitle || currentRoundData.gameTitle || ""
+    const alternateNames = selectedOption?.gameAlternateNames || currentRoundData.gameAlternateNames || []
 
-    const isCorrect = Boolean(correctGameName && isSameNormalized(correctGameName, playerAnswerValue))
+    const isCorrect = Boolean(correctGameName && (isSameNormalized(correctGameName, playerAnswerValue) || alternateNames.some((name) => isSameNormalized(name, playerAnswerValue))))
 
     if (isCorrect) {
       await submitRoundAnswer({

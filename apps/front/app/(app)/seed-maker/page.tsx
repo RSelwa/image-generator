@@ -40,6 +40,7 @@ type SelectedGame = {
   id: string
   title: string
   image: string
+  alternateNames: string[]
 }
 
 type SortableRoundProps = {
@@ -118,6 +119,7 @@ const buildNormalRound = (data: DragData): Round => ({
   type: data.type,
   gameId: data.gameId,
   gameTitle: data.gameTitle,
+  gameAlternateNames: data.gameAlternateNames,
   gameThumbnailUrl: data.gameImage,
   sphericalId: data.type === ROUND_TYPE.SPHERICAL ? data.imageId : null,
   sphericalImageUrl: data.type === ROUND_TYPE.SPHERICAL ? data.image : null,
@@ -137,6 +139,7 @@ const buildSpecialOption = (data: DragData): SpecialRoundOption => ({
   type: data.type,
   gameId: data.gameId,
   gameTitle: data.gameTitle,
+  gameAlternateNames: data.gameAlternateNames,
   gameThumbnailUrl: data.gameImage,
   thumbnailUrl: data.thumbnail || data.image,
   sphericalId: data.type === ROUND_TYPE.SPHERICAL ? data.imageId : null,
@@ -389,8 +392,8 @@ const Page = () => {
           <div className="w-2/5 border-r p-3 overflow-y-auto">
             {!selectedGame && (
               <GameGallery
-                onSelectGame={(id, title, image) =>
-                  setSelectedGame({ id, title, image })}
+                onSelectGame={(id, title, image, alternateNames) =>
+                  setSelectedGame({ id, title, image, alternateNames })}
               />
             )}
             {selectedGame && (
@@ -398,6 +401,7 @@ const Page = () => {
                 gameId={selectedGame.id}
                 gameTitle={selectedGame.title}
                 gameImage={selectedGame.image}
+                gameAlternateNames={selectedGame.alternateNames}
                 onBack={() => setSelectedGame(null)}
               />
             )}

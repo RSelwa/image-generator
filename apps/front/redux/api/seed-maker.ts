@@ -6,6 +6,7 @@ type SeedMakerGame = {
   id: string
   title: string
   image: string
+  alternateNames: string[]
 }
 
 type GameReadyData = {

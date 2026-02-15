@@ -44,8 +44,7 @@
   - [x] bug minimap when first hover
   - [x] when create lobby when anonymous should disable all config, and pick the seed
   - [x] When user start a lobby, remove his id from createdBy seedDoc, because he don't really create it
-  - [ ] Implements fonts for tailwinds
-  - [ ] Seed maker, better tags, which games has sphericals and which has flats, wich means better handling listeners
+  - [x] Implements fonts for tailwinds
   - [ ] ajouter description pour le round special
   - [ ] ajouter des bouttons back to lobby / new game, when in finished screen
   - [ ] Implement modals system for pubing/infos
@@ -55,6 +54,7 @@
   - [ ] can copy the seedId in the maker
   - [ ] Change icons on minimap
   - [ ] Share seed at the end of a lobby
+  - [ ] Seed maker, better tags, which games has sphericals and which has flats, wich means better handling listeners
   - [ ] end game screen⌛️
   - [ ] Analytics
   - [ ] Integrate ads

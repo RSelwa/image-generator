@@ -14,7 +14,7 @@ export const gameFactory: FactoryDoc<GameDoc & { id: string }> = (item = {}) => 
   image: mockedGameImageURL,
   hasSpecialImagesReady: false,
   hasSphericalImagesReady: false,
-  alternateName: "",
+  alternateNames: [],
   midName: "",
   ...item
 })

@@ -9,6 +9,7 @@ export const GET = async () => {
       id: doc.id,
       title: doc.data().title,
       image: doc.data().image || "",
+      alternateNames: doc.data().alternateNames || [],
     }))
 
     return Response.json({ games })

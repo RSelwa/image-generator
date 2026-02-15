@@ -3,12 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { STORAGE_PATHS } from "@repo/common"
 import { createGameInputSchema } from "@repo/schemas"
+import { X } from "lucide-react"
 import Link from "next/link"
 import { useQueryState } from "nuqs"
-import { useEffect, useState } from "react"
+import { type KeyboardEvent, useEffect, useRef, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { type z } from "zod"
+import { Badge } from "@/components/ui/badge"
 import Loader from "@/components/icons/loader"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
@@ -61,7 +63,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
       description: "",
       image: "",
       midName: "",
-      alternateName: "",
+      alternateNames: [],
       hasSphericalImagesReady: false,
       hasSpecialImagesReady: false,
     },
@@ -77,7 +79,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
         description: data.description ?? "",
         image: data.image ?? "",
         midName: data.midName ?? "",
-        alternateName: data.alternateName ?? "",
+        alternateNames: data.alternateNames || [],
         hasSphericalImagesReady: data.hasSphericalImagesReady ?? false,
         hasSpecialImagesReady: data.hasSpecialImagesReady ?? false,
       })
@@ -163,11 +165,55 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="alternateName">Alternate Name</FieldLabel>
-                <Input
-                  id="alternateName"
-                  placeholder="Alternate name"
-                  {...register("alternateName")}
+                <FieldLabel htmlFor="alternateNames">Alternate Names</FieldLabel>
+                <Controller
+                  name="alternateNames"
+                  control={control}
+                  render={({ field }) => {
+                    const inputRef = useRef<HTMLInputElement>(null)
+                    const addName = (value: string) => {
+                      const trimmed = value.trim()
+                      if (trimmed && !(field.value || []).includes(trimmed)) {
+                        field.onChange([...(field.value || []), trimmed])
+                      }
+                    }
+                    const removeName = (index: number) => {
+                      field.onChange((field.value || []).filter((_: string, i: number) => i !== index))
+                    }
+                    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault()
+                        addName(e.currentTarget.value)
+                        e.currentTarget.value = ""
+                      }
+                      if (e.key === "Backspace" && !e.currentTarget.value && (field.value || []).length > 0) {
+                        removeName((field.value || []).length - 1)
+                      }
+                    }
+
+                    return (
+                      <div
+                        className="border-input dark:bg-input/30 flex min-h-9 w-full flex-wrap items-center gap-1 rounded-md border bg-transparent px-2 py-1 shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]"
+                        onClick={() => inputRef.current?.focus()}
+                      >
+                        {(field.value || []).map((name: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="gap-1 pl-2 pr-1">
+                            {name}
+                            <button type="button" onClick={() => removeName(index)} className="hover:bg-muted rounded-full p-0.5">
+                              <X className="size-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                        <input
+                          ref={inputRef}
+                          id="alternateNames"
+                          placeholder={(field.value || []).length === 0 ? "Type and press Enter" : ""}
+                          onKeyDown={handleKeyDown}
+                          className="min-w-20 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                        />
+                      </div>
+                    )
+                  }}
                 />
               </Field>
             </div>

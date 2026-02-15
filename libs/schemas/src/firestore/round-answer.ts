@@ -24,6 +24,7 @@ export const roundAnswerDocSchema = z.object({
     type: true,
     gameId: true,
     gameTitle: true,
+    gameAlternateNames: true,
     gameThumbnailUrl: true,
 
     sphericalId: true,

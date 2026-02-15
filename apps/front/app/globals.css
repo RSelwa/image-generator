@@ -188,6 +188,7 @@
   --background: oklch(0 0 0);
   --foreground: oklch(1 0 0);
   --primary: oklch(0.9209 0.2325 125.54);
+  --primary-foreground: oklch(0 0 0);
 }
 
 @layer base {

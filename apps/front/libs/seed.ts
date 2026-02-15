@@ -93,6 +93,7 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
         type: randomRound.type,
         gameId: randomRound.gameId,
         gameTitle: randomRound.gameTitle,
+        gameAlternateNames: randomRound.gameAlternateNames,
         gameThumbnailUrl: randomRound.gameThumbnailUrl,
 
         sphericalId: randomRound.sphericalId,

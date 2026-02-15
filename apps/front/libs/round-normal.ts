@@ -52,6 +52,7 @@ export const formatSphericalsForNormalRounds = async (sphericals: SphericalDocWi
         type: ROUND_TYPE.SPHERICAL,
         gameId,
         gameTitle: gameData.title,
+        gameAlternateNames: gameData.alternateNames,
         gameThumbnailUrl: gameData.image,
 
         sphericalId: spherical.id,
@@ -134,6 +135,7 @@ export const formatFlatsForNormalRounds = async (flats: FlatDocWithId[]) => {
         type: ROUND_TYPE.FLAT,
         gameId,
         gameTitle: gameData.title,
+        gameAlternateNames: gameData.alternateNames,
         gameThumbnailUrl: gameData.image,
 
         flatId: flat.id,

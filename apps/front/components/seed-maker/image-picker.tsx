@@ -10,10 +10,11 @@ type ImagePickerProps = {
   gameId: string
   gameTitle: string
   gameImage: string
+  gameAlternateNames: string[]
   onBack: () => void
 }
 
-const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps) => {
+const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack }: ImagePickerProps) => {
   const { data, isLoading } = useGetGameReadyDataQuery({ gameId })
 
   const sphericals = data?.sphericals || []
@@ -62,6 +63,7 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps)
                 thumbnail: spherical.thumbnail || "",
                 gameId,
                 gameTitle,
+                gameAlternateNames,
                 gameImage,
                 mapId: spherical.mapId || null,
                 mapPosition: spherical.mapPosition || null,
@@ -98,6 +100,7 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, onBack }: ImagePickerProps)
                 thumbnail: flat.thumbnail || "",
                 gameId,
                 gameTitle,
+                gameAlternateNames,
                 gameImage,
                 mapId: flat.mapId || null,
                 mapPosition: flat.mapPosition || null,

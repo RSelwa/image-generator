@@ -7,7 +7,7 @@ export const gameDocSchema = z.object({
   description: z.string().max(500).optional(),
   image: z.string().optional().default(""),
   midName: z.string().optional().default(""),
-  alternateName: z.string().optional().default(""),
+  alternateNames: z.array(z.string()).optional().default([]),
   hasSphericalImagesReady: z.boolean().optional().default(false),
   hasSpecialImagesReady: z.boolean().optional().default(false),
   createdAt: timestampSchema.nullish().default(() => null),

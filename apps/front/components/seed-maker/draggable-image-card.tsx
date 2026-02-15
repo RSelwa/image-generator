@@ -15,6 +15,7 @@ export type DragData = {
   thumbnail: string
   gameId: string
   gameTitle: string
+  gameAlternateNames: string[]
   gameImage: string
   mapId: string | null
   mapPosition: { x: number, y: number } | null

@@ -11,6 +11,7 @@ export const roundSchema = z.object({
   type: z.enum(ROUND_TYPE).optional(),
   gameId: z.string().nullish().default(null), // The game to guess
   gameTitle: z.string().nullish().default(null), // Cached for quick access
+  gameAlternateNames: z.array(z.string()).nullish().default(null), // Cached for quick access
   gameThumbnailUrl: z.string().nullish().default(null), // Cached for quick access
 
   sphericalId: z.string().nullish().default(null), // If type is "spherical"

@@ -41,6 +41,7 @@ export const formatSphericalsForSpecialRounds = async (sphericals: SphericalDocW
 
         gameId,
         gameTitle: gameData.title,
+        gameAlternateNames: gameData.alternateNames,
         gameThumbnailUrl: gameData.image,
 
         thumbnailUrl: thumbnail,
@@ -107,6 +108,7 @@ export const formatFlatsForSpecialRounds = async (flats: FlatDocWithId[]) => {
 
         gameId,
         gameTitle: gameData.title,
+        gameAlternateNames: gameData.alternateNames,
         gameThumbnailUrl: gameData.image,
 
         thumbnailUrl: thumbnail,
