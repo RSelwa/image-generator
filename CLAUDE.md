@@ -1,7 +1,6 @@
 # Bash commands
 
 - pnpm --filter @repo/front build: Build the front
-- pnpm run typecheck: Run the typechecker
 - pnpm build:libs: Build all libs of the monorepo
 - pnpm lint: run the linter
 
@@ -27,6 +26,3 @@
 # Workflow
 
 - Always launch commands from root directory and use '--filter <package>' when launching commands
-- Be sure to typecheck when you’re done making a series of code changes
-- do not build the front for typecheck
-<!-- - Be sure to format everything with 'pnpm lint:fix' -->
