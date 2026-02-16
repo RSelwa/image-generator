@@ -7,6 +7,7 @@ export const PAGES = {
   TERMS: "/terms",
   ADMIN: "/admin",
   LOBBY: "/lobby",
+  CAPTURE: "/capture",
   JOIN_LOBBY: "/join-lobby",
   ADMIN_GAMES: "/admin/games",
   ADMIN_SPHERICAL: "/admin/sphericals",
@@ -20,4 +21,5 @@ export const PAGES = {
   SEED_MAKER: "/seed-maker",
   MY_SEEDS: "/my-seeds",
   ACCOUNT: "/account",
+  PROMO: "/promo",
 } as const

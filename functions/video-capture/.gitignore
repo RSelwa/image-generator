@@ -1,0 +1,6 @@
+node_modules/
+*.mp4
+*.avi
+*.mov
+output.*
+.env

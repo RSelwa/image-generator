@@ -1,0 +1,9 @@
+node_modules
+*.mp4
+*.avi
+*.mov
+output.*
+.git
+.gitignore
+README.md
+.env

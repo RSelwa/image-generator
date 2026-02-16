@@ -1,0 +1,53 @@
+name: 🚀 Deploy video-capture Cloud Run Job
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/deploy-video-capture-job.yml
+      - functions/video-capture/**
+      - apps/front/app/capture/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy video-capture Cloud Run Job
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    environment: prod
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: ⚙️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: 🐳 Build and push Docker image
+        run: |
+          cd functions/video-capture
+          gcloud builds submit \
+            --tag gcr.io/${{ secrets.PROJECT_ID }}/video-capture \
+            --project ${{ secrets.PROJECT_ID }}
+
+      - name: 🚀 Deploy Cloud Run Job
+        run: |
+          gcloud run jobs deploy video-capture \
+            --image gcr.io/${{ secrets.PROJECT_ID }}/video-capture \
+            --region us-central1 \
+            --memory 4Gi \
+            --cpu 2 \
+            --task-timeout 15m \
+            --max-retries 1 \
+            --set-env-vars CAPTURE_URL=https://www.geo-gamer.net/capture \
+            --project ${{ secrets.PROJECT_ID }}
+
+      - name: ✅ Deployment complete
+        run: echo "Video capture job deployed successfully!"
