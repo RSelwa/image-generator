@@ -1,6 +1,8 @@
 ## TODO
 
-- Global
+<details>
+<summary>Global</summary>
+
   - [X]  Change gameRef into gameId in spherical + maps
   - [X] Update schema to allow sphericals to have mapId and coordinates or not depending on types
   - [X] Implement 2D maps
@@ -66,8 +68,16 @@
   - [ ] Setup Reels Insta et tiktok
   - [ ] Implement a system to interact with twitch chat, maybe to vote for games
   - [ ] Implement a chat room inside
+</details>
 
-- Front
+<details>
+<summary>Front</summary>
   - [ ] Fix starting screen when game is Loading
   - Clean footer
   - Find DA for the website
+</details>
+
+<details>
+<summary>Ideas</summary>
+  - [ ] Multiple cursor in lobby to see everyone
+</details>
