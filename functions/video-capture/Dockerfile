@@ -7,14 +7,17 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install pnpm globally using npm
+RUN npm install -g pnpm@10.28.2
+
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package file
+COPY package.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN pnpm install --prod
 
 # Copy application code
 COPY . .

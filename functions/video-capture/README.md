@@ -68,3 +68,7 @@ gcloud scheduler jobs create http video-capture-daily \
 2. Create Firestore document after capture
 3. Integrate with existing image collection
 4. Add Cloud Function triggers for post-processing
+
+
+## Commands to not forget 
+Execute job : gcloud run jobs execute video-capture   --region us-central1  
