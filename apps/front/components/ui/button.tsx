@@ -18,9 +18,10 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
-        marathon: "text-background bg-primary hover:text-primary hover:bg-background inset-shadow-marathon rounded-none",
-        "marathon-white": "text-primary underline-offset-4 hover:underline",
-        "marathon-outline": "text-primary underline-offset-4 hover:underline",
+        marathon: "text-primary-foreground bg-primary hover:text-primary hover:bg-background inset-shadow-marathon rounded-none font-interference uppercase transition-none",
+        "marathon-white": "text-primary-foreground uppercase bg-foreground hover:text-primary hover:bg-background inset-shadow-marathon-white hover:inset-shadow-marathon rounded-none font-interference transition-none",
+        "marathon-outline": "text-foreground bg-background uppercase hover:text-primary hover:bg-background inset-shadow-marathon-white hover:inset-shadow-marathon rounded-none font-interference transition-none",
+        "marathon-link": "text-foreground bg-background uppercase hover:text-primary hover:bg-background inset-shadow-marathon-white hover:inset-shadow-marathon rounded-none font-interference transition-none",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

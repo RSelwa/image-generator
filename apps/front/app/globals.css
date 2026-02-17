@@ -6,7 +6,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-shapiro);
   --font-mono: var(--font-fraktion-mono);
   --font-fraktion: var(--font-fraktion);
   --font-fraktion-mono: var(--font-fraktion-mono);
@@ -51,7 +51,8 @@
 }
 
 @theme {
-  --inset-shadow-marathon: inset 0 0px 0px 2px var(--primary);
+  --inset-shadow-marathon: inset 0 0px 0px 1px var(--primary);
+  --inset-shadow-marathon-white: inset 0 0px 0px 1px var(--foreground);
   --shadow-glow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25); 
   --shadow-glow-xs: 0px 0px 10px 5px rgba(0, 0, 0, 0.25); 
   --admin-header-height: 76px;
