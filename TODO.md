@@ -68,6 +68,13 @@
   - [ ] Setup Reels Insta et tiktok
   - [ ] Implement a system to interact with twitch chat, maybe to vote for games
   - [ ] Implement a chat room inside
+  - [ ] mette un array players qui contient que les id à la racine du doc de lobby pour simplifier firestore query
+  - [ ] When problem of connexion, auto send a report to me
+  - [ ] Create a document with all games to lower read in firestore
+  - [ ] Create an e2e test with DEMO_SEED
+  - [ ] Adapter storybook et les comportements 
+  - [ ] In demo test, test to write variable game name
+
 </details>
 
 <details>

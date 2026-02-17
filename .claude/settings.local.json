@@ -21,7 +21,8 @@
       "Bash(xargs:*)",
       "Bash(find:*)",
       "WebFetch(domain:firebase.google.com)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "WebFetch(domain:storybook.js.org)"
     ]
   }
 }

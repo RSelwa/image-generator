@@ -22,6 +22,7 @@
     "dev": "turbo run dev",
     "build:front": "turbo run -F @repo/front build",
     "dev:front": "turbo run -F @repo/front dev",
+    "storybook:front": "pnpm run -F @repo/front storybook",
     "dev:server": "deno run --allow-all --env=./scripts/.env --config scripts/deno.json scripts/src/server/index.ts",
     "test": "turbo run test",
     "test:front-ui": "pnpm -F @repo/front e2e:ui",
