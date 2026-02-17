@@ -67,7 +67,7 @@ export const SuggestGameModal = () => {
         </InputGroup>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">
+            <Button variant="marathon-outline">
 
               Cancel
             </Button>

@@ -36,10 +36,10 @@ const Navbar = () => {
       )}
       {(!user || user.isAnonymous) && (
         <article className="flex items-center gap-3">
-          <Button variant="outline" asChild>
+          <Button variant="marathon-outline" asChild>
             <Link href={PAGES.LOGIN}>Login</Link>
           </Button>
-          <Button variant="default" asChild>
+          <Button variant="marathon" asChild>
             <Link href={PAGES.SIGNUP}>Join</Link>
           </Button>
         </article>

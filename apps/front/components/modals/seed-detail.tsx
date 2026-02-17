@@ -127,7 +127,7 @@ export const SeedDetailModal = () => {
               )}
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={handleCopyId}>
+          <Button variant="marathon-outline" size="sm" onClick={handleCopyId}>
             <Copy className="size-4" />
             Copy ID
           </Button>

@@ -105,6 +105,7 @@ const FieldLabel = ({
       "group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50",
       "has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border [&>*]:data-[slot=field]:p-4",
       "has-data-[state=checked]:bg-primary/5 has-data-[state=checked]:border-primary dark:has-data-[state=checked]:bg-primary/10",
+      "font-interference",
       className,
     )}
     {...props}
@@ -129,6 +130,7 @@ const FieldDescription = ({ className, ...props }: React.ComponentProps<"p">) =>
       "text-muted-foreground text-sm leading-normal font-normal group-has-[[data-orientation=horizontal]]/field:text-balance",
       "last:mt-0 nth-last-2:-mt-1 [[data-variant=legend]+&]:-mt-1.5",
       "[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4",
+      "font-mono",
       className,
     )}
     {...props}

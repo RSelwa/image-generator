@@ -48,6 +48,7 @@
   - [x] When user start a lobby, remove his id from createdBy seedDoc, because he don't really create it
   - [x] Implements fonts for tailwinds
   - [ ] ajouter description pour le round special
+  - [ ] Merge the button play/play demo in the first screen
   - [ ] ajouter des bouttons back to lobby / new game, when in finished screen
   - [ ] Implement modals system for pubing/infos
   - [ ] implement seeds that will be featured like flim discover

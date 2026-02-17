@@ -24,7 +24,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   render: () => (
-    <Select>
+    <Select open>
       <SelectTrigger className="w-48">
         <SelectValue placeholder="Select a fruit" />
       </SelectTrigger>

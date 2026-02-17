@@ -27,7 +27,7 @@ export const Default: Story = {
   render: () => (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">Open Popover</Button>
+        <Button variant="marathon-outline">Open Popover</Button>
       </PopoverTrigger>
       <PopoverContent>
         <PopoverHeader>
@@ -53,7 +53,7 @@ export const Simple: Story = {
   render: () => (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">Info</Button>
+        <Button variant="marathon-outline">Info</Button>
       </PopoverTrigger>
       <PopoverContent>
         <PopoverHeader>

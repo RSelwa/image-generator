@@ -43,7 +43,7 @@ export const Default: Story = {
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Open Menu</Button>
+        <Button variant="marathon-outline">Open Menu</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -118,7 +118,7 @@ export const DestructiveItems: Story = {
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Actions</Button>
+        <Button variant="marathon-outline">Actions</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-48">
         <DropdownMenuItem>
@@ -143,7 +143,7 @@ export const Simple: Story = {
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Options</Button>
+        <Button variant="marathon-outline">Options</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40">
         <DropdownMenuItem>New file</DropdownMenuItem>

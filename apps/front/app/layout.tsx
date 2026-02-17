@@ -21,22 +21,22 @@ const geistSans = Geist({
 //   subsets: ["latin"],
 // })
 
-const font1 = localFont({
+const fraktion = localFont({
   src: "../public/fonts/Fraktion.woff2",
   variable: "--font-fraktion",
 })
 
-const front2 = localFont({
+const fraktionMono = localFont({
   src: "../public/fonts/Fraktion-mono.woff2",
   variable: "--font-fraktion-mono",
 })
 
-const front3 = localFont({
+const interference = localFont({
   src: "../public/fonts/Interference.otf",
   variable: "--font-interference",
 })
 
-const front4 = localFont({
+const shapiro = localFont({
   src: "../public/fonts/Shapiro.otf",
   variable: "--font-shapiro",
 })
@@ -55,7 +55,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         data-marathon
-        className={`${geistSans.variable} ${font1.variable} ${front2.variable} ${front3.variable} ${front4.variable} antialiased dark`}
+        className={`${geistSans.variable} ${fraktion.variable} ${fraktionMono.variable} ${interference.variable} ${shapiro.variable} antialiased dark`}
       >
         <Suspense>
           <NuqsAdapter>

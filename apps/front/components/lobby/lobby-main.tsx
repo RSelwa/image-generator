@@ -30,7 +30,7 @@ const NoLobby = () => {
   return (
     <main className="min-h-full-height flex items-center justify-center text-foreground bg-primary">
       <p className="text-lg text-muted-primary-foreground">Lobby not found</p>
-      <Button variant="outline" className="ml-4" onClick={() => router.push(PAGES.HOME)}>
+      <Button variant="marathon-outline" className="ml-4" onClick={() => router.push(PAGES.HOME)}>
         Go back home
       </Button>
     </main>

@@ -63,7 +63,7 @@ const Page = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">Sort By</Button>
+              <Button variant="marathon-outline">Sort By</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {Object.values(SORT_OPTIONS).map((sortOption) => (

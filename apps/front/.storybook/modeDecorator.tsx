@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const fontFaces = `
   @font-face {
@@ -28,7 +28,14 @@ export const ModeDecorator = (Story: any) => {
     };
 
     useEffect(()=>{
-
+        document.documentElement.setAttribute("data-marathon", "")
+        const root = document.documentElement
+        root.style.setProperty("--font-geist-sans", "'Geist', sans-serif")
+        root.style.setProperty("--font-fraktion", "'Fraktion', sans-serif")
+        root.style.setProperty("--font-fraktion-mono", "'Fraktion Mono', monospace")
+        root.style.setProperty("--font-mono", "'Fraktion Mono', monospace")
+        root.style.setProperty("--font-interference", "'Interference', sans-serif")
+        root.style.setProperty("--font-shapiro", "'Shapiro', sans-serif")
         toggleMode()
     },[])
 
@@ -51,16 +58,7 @@ export const ModeDecorator = (Story: any) => {
             >
                 {isDarkMode ? "Light Mode" : "Dark Mode"}
             </button>
-            <div
-                data-marathon
-                style={{
-                    "--font-geist-sans": "'Geist', sans-serif",
-                    "--font-fraktion": "'Fraktion', sans-serif",
-                    "--font-fraktion-mono": "'Fraktion Mono', monospace",
-                    "--font-interference": "'Interference', sans-serif",
-                    "--font-shapiro": "'Shapiro', sans-serif",
-                } as React.CSSProperties}
-            >
+            <div data-marathon>
                 <Story />
             </div>
         </>

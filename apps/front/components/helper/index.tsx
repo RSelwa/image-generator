@@ -28,7 +28,7 @@ export const HelperMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="fixed bottom-4 right-4 outline-none">
-        <Button variant="outline">
+        <Button variant="marathon-outline">
           Need help
         </Button>
       </DropdownMenuTrigger>

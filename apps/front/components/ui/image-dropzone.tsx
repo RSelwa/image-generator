@@ -146,7 +146,7 @@ export const ImageDropzone = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !displayImage && openFilePicker()}
-        className={`relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-colors ${
+        className={`relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden border-2 border-dashed transition-colors ${
           isDragging ? "border-primary bg-primary/10" : "border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50"
         } ${className ?? ""}`}
       >
@@ -178,7 +178,7 @@ export const ImageDropzone = ({
         )}
         {isUploading && (
           <div className="bg-background/80 absolute inset-0 flex items-center justify-center">
-            <Loader className="size-4" />
+            <Loader className="size-8" />
           </div>
         )}
       </div>

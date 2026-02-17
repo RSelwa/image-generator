@@ -1,11 +1,8 @@
 import { type ComponentProps } from "react"
 
 const Loader = ({
-  className,
   ...props
-}: ComponentProps<"svg"> & {
-  size?: string | number
-}) => (
+}: ComponentProps<"svg">) => (
   <svg
     viewBox="0 0 16 16"
     fill="none"

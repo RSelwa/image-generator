@@ -26,15 +26,17 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
+          "--normal-bg": "var(--background)",
+          "--normal-text": "var(--primary)",
+          "--normal-border": "var(--primary)",
+          "--border-radius": "none",
         } as React.CSSProperties
       }
       toastOptions={{
+        duration: 30000,
         classNames: {
-          toast: "cn-toast",
+          toast: "cn-toast data-[type=error]:text-destructive! data-[type=error]:border-destructive! data-[type=warning]:text-foreground! data-[type=warning]:border-blue-accent! data-[type=warning]:bg-blue-accent! data-[type=info]:text-foreground! data-[type=info]:border-blue-accent! data-[type=info]:bg-blue-accent!",
+          title:"font-interference",
         },
       }}
       {...props}

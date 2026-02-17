@@ -130,7 +130,7 @@ const RoundSlotSpecial = memo(({
         </Select>
 
         <Button
-          variant="default"
+          variant="marathon"
           size="sm"
           className="h-7 text-xs px-2"
           onClick={onToggleSpecial}

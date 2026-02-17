@@ -134,7 +134,7 @@ export const ReportBugModal = () => {
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">
+            <Button variant="marathon-outline">
 
               Cancel
             </Button>

@@ -130,7 +130,7 @@ export const SignupForm = ({
               </FieldSeparator>
               <Field className="grid grid-cols-1 gap-4">
                 <Button
-                  variant="outline"
+                  variant="marathon-outline"
                   type="button"
                   onClick={onLoginWithGoogle}
                 >
