@@ -151,7 +151,5 @@ export const waitForAnonymousAuth = async (page: Page) => {
   const anonymousUid = await getAnonymousUid(page)
   expect(anonymousUid).toBeTruthy()
 
-  // await createAnonymousUserDoc(anonymousUid!)
-
   return anonymousUid || ""
 }

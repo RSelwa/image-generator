@@ -26,11 +26,6 @@ const Page = () => (
 
       <div className="flex flex-col sm:flex-row gap-4">
         <CreateLobbyButton />
-        <Button variant="secondary" asChild>
-          <Link href="/demo">
-            Try Demo
-          </Link>
-        </Button>
       </div>
     </section>
   </main>

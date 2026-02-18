@@ -76,6 +76,7 @@
   - [ ] Create an e2e test with DEMO_SEED
   - [ ] Adapter storybook et les comportements 
   - [ ] In demo test, test to write variable game name
+  - [ ] Fix tests storage suggestions update unauthenticated
 
 </details>
 

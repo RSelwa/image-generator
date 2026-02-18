@@ -6,20 +6,22 @@ import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PAGES } from "@/constants/pages"
-import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
-import { selectUser } from "@/redux/session/session.selectors"
+import { useCreateAndJoinLobbyMutation, useCreateDemoLobbyMutation } from "@/redux/api/lobby"
+import { selectIsAnonymous, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
 const CreateLobbyButton = () => {
   const router = useRouter()
   const user = useAppSelector(selectUser)
+  const userIsAnonymous = useAppSelector(selectIsAnonymous)
   const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
+  const [createDemoLobby] = useCreateDemoLobbyMutation()
 
   if (!user) return <Skeleton className="h-9 bg-primary w-24" />
 
   const handleCreateLobby = async () => {
     try {
-      const lobby = await createLobbyDoc({ user }).unwrap()
+      const lobby = userIsAnonymous ? await createDemoLobby({user}).unwrap() :  await createLobbyDoc({ user }).unwrap()
 
       router.push(`${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
