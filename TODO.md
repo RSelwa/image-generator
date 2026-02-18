@@ -50,8 +50,11 @@
   - [x] In demo test, test to write variable game name
   - [x] Merge the button play/play demo in the first screen
   - [x] Analytics
+  - [ ] Fix DEFAULT map distance
+  - [ ] When solo in a lobby, Should have only one button that will set ready and start the game
   - [ ] Fix starting screen when game is Loading, maybe add a tutorial here
   - [ ] ajouter des bouttons back to lobby / new game, when in finished screen
+  - [ ] Add sound
   - [ ] Implement modals system for pubing/infos
   - [ ] implement seeds that will be featured like flim discover
   - [ ] ajouter description pour le round special

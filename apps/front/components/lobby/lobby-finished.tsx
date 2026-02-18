@@ -1,6 +1,5 @@
 import { usePathname } from "next/navigation"
 import * as React from "react"
-import Logo from "@/components/icons/logo"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Progress } from "@/components/ui/progress"
 import { APP_NAME } from "@/constants/mapping"
@@ -9,6 +8,7 @@ import { selectLobbyConfig, selectPlayerMyself } from "@/redux/lobby/lobby.selec
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
+import { LogoWithIcon } from "@/components/icons"
 
 const LobbyFinished = () => {
   const pathname = usePathname()
@@ -30,7 +30,7 @@ const LobbyFinished = () => {
 
   return (
     <main data-testid="lobby-finished" className="min-h-full-height w-1/2 mx-auto bg-background text-foreground flex flex-col items-center justify-center gap-8">
-      <Logo />
+      <LogoWithIcon />
       <h1>{APP_NAME}</h1>
       <Field className="w-full max-w-sm">
         <FieldLabel htmlFor="progress-points">

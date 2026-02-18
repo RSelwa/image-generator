@@ -84,3 +84,7 @@ export const FIREBASE_ERRORS = {
   EMAIL_ALREADY_USED: "auth/email-already-in-use",
   CREDENTIAL_ALREADY_IN_USE: "auth/credential-already-in-use",
 } as const
+
+export const ASSET_URLS = {
+  STRIP_ICONS: "/assets/left-icons.png",
+} as const
