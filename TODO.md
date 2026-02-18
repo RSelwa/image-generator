@@ -47,15 +47,16 @@
   - [x] when create lobby when anonymous should disable all config, and pick the seed
   - [x] When user start a lobby, remove his id from createdBy seedDoc, because he don't really create it
   - [x] Implements fonts for tailwinds
+  - [x] In demo test, test to write variable game name
+  - [x] Merge the button play/play demo in the first screen
   - [ ] Analytics
-  - [ ] Merge the button play/play demo in the first screen
   - [ ] Fix starting screen when game is Loading, maybe add a tutorial here
   - [ ] ajouter des bouttons back to lobby / new game, when in finished screen
   - [ ] Implement modals system for pubing/infos
   - [ ] implement seeds that will be featured like flim discover
   - [ ] ajouter description pour le round special
   - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
-  - [ ] Improve the empty card whe no map/no games etc... with shadcn empty components
+  - [ ] ADMIN -Improve the empty card whe no map/no games etc... with shadcn empty components
   - [ ] can copy the seedId in the maker
   - [ ] Change icons on minimap
   - [ ] Share seed at the end of a lobby
@@ -75,7 +76,6 @@
   - [ ] Create a document with all games to lower read in firestore
   - [ ] Create an e2e test with DEMO_SEED
   - [ ] Adapter storybook et les comportements 
-  - [ ] In demo test, test to write variable game name
   - [ ] Fix tests storage suggestions update unauthenticated
 
 </details>

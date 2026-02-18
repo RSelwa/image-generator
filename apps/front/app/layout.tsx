@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import localFont from "next/font/local"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { Suspense } from "react"
+import { Analytics } from '@vercel/analytics/next';
 import { HelperMenu } from "@/components/helper"
 import { ModalProvider } from "@/components/modals"
 import StoreProvider from "@/components/providers/redux-provider"
@@ -64,6 +65,7 @@ export default function RootLayout({
                 <Toaster />
                 <ModalProvider />
                 {children}
+                <Analytics />
                 <HelperMenu />
               </Suspense>
             </StoreProvider>
