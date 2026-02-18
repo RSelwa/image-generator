@@ -32,6 +32,7 @@ env.txt
 service-account.json
 .runtimeconfig.*
 
+scripts/screenshots/*
 # isolate-package output
 isolate
 
