@@ -88,6 +88,12 @@ service cloud.firestore {
     }
 
 
+    // Metadata collection - admin can write, anyone can read
+    match /metadata/{docId} {
+      allow write: if signedInAdmin();
+      allow read: if true;
+    }
+
     // Seed collection - admin can write, anyone can read
     match /seeds/{seedId} {
       allow write: if signedInAdmin();

@@ -10,7 +10,12 @@ export const TABLES = {
   LOBBIES: "lobbies",
   SEEDS: "seeds",
   ROUND_ANSWERS: "roundAnswers",
-  SUGGESTIONS: "suggestions"
+  SUGGESTIONS: "suggestions",
+  METADATA: "metadata",
+} as const
+
+export const METADATA_DOCS = {
+  GAMES_LIST: "gamesList",
 } as const
 
 export const STORAGE_PATHS = {

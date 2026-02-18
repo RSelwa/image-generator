@@ -1,8 +1,9 @@
-import { TABLES } from "@repo/common"
-import { type FlatDoc, type SphericalDoc } from "@repo/schemas"
+import { METADATA_DOCS, TABLES } from "@repo/common"
+import { type FlatDoc, type GameDoc, type SphericalDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
 import { updateFlatStatus, updateGameStatus, updateSphericalStatus } from "~/updates-status"
+import { updateGamesList } from "~/updates-games-list"
 
 export const listen_doc_spherical_written = onDocumentWritten(
   `${TABLES.GAMES}/{gameId}/${TABLES.SPHERICAL}/{sphericalId}`,
@@ -49,30 +50,20 @@ export const listen_doc_flat_written = onDocumentWritten(
   },
 )
 
-// export const listen_doc_games_written = onDocumentWritten(
-//   `${TABLES.GAMES}/{gameId}`,
-//   async (event) => {
-//     logger.log(`✍ Game ${event.document} written`)
+export const listen_doc_games_written = onDocumentWritten(
+  `${TABLES.GAMES}/{gameId}`,
+  async (event) => {
+    const gameId = event.params.gameId
 
-//     const [, gameId] = event.document.split("/")
+    if (!gameId) {
+      logger.error(`Game ID is undefined in document path: ${event.document}`)
 
-//     if (!gameId) {
-//       logger.error(`Game ID is undefined in document path: ${event.document}`)
-//       return
-//     }
-//   },
-// )
+      return
+    }
 
-// export const listen_doc_users_written = onDocumentWritten(
-//   `${TABLES.USERS}/{userId}`,
-//   async (event) => {
-//     logger.log(`✍ Game ${event.document} written`)
+    const before = event.data?.before.data() as GameDoc | undefined
+    const after = event.data?.after.data() as GameDoc | undefined
 
-//     const [, userId] = event.document.split("/")
-
-//     if (!userId) {
-//       logger.error(`User ID is undefined in document path: ${event.document}`)
-//       return
-//     }
-//   },
-// )
+    await updateGamesList(gameId, before, after)
+  },
+)

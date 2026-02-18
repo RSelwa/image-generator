@@ -1,10 +1,11 @@
-import { DIFFICULTIES, DOCUMENTS_STATUS, mockedImageURL, TABLES } from "@repo/common"
+import { DIFFICULTIES, DOCUMENTS_STATUS, METADATA_DOCS, mockedImageURL, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
+import { type GamesListDoc } from "@repo/schemas"
 import { flatFactory, gameFactory, sphericalFactory } from "@repo/testing/factory"
 import firebaseFunctionsTest from "firebase-functions-test"
 import { makeDocumentSnapshot } from "firebase-functions-test/lib/providers/firestore"
 import { beforeAll, describe, expect, it } from "vitest"
-import { listen_doc_flat_written, listen_doc_spherical_written } from "~/index"
+import { listen_doc_flat_written, listen_doc_games_written, listen_doc_spherical_written } from "~/index"
 
 beforeAll(() => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
@@ -266,5 +267,158 @@ describe("listen flats docs changes for status", () => {
 
     const flatSnapshot = await subRefs[TABLES.FLAT](game.id).doc(flat.id).get()
     expect(flatSnapshot.data()?.status).toBe("waiting")
+  })
+})
+
+const getGamePath = (gameId: string) => `${TABLES.GAMES}/${gameId}`
+
+const getGamesListData = async () => {
+  const doc = await refs[TABLES.METADATA].doc(METADATA_DOCS.GAMES_LIST).get()
+
+  return doc.data()
+}
+
+describe("listen games docs changes for gamesList metadata", () => {
+  it("should add a game to gamesList when a game is created", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_games_written)
+
+    const game = gameFactory({})
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+
+    const before = makeDocumentSnapshot({}, getGamePath(game.id))
+    const after = makeDocumentSnapshot(game, getGamePath(game.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { gameId: game.id },
+    })
+
+    const data = await getGamesListData()
+
+    expect(data?.games).toEqual(
+      expect.arrayContaining([{ id: game.id, title: game.title }]),
+    )
+  })
+
+  it("should create the metadata doc if it does not exist on first game creation", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_games_written)
+
+    // Clean up metadata doc to simulate fresh state
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.GAMES_LIST).delete()
+
+    const game = gameFactory({})
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+
+    const before = makeDocumentSnapshot({}, getGamePath(game.id))
+    const after = makeDocumentSnapshot(game, getGamePath(game.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { gameId: game.id },
+    })
+
+    const data = await getGamesListData()
+
+    expect(data?.games).toEqual([{ id: game.id, title: game.title }])
+  })
+
+  it("should remove a game from gamesList when a game is deleted", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_games_written)
+
+    const game = gameFactory({})
+
+    // Seed the metadata doc with the game
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.GAMES_LIST).set({
+      games: [{ id: game.id, title: game.title }],
+    })
+
+    const before = makeDocumentSnapshot(game, getGamePath(game.id))
+    const after = makeDocumentSnapshot({}, getGamePath(game.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { gameId: game.id },
+    })
+
+    const data = await getGamesListData()
+
+    expect(data?.games).toEqual([])
+  })
+
+  it("should update the title in gamesList when a game title changes", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_games_written)
+
+    const game = gameFactory({})
+    const updatedGame = { ...game, title: "new title" }
+
+    // Seed the metadata doc with the game
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.GAMES_LIST).set({
+      games: [{ id: game.id, title: game.title }],
+    })
+
+    const before = makeDocumentSnapshot(game, getGamePath(game.id))
+    const after = makeDocumentSnapshot(updatedGame, getGamePath(game.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { gameId: game.id },
+    })
+
+    const data = await getGamesListData()
+
+    expect(data?.games).toEqual([{ id: game.id, title: "new title" }])
+  })
+
+  it("should not update gamesList when a game is updated without title change", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_games_written)
+
+    const game = gameFactory({})
+    const updatedGame = { ...game, description: "updated description" }
+
+    // Seed the metadata doc with the game
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.GAMES_LIST).set({
+      games: [{ id: game.id, title: game.title }],
+    })
+
+    const before = makeDocumentSnapshot(game, getGamePath(game.id))
+    const after = makeDocumentSnapshot(updatedGame, getGamePath(game.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { gameId: game.id },
+    })
+
+    const data = await getGamesListData()
+
+    expect(data?.games).toEqual([{ id: game.id, title: game.title }])
+  })
+
+  it("should only remove the deleted game and keep others", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_games_written)
+
+    const game1 = gameFactory({})
+    const game2 = gameFactory({})
+
+    // Seed the metadata doc with both games
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.GAMES_LIST).set({
+      games: [
+        { id: game1.id, title: game1.title },
+        { id: game2.id, title: game2.title },
+      ],
+    })
+
+    const before = makeDocumentSnapshot(game1, getGamePath(game1.id))
+    const after = makeDocumentSnapshot({}, getGamePath(game1.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { gameId: game1.id },
+    })
+
+    const data = await getGamesListData()
+
+    expect(data?.games).toEqual([{ id: game2.id, title: game2.title }])
   })
 })
