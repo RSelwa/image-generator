@@ -53,6 +53,7 @@ export const listen_doc_flat_written = onDocumentWritten(
 export const listen_doc_games_written = onDocumentWritten(
   `${TABLES.GAMES}/{gameId}`,
   async (event) => {
+    try {
     const gameId = event.params.gameId
 
     if (!gameId) {
@@ -65,5 +66,8 @@ export const listen_doc_games_written = onDocumentWritten(
     const after = event.data?.after.data() as GameDoc | undefined
 
     await updateGamesList(gameId, before, after)
+    } catch (error) {
+      console.error(`Error in listen_doc_games_written for document ${event.document}:`, error)
+    }
   },
 )

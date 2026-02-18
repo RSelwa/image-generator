@@ -49,7 +49,7 @@
   - [x] Implements fonts for tailwinds
   - [x] In demo test, test to write variable game name
   - [x] Merge the button play/play demo in the first screen
-  - [ ] Analytics
+  - [x] Analytics
   - [ ] Fix starting screen when game is Loading, maybe add a tutorial here
   - [ ] ajouter des bouttons back to lobby / new game, when in finished screen
   - [ ] Implement modals system for pubing/infos
