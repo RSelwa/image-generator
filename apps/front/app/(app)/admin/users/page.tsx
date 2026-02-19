@@ -8,8 +8,14 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useGetUsersCountQuery, useGetUsersInfiniteQuery } from "@/redux/api/user"
+import SheetAdminUser from "@/components/sheet/user-admin"
+import { QUERY_PARAMS } from "@/constants/mapping"
+import { useQueryState } from "nuqs"
 
 const Page = () => {
+  const [_, setUserId] = useQueryState(QUERY_PARAMS.USER_ID)
+
+
   const { data: usersCount } = useGetUsersCountQuery()
   const { data: users, fetchNextPage, hasNextPage, isFetching } = useGetUsersInfiniteQuery()
   const captionRef = useRef<HTMLTableCaptionElement>(null)
@@ -75,7 +81,7 @@ const Page = () => {
                 setCheckedIds((prev) => value ? [...prev, user.id] : prev.filter((id) => id !== user.id))
 
               return (
-                <TableRow key={user.id}>
+                <TableRow key={user.id} onClick={() => setUserId(user.id)}>
                   <TableCell><Checkbox checked={checked} onCheckedChange={onCheckedChange} /></TableCell>
                   <TableCell>{user.id}</TableCell>
                   <TableCell className="font-medium">{user.email}</TableCell>
@@ -87,6 +93,7 @@ const Page = () => {
           </TableBody>
         </Table>
       </ScrollArea>
+      <SheetAdminUser />
     </main>
   )
 }

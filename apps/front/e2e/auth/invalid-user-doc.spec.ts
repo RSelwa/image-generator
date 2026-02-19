@@ -49,7 +49,6 @@ test.describe("invalid user document", () => {
     const { email } = await createAuthUserWithCustomDoc({
       email: null,
       pseudo: faker.person.fullName(),
-      photoUrl: null,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     })
@@ -67,7 +66,6 @@ test.describe("invalid user document", () => {
     const { email } = await createAuthUserWithCustomDoc({
       email: "not-an-email",
       pseudo: faker.person.fullName(),
-      photoUrl: null,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     })

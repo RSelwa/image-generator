@@ -1,6 +1,7 @@
-import { type ConstantValues, type STORAGE_PATHS } from "@repo/common"
+import { AVATARS_KEYS, type ConstantValues, type STORAGE_PATHS } from "@repo/common"
 import { ENDPOINTS_BASE } from "@/constants/api"
 import { auth } from "@/constants/db"
+import { AVATARS_URLS } from "@/constants/mapping"
 
 type Props = {
   file: File
@@ -40,4 +41,12 @@ export const uploadFileToBucket = async ({
   const { url, width, height } = await response.json()
 
   return { url, width, height }
+}
+
+
+export const getAvatarUrl = (avatarKey: ConstantValues<typeof AVATARS_KEYS>) => AVATARS_URLS[avatarKey]
+
+export const getAvatarKeyFromUrl = (avatarUrl: string) => {
+  const entry = Object.entries(AVATARS_URLS).find(([key, url]) => url === avatarUrl)
+  return entry ? (entry[0] as ConstantValues<typeof AVATARS_KEYS>) : null 
 }

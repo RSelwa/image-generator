@@ -1,5 +1,4 @@
-import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
-import { SUGGESTIONS_TYPE } from "./../../../libs/common/src/constants/constants"
+import { AVATARS_KEYS, DIFFICULTIES, DOCUMENTS_STATUS, SUGGESTIONS_TYPE } from "@repo/common"
 
 export const SESSION_STATUS = {
   LOADING: "loading",
@@ -14,6 +13,7 @@ export const QUERY_PARAMS = {
   LOBBY_CODE: "code",
   REDIRECT: "redirect",
   SUGGESTION_ID: "suggestion-id",
+  USER_ID: "user-id",
 } as const
 
 export const MODAL_KEYS = {
@@ -87,4 +87,18 @@ export const FIREBASE_ERRORS = {
 
 export const ASSET_URLS = {
   STRIP_ICONS: "/assets/left-icons.png",
+} as const
+
+export const AVATARS_URLS = {
+  [AVATARS_KEYS.ASSASSIN]: "/avatar/runner_assassin_icon-CQczza6i.png",
+  [AVATARS_KEYS.DESTROYER]: "/avatar/runner_destroyer_icon-BNsj7jDO.png",
+  [AVATARS_KEYS.RECON]: "/avatar/runner_recon_icon-DcxTFu9p.png",
+  [AVATARS_KEYS.ROOK]: "/avatar/runner_rook_icon-C12uL7F1.png",
+  [AVATARS_KEYS.THIEF]: "/avatar/runner_thief_icon-DwN1CDwF.png",
+  [AVATARS_KEYS.TRIAGE]: "/avatar/runner_triage_icon-BgDnRG_N.png",
+  [AVATARS_KEYS.VANDAL]: "/avatar/runner_vandal_icon-FzjQgJ8c.png",
+} as const
+
+export const AVATARS_BACKGROUND_URLS = {
+  PERIMETER: "/avatar_background/map_perimeter_overflow-Ck2U4HJE.jpg",
 } as const

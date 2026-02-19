@@ -53,3 +53,13 @@ export const SUGGESTIONS_TYPE = {
   SUGGESTIONS: "suggestions",
   HELP: "help"
 } as const
+
+export const AVATARS_KEYS = {
+  ASSASSIN: "assassin",
+  DESTROYER: "destroyer",
+  RECON: "recon",
+  ROOK: "rook",
+  THIEF: "thief",
+  TRIAGE: "triage",
+  VANDAL: "vandal",
+} as const

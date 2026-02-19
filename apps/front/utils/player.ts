@@ -1,10 +1,12 @@
 import { type Player } from "@repo/schemas"
 import { type SessionUser } from "@/schemas/session"
+import { getAvatarKeyFromUrl } from "@/utils/file"
+import { getRandomAvatar } from "@repo/common"
 
 export const createPlayerFromSessionUser = (sessionUser: SessionUser): Player => ({
   uid: sessionUser.id,
   name: sessionUser.pseudo,
-  avatar: sessionUser.photoUrl,
+  avatar: getAvatarKeyFromUrl(sessionUser.avatar||"") || getRandomAvatar(),
   score: 0,
   isHost: false,
   isReady: false,

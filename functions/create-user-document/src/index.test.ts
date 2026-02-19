@@ -72,6 +72,8 @@ describe("createUserDocument", () => {
     expect(userDoc).toHaveProperty("updatedAt")
     expect(userDoc?.pseudo).toBeTruthy()
     expect(userDoc).toHaveProperty("isAnonymousUser", false)
+    expect(userDoc?.avatar).toBeTruthy()
+
   })
 
   it("should set isAnonymousUser to true when user has no email", async () => {

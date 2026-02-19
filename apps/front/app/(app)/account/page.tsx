@@ -16,10 +16,15 @@ import { useUpdateUserDocMutation } from "@/redux/api/user"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { firstLetter } from "@/utils"
+import { AVATARS_KEYS } from "@repo/common"
+import { AVATARS_BACKGROUND_URLS, AVATARS_URLS } from "@/constants/mapping"
+import { getAvatarKeyFromUrl, getAvatarUrl } from "@/utils/file"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import Image from "next/image"
 
 const formSchema = z.object({
   pseudo: z.string().min(3, "Pseudo must be at least 3 characters").max(30, "Pseudo must be at most 30 characters"),
-  photoUrl: z.string().url("Must be a valid URL").or(z.literal("")),
+  avatar: z.enum(AVATARS_KEYS).nullish(),
 })
 
 type FormSchema = z.infer<typeof formSchema>
@@ -28,39 +33,42 @@ const AccountForm = () => {
   const user = useAppSelector(selectUser)
   const [updateUserDoc, { isLoading }] = useUpdateUserDocMutation()
 
+
   const {
     handleSubmit,
     register,
     reset,
     watch,
+    setValue
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       pseudo: user?.pseudo || "",
-      photoUrl: user?.photoUrl || "",
+      avatar: getAvatarKeyFromUrl(user?.avatar || ""),
     },
   })
 
   useEffect(() => {
-    if (user) {
-      reset({
-        pseudo: user.pseudo || "",
-        photoUrl: user.photoUrl || "",
-      })
-    }
+    if (!user) return
+
+    reset({
+      pseudo: user.pseudo || "",
+      avatar: getAvatarKeyFromUrl(user.avatar || ""),
+    })
+
   }, [user, reset])
 
-  const photoUrl = watch("photoUrl")
 
   const onSubmit: SubmitHandler<FormSchema> = async (formData) => {
     try {
       if (!user?.id) return
 
+
       await updateUserDoc({
         id: user.id,
         data: {
           pseudo: formData.pseudo,
-          photoUrl: formData.photoUrl || "",
+          avatar: formData.avatar,
         },
       }).unwrap()
 
@@ -73,36 +81,37 @@ const AccountForm = () => {
 
   if (!user) return null
 
+  const watchAvatar = watch("avatar")
+  const avatar = watchAvatar ? getAvatarUrl(watchAvatar) : user.avatar
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <Card>
-        <CardHeader>
-          <CardTitle>Profile Picture</CardTitle>
-          <CardDescription>Your avatar visible to other players</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-          <Avatar className="size-20 rounded-lg">
-            <AvatarImage src={photoUrl} alt={user.pseudo} />
-            <AvatarFallback className="rounded-lg text-2xl">
-              {firstLetter(user.pseudo)}
-            </AvatarFallback>
-          </Avatar>
-          <Field className="flex-1">
-            <FieldLabel htmlFor="photoUrl">Photo URL</FieldLabel>
-            <FieldDescription>Paste a link to your profile picture</FieldDescription>
-            <Input
-              id="photoUrl"
-              placeholder="https://example.com/avatar.png"
-              {...register("photoUrl")}
-            />
-          </Field>
-        </CardContent>
-      </Card>
+        <CardHeader className="flex justify-between">
+          <div>
+            <CardTitle>Profile Picture</CardTitle>
+            <CardDescription>Your avatar visible to other players</CardDescription>
+          </div>
+          <Popover>
+            <PopoverTrigger>
+              <Avatar className="size-20">
+                <AvatarImage src={avatar || ""} alt={user.pseudo} />
+                <AvatarFallback className="rounded-lg text-2xl">
+                  {firstLetter(user.pseudo)}
+                </AvatarFallback>
+              </Avatar>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-auto grid grid-cols-4 gap-4">
+              {Object.values(AVATARS_KEYS).map((avatarKey) => (
+                <button key={avatarKey} className="size-32 hover:bg-primary cursor-pointer" onClick={() =>
+                  setValue("avatar", avatarKey)
+                }>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
-          <CardDescription>Your public profile details</CardDescription>
+                  <Image src={getAvatarUrl(avatarKey)} alt={`Avatar of ${avatarKey}`} width={370} height={370} className={`bg-[url(${AVATARS_BACKGROUND_URLS.PERIMETER})] bg-cover`} />
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
         </CardHeader>
         <CardContent className="space-y-6">
           <Field>

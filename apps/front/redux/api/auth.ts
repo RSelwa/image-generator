@@ -1,6 +1,6 @@
 import { type Action } from "@reduxjs/toolkit"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { generateUsername, isEqual, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
+import { generateUsername, getRandomAvatar, isEqual, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
 import { type UserDoc } from "@repo/schemas"
 import {
   createUserWithEmailAndPassword,
@@ -107,7 +107,7 @@ export const authApi = createApi({
               const result = await linkWithPopup(auth.currentUser, googleProvider)
               const email = result.user.email
               if (email) {
-                await updateDoc(getUserRef(auth.currentUser.uid), { email, photoUrl: auth.currentUser.photoURL, pseudo: auth.currentUser.displayName, isAnonymousUser:false }).catch((error) => {
+                await updateDoc(getUserRef(auth.currentUser.uid), { email, pseudo: auth.currentUser.displayName, isAnonymousUser:false, avatar: getRandomAvatar() }).catch((error) => {
                   console.error("Error updating user", auth.currentUser?.uid, error)
                 })
               }
@@ -179,9 +179,9 @@ export const authApi = createApi({
                   email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
                   createdAt: serverTimestamp(),
                   updatedAt: serverTimestamp(),
-                  photoUrl: null,
                   pseudo,
                   isAnonymousUser: true,
+                  avatar: getRandomAvatar(),
                 })
               }
 

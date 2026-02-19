@@ -1,4 +1,4 @@
-import { documentId, getCountFromServer, getDocs, limit, orderBy, query, type QueryConstraint, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
+import { documentId, getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES, USERS_FIELDS } from "@repo/common"
 import { type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
@@ -124,8 +124,38 @@ export const userApi = createApi({
       },
       invalidatesTags: (_, error, { id }) =>
         error ? [] : [{ type: "User", id }, "UserList"],
-    })
+    }),
+    getUserById: builder.query<userDocWithId, { id: string }>({
+      queryFn: async ({ id }) => {
+        try {
+          const docSnap = await getDoc(getUserRef(id))
+
+          if (!docSnap.exists()) {
+            return { error: { status: 404, data: "User not found" } }
+          }
+
+          const { data, error } = userDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) {
+            console.error(`Error parsing user with ID: ${id}`, error)
+            return { error: { status: 500, data: "Data parsing error" } }
+          }
+
+          return { data }
+
+      }
+        catch (error) {
+          console.error(`Error fetching user with ID: ${id}`, error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+  }})
   }),
 })
 
-export const { useGetUsersInfiniteQuery, useUpdateUserDocMutation, useGetUsersCountQuery } = userApi
+export const { useGetUsersInfiniteQuery, useUpdateUserDocMutation, useGetUsersCountQuery, useGetUserByIdQuery } = userApi

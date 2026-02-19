@@ -1,4 +1,4 @@
-import { generateUsername, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
+import { generateUsername, getRandomAvatar, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { userDocSchema } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
@@ -24,10 +24,10 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
       const userDoc = userDocSchema.parse({
         email,
         createdAt: now,
-        photoUrl: user.photoURL || null,
         updatedAt: now,
         pseudo,
         isAnonymousUser: Boolean(!user.email),
+        avatar: getRandomAvatar(),
       })
 
       await refs.users.doc(user.uid).set(userDoc)

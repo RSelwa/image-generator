@@ -1,4 +1,4 @@
-import { ROUND_POINTS } from "../constants/constants"
+import { AVATARS_KEYS, ROUND_POINTS } from "../constants/constants"
 
 function isSameArray(a: unknown[], b: unknown[]) {
   if (a.length !== b.length) return false
@@ -122,3 +122,5 @@ export const getDateFromString = (date?: Date) => {
 
   return `${day.toString().padStart(2, "0")}/${month.toString().padStart(2, "0")}/${year}`
 }
+
+export const getRandomAvatar = () => Object.values(AVATARS_KEYS)[Math.floor(Math.random() * Object.values(ROUND_POINTS).length)]|| AVATARS_KEYS.ASSASSIN

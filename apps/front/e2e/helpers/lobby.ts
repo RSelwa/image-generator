@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { expect, type Page } from "@playwright/test"
-import { generateUsername, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER, TABLES } from "@repo/common"
+import { generateUsername, getRandomAvatar, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { type LobbyDoc, type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
 import { userDocSchema } from "@repo/schemas"
@@ -9,6 +9,7 @@ import { userFactory } from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"
 import { SELECTORS } from "@/constants/testing"
 import { createPlayerFromSessionUser } from "@/utils/player"
+import { getAvatarUrl } from "@/utils/file"
 
 export const PASSWORD = "cacayolo"
 
@@ -73,7 +74,7 @@ export const startLobbyViaUI = async (page: Page) => {
 export const waitForInputToBeVisible = async (page: Page) =>
   await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10000 })
 
-export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", photoUrl: "", isAnonymous: false })
+export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", isAnonymous: false, avatar: getAvatarUrl(user.avatar|| getRandomAvatar()) })
 
 export const createFirestoreLobbyDoc = async (
   lobby: LobbyDoc,
@@ -139,7 +140,6 @@ export const createAnonymousUserDoc = async (uid: string) => {
   const userDoc = userDocSchema.parse({
     email: `${PREFIX_ANONYMOUS_USER}${uid}${SUFFIX_ANONYMOUS_USER}`,
     createdAt: now,
-    photoUrl: null,
     updatedAt: now,
     pseudo: generateUsername(),
   })

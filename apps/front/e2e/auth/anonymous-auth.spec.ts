@@ -24,6 +24,9 @@ test.describe("anonymous auth", () => {
     const userDoc = await refs[TABLES.USERS].doc(uid).get()
     expect(userDoc.exists).toBe(true)
     expect(userDoc.data()?.email).toBe(email.toLowerCase())
+    expect(userDoc.data()?.isAnonymousUser).toBe(false)
+    expect(userDoc.data()?.pseudo).toBeTruthy()
+    expect(userDoc.data()?.avatar).toBeTruthy()
   })
 
   test("anonymous user can not sign up with an already used email", async ({ page }) => {
