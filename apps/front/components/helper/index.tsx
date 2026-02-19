@@ -13,10 +13,24 @@ import { PAGES } from "@/constants/pages"
 
 const HIDE_PAGES:string[] = [PAGES.CAPTURE]
 
-export const HelperMenu = () => {
-  const pathname = usePathname()
+export const HelperMenuContent = () => {
+
   const { openModal: openGameSuggestion } = useModal(MODAL_KEYS.SUGGEST_GAME)
   const { openModal: openReportBug } = useModal(MODAL_KEYS.REPORT_BUG)
+
+  return (<DropdownMenuGroup>
+    <DropdownMenuLabel>Help</DropdownMenuLabel>
+    <DropdownMenuItem onClick={() => openGameSuggestion()}>
+      Suggest a game
+    </DropdownMenuItem>
+    <DropdownMenuItem onClick={() => openReportBug()}>
+      Report a bug
+    </DropdownMenuItem>
+  </DropdownMenuGroup>)
+}
+
+export const HelperMenu = () => {
+  const pathname = usePathname()
 
   const isAdmin = useAppSelector(selectIsAdmin)
 
@@ -33,18 +47,7 @@ export const HelperMenu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end" side="top">
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>Help</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => openGameSuggestion()}>
-            Suggest a game
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openReportBug()}>
-            Report a bug
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        {isAdmin && (
-          <LobbyDebug />
-        )}
+        <HelperMenuContent />
       </DropdownMenuContent>
     </DropdownMenu>
   )

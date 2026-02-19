@@ -66,7 +66,6 @@ export default function RootLayout({
                 <ModalProvider />
                 {children}
                 <Analytics />
-                <HelperMenu />
               </Suspense>
             </StoreProvider>
           </NuqsAdapter>

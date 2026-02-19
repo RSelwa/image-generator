@@ -50,6 +50,7 @@
   - [x] In demo test, test to write variable game name
   - [x] Merge the button play/play demo in the first screen
   - [x] Analytics
+  - [x] Remove sidebar from admin
   - [ ] Désactiver l'auto focus quand on est en mobile ?
   - [ ] reduce input size in mobile
   - [ ] Implémenter le buy me coffee

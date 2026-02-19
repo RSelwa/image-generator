@@ -3,7 +3,10 @@
 import {
   ChevronsUpDown,
   Gamepad2,
+  Globe2,
+  Image,
   LayoutDashboard,
+  Lightbulb,
   LogOut,
   Sprout,
   User,
@@ -18,17 +21,23 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { PAGES } from "@/constants/pages"
 import { useLogoutMutation } from "@/redux/api/auth"
-import { selectHasRightToDashBoard, selectUser } from "@/redux/session/session.selectors"
+import { selectHasRightToDashBoard, selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { firstLetter } from "@/utils"
+import { HelperMenuContent } from "@/components/helper"
+import { LobbyDebug } from "@/components/lobby/lobby-debug"
 
 export const NavUser = () => {
   const user = useAppSelector(selectUser)
   const hasRights = useAppSelector(selectHasRightToDashBoard)
+  const isAdmin = useAppSelector(selectIsAdmin)
 
   const [logout] = useLogoutMutation()
 
@@ -69,34 +78,70 @@ export const NavUser = () => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          {hasRights && (
+        {isAdmin &&
+          <>
+          <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Admin</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+              <DropdownMenuItem asChild>
+                <Link href={PAGES.ADMIN_USERS} className="cursor-pointer">
+                  <User />
+                  Users
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={PAGES.ADMIN_GAMES} className="cursor-pointer">
+                  <Gamepad2 />
+                  Games
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={PAGES.ADMIN_SPHERICAL} className="cursor-pointer">
+                  <Globe2 />
+                  Sphericals
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={PAGES.ADMIN_FLATS} className="cursor-pointer">
+                  <Image />
+                  Flats
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={PAGES.ADMIN_SUGGESTIONS} className="cursor-pointer">
+                  <Lightbulb />
+                  Suggestions
+                </Link>
+              </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={PAGES.ADMIN} className="cursor-pointer">
-                <LayoutDashboard />
-                Dashboard
+              <Link href={PAGES.SEED_MAKER} className="cursor-pointer">
+                <Gamepad2 />
+                Make a round
               </Link>
             </DropdownMenuItem>
-          )}
+            <DropdownMenuItem asChild>
+              <Link href={PAGES.MY_SEEDS} className="cursor-pointer">
+                <Sprout />
+                My Seeds
+              </Link>
+            </DropdownMenuItem>
+            </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <LobbyDebug />
+            <DropdownMenuSeparator />
+          </>
+        }
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Account</DropdownMenuLabel>
           <DropdownMenuItem asChild>
             <Link href={PAGES.ACCOUNT} className="cursor-pointer">
               <User />
               Account
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={PAGES.SEED_MAKER} className="cursor-pointer">
-              <Gamepad2 />
-              Make a round
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={PAGES.MY_SEEDS} className="cursor-pointer">
-              <Sprout />
-              My Seeds
-            </Link>
-          </DropdownMenuItem>
         </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <HelperMenuContent />
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => logout()}>
           <LogOut />
