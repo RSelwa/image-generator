@@ -60,7 +60,7 @@ test.describe("lobby Waiting", () => {
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
       await expect(page.getByText("Config")).toBeVisible()
-      await expect(page.getByRole("button", { name: "Start Lobby" })).toBeVisible()
+      await expect(page.getByTestId("start-lobby-button-solo")).toBeVisible()
     })
 
     test("can modify a lobby config if host", async ({ page }) => {
@@ -101,7 +101,7 @@ test.describe("lobby Waiting", () => {
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
 
-      const startButton = page.getByRole("button", { name: "Start Lobby" })
+      const startButton = page.getByTestId("start-lobby-button")
       await expect(startButton).toBeEnabled()
     })
 
@@ -124,7 +124,7 @@ test.describe("lobby Waiting", () => {
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
 
-      const startButton = page.getByRole("button", { name: "Start Lobby" })
+      const startButton = page.getByTestId("start-lobby-button")
       await expect(startButton).toBeDisabled()
     })
 

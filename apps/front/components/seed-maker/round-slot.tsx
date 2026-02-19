@@ -104,7 +104,7 @@ const RoundSlot = memo(({
         )}
 
         <Button
-          variant={isSpecial ? "default" : "outline"}
+          variant={isSpecial ? "marathon" : "marathon-outline"}
           size="sm"
           className="h-7 text-xs px-2"
           onClick={onToggleSpecial}

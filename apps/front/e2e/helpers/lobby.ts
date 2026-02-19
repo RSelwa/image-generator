@@ -57,6 +57,10 @@ export const createLobbyViaUI = async (page: Page) => {
   return lobbyId
 }
 
+export const startSoloLobbyViaUI = async (page: Page) => {
+  await page.getByTestId("start-lobby-button-solo").click()
+}
+
 export const getReadyViaUI = async (page: Page) => {
   await page.getByTestId("ready-button").click()
   await expect(page.getByTestId("ready-button")).toHaveText("Cancel ready")

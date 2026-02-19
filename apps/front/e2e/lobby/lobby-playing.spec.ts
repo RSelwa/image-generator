@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { SELECTORS } from "@/constants/testing"
-import { createLobbyViaUI, getReadyViaUI, loginViaUI, retrieveGamesFromLobby, setupUser, startLobbyViaUI, waitForInputToBeVisible, waitToBeLogged } from "@/e2e/helpers/lobby"
+import { createLobbyViaUI, loginViaUI, retrieveGamesFromLobby, setupUser, startLobbyViaUI, startSoloLobbyViaUI, waitForInputToBeVisible, waitToBeLogged } from "@/e2e/helpers/lobby"
 
 test.describe("lobby playing", () => {
   test.describe("when is display game", () => {
@@ -35,9 +35,7 @@ test.describe("lobby playing", () => {
     await specialRoundsSwitch.click()
     await expect(specialRoundsSwitch).toBeChecked()
 
-    await getReadyViaUI(page)
-
-    await startLobbyViaUI(page)
+    await startSoloLobbyViaUI(page)
 
     await waitForInputToBeVisible(page)
 

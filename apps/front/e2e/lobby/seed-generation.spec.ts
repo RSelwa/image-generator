@@ -9,6 +9,7 @@ import {
   loginViaUI,
   setupUser,
   startLobbyViaUI,
+  startSoloLobbyViaUI,
 } from "../helpers/lobby"
 
 test.describe("Test seed generation", () => {
@@ -38,9 +39,7 @@ test.describe("Test seed generation", () => {
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
 
-      await getReadyViaUI(page)
-
-      await startLobbyViaUI(page)
+      await startSoloLobbyViaUI(page)
 
       await page.waitForTimeout(5000)
 
@@ -81,9 +80,7 @@ test.describe("Test seed generation", () => {
       await loginViaUI(page, host.email)
       await page.goto(`/lobby/${lobby.id}`)
 
-      await getReadyViaUI(page)
-
-      await startLobbyViaUI(page)
+      await startSoloLobbyViaUI(page)
 
       await page.waitForTimeout(7000)
 

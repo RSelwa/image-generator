@@ -61,6 +61,7 @@ const LobbyWaiting = () => {
   const hasLobbySeed = Boolean(lobby.seedId)
   const areAllPlayersReady = lobby.players.every((p) => p.isReady)
   const isMeReady = lobby.players.find((p) => p.uid === userId)?.isReady
+  const isOnlyPlayer = lobby.players.length === 1
 
   const changeConfig = (newConfig: Partial<LobbyDoc["config"]>) => {
     if (!isOwner) {
@@ -99,7 +100,7 @@ const LobbyWaiting = () => {
 
   return (
     <main className="min-h-full-height w-3/4 mx-auto space-y-8">
-      <section className="w-full flex flex-col border border-dashed items-center gap-4 p-6 rounded-xl text-muted-primary-foreground">
+      <section className="w-full flex flex-col border border-dashed items-center gap-4 p-6  text-muted-primary-foreground">
         <p className="text-lg ">Players in lobby: {lobby.players.length}/{lobby.config.maxPlayers}</p>
         <LobbyAvatars />
         <p>
@@ -111,7 +112,7 @@ const LobbyWaiting = () => {
         </p>
       </section>
       <section className="grid grid-cols-2 gap-8">
-        <article className="w-full flex flex-col border border-dashed items-center gap-4 p-6 rounded-xl">
+        <article className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
           <h2 className="mb-8">Config</h2>
           <div className="flex flex-col items-center gap-4">
             <Separator orientation="horizontal" />
@@ -180,7 +181,6 @@ const LobbyWaiting = () => {
               </Select>
             </Field>
             <Separator orientation="horizontal" />
-
             <Field orientation="horizontal" className="justify-between">
               <FieldDescription>
                 Round duration:
@@ -228,7 +228,7 @@ const LobbyWaiting = () => {
             </Field>
           </div>
         </article>
-        <article className="w-full flex flex-col border border-dashed items-center gap-4 p-6 rounded-xl">
+        <article className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
           <h2 className="mb-8">Seed</h2>
           <form autoComplete="off" onSubmit={handleSubmit(onSubmitSeed)}>
             <InputGroup>
@@ -266,38 +266,52 @@ const LobbyWaiting = () => {
         </article>
       </section>
 
-      <section className="w-full flex justify-center border border-dashed items-center gap-4 p-6 rounded-xl">
-        <Button variant="secondary" onClick={copyUrl}>
+      <section className="w-full flex justify-center border border-dashed items-center gap-4 p-6 ">
+        <Button variant="marathon-white" onClick={copyUrl}>
           Join this lobby: {lobby.code} <ArrowUpRightFromSquareIcon className="size-4" />
         </Button>
 
-        <Button
-          data-testid="ready-button"
-          variant={isMeReady ? "outline" : "default"}
-          onClick={() => updatePlayerReady({
-            lobbyId,
-            playerId: userId,
-            isReady: !isMeReady
-          })}
-        >
-          {isMeReady ? "Cancel ready" : "I'm ready"}
-        </Button>
-        <HoverCard>
-          <HoverCardTrigger>
+        {isOnlyPlayer && <Button
+          data-testid="start-lobby-button-solo"
+          onClick={async () => {
+            updatePlayerReady({
+              lobbyId,
+              playerId: userId,
+              isReady: !isMeReady
+            })
+            await startLobby({ lobbyId })
+          }}>Play!</Button>}
+        {!isOnlyPlayer &&
+          <>
             <Button
-              data-testid="start-lobby-button"
-              variant={areAllPlayersReady ? "default" : "outline"}
-              disabled={disabled || !areAllPlayersReady}
-              onClick={() => startLobby({ lobbyId })}
+              data-testid="ready-button"
+              variant={isMeReady ? "marathon-outline" : "marathon"}
+              onClick={() => updatePlayerReady({
+                lobbyId,
+                playerId: userId,
+                isReady: !isMeReady
+              })}
             >
-              Start Lobby
+              {isMeReady ? "Cancel ready" : "I'm ready"}
             </Button>
-          </HoverCardTrigger>
-          <HoverCardContent className="text-foreground bg-primary/50 text-center">
-            Only the host can start the lobby
-          </HoverCardContent>
+            <HoverCard>
+              <HoverCardTrigger>
+                <Button
+                  data-testid="start-lobby-button"
+                  variant={areAllPlayersReady ? "marathon" : "marathon-outline"}
+                  disabled={disabled || !areAllPlayersReady}
+                  onClick={async () => await startLobby({ lobbyId })}
+                >
+                  Start Lobby
+                </Button>
+              </HoverCardTrigger>
+              <HoverCardContent className="text-foreground bg-primary/50 text-center">
+                Only the host can start the lobby
+              </HoverCardContent>
 
-        </HoverCard>
+            </HoverCard>
+          </>
+        }
       </section>
 
     </main>

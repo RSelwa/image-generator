@@ -50,6 +50,12 @@
   - [x] In demo test, test to write variable game name
   - [x] Merge the button play/play demo in the first screen
   - [x] Analytics
+  - [ ] Désactiver l'auto focus quand on est en mobile ?
+  - [ ] reduce input size in mobile
+  - [ ] Implémenter le buy me coffee
+  - [ ] Pour les avatar, reprendre le design des cartes du fan made marathon, c'est un gars du groupe twitter
+  - [ ] Utiliser driver js pour présenter le lobby et/ou les trucs des rounds spéciaux 
+  - [ ] Scrap lostgamer for the images of the maps
   - [ ] Fix DEFAULT map distance
   - [ ] When solo in a lobby, Should have only one button that will set ready and start the game
   - [ ] Fix starting screen when game is Loading, maybe add a tutorial here
