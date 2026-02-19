@@ -16,9 +16,20 @@ await Promise.all(
 
       return
     }
+
     if (!mapData.maxDistancePoints) {
       await subRefs[TABLES.MAPS](mapData.gameId).doc(map.id).update({
         maxDistancePoints: DEFAULT_MAX_DISTANCE_POINTS,
+      })
+
+      console.info(`Updated map ${map.id} with maxDistancePoints`)
+
+      return 
+    }
+
+    if(mapData.maxDistancePoints <= 30) {
+      await subRefs[TABLES.MAPS](mapData.gameId).doc(map.id).update({
+        maxDistancePoints: mapData.maxDistancePoints + 20,
       })
 
       console.info(`Updated map ${map.id} with maxDistancePoints`)

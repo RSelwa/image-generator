@@ -51,14 +51,15 @@
   - [x] Merge the button play/play demo in the first screen
   - [x] Analytics
   - [x] Remove sidebar from admin
+  - [x] Fix DEFAULT map distance
+  - [x] When solo in a lobby, Should have only one button that will set ready and start the game
   - [ ] Désactiver l'auto focus quand on est en mobile ?
+  - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
   - [ ] reduce input size in mobile
   - [ ] Implémenter le buy me coffee
   - [ ] Pour les avatar, reprendre le design des cartes du fan made marathon, c'est un gars du groupe twitter
   - [ ] Utiliser driver js pour présenter le lobby et/ou les trucs des rounds spéciaux 
   - [ ] Scrap lostgamer for the images of the maps
-  - [ ] Fix DEFAULT map distance
-  - [ ] When solo in a lobby, Should have only one button that will set ready and start the game
   - [ ] Fix starting screen when game is Loading, maybe add a tutorial here
   - [ ] ajouter des bouttons back to lobby / new game, when in finished screen
   - [ ] Add sound

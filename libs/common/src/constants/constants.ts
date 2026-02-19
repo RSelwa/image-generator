@@ -19,7 +19,7 @@ export const MAX_PLAYERS = 8
 export const DEFAULT_TIME_PER_ROUND = 60 // seconds
 export const SPECIAL_ROUND_OPTIONS_COUNT = 4 // seconds
 export const DEFAULT_LIVES = 3
-export const DEFAULT_MAX_DISTANCE_POINTS = 30 // percentage of max distance
+export const DEFAULT_MAX_DISTANCE_POINTS = 50 // percentage of max distance - Old value : 30
 export const DEFAULT_HAS_SPECIAL_ROUNDS = false
 
 export const PREFIX_ANONYMOUS_USER = "anon_"
