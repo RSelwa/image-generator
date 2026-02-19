@@ -9,14 +9,13 @@ import { useExcludePlayerMutation, useSubscribeLobbyQuery } from "@/redux/api/lo
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { firstLetter, getLobbyIdFromPathname } from "@/utils"
+import { getAvatarUrl } from "@/utils/file"
 
-const AvatarPlayer = ({ p, isOwner}: { p: Player, isOwner?: boolean }) => (
+const AvatarPlayer = ({ p, isOwner, isOnlyPlayer}: { p: Player, isOwner?: boolean, isOnlyPlayer?:boolean }) => (
   <Avatar>
-    <AvatarImage src={p.avatar} />
+    <AvatarImage data-ready={p.isReady || isOnlyPlayer} className="data-[ready=true]:bg-primary  data-[ready=false]:bg-destructive" src={getAvatarUrl(p.avatar)} />
     <AvatarFallback className="font-bold">{firstLetter(p.name)}</AvatarFallback>
-    {isOwner && <Crown className="absolute fill-primary-foreground -top-4 left-1/2 -translate-x-1/2 stroke-0" size={16} />}
-    {!p.isReady && <AvatarBadge className="bg-amber-600 dark:bg-amber-800" />}
-    {p.isReady && <AvatarBadge className="bg-green-600 dark:bg-green-800" />}
+    {isOwner && <Crown className="absolute fill-primary -top-4 left-1/2 -translate-x-1/2 stroke-0" size={16} />}
   </Avatar>
 )
 
@@ -34,6 +33,7 @@ export const LobbyAvatars = () => {
   if (!lobby) return null
 
   const isOwner = lobby.hostId === user?.id
+  const isOnlyPlayer = lobby.players?.length === 1
 
   const handleExcludePlayer = async (playerId: string) => {
     await excludeUser({ lobbyId, playerId })
@@ -60,7 +60,7 @@ export const LobbyAvatars = () => {
           <Fragment key={player.uid}>
             <ContextMenu>
               <ContextMenuTrigger disabled={!isOwner}>
-                <AvatarPlayer p={player} isOwner={isPlayerOwner} />
+                <AvatarPlayer p={player} isOwner={isPlayerOwner} isOnlyPlayer={isOnlyPlayer} />
               </ContextMenuTrigger>
               <ContextMenuContent>
                 <ContextMenuItem disabled={isPlayerOwner} onClick={() => handleExcludePlayer(player.uid)}>

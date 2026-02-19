@@ -11,6 +11,8 @@ import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 
+
+
 const GameInputGuess = () => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
@@ -70,7 +72,7 @@ const GameInputGuess = () => {
               <div
                 key={i}
                 data-is-filled={i < livesRemaining}
-                className="size-6 transition-colors data-[is-filled=false]:shadow-glow-xs data-[is-filled=false]:shadow-red-600/70 data-[is-filled=true]:bg-neutral-50 border border-secondary data-[is-filled=false]:bg-red-500/30"
+                className="size-6 transition-colors data-[is-filled=false]:shadow-glow-xs data-[is-filled=false]:shadow-destructive/70 data-[is-filled=true]:bg-primary data-[is-filled=true]:shadow-primary/70 border border-secondary data-[is-filled=false]:bg-destructive/30"
               />
             ))
           }

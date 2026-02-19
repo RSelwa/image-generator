@@ -9,8 +9,9 @@ import { PAGES } from "@/constants/pages"
 import { useCreateAndJoinLobbyMutation, useCreateDemoLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAnonymous, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import { ReactNode } from "react"
 
-const CreateLobbyButton = () => {
+const CreateLobbyButton = ({children}: {children?: ReactNode}) => {
   const router = useRouter()
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
@@ -31,7 +32,7 @@ const CreateLobbyButton = () => {
 
   return (
     <Button data-testid={user.isAnonymous ? "create-lobby-button-demo" : "create-lobby-button"} onClick={handleCreateLobby} disabled={isLoading}>
-      Play now!
+      {children||"Play now!"}
       {" "}
       {isLoading && <Loader className="size-4" />}
     </Button>

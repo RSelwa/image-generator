@@ -28,8 +28,8 @@ const Timer = () => {
   const { timeRemaining } = useCountdown(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
 
   return (
-    <span className="absolute z-10 top-4 left-1/2 -translate-x-1/2 font-bold text-white drop-shadow-2xl text-center text-6xl">
-      {timeRemaining}
+    <span className="absolute z-10 bg-background font-fraktion-mono px-4 py-1 text-primary top-4 left-1/2 -translate-x-1/2 font-bold drop-shadow-2xl text-center text-6xl">
+      {timeRemaining<10&& 0}{timeRemaining}
     </span>
   )
 }

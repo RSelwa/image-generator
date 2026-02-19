@@ -55,49 +55,53 @@
   --font-shapiro: var(--font-shapiro), sans-serif;
   --inset-shadow-marathon: inset 0 0px 0px 1px var(--primary);
   --inset-shadow-marathon-white: inset 0 0px 0px 1px var(--foreground);
-  --shadow-glow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25); 
-  --shadow-glow-xs: 0px 0px 10px 5px rgba(0, 0, 0, 0.25); 
+  --shadow-glow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25);
+  --shadow-glow-xs: 0px 0px 10px 5px rgba(0, 0, 0, 0.25);
   --admin-header-height: 60px;
   --header-height: 60px;
   --footer-height: 0px;
   /* --header-height: 76px; */
   /* --footer-height: 85px; */
   --spacing-full-height-admin: calc(100svh - var(--admin-header-height));
-  --spacing-full-height: calc(
-    100svh -
-    var(--header-height) -
-    var(--footer-height)
-  );
+  --spacing-full-height: calc(100svh - var(--header-height) - var(--footer-height));
 
   @keyframes loadingColors {
+
     0%,
     12.4% {
       fill: var(--color-gray-200);
     }
+
     12.5%,
     24.9% {
       fill: var(--color-gray-300);
     }
+
     25%,
     37.4% {
       fill: var(--color-gray-400);
     }
+
     37.5%,
     49.9% {
       fill: var(--color-gray-500);
     }
+
     50%,
     62.4% {
       fill: var(--color-gray-600);
     }
+
     62.5%,
     74.9% {
       fill: var(--color-gray-700);
     }
+
     75%,
     87.4% {
       fill: var(--color-gray-800);
     }
+
     87.5%,
     99.9% {
       fill: var(--color-gray-900);
@@ -108,6 +112,7 @@
     0% {
       transform: translate(0, 100%);
     }
+
     100% {
       transform: translate(0, 0);
     }
@@ -186,14 +191,14 @@
   --sidebar-ring: oklch(0.38 0.189 293.745);
 }
 
-[data-marathon]{
+[data-marathon] {
   --background: oklch(0 0 0);
   --foreground: oklch(1 0 0);
   --primary: oklch(0.9209 0.2325 125.54);
   --primary-foreground: oklch(0 0 0);
   --ring: oklch(0.95 0.1994 117.42);
-  --blue-accent:oklch(0.4426 0.306677 264.052);
-  --blue-accent-foreground:oklch(0.4426 0.306677 264.052);
+  --blue-accent: oklch(0.4426 0.306677 264.052);
+  --blue-accent-foreground: oklch(0.4426 0.306677 264.052);
 
 }
 
@@ -201,11 +206,12 @@
   * {
     @apply border-border outline-ring/50 box-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 
-  .psv-navbar{
+  .psv-navbar {
     @apply h-0!;
   }
 
@@ -217,41 +223,82 @@
     @apply hidden!;
   }
 
-    ::-webkit-scrollbar {
-      @apply w-2.5 h-2.5;
-  
-    }
-  
-    ::-webkit-scrollbar-track {
-      @apply bg-transparent
-    }
-  
-    ::-webkit-scrollbar-thumb {
-      @apply rounded-full bg-transparent border-0 bg-clip-padding;
-    }
+  ::selection {
+    @apply bg-blue-accent;
+  }
 
-    *:hover > ::-webkit-scrollbar-thumb,
-    ::-webkit-scrollbar-thumb:hover,
-    ::-webkit-scrollbar-thumb:active {
-      @apply bg-border;
-    }
-         .scrollbar::-webkit-scrollbar {
-           width: 20px;
-           height: 20px;
-         }
-    
-         .scrollbar::-webkit-scrollbar-track {
-           border-radius: 100vh;
-           background: #f7f4ed;
-         }
-    
-         .scrollbar::-webkit-scrollbar-thumb {
-           background: #e0cbcb;
-           border-radius: 100vh;
-           border: 3px solid #f6f7ed;
-         }
-    
-         .scrollbar::-webkit-scrollbar-thumb:hover {
-           background: #c0a0b9;
-         }
+  ::-webkit-scrollbar {
+    @apply w-2.5 h-2.5;
+
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-transparent border-0 bg-clip-padding;
+  }
+
+  *:hover> ::-webkit-scrollbar-thumb,
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active {
+    @apply bg-border;
+  }
+
+  .scrollbar::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #f7f4ed;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #e0cbcb;
+    border-radius: 100vh;
+    border: 3px solid #f6f7ed;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #c0a0b9;
+  }
+
+}
+
+@layer utilities {
+/* Class assigned to popover wrapper */
+.driver-popover {
+  @apply bg-primary! rounded-none!;
+}
+
+/* Arrow pointing towards the highlighted element */
+.driver-popover-arrow {
+  @apply border-t-transparent border-l-transparent border-r-transparent border-b-primary!;
+}
+
+/* Title and description */
+.driver-popover-title {
+  @apply text-lg font-bold text-primary-foreground font-interference!
+}
+
+.driver-popover-description {
+  @apply text-primary-foreground/80 font-mono!
+}
+
+/* Close button displayed on the top right corner */
+.driver-popover-close-btn {
+  @apply text-primary-foreground/80 hover:text-primary-foreground;
+}
+
+/* Footer of the popover displaying progress and navigation buttons */
+.driver-popover-footer {}
+
+.driver-popover-progress-text {}
+
+.driver-popover-prev-btn, .driver-popover-next-btn {
+  @apply bg-background! text-primary! border-none! text-shadow-none!
+}
 }

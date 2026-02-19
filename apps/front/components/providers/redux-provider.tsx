@@ -3,12 +3,13 @@
 import { type ReactNode, useEffect, useMemo } from "react"
 import { Provider } from "react-redux"
 import { makeStore } from "@/redux/store"
+import { IS_PLAYWRIGHT_EMULATOR } from "@/constants/mapping"
 
 const StoreProvider = ({ children }: { children: ReactNode }) => {
   const store = useMemo(() => makeStore(), [])
   const dispatch = store.dispatch
 
-  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_EMULATOR) {
+  if (typeof window !== "undefined" && IS_PLAYWRIGHT_EMULATOR) {
     ;(window as any).__store__ = store
   }
 

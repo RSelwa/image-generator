@@ -18,15 +18,15 @@ export const RoundInfos = () => {
   const player = useAppSelector(selectPlayerMyself(lobbyId))
 
   return (
-    <div className="absolute z-10 top-4 right-8 flex flex-col items-end pr-8 text-foreground text-shadow-primary text-shadow">
+    <div className="absolute font-fraktion-mono z-10 top-4 right-8 flex flex-col items-end pr-8 text-foreground text-shadow-primary text-shadow">
       <p>
-        Stage: {currentRoundData?.stage}
+        Stage: <span className="text-xl text-primary font-bold">{currentRoundData?.stage}</span>
       </p>
       <p>
-        Level: {lobby?.currentRound}/{config?.numberOfRounds}
+        Level: <span className="text-xl text-primary font-bold">{lobby?.currentRound}/{config?.numberOfRounds}</span>
       </p>
       <p>
-        Your score: {player?.score} pts
+        Your score: <span className="text-xl text-primary font-bold">{player?.score} pts</span>
       </p>
     </div>
   )

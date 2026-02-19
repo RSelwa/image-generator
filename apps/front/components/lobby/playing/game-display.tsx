@@ -15,6 +15,7 @@ import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRou
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
+import LoadingGameData from "@/components/lobby/playing/loading-game-data"
 
 const NextRoundButton = () => {
   const pathname = usePathname()
@@ -65,11 +66,11 @@ const Rounds = ({ currentRound, numberOfRounds }: { currentRound: number, number
         <div
           data-is-active={i + 1 === currentRound}
           data-is-completed={i + 1 < (currentRound)}
-          className="size-6 flex items-center justify-center data-[is-completed=true]:bg-white data-[is-completed=true]:text-neutral-900 text-white bg-transparent data-[is-active=true]:bg-white data-[is-active=true]:text-neutral-900 data-[is-active=true]:shadow-glow data-[is-active=true]:shadow-sky-600/50"
+          className="size-6 flex items-center justify-center data-[is-completed=true]:bg-primary data-[is-completed=true]:text-primary-foreground text-primary bg-transparent data-[is-active=true]:bg-primary data-[is-active=true]:text-primary-foreground data-[is-active=true]:shadow-glow data-[is-active=true]:shadow-primary/50"
         >
           {i + 1}
         </div>
-        <Separator orientation="vertical" className="h-4 w-px bg-white" />
+        <Separator orientation="vertical" className="h-4 w-px bg-primary" />
       </Fragment>
 
     ))}
@@ -218,7 +219,7 @@ export const DisplayGame = () => {
     })
   }, [currentAnswer?.isReadyForNextRound])
 
-  if (!currentRoundData) return <div className="min-h-full-height">Loading round data...</div>
+  if (!currentRoundData) return <LoadingGameData />
 
   return (
     <section className="h-full-height absolute z-10 bg-background/90 w-full">

@@ -1,14 +1,33 @@
 import { usePathname } from "next/navigation"
 import * as React from "react"
-import { getLobbyIdFromPathname } from "@/utils"
+import { cn, getLobbyIdFromPathname } from "@/utils"
+import { ASSET_URLS } from "@/constants/mapping"
+import Image from "next/image"
+import { Progress } from "@/components/ui/progress"
+import { useEffect, useState } from "react"
 
 const LobbyStarting = () => {
-  const pathname = usePathname()
-  const _ = getLobbyIdFromPathname(pathname)
+  const [progress, setProgress] = useState(0)
+
+useEffect(() => {
+  let current = 0
+
+  const interval = setInterval(() => {
+    current += 2
+    setProgress(current)
+    if (current >= 100) clearInterval(interval)
+  }, 110)
+
+  return () => clearInterval(interval)
+}, [])
+
 
   return (
-    <main className="min-h-full-height flex items-center justify-center">
-      <p className="text-lg text-muted-primary-foreground">Game in progress...</p>
+    <main className={cn("min-h-full-height relative flex items-center justify-center",`bg-[url(${ASSET_URLS.CREATOR_BACKGROUND})] bg-repeat bg-center bg-size-[25%]`)}>
+      
+      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute top-0 left-0 z-0 rotate-180"/>
+      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0"/>
+      <Progress className="w-1/2 h-15 z-10" value={progress} />
     </main>
   )
 }

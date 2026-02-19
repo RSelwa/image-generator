@@ -13,6 +13,7 @@ import { useListenRoundAnswerQuery, useSubscribeLobbyQuery } from "@/redux/api/l
 import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectHasSelectedOption, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining } from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
+import LoadingGameData from "@/components/lobby/playing/loading-game-data"
 
 const LobbyPlaying = () => {
   const pathname = usePathname()
@@ -50,7 +51,7 @@ const LobbyPlaying = () => {
 
   if (isLobbyLoading || !lobby) return <div>Loading...</div>
 
-  if (!currentRoundData) return <div className="min-h-full-height">Loading round data...</div>
+  if (!currentRoundData) return <LoadingGameData />
 
   return (
     <main className="min-h-full-height relative">

@@ -1,5 +1,7 @@
 import { AVATARS_KEYS, DIFFICULTIES, DOCUMENTS_STATUS, SUGGESTIONS_TYPE } from "@repo/common"
 
+export const IS_PLAYWRIGHT_EMULATOR = process.env.NEXT_PUBLIC_EMULATOR
+
 export const SESSION_STATUS = {
   LOADING: "loading",
   SUCCESS: "success",
@@ -87,6 +89,8 @@ export const FIREBASE_ERRORS = {
 
 export const ASSET_URLS = {
   STRIP_ICONS: "/assets/left-icons.png",
+  CREATOR_BACKGROUND: "/creator-background.svg",
+  BOTTOM_GB:"/gb-br.png",
 } as const
 
 export const AVATARS_URLS = {
@@ -101,4 +105,8 @@ export const AVATARS_URLS = {
 
 export const AVATARS_BACKGROUND_URLS = {
   PERIMETER: "/avatar_background/map_perimeter_overflow-Ck2U4HJE.jpg",
+} as const
+
+export const STORAGE_KEYS = {
+  DRIVER_WAITING_ROOM: "driver_waiting_room",
 } as const

@@ -10,6 +10,7 @@ import { Timestamp } from "firebase-admin/firestore"
 import { SELECTORS } from "@/constants/testing"
 import { createPlayerFromSessionUser } from "@/utils/player"
 import { getAvatarUrl } from "@/utils/file"
+import { STORAGE_KEYS } from "@/constants/mapping"
 
 export const PASSWORD = "cacayolo"
 
@@ -49,6 +50,7 @@ export const waitToBeLogged = async (page: Page) => {
 }
 
 export const createLobbyViaUI = async (page: Page) => {
+  await hideDriverTutorial(page)
   await page.getByTestId("create-lobby-button").click()
 
   await page.waitForURL(/\/lobby\//)
@@ -157,3 +159,8 @@ export const waitForAnonymousAuth = async (page: Page) => {
 
   return anonymousUid || ""
 }
+
+export const hideDriverTutorial = async (page: Page) => 
+  await page.evaluate(() => {
+    localStorage.setItem(STORAGE_KEYS.DRIVER_WAITING_ROOM, "true")
+  })
