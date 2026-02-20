@@ -10,6 +10,8 @@ import { selectCurrentRoundData, selectCurrentRoundIndex, selectLobbyConfig, sel
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import { useGetAllGamesNamesQuery } from "@/redux/api/games"
 
 
 
@@ -21,6 +23,8 @@ const GameInputGuess = () => {
 
   const [submitRoundAnswer] = useSubmitRoundAnswerMutation()
   const [incrementLivesUsed] = useIncrementPlayerLivesUsedMutation()
+
+const {data: allGamesNames} = useGetAllGamesNamesQuery()
 
   const user = useAppSelector(selectUser)
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
@@ -78,6 +82,27 @@ const GameInputGuess = () => {
           }
         </div>
       )}
+      {/* <Combobox>
+        <ComboboxInput
+          data-testid="game-input-guess"
+          name="input"
+          type="text"
+          placeholder="Your answer"
+          autoFocus
+          className="bg-background/50! text-2xl! font-bold placeholder:text-foreground/70 text-foreground min-w-96 py-6"
+        />
+        <ComboboxContent>
+          <ComboboxEmpty>No items found.</ComboboxEmpty>
+          <ComboboxList>
+            {allGamesNames?.map((game) => (
+              <ComboboxItem key={game.id} value={game.title}>
+                {game.title}
+              </ComboboxItem>
+
+            ))}
+          </ComboboxList>
+          </ComboboxContent>
+      </Combobox> */}
       <Input
         data-testid="game-input-guess"
         name="input"

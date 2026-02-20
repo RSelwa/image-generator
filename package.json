@@ -33,6 +33,11 @@
     "build:create-user-document": "turbo run build --filter=@repo/create-user-document",
     "build:listen-docs": "turbo run build --filter=@repo/listen-docs"
   },
+  "pnpm": {
+    "overrides": {
+      "reselect": "5.1.0"
+    }
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^7.2.0",
     "@clack/prompts": "^0.11.0",

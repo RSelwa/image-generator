@@ -1,6 +1,6 @@
 import { METADATA_DOCS, TABLES } from "@repo/common"
-import { type DocumentMapping, type Table } from "@repo/schemas"
-import { collection, collectionGroup, type CollectionReference, doc } from "firebase/firestore"
+import { GamesListDoc, type DocumentMapping, type Table } from "@repo/schemas"
+import { collection, collectionGroup, type CollectionReference, doc, DocumentReference } from "firebase/firestore"
 import { db } from "@/constants/db"
 
 export type CustomCollectionRef<T extends Table> = CollectionReference<
@@ -97,4 +97,7 @@ export const getRoundAnswerRef = (lobbyId: string, roundAnswerId: string) =>
   doc(TABLES_SUB_REFS[TABLES.ROUND_ANSWERS](lobbyId), roundAnswerId)
 
 export const getGamesListRef = () =>
+  doc(TABLE_REFS[TABLES.METADATA], METADATA_DOCS.GAMES_LIST)
+
+export const getMetadataGameListRef = (): DocumentReference<GamesListDoc, GamesListDoc> =>
   doc(TABLE_REFS[TABLES.METADATA], METADATA_DOCS.GAMES_LIST)

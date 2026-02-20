@@ -7,6 +7,7 @@ import {
   gameDocWithIdSchema,
   type GameEntity,
   gameEntitySchema,
+  GamesListDoc,
   type MapDocWithId,
   mapDocWithIdSchema,
   type SphericalDocWithId,
@@ -34,7 +35,7 @@ import { toast } from "sonner"
 // Need to use the React-specific entry point to import createApi
 import { DEFAULT_SIZE_GAMES } from "@/constants/api"
 import { db } from "@/constants/db"
-import { getGameRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
+import { getGameRef, getMetadataGameListRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
 export const gameApi = createApi({
@@ -467,6 +468,31 @@ export const gameApi = createApi({
         { type: "GameSphericals", id },
       ],
     }),
+    getAllGamesNames: builder.query<GamesListDoc["games"], void>({
+      queryFn: async () => {
+        try {
+          const snapshot = await getDoc(getMetadataGameListRef()
+          )
+
+         if(!snapshot.exists()) {
+          throw new Error("Games list not found")
+         }
+
+         const data = snapshot.data()
+
+         if(!data || !data.games) {
+          throw new Error("Games list data is invalid")
+         }
+
+
+          return { data: data.games }
+        } catch (error) {
+          console.error("Error fetching games:", error)
+
+          return {
+            error: globalErrorHandler(error), 
+      }}}
+    })
   }),
 })
 
@@ -482,4 +508,5 @@ export const {
   useUpdateGameByIdMutation,
   useDeleteGameByIdMutation,
   useGetAllGamesQuery,
+  useGetAllGamesNamesQuery
 } = gameApi
