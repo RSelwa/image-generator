@@ -101,3 +101,16 @@ jobs:
           name: playwright-report-${{ matrix.suite }}
           path: apps/front/playwright-report/
           retention-days: 30
+
+  e2e-complete:
+    needs: e2e
+    runs-on: ubuntu-latest
+    name: ✅ E2E Tests Complete
+    if: ${{ !cancelled() }}
+    steps:
+      - name: ✅ All E2E tests passed
+        if: ${{ needs.e2e.result == 'success' }}
+        run: echo "All E2E tests passed"
+      - name: ❌ Some E2E tests failed
+        if: ${{ needs.e2e.result != 'success' }}
+        run: exit 1

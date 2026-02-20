@@ -7,7 +7,7 @@ import { useGetNumberGameFoundByPlayerQuery, useSubscribeLobbyQuery } from "@/re
 import { selectLobbyConfig, selectPlayerMyself } from "@/redux/lobby/lobby.selectors"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { cn, getLobbyIdFromPathname } from "@/utils"
+import { getLobbyIdFromPathname } from "@/utils"
 import { LogoWithIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import CreateLobbyButton from "@/components/home-create-lobby"
@@ -33,7 +33,7 @@ const LobbyFinished = () => {
   const percentageValueGamesFound = numberGameFound && config ? (numberGameFound.numberGameFound / config.numberOfRounds) * 100 : 0
 
   return (
-    <main data-testid="lobby-finished" className={cn("min-h-full-height flex items-center justify-center bg-background text-foreground", `bg-[url(${ASSET_URLS.CREATOR_BACKGROUND})] bg-repeat bg-center bg-size-[25%]`)}>
+    <main data-testid="lobby-finished" className="min-h-full-height flex items-center justify-center bg-background text-foreground bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
       <section className="w-1/2 flex flex-col items-center justify-center gap-8 bg-background/80">
         <LogoWithIcon className="text-primary h-52 mb-20" />
         <Field className="w-full max-w-sm">

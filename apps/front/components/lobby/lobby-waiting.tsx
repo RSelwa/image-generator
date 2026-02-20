@@ -21,7 +21,7 @@ import { useApplySeedToLobbyMutation } from "@/redux/api/local"
 import { selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { cn, getLobbyIdFromPathname } from "@/utils"
+import { getLobbyIdFromPathname } from "@/utils"
 import { useLocalStorage } from "@/hooks/use-storage"
 import { ASSET_URLS, STORAGE_KEYS } from "@/constants/mapping"
 import { driver, DriveStep } from "driver.js";
@@ -139,7 +139,7 @@ const LobbyWaiting = () => {
 
 
   return (
-    <main className={cn("min-h-full-height flex items-center justify-center relative", `bg-[url(${ASSET_URLS.CREATOR_BACKGROUND})] bg-repeat bg-center bg-size-[25%]`)}>
+    <main className="min-h-full-height flex items-center justify-center relative bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
       <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0"/>
       <div className=" bg-background/80 space-y-8 w-3/4 z-10">
       <section id={DRIVER_IDS.LOBBY_PLAYERS} className="w-full flex flex-col border border-dashed items-center gap-4 p-6  text-muted-primary-foreground">
