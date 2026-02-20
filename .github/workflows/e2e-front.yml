@@ -28,8 +28,20 @@ jobs:
   e2e:
     needs: init
     runs-on: ubuntu-latest
-    name: 🧪 E2E Tests
+    name: 🧪 E2E Tests - ${{ matrix.suite }}
     environment: prod
+    strategy:
+      matrix:
+        include:
+          - suite: auth
+            path: auth
+          - suite: demo
+            path: demo
+          - suite: lobby
+            path: lobby/
+          - suite: lobby-playing
+            path: lobby-playing
+      fail-fast: false
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
@@ -77,8 +89,8 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: 🧪 Run E2E Tests
-        run: firebase emulators:exec --project "$GCLOUD_PROJECT" 'pnpm --filter @repo/front e2e'
+      - name: 🧪 Run E2E Tests - ${{ matrix.suite }}
+        run: firebase emulators:exec --project "$GCLOUD_PROJECT" 'pnpm --filter @repo/front e2e -- e2e/${{ matrix.path }}'
         env:
           GCLOUD_PROJECT: ${{ secrets.PROJECT_ID }}
 
@@ -86,12 +98,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.suite }}
           path: apps/front/playwright-report/
           retention-days: 30
-
-      - name: 📄 Upload Report to Pages
-        uses: actions/upload-pages-artifact@v3
-        if: ${{ !cancelled() }}
-        with:
-          path: apps/front/playwright-report/

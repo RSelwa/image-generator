@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { SELECTORS } from "@/constants/testing"
-import { createLobbyViaUI, loginViaUI, retrieveGamesFromLobby, setupUser, startLobbyViaUI, startSoloLobbyViaUI, waitForInputToBeVisible, waitToBeLogged } from "@/e2e/helpers/lobby"
+import { createLobbyViaUI, hideDriverTutorial, loginViaUI, retrieveGamesFromLobby, setupUser, startLobbyViaUI, startSoloLobbyViaUI, waitForInputToBeVisible, waitToBeLogged } from "@/e2e/helpers/lobby"
 
 test.describe("lobby playing", () => {
   test.describe("when is display game", () => {
@@ -20,6 +20,8 @@ test.describe("lobby playing", () => {
     const user = await setupUser()
 
     await loginViaUI(page, user.email)
+
+    await hideDriverTutorial(page)
 
     await page.goto("/")
 

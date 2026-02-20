@@ -6,6 +6,7 @@ import {
   createFirestoreLobbyDoc,
   createPlayerFromUserDoc,
   getReadyViaUI,
+  hideDriverTutorial,
   loginViaUI,
   setupUser,
   startLobbyViaUI,
@@ -35,6 +36,7 @@ test.describe("Test seed generation", () => {
       await createFirestoreLobbyDoc(lobby)
 
       await loginViaUI(page, host.email)
+      await hideDriverTutorial(page)
       await page.goto(`/lobby/${lobby.id}`)
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
@@ -78,6 +80,7 @@ test.describe("Test seed generation", () => {
       await createFirestoreLobbyDoc(lobby)
 
       await loginViaUI(page, host.email)
+      await hideDriverTutorial(page)
       await page.goto(`/lobby/${lobby.id}`)
 
       await startSoloLobbyViaUI(page)
