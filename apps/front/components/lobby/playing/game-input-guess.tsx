@@ -1,10 +1,7 @@
 import { Timestamp } from "@firebase/firestore"
 import { isSameNormalized, ROUND_POINTS } from "@repo/common"
 import { usePathname } from "next/navigation"
-import { type FormEvent } from "react"
-import * as React from "react"
-import { useRef } from "react"
-import { Input } from "@/components/ui/input"
+import { useState } from "react"
 import { useIncrementPlayerLivesUsedMutation, useSubmitRoundAnswerMutation } from "@/redux/api/lobby"
 import { selectCurrentRoundData, selectCurrentRoundIndex, selectLobbyConfig, selectMyLivesRemaining, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -13,20 +10,26 @@ import { getLobbyIdFromPathname } from "@/utils"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { useGetAllGamesNamesQuery } from "@/redux/api/games"
 import { useIsMobile } from "@/hooks/use-mobile"
+import z from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
 
 
+const schema = z.object({
+  input: z.string().min(1, "Answer cannot be empty"),
+})
+
+type Schema = z.infer<typeof schema>
 
 const GameInputGuess = () => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
-  const gameFormRef = useRef<HTMLFormElement>(null)
-  const isMobile = useIsMobile()
-
   const [submitRoundAnswer] = useSubmitRoundAnswerMutation()
   const [incrementLivesUsed] = useIncrementPlayerLivesUsedMutation()
 
-const {data: allGamesNames} = useGetAllGamesNamesQuery()
+  const { data: allGamesNames } = useGetAllGamesNamesQuery()
 
   const user = useAppSelector(selectUser)
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
@@ -35,15 +38,29 @@ const {data: allGamesNames} = useGetAllGamesNamesQuery()
   const config = useAppSelector(selectLobbyConfig(lobbyId))
   const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
 
-  const gameList = allGamesNames?.filter(({title}) => title.includes("")) || []
 
-  const verifyGameName = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const [comboboxKey, setComboboxKey] = useState(0)
 
-    const formdata = new FormData(e.currentTarget)
-    const input = formdata.get("input")
+  const {
+    handleSubmit,
+    register,
+    getValues,
+    setValue,
+    reset,
+  } = useForm<Schema>({
+    resolver: zodResolver(schema),
+    defaultValues: { input: "" },
+  })
+
+  const lowerCaseInput = (getValues("input") || "").toLocaleLowerCase().trim()
+
+  const gameList = allGamesNames?.filter(({ title }) => title.trim().toLocaleLowerCase().includes(lowerCaseInput)) || []
+
+  const verifyGameName = async (data: Schema) => {
+    const input = data.input.trim()
 
     if (!currentRoundData) return
+
     const playerAnswerValue = input?.toString() || ""
 
     const correctGameName = selectedOption?.gameTitle || currentRoundData.gameTitle || ""
@@ -65,15 +82,21 @@ const {data: allGamesNames} = useGetAllGamesNamesQuery()
         },
       })
     } else {
-      incrementLivesUsed({ lobbyId, playerId: user?.id || "", roundIndex })
-      gameFormRef.current?.reset()
+      await incrementLivesUsed({ lobbyId, playerId: user?.id || "", roundIndex })
+      reset()
+      setComboboxKey((k) => k + 1)
     }
   }
 
-  return (
-    <form ref={gameFormRef} onSubmit={verifyGameName} autoComplete="off" className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-8 flex flex-col items-center gap-4">
-      {config?.playersLives && (
+  const handleClickItem = (value: string) => {
+    setValue("input", value, { shouldDirty: true })
+    handleSubmit(verifyGameName)()
+  }
 
+  return (
+    <form onSubmit={handleSubmit(verifyGameName)} autoComplete="off" className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-8 flex flex-col items-center gap-4">
+      <Button onClick={() => { reset(); setComboboxKey((k) => k + 1) }}>Test </Button>
+      {config?.playersLives && (
         <div data-testid="lives-container" className="w-full flex justify-center items-center gap-8">
           {
             Array.from({ length: config.playersLives }, (_, i) => (
@@ -86,35 +109,28 @@ const {data: allGamesNames} = useGetAllGamesNamesQuery()
           }
         </div>
       )}
-      {/* <Combobox>
+      <Combobox key={comboboxKey}>
         <ComboboxInput
+          showTrigger={false}
           data-testid="game-input-guess"
-          name="input"
           type="text"
           placeholder="Your answer"
           autoFocus
-          className="bg-background/50! text-2xl! font-bold placeholder:text-foreground/70 text-foreground min-w-96 py-6"
+          className="dark:bg-background/50 font-mono! text-2xl font-bold placeholder:text-foreground/70 text-foreground w-96 py-6"
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit(verifyGameName)()}
+          {...register("input")}
         />
-        <ComboboxContent>
-          <ComboboxEmpty>No items found.</ComboboxEmpty>
+        {gameList?.length > 0 && <ComboboxContent sideOffset={8} side="top" align="center">
           <ComboboxList>
-            {allGamesNames?.map((game) => (
-              <ComboboxItem key={game.id} value={game.title}>
+            {gameList?.map((game) => (
+              <ComboboxItem key={game.id} value={game.title} className="font-mono" onClick={() => handleClickItem(game.title)}>
                 {game.title}
               </ComboboxItem>
-
             ))}
           </ComboboxList>
-          </ComboboxContent>
-      </Combobox> */}
-      <Input
-        data-testid="game-input-guess"
-        name="input"
-        type="text"
-        placeholder="Your answer"
-        autoFocus={!isMobile}
-        className="bg-background/50! text-2xl! font-bold placeholder:text-foreground/70 text-foreground w-5/6 lg:w-96 py-6"
-      />
+        </ComboboxContent>
+        }
+      </Combobox>
     </form>
   )
 }

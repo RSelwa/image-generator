@@ -133,8 +133,7 @@ const LobbyMain = () => {
     }
 
     const player = createPlayerFromSessionUser(user)
-
-    joinLobby({ lobbyId: lobby.id, player }).unwrap()
+    if (lobby.status === LOBBY_STATUS.WAITING) joinLobby({ lobbyId: lobby.id, player }).unwrap()
   }, [isSessionReady, user, user?.isAnonymous])
 
   const isUserInLobby = lobby?.players.some((p) => p.uid === user?.id)

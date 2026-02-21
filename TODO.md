@@ -34,7 +34,7 @@
   - [x] lock the number of rounds if seed already selected
   - [x] Allow seed application in a lobby
   - [x] Allow flats to have maps
-  - [ ] the listen docs should changes games if they contains a ready or not, when they are changed, should call another cf (maybe on request) that will fetch all games spehrical/flat to check if they have ready
+  - [x] the listen docs should changes games if they contains a ready or not, when they are changed, should call another cf (maybe on request) that will fetch all games spehrical/flat to check if they have ready
   - [x] Fix: if selected 6 rounds, in end screen, still have 18 displayed
   - [x] Allow creation of flats and sphericals from new or gameId
   - [x] Account settings
@@ -64,6 +64,8 @@
   - [ ] Add a modal for suggestions only, not particulary games
   - [ ] mettre un array players qui contient que les id à la racine du doc de lobby pour simplifier firestore query
   - [ ] Add a button How to play wich gonna open a modal wich gonna be carousel with examples
+  - [ ] When user close the tab should remove them from the players only if the status is waiting
+  - [ ] When no pin already on map, should have the outline color for the button
   - [ ] Ajouter des tests sur ces bouttons
   - [ ] Ajouter la selection d'avatar sur la popup pseudo after login
   - [ ] Utiliser driver js pour présenter les trucs des rounds spéciaux 

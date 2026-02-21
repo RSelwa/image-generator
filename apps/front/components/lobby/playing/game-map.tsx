@@ -58,7 +58,7 @@ const GameMapGuess = () => {
       onSubmit={submitDistance}
       className="fixed bottom-6 right-6 z-50 flex flex-col gap-2"
     >
-      <p className="w-full bg-background text-foreground py-1 flex text-center items-center justify-around text-shadow text-xl font-semibold">
+      <p className="w-full bg-background font-mono text-foreground py-1 flex text-center items-center justify-around text-shadow font-semibold">
         <span className="text-primary">+</span>
         <span>
           {currentRoundData.gameTitle}
@@ -82,7 +82,7 @@ const GameMapGuess = () => {
         isParentHover={isHovered}
       />
 
-      <Button data-testid="map-submit" type="submit" className="w-full">
+      <Button disabled={!playPosition} variant={playPosition? "marathon":"marathon-outline" } data-testid="map-submit" type="submit" className="w-full">
         Guess
       </Button>
     </form>
