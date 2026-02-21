@@ -35,6 +35,15 @@
         "pnpm build:listen-docs"
       ],
       "codebase": "listen-docs"
+    },
+    {
+      "source": "functions/lobby-presence",
+      "runtime": "nodejs22",
+      "isolate": true,
+      "predeploy": [
+        "pnpm build:lobby-presence"
+      ],
+      "codebase": "lobby-presence"
     }
   ],
   "emulators": {
@@ -56,7 +65,13 @@
     "pubsub": {
       "port": 8085
     },
+    "database": {
+      "port": 9000
+    },
     "singleProjectMode": true
+  },
+  "database": {
+    "rules": "rules/src/database.rules.json"
   },
   "firestore": {
     "database": "(default)",

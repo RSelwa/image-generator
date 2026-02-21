@@ -81,7 +81,6 @@ export const SUGGESTIONS_TYPE_TO_BADGE_VARIANT = {
 
 export const API_ENDPOINTS = {
   CREATE_SEED: "/api/create-seed",
-  LEAVE_LOBBY: "/api/leave-lobby",
 } as const
 
 export const FIREBASE_ERRORS = {

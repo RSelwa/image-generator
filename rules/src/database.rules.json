@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "lobbies": {
+      "$lobbyId": {
+        "players": {
+          "$userId": {
+            ".read": "auth != null",
+            ".write": "auth != null && auth.uid === $userId"
+          }
+        }
+      }
+    }
+  }
+}

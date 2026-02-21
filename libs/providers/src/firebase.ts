@@ -4,6 +4,7 @@ import { PROJECT_ID } from "@repo/common"
 import admin from "firebase-admin"
 import { getAuth } from "firebase-admin/auth"
 import { getFunctions } from "firebase-admin/functions"
+import { getDatabase } from "firebase-admin/database"
 import { getStorage } from "firebase-admin/storage"
 
 export type { DecodedIdToken } from "firebase-admin/auth"
@@ -28,12 +29,16 @@ const getCredential = () => {
 
 if (!admin.apps.length) {
   if (process.env.FIRESTORE_EMULATOR_HOST) {
-    admin.initializeApp({ projectId: PROJECT_ID })
+    admin.initializeApp({
+      projectId: PROJECT_ID,
+      databaseURL: `http://${process.env.FIREBASE_DATABASE_EMULATOR_HOST || "127.0.0.1:9000"}?ns=${PROJECT_ID}`,
+    })
   } else {
     const credential = getCredential()
     admin.initializeApp({
       credential,
       storageBucket: `${PROJECT_ID}.firebasestorage.app`,
+      databaseURL: `https://${PROJECT_ID}-default-rtdb.europe-west1.firebasedatabase.app`,
     })
   }
 
@@ -46,4 +51,5 @@ export const region = "europe-west3"
 export const auth = getAuth(firebaseApp)
 export const db = admin.firestore(firebaseApp)
 export const storage = getStorage(firebaseApp)
+export const rtdb = getDatabase(firebaseApp)
 export const functions = getFunctions(firebaseApp)

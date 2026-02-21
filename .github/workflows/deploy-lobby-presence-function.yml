@@ -1,10 +1,16 @@
-name: 🔥 Deploy Firestore, Storage & Database Rules
+name: 🚀 Deploy lobby-presence
 
 on:
+  workflow_dispatch:
   push:
     paths:
-      - .github/workflows/deploy-firestore-rules.yml
-      - "rules/**"
+      - .github/workflows/deploy-lobby-presence-function.yml
+      - functions/lobby-presence/**
+      - libs/common/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   init:
@@ -19,11 +25,11 @@ jobs:
         uses: ./.github/actions/initialization
 
   deploy:
-    needs: init
     runs-on: ubuntu-latest
-    name: 🔥 Deploy Firestore, Storage & Database Rules
+    needs: [init]
+    name: 🚀 Deploy lobby-presence function
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
     environment: prod
-
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
@@ -31,21 +37,15 @@ jobs:
       - name: ⚙️ Initialize Node.js Environment
         uses: ./.github/actions/initialization
 
-      - name: ⚙️ Install Firebase tools
-        run: pnpm install -g firebase-tools
-
-      - name: 🧪 Test Security Rules
-        run: npx firebase emulators:exec --only firestore,storage "pnpm --filter
-          @repo/rules test"
-
       - name: 🔐 Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: 🔥 Deploy Firestore, Storage & Database Rules
-        if: github.ref_name == 'main' || github.ref_name == 'develop'
-        run: npx firebase deploy --project "$PROJECT_ID" --only
-          firestore,storage,database --force
+      - name: ⚙️ Install Firebase tools
+        run: pnpm install -g firebase-tools
+
+      - name: 🚀 Deploy to Firebase
+        run: npx firebase deploy --project "$PROJECT_ID" --only functions:lobby-presence --force
         env:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}

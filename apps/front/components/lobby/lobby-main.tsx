@@ -1,18 +1,20 @@
 "use client"
 
 import { LOBBY_STATUS } from "@repo/common"
+import { onDisconnect, ref, remove, set } from "firebase/database"
 import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import { toast } from "sonner"
 import LobbyFinished from "@/components/lobby/lobby-finished"
 import LobbyStarting from "@/components/lobby/lobby-starting"
 import LobbyWaiting from "@/components/lobby/lobby-waiting"
 import LobbyPlaying from "@/components/lobby/playing/lobby-playing"
 import { Button } from "@/components/ui/button"
-import { auth } from "@/constants/db"
-import { API_ENDPOINTS, QUERY_PARAMS } from "@/constants/mapping"
+import { rtdb } from "@/constants/db"
+import { QUERY_PARAMS } from "@/constants/mapping"
+
 import { PAGES } from "@/constants/pages"
-import { useJoinLobbyMutation, useLeaveLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
+import { useJoinLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -45,62 +47,21 @@ const LobbyMain = () => {
   const user = useAppSelector(selectUser)
   const isSessionReady = useAppSelector(selectSessionIsReady)
 
-  const [leaveLobby] = useLeaveLobbyMutation()
   const [joinLobby] = useJoinLobbyMutation()
 
   const { data: lobby, isLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {
     skip: !lobbyId,
   })
 
-  const statusRef = useRef(lobby?.status)
-  statusRef.current = lobby?.status
-
-  const tokenRef = useRef("")
-  const cleanupTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
-
   useEffect(() => {
-    auth.currentUser?.getIdToken().then((token) => {
-      tokenRef.current = token
-    })
-  }, [user?.id])
+    if (!lobbyId || !user?.id || lobby?.status !== LOBBY_STATUS.WAITING) return
 
-  useEffect(() => {
-    clearTimeout(cleanupTimeoutRef.current)
+    const presenceRef = ref(rtdb, `lobbies/${lobbyId}/players/${user.id}`)
+    set(presenceRef, true)
+    onDisconnect(presenceRef).remove()
 
-    const tabCountKey = `lobby-${lobbyId}-tabs`
-    const current = Number(localStorage.getItem(tabCountKey) || 0)
-    localStorage.setItem(tabCountKey, String(current + 1))
-
-    const handleBeforeUnload = () => {
-      const count = Number(localStorage.getItem(tabCountKey) || 0)
-      const remaining = Math.max(0, count - 1)
-      localStorage.setItem(tabCountKey, String(remaining))
-
-      if (remaining === 0 && statusRef.current === LOBBY_STATUS.WAITING) {
-        const blob = new Blob(
-          [JSON.stringify({ lobbyId, playerId: user?.id, token: tokenRef.current })],
-          { type: "application/json" },
-        )
-        navigator.sendBeacon(API_ENDPOINTS.LEAVE_LOBBY, blob)
-      }
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload)
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload)
-
-      const count = Number(localStorage.getItem(tabCountKey) || 0)
-      const remaining = Math.max(0, count - 1)
-      localStorage.setItem(tabCountKey, String(remaining))
-
-      if (remaining === 0 && statusRef.current === LOBBY_STATUS.WAITING) {
-        cleanupTimeoutRef.current = setTimeout(() => {
-          leaveLobby({ lobbyId, playerId: user?.id || "" })
-        }, 200)
-      }
-    }
-  }, [lobbyId, user?.id, leaveLobby])
+    return () => { remove(presenceRef) }
+  }, [lobbyId, user?.id, lobby?.status])
 
   useEffect(() => {
     if (isLoading || !lobby) return

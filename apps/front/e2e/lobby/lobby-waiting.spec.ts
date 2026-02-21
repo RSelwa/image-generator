@@ -50,8 +50,13 @@ test.describe("lobby Waiting", () => {
       expect(lobbyDoc.data()?.playersIds).toContain(user.id)
 
       await page.goto("/")
-      const removedDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
 
+      await expect.poll(async () => {
+        const doc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
+        return doc.data()?.playersIds?.includes(user.id)
+      }, { timeout: 5000 }).toBe(false)
+
+      const removedDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
       expect(removedDoc.data()?.players.map((player) => player.uid)).not.toContain(user.id)
       expect(removedDoc.data()?.playersIds).not.toContain(user.id)
     })

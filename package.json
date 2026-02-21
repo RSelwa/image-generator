@@ -13,14 +13,14 @@
     "lint:errors": "eslint --quiet",
     "lint:fix": "eslint --fix",
     "check-circular": "turbo check-circular --continue",
-    "emulators:test": "firebase emulators:start --only firestore,functions,storage,auth",
+    "emulators:test": "firebase emulators:start --only firestore,functions,storage,auth,database",
     "test:front-ui": "pnpm -F @repo/front e2e:ui",
     "build:front": "turbo run -F @repo/front build",
     "dev:front": "turbo run -F @repo/front dev",
     "storybook:front": "pnpm run -F @repo/front storybook",
     "build": "turbo run build",
     "create:function": "npx tsx cli/create-function.mts",
-    "build:functions": "turbo run build --filter=@repo/http --filter=@repo/create-user-document --filter=@repo/create-party-doc --filter=@repo/listen-docs",
+    "build:functions": "turbo run build --filter=@repo/http --filter=@repo/create-user-document --filter=@repo/create-party-doc --filter=@repo/listen-docs --filter=@repo/lobby-presence",
     "build:libs": "turbo run build --filter=@repo/providers --filter=@repo/schemas --filter=@repo/testing --filter=@repo/common && pnpm install",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
@@ -31,7 +31,8 @@
     "script": "deno run --allow-all --env=./scripts/.env --config scripts/deno.json",
     "build:create-party-doc": "turbo run build --filter=@repo/create-party-doc",
     "build:create-user-document": "turbo run build --filter=@repo/create-user-document",
-    "build:listen-docs": "turbo run build --filter=@repo/listen-docs"
+    "build:listen-docs": "turbo run build --filter=@repo/listen-docs",
+    "build:lobby-presence": "turbo run build --filter=@repo/lobby-presence"
   },
   "pnpm": {
     "overrides": {
