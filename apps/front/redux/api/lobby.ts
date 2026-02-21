@@ -455,8 +455,11 @@ export const lobbyApi = createApi({
             (p: Player) => p.uid !== playerId,
           )
 
+          const updatedPlayersIds = (docSnap.playersIds || []).filter((id: string) => id !== playerId)
+
           await updateDoc(getLobbyRef(lobbyId), {
             players: updatedPlayers,
+            playersIds: updatedPlayersIds,
             updatedAt: Timestamp.now(),
           })
 
