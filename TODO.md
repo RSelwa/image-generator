@@ -59,11 +59,12 @@
   - [x] ajouter des bouttons back to lobby / new game, when in finished screen
   - [x] Fix starting screen when game is Loading
   - [x] end game screen⌛️
-  - [ ] Add combobox for games suggestions
+  - [x] Add combobox for games suggestions
   - [ ] Fix, when users is closing the tab, it should remove them from the lobby
   - [ ] Add a modal for suggestions only, not particulary games
   - [ ] mettre un array players qui contient que les id à la racine du doc de lobby pour simplifier firestore query
   - [ ] Add a button How to play wich gonna open a modal wich gonna be carousel with examples
+  - In lobby fix the timer that make everything re render everry seconds
   - [ ] When user close the tab should remove them from the players only if the status is waiting
   - [ ] When no pin already on map, should have the outline color for the button
   - [ ] Ajouter des tests sur ces bouttons

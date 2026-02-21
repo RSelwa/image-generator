@@ -38,7 +38,7 @@ export const SuggestGameModal = () => {
   const submitSuggestion = async (data: FormSchema) => {
     try {
       const suggestionDoc = suggestionsDocSchema.parse({
-        type: SUGGESTIONS_TYPE.SUGGESTIONS,
+        type: SUGGESTIONS_TYPE.GAME_SUGGESTIONS,
         title: data.title,
         message: data.description,
         createdBy: userId

@@ -36,7 +36,6 @@ import { LobbyDebug } from "@/components/lobby/lobby-debug"
 
 export const NavUser = () => {
   const user = useAppSelector(selectUser)
-  const hasRights = useAppSelector(selectHasRightToDashBoard)
   const isAdmin = useAppSelector(selectIsAdmin)
 
   const [logout] = useLogoutMutation()
@@ -56,7 +55,6 @@ export const NavUser = () => {
           <AvatarImage src={user.avatar} alt={user.email} />
           <AvatarFallback>{firstLetter(user.pseudo)}</AvatarFallback>
         </Avatar>
-        {/* <ChevronsUpDown className="ml-auto size-4" /> */}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
@@ -65,19 +63,6 @@ export const NavUser = () => {
         sideOffset={8}
         alignOffset={-8}
       >
-        {/* <DropdownMenuLabel className="p-0 font-normal">
-          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <div className="grid flex-1 text-right text-sm leading-tight">
-              <span className="truncate font-medium">{user.pseudo}</span>
-              <span className="truncate text-xs">{user.email}</span>
-            </div>
-            <Avatar className="size-9">
-              <AvatarImage src={user.avatar} alt={user.email} />
-              <AvatarFallback className="rounded-lg">{firstLetter(user.pseudo)}</AvatarFallback>
-            </Avatar>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator /> */}
         {isAdmin &&
           <>
             <DropdownMenuSub>

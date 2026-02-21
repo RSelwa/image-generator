@@ -17,6 +17,7 @@ export const HelperMenuContent = () => {
 
   const { openModal: openGameSuggestion } = useModal(MODAL_KEYS.SUGGEST_GAME)
   const { openModal: openReportBug } = useModal(MODAL_KEYS.REPORT_BUG)
+  const { openModal: openMakeSuggestion } = useModal(MODAL_KEYS.MAKE_SUGGESTION)
 
   return (<DropdownMenuGroup>
     <DropdownMenuLabel>Help</DropdownMenuLabel>
@@ -25,6 +26,9 @@ export const HelperMenuContent = () => {
     </DropdownMenuItem>
     <DropdownMenuItem onClick={() => openReportBug()}>
       Report a bug
+    </DropdownMenuItem>
+    <DropdownMenuItem onClick={() => openMakeSuggestion()}>
+      Make a suggestion
     </DropdownMenuItem>
   </DropdownMenuGroup>)
 }

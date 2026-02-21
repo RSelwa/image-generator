@@ -50,6 +50,7 @@ export const ROUND_POINTS = {
 
 export const SUGGESTIONS_TYPE = {
   BUG: "bug",
+  GAME_SUGGESTIONS: "game_suggestion",
   SUGGESTIONS: "suggestions",
   HELP: "help"
 } as const

@@ -43,9 +43,11 @@ export const ModalBase = ({
   className,
   customClose,
   title,
+  description,
   ...props
 }: {
   title?: React.ReactNode
+  description?: React.ReactNode
   modalKey: ConstantValues<typeof MODAL_KEYS>
   alertDialog?: boolean
   customClose?: () => void
@@ -60,9 +62,8 @@ export const ModalBase = ({
           <DialogTitle>
             {title}
           </DialogTitle>
-
           <DialogDescription>
-            {title && <span className="text-muted-foreground text-sm">{`This is the ${title} modal`}</span>}
+            {description && <span className="text-muted-foreground text-sm">{`This is the ${title} modal`}</span>}
           </DialogDescription>
         </DialogHeader>
         {children}

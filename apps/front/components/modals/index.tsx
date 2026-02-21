@@ -13,6 +13,7 @@ import { SphericalGalleryModal } from "@/components/modals/spherical-gallery"
 import { ModalSphericalId } from "@/components/modals/spherical-id"
 import { SuggestGameModal } from "@/components/modals/suggest-game"
 import { MODAL_KEYS } from "@/constants/mapping"
+import { MakeSuggestion } from "@/components/modals/make-suggestion"
 
 export const ModalProvider = () => {
   const searchParams = useSearchParams()
@@ -21,6 +22,7 @@ export const ModalProvider = () => {
 
   if (type === MODAL_KEYS.CHANGE_PSEUDO) return <ChangePseudoModal />
 
+  if (type === MODAL_KEYS.MAKE_SUGGESTION) return <MakeSuggestion />
   if (type === MODAL_KEYS.REPORT_BUG) return <ReportBugModal />
   if (type === MODAL_KEYS.SUGGEST_GAME) return <SuggestGameModal />
 
