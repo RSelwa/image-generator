@@ -12,6 +12,7 @@ export const lobbyDocSchema = z.object({
   hostId: z.string().min(1),
   status: z.enum(LOBBY_STATUS).default(LOBBY_STATUS.WAITING),
   players: z.array(playerSchema).max(MAX_PLAYERS).default([]),
+  playersIds: z.array(z.string()).max(MAX_PLAYERS).default([]), // For quick lookup
   config: lobbyConfigSchema.default({
     playersLives: DEFAULT_LIVES,
     hasSpecialRounds: DEFAULT_HAS_SPECIAL_ROUNDS,
@@ -49,5 +50,6 @@ export type CreateLobbyInput = z.infer<typeof createLobbyInputSchema>
 // Update lobby input
 export const updateLobbyInputSchema = createLobbyInputSchema.omit({
   players: true, // Players are managed separately
+  playersIds: true, // Players are managed separately
 }).partial()
 export type UpdateLobbyInput = z.infer<typeof updateLobbyInputSchema>

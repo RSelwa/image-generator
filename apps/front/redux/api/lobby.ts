@@ -283,6 +283,7 @@ export const lobbyApi = createApi({
               isDemo: false,
               seedId: "",
               players: [],
+              playersIds: [],
               maximumPossiblePoints: 0,
               config: {
                 hasSpecialRounds: DEFAULT_HAS_SPECIAL_ROUNDS,
@@ -354,9 +355,11 @@ export const lobbyApi = createApi({
 
           // Add player to lobby
           const updatedPlayers = [...currentPlayers, player]
+          const playersIds = [...currentPlayers.map(({uid})=>uid), player.uid]
 
           await updateDoc(lobbyRef, {
             players: updatedPlayers,
+            playersIds,
             updatedAt: Timestamp.now(),
           })
 
@@ -398,14 +401,18 @@ export const lobbyApi = createApi({
 
           const currentData = docSnap.data()
           const currentPlayers = currentData?.players || []
+          const currentPlayersIds = currentData?.playersIds || []
 
           // Remove player from lobby
           const updatedPlayers = currentPlayers.filter(
             (p: Player) => p.uid !== playerId,
           )
 
+          const updatedPlayersIds = currentPlayersIds.filter((id: string) => id !== playerId)
+
           await updateDoc(lobbyRef, {
             players: updatedPlayers,
+            playersIds: updatedPlayersIds,
             updatedAt: Timestamp.now(),
           })
 
@@ -995,6 +1002,7 @@ export const lobbyApi = createApi({
               isDemo: true,
               seedId: DEMO_SEED_ID,
               players: [],
+              playersIds: [],
               maximumPossiblePoints: 0,
               config: {
                 hasSpecialRounds,

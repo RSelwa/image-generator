@@ -8,7 +8,6 @@ const Page = async ({
   const { flatId: id, gameId } = await params
 
   return (
-
     <SphericalFullScreen {...{ id, gameId }} />
   )
 }

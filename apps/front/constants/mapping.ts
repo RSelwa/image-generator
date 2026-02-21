@@ -49,7 +49,7 @@ export const SORT_OPTIONS_LABEL = {
 export const NEW_SEARCH_PARAM = "new"
 export const FALL_BACK_IMAGE = "/placeholder.svg"
 export const APP_NAME = "Geo gamer"
-export const CONTACT_EMAIL = "selwa.raphael@gmail.com"
+export const CONTACT_EMAIL = "contact.geogamer@gmail.com"
 
 const BADGE_VARIANTS = {
   GREEN: "green",

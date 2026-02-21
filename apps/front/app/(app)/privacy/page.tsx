@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
           Privacy Policy
         </h1>
         <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-12">
-          Last updated: January 21, 2026
+          Last updated: February 21, 2026
         </p>
 
         <div className="prose prose-zinc dark:prose-invert max-w-none">
@@ -20,10 +20,11 @@ export default function PrivacyPolicy() {
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
               {APP_NAME}
               {" "}
-              ("we", "our", or "us") is committed to protecting your
-              privacy. This Privacy Policy explains how we collect, use,
-              disclose, and safeguard your information when you use our Service.
-              Please read this privacy policy carefully.
+              ("we", "our", or "us") is committed to protecting your privacy.
+              This Privacy Policy explains how we collect, use, disclose, and
+              safeguard your information when you play our game — a challenge
+              where players are dropped into a scene and must guess which video
+              game it comes from. Please read this privacy policy carefully.
             </p>
           </section>
 
@@ -33,34 +34,28 @@ export default function PrivacyPolicy() {
             </h2>
 
             <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
-              2.1 Personal Information
+              2.1 Account Information
             </h3>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              When you register for an account, we collect:
+              When you create an account, we collect:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300 mb-4">
               <li>Name and email address</li>
               <li>Account credentials (encrypted passwords)</li>
-              <li>
-                Payment information (processed securely through our payment
-                provider)
-              </li>
-              <li>Profile information you choose to provide</li>
+              <li>Profile information you choose to provide (e.g., username, avatar)</li>
             </ul>
 
             <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
-              2.2 Instagram Account Information
+              2.2 Gameplay Data
             </h3>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              To provide our Service, we collect:
+              To operate and improve the game, we collect:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300 mb-4">
-              <li>Instagram account credentials and access tokens</li>
-              <li>Instagram profile information (username, profile picture)</li>
-              <li>
-                Content you upload for scheduling (images, captions, hashtags)
-              </li>
-              <li>Post performance data and analytics</li>
+              <li>Your guesses and answers for each round</li>
+              <li>Scores, streaks, and game history</li>
+              <li>Time taken to answer each round</li>
+              <li>Lobby activity and multiplayer session data</li>
             </ul>
 
             <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
@@ -85,18 +80,12 @@ export default function PrivacyPolicy() {
               We use the collected information to:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
-              <li>Provide, maintain, and improve our Service</li>
-              <li>Process and schedule your Instagram posts</li>
-              <li>Manage your account and subscriptions</li>
+              <li>Provide, maintain, and improve the game experience</li>
+              <li>Track scores, leaderboards, and game history</li>
+              <li>Manage your account and sessions</li>
               <li>Send you technical notices, updates, and support messages</li>
               <li>Respond to your comments and questions</li>
-              <li>
-                Provide analytics and insights about your Instagram performance
-              </li>
-              <li>
-                Detect, prevent, and address technical issues and security
-                threats
-              </li>
+              <li>Detect, prevent, and address technical issues and security threats</li>
               <li>Comply with legal obligations</li>
               <li>Send marketing communications (with your consent)</li>
             </ul>
@@ -118,19 +107,18 @@ export default function PrivacyPolicy() {
               Service, including:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300 mb-4">
-              <li>Payment processors</li>
               <li>Cloud hosting providers</li>
               <li>Analytics services</li>
               <li>Customer support tools</li>
             </ul>
 
             <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
-              4.2 Instagram/Meta
+              4.2 Public Leaderboards
             </h3>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              Your content is posted to Instagram through their official API.
-              Instagram's own privacy policy applies to data they collect and
-              process.
+              Your username and scores may be displayed publicly on leaderboards
+              within the game. You can update your username at any time from
+              your account settings.
             </p>
 
             <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
@@ -154,9 +142,6 @@ export default function PrivacyPolicy() {
               <li>Encryption of data in transit and at rest</li>
               <li>Regular security assessments and updates</li>
               <li>Access controls and authentication measures</li>
-              <li>
-                Secure payment processing through PCI-DSS compliant providers
-              </li>
             </ul>
             <p className="text-zinc-700 dark:text-zinc-300 mt-4">
               However, no method of transmission over the internet is 100%
@@ -266,10 +251,11 @@ export default function PrivacyPolicy() {
               10. Children's Privacy
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              Our Service is not intended for children under 18 years of age. We
+              Our Service is not directed to children under 13 years of age. We
               do not knowingly collect personal information from children under
-              18. If you are a parent or guardian and believe your child has
-              provided us with personal information, please contact us.
+              13. If you are a parent or guardian and believe your child has
+              provided us with personal information, please contact us and we
+              will promptly delete that information.
             </p>
           </section>
 
@@ -309,7 +295,6 @@ export default function PrivacyPolicy() {
                 Email:
                 {CONTACT_EMAIL}
               </p>
-              <p>Address: [Your Company Address]</p>
             </div>
           </section>
 

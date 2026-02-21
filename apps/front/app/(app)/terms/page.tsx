@@ -9,7 +9,7 @@ export default function TermsOfService() {
           Terms of Service
         </h1>
         <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-12">
-          Last updated: January 21, 2026
+          Last updated: February 21, 2026
         </p>
 
         <div className="prose prose-zinc dark:prose-invert max-w-none">
@@ -36,10 +36,10 @@ export default function TermsOfService() {
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
               {APP_NAME}
               {" "}
-              provides a web-based platform that allows users to
-              schedule and automatically publish content to Instagram. The
-              Service includes features such as post scheduling, content
-              calendar management, and analytics.
+              is a web-based guessing game where players are shown
+              a screenshot or scene from a video game and must identify which
+              game it is from. The Service includes features such as daily
+              challenges, multiplayer lobbies, score tracking, and leaderboards.
             </p>
           </section>
 
@@ -56,9 +56,8 @@ export default function TermsOfService() {
                 </li>
                 <li>Maintain the security of your account credentials</li>
                 <li>
-                  Be at least 18 years old or have parental/guardian consent
+                  Be at least 13 years old or have parental/guardian consent
                 </li>
-                <li>Have a valid Instagram account</li>
                 <li>
                   Notify us immediately of any unauthorized use of your account
                 </li>
@@ -72,26 +71,22 @@ export default function TermsOfService() {
 
           <section className="mb-12">
             <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
-              4. User Content and Conduct
+              4. User Conduct
             </h2>
             <div className="text-zinc-700 dark:text-zinc-300 space-y-4">
               <p>You agree not to use the Service to:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
-                  Post content that is illegal, harmful, threatening, abusive,
-                  harassing, defamatory, or otherwise objectionable
+                  Cheat, exploit bugs, or use unauthorized tools to gain an
+                  unfair advantage in the game
                 </li>
                 <li>
-                  Violate Instagram's Terms of Service or Community Guidelines
+                  Harass, abuse, or intimidate other players
                 </li>
                 <li>Infringe upon intellectual property rights of others</li>
                 <li>
-                  Transmit spam, chain letters, or unsolicited mass
-                  communications
-                </li>
-                <li>
-                  Engage in any automated use of the system without our express
-                  written permission
+                  Use bots or automated scripts to play the game or manipulate
+                  leaderboards
                 </li>
                 <li>
                   Attempt to gain unauthorized access to the Service or related
@@ -103,66 +98,60 @@ export default function TermsOfService() {
 
           <section className="mb-12">
             <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
-              5. Instagram Integration
+              5. Game Content and Intellectual Property
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              Our Service integrates with Instagram through official APIs. By
-              using
-              {" "}
               {APP_NAME}
-              , you acknowledge that:
+              {" "}
+              displays video game screenshots and assets for the purpose of
+              identification as part of a quiz-style game. By using the Service,
+              you acknowledge that:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
               <li>
-                You grant us permission to access your Instagram account on your
-                behalf
+                All game titles, screenshots, and related assets are the
+                property of their respective owners
               </li>
               <li>
-                You must comply with Instagram's Terms of Service and Platform
-                Policy
+                {APP_NAME}
+                {" "}
+                does not claim ownership over any third-party game
+                content displayed within the Service
               </li>
               <li>
-                We are not responsible for changes to Instagram's API or
-                policies
+                Content is used solely for entertainment and educational
+                identification purposes
               </li>
               <li>
-                Instagram may suspend or terminate your account for violations,
-                which may affect your use of our Service
+                We will respond promptly to valid intellectual property
+                takedown requests from rights holders
               </li>
             </ul>
           </section>
 
           <section className="mb-12">
             <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
-              6. Subscription and Payment
+              6. Scores and Leaderboards
             </h2>
             <div className="text-zinc-700 dark:text-zinc-300 space-y-4">
               <p>
-                <strong>Billing:</strong>
+                <strong>Fair Play:</strong>
                 {" "}
-                Subscriptions are billed in advance on
-                a monthly or annual basis. You authorize us to charge your
-                payment method for the applicable fees.
+                Scores are computed server-side to ensure fairness. Any attempt
+                to manipulate scores through unauthorized means will result in
+                account suspension.
               </p>
               <p>
-                <strong>Cancellation:</strong>
+                <strong>Leaderboard Resets:</strong>
                 {" "}
-                You may cancel your subscription
-                at any time. Cancellations will take effect at the end of the
-                current billing period.
+                We reserve the right to reset leaderboards at any time,
+                including at the start of new seasons or competitive periods.
               </p>
               <p>
-                <strong>Refunds:</strong>
+                <strong>Account Suspension:</strong>
                 {" "}
-                We offer refunds within 14 days of
-                purchase if you are not satisfied with the Service. After 14
-                days, no refunds will be provided.
-              </p>
-              <p>
-                <strong>Changes to Pricing:</strong>
-                {" "}
-                We reserve the right to
-                modify our pricing with 30 days notice to existing subscribers.
+                Accounts found cheating or abusing the game will be permanently
+                banned without prior notice.
               </p>
             </div>
           </section>
@@ -265,8 +254,6 @@ export default function TermsOfService() {
               Email:
               {" "}
               {CONTACT_EMAIL}
-              <br />
-              Address: [Your Company Address]
             </p>
           </section>
         </div>

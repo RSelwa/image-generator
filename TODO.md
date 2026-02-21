@@ -59,9 +59,13 @@
   - [x] ajouter des bouttons back to lobby / new game, when in finished screen
   - [x] Fix starting screen when game is Loading
   - [x] end game screen⌛️
+  - [ ] Add combobox for games suggestions
+  - [ ] Fix, when users is closing the tab, it should remove them from the lobby
+  - [ ] Add a modal for suggestions only, not particulary games
   - [ ] mettre un array players qui contient que les id à la racine du doc de lobby pour simplifier firestore query
   - [ ] Add a button How to play wich gonna open a modal wich gonna be carousel with examples
   - [ ] Ajouter des tests sur ces bouttons
+  - [ ] Ajouter la selection d'avatar sur la popup pseudo after login
   - [ ] Utiliser driver js pour présenter les trucs des rounds spéciaux 
   - [ ] When playing close window and try to get back, verify that it's allowed
   - [ ] Ajouter une image pour le share seo

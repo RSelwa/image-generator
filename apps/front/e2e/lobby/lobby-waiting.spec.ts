@@ -40,18 +40,20 @@ test.describe("lobby Waiting", () => {
     test("should remove me from the players", async ({ page }) => {
       const user = await setupUser()
       await loginViaUI(page, user.email)
-      
+
       await hideDriverTutorial(page)
 
       const lobbyId = await createLobbyViaUI(page)
       const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
 
       expect(lobbyDoc.data()?.players.map((player) => player.uid)).toContain(user.id)
+      expect(lobbyDoc.data()?.playersIds).toContain(user.id)
 
       await page.goto("/")
       const removedDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
 
       expect(removedDoc.data()?.players.map((player) => player.uid)).not.toContain(user.id)
+      expect(removedDoc.data()?.playersIds).not.toContain(user.id)
     })
   })
 
@@ -279,6 +281,34 @@ test.describe("lobby Waiting", () => {
   })
 
   test.describe("When joining a lobby with the url", () => {
+    test("should populate playersIds when a new user joins via the join URL", async ({ browser }) => {
+      const host = await setupUser()
+      const joiner = await setupUser()
+
+      const playerHost = createPlayerFromUserDoc(host)
+
+      const lobby = lobbyFactory({
+        hostId: host.id,
+        players: [playerHost],
+      })
+
+      await createFirestoreLobbyDoc(lobby)
+
+      const context = await browser.newContext()
+      const page = await context.newPage()
+
+      await loginViaUI(page, joiner.email)
+      await page.goto(`/join-lobby/${lobby.code}`)
+
+      await expect(page).toHaveURL(`/lobby/${lobby.id}`, { timeout: 10000 })
+
+      const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobby.id).get()
+      expect(lobbyDoc.data()?.playersIds).toContain(joiner.id)
+      expect(lobbyDoc.data()?.playersIds).toContain(host.id)
+
+      await context.close()
+    })
+
     test("Should be redirected to the lobby page if already connected", async ({ browser }) => {
       const host = await setupUser()
       const joiner = await setupUser()

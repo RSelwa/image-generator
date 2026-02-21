@@ -20,7 +20,7 @@ export const SphericalFullScreen = (props: { id: string, gameId: string }) => {
   const { data } = useGetSphericalByIdQuery(props)
 
   return (
-    <div className="size-full">
+    <div className="h-full-height w-full">
       {data?.image && <ReactSphere src={data.image} />}
     </div>
   )

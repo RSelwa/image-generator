@@ -47,85 +47,85 @@ export const NavUser = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         data-testid="nav-user-dropdown-trigger"
-        className="flex w-fit lg:w-56 items-center gap-2 outline-none"
+        className="flex w-fit items-center gap-2 outline-none"
       >
-        <Avatar className="size-9 rounded-lg">
-          <AvatarImage src={user.avatar} alt={user.email} />
-          <AvatarFallback className="rounded-lg">{firstLetter(user.pseudo)}</AvatarFallback>
-        </Avatar>
-        <div className="grid text-left text-sm leading-tight">
-          <span className="truncate font-medium">{user.pseudo}</span>
-          {/* <span className="truncate text-xs">{user.email}</span> */}
+        <div className="grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight">
+          {user.pseudo}
         </div>
-        <ChevronsUpDown className="ml-auto size-4" />
+        <Avatar className="size-9">
+          <AvatarImage src={user.avatar} alt={user.email} />
+          <AvatarFallback>{firstLetter(user.pseudo)}</AvatarFallback>
+        </Avatar>
+        {/* <ChevronsUpDown className="ml-auto size-4" /> */}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
         side="bottom"
         align="end"
         sideOffset={8}
+        alignOffset={-8}
       >
-        <DropdownMenuLabel className="p-0 font-normal">
+        {/* <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage src={user.avatar} alt={user.email} />
-              <AvatarFallback className="rounded-lg">{firstLetter(user.pseudo)}</AvatarFallback>
-            </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
+            <div className="grid flex-1 text-right text-sm leading-tight">
               <span className="truncate font-medium">{user.pseudo}</span>
               <span className="truncate text-xs">{user.email}</span>
             </div>
+            <Avatar className="size-9">
+              <AvatarImage src={user.avatar} alt={user.email} />
+              <AvatarFallback className="rounded-lg">{firstLetter(user.pseudo)}</AvatarFallback>
+            </Avatar>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator /> */}
         {isAdmin &&
           <>
-          <DropdownMenuSub>
+            <DropdownMenuSub>
               <DropdownMenuSubTrigger>Admin</DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
-              <DropdownMenuItem asChild>
-                <Link href={PAGES.ADMIN_USERS} className="cursor-pointer">
-                  <User />
-                  Users
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={PAGES.ADMIN_GAMES} className="cursor-pointer">
-                  <Gamepad2 />
-                  Games
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={PAGES.ADMIN_SPHERICAL} className="cursor-pointer">
-                  <Globe2 />
-                  Sphericals
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={PAGES.ADMIN_FLATS} className="cursor-pointer">
-                  <Image />
-                  Flats
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={PAGES.ADMIN_SUGGESTIONS} className="cursor-pointer">
-                  <Lightbulb />
-                  Suggestions
-                </Link>
-              </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={PAGES.SEED_MAKER} className="cursor-pointer">
-                <Gamepad2 />
-                Make a round
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={PAGES.MY_SEEDS} className="cursor-pointer">
-                <Sprout />
-                My Seeds
-              </Link>
-            </DropdownMenuItem>
-            </DropdownMenuSubContent>
+                <DropdownMenuItem asChild>
+                  <Link href={PAGES.ADMIN_USERS} className="cursor-pointer">
+                    <User />
+                    Users
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={PAGES.ADMIN_GAMES} className="cursor-pointer">
+                    <Gamepad2 />
+                    Games
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={PAGES.ADMIN_SPHERICAL} className="cursor-pointer">
+                    <Globe2 />
+                    Sphericals
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={PAGES.ADMIN_FLATS} className="cursor-pointer">
+                    <Image />
+                    Flats
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={PAGES.ADMIN_SUGGESTIONS} className="cursor-pointer">
+                    <Lightbulb />
+                    Suggestions
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={PAGES.SEED_MAKER} className="cursor-pointer">
+                    <Gamepad2 />
+                    Make a round
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={PAGES.MY_SEEDS} className="cursor-pointer">
+                    <Sprout />
+                    My Seeds
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
             </DropdownMenuSub>
             <LobbyDebug />
             <DropdownMenuSeparator />

@@ -9,7 +9,7 @@ import { cn } from "@/utils"
 const DropdownMenu = ({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) => (
-  <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+  <DropdownMenuPrimitive.Root modal={false} data-slot="dropdown-menu" {...props} />
 )
 
 const DropdownMenuPortal = ({

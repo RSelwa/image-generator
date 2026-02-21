@@ -31,8 +31,9 @@ const AvatarImage = ({
 }: React.ComponentProps<typeof AvatarPrimitive.Image>) => (
   <AvatarPrimitive.Image
     data-slot="avatar-image"
+    style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})`}}
     className={cn("aspect-square size-full rounded-full overflow-hidden object-cover",
-      `rounded-none bg-cover bg-[url(${AVATARS_BACKGROUND_URLS.PERIMETER})]`, className)}
+      `rounded-none bg-cover`, className)}
     {...props}
   />
 )
