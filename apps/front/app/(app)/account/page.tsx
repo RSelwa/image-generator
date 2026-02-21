@@ -39,7 +39,8 @@ const AccountForm = () => {
     register,
     reset,
     watch,
-    setValue
+    setValue,
+    formState:{isDirty},
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -89,8 +90,8 @@ const AccountForm = () => {
       <Card>
         <CardHeader className="flex justify-between">
           <div>
-            <CardTitle>Profile Picture</CardTitle>
-            <CardDescription>Your avatar visible to other players</CardDescription>
+            <CardTitle className="font-interference">Profile Picture</CardTitle>
+            <CardDescription className="font-mono">Your avatar visible to other players</CardDescription>
           </div>
           <Popover>
             <PopoverTrigger>
@@ -103,10 +104,9 @@ const AccountForm = () => {
             </PopoverTrigger>
             <PopoverContent align="end" className="w-auto grid grid-cols-4 gap-4">
               {Object.values(AVATARS_KEYS).map((avatarKey) => (
-                <button key={avatarKey} className="size-32 hover:bg-primary cursor-pointer" onClick={() =>
-                  setValue("avatar", avatarKey)
+                <button key={avatarKey} className="size-16 lg:size-32 hover:bg-primary cursor-pointer" onClick={() =>
+                  setValue("avatar", avatarKey, { shouldDirty: true })
                 }>
-
                   <Image src={getAvatarUrl(avatarKey)} alt={`Avatar of ${avatarKey}`} width={370} height={370} className={`bg-[url(${AVATARS_BACKGROUND_URLS.PERIMETER})] bg-cover`} />
                 </button>
               ))}
@@ -137,7 +137,7 @@ const AccountForm = () => {
       </Card>
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={isLoading}>
+        <Button variant={isDirty? "marathon": "marathon-outline"} type="submit" disabled={isLoading}>
           {isLoading && <Loader className="size-4" />}
           Save changes
         </Button>

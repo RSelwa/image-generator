@@ -47,15 +47,15 @@ export const NavUser = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         data-testid="nav-user-dropdown-trigger"
-        className="flex w-56 items-center gap-2 outline-none"
+        className="flex w-fit lg:w-56 items-center gap-2 outline-none"
       >
         <Avatar className="size-9 rounded-lg">
           <AvatarImage src={user.avatar} alt={user.email} />
           <AvatarFallback className="rounded-lg">{firstLetter(user.pseudo)}</AvatarFallback>
         </Avatar>
-        <div className="grid flex-1 text-left text-sm leading-tight">
+        <div className="grid text-left text-sm leading-tight">
           <span className="truncate font-medium">{user.pseudo}</span>
-          <span className="truncate text-xs">{user.email}</span>
+          {/* <span className="truncate text-xs">{user.email}</span> */}
         </div>
         <ChevronsUpDown className="ml-auto size-4" />
       </DropdownMenuTrigger>

@@ -58,8 +58,12 @@ const GameMapGuess = () => {
       onSubmit={submitDistance}
       className="fixed bottom-6 right-6 z-50 flex flex-col gap-2"
     >
-      <p className="w-full bg-background text-foreground rounded-sm py-1 text-center text-shadow text-xl font-semibold">
-        {currentRoundData.gameTitle}
+      <p className="w-full bg-background text-foreground py-1 flex text-center items-center justify-around text-shadow text-xl font-semibold">
+        <span className="text-primary">+</span>
+        <span>
+          {currentRoundData.gameTitle}
+          </span>
+        <span className="text-primary">+</span>
       </p>
 
       <MiniMap
@@ -70,7 +74,6 @@ const GameMapGuess = () => {
             height: currentRoundData.mapHeight || 0,
           },
           correctPosition: currentRoundData.mapPosition,
-
         }}
         showCorrectMarker={false}
         guessPosition={playPosition}

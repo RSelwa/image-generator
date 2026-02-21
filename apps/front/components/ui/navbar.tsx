@@ -14,7 +14,7 @@ import { Logo } from "@/components/icons/logo"
 export const LogoHeader = ({ href, className }: ComponentProps<"a">) => (
     <Link href={href || PAGES.HOME} className={cn("flex items-center gap-4", className)}>
       <NewLogoIcon className="size-15 bg-primary p-4 text-primary-foreground" />
-    <Logo className="h-10 text-primary" />
+      <Logo className="h-10 hidden lg:block text-primary" />
     </Link>
 )
 

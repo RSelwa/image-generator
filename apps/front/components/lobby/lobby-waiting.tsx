@@ -140,222 +140,222 @@ const LobbyWaiting = () => {
 
   return (
     <main className="min-h-full-height flex items-center justify-center relative bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
-      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0"/>
-      <div className=" bg-background/80 space-y-8 w-3/4 z-10">
-      <section id={DRIVER_IDS.LOBBY_PLAYERS} className="w-full flex flex-col border border-dashed items-center gap-4 p-6  text-muted-primary-foreground">
-        <p className="text-lg ">Players in lobby: {lobby.players.length}/{lobby.config.maxPlayers}</p>
-        <LobbyAvatars />
-        {!isOnlyPlayer && <p>
-          Ready:
-          {" "}
-          {lobby.players.filter((p) => p.isReady).length}
-          /
-          {lobby.players.length}
-        </p>}
-      </section>
-      <section className="grid grid-cols-2 gap-8">
-        <article id={DRIVER_IDS.LOBBY_CONFIG} className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
-          <h2 className="mb-8">Config</h2>
-          <div className="flex flex-col items-center gap-4">
-            <Separator orientation="horizontal" />
-            <Field orientation="horizontal" className="justify-between">
-              <FieldDescription>
-                Number of rounds:
-              </FieldDescription>
+      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0" />
+      <div className="bg-background/80 space-y-8 lg:w-3/4 w-5/6 z-10 lg:my-0 my-4">
+        <section id={DRIVER_IDS.LOBBY_PLAYERS} className="w-full flex flex-col border border-dashed items-center gap-4 p-6  text-muted-primary-foreground">
+          <p className="text-lg ">Players in lobby: {lobby.players.length}/{lobby.config.maxPlayers}</p>
+          <LobbyAvatars />
+          {!isOnlyPlayer && <p>
+            Ready:
+            {" "}
+            {lobby.players.filter((p) => p.isReady).length}
+            /
+            {lobby.players.length}
+          </p>}
+        </section>
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <article id={DRIVER_IDS.LOBBY_CONFIG} className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
+            <h2 className="mb-8">Config</h2>
+            <div className="flex flex-col items-center gap-4">
+              <Separator orientation="horizontal" />
+              <Field orientation="horizontal" className="justify-between">
+                <FieldDescription>
+                  Number of rounds:
+                </FieldDescription>
 
-              <Select
-                value={lobby.config.numberOfRounds.toString()}
-                onValueChange={(value) => changeConfig({ numberOfRounds: Number.parseInt(value) })}
-                disabled={disabled || hasLobbySeed}
-              >
-                <SelectTrigger
-                  data-testid="select-number-rounds-trigger"
-                  className="w-20"
+                <Select
+                  value={lobby.config.numberOfRounds.toString()}
+                  onValueChange={(value) => changeConfig({ numberOfRounds: Number.parseInt(value) })}
+                  disabled={disabled || hasLobbySeed}
                 >
-                  <SelectValue
-                    placeholder={`Number of rounds: ${lobby.config.numberOfRounds}`}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {OPTIONS_NUMBER_OF_ROUNDS.map((roundNumber) => (
-                    <SelectItem
-                      data-testid={`select-number-rounds-${roundNumber}-item`}
-
-                      key={roundNumber}
-                      value={roundNumber.toString()}
-                    >
-                      {roundNumber}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-            </Field>
-            <Separator orientation="horizontal" />
-
-            <Field orientation="horizontal" className="justify-between">
-              <FieldDescription>
-                Players lives:
-              </FieldDescription>
-              <Select
-                value={lobby.config.playersLives?.toString()}
-                onValueChange={(value) => changeConfig({ playersLives: value !== "null" ? Number.parseInt(value) : null })}
-                disabled={disabled}
-
-              >
-                <SelectTrigger
-                  data-testid="select-player-live-trigger"
-                  className="w-20"
-                >
-                  <SelectValue placeholder={`Players lives: ${lobby.config.playersLives || "Unlimited"}`} />
-                </SelectTrigger>
-                <SelectContent>
-                  {OPTIONS_PLAYERS_LIVES.map((playerLive) => (
-                    <SelectItem
-                      data-testid={`select-player-live-${playerLive}-item`}
-                      key={playerLive}
-                      value={playerLive?.toString() || "null"}
-                    >
-                      {playerLive || "Unlimited"}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-            <Separator orientation="horizontal" />
-            <Field orientation="horizontal" className="justify-between">
-              <FieldDescription>
-                Round duration:
-              </FieldDescription>
-              <Select
-                value={lobby.config.roundDuration?.toString()}
-                onValueChange={(value) => changeConfig({ roundDuration: Number.parseInt(value) })}
-                disabled={disabled}
-              >
-                <SelectTrigger
-                  data-testid="select-round-duration-trigger"
-                  className="w-20"
-                >
-                  <SelectValue placeholder={`Rounds duration: ${lobby.config.roundDuration}`} />
-                </SelectTrigger>
-                <SelectContent>
-                  {OPTIONS_ROUND_DURATIONS.map((roundDuration) => (
-                    <SelectItem
-                      data-testid={`select-round-duration-${roundDuration}-item`}
-                      key={roundDuration}
-                      value={roundDuration.toString()}
-                    >
-                      {roundDuration}s
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-            <Separator orientation="horizontal" />
-
-            <Field orientation="horizontal" className="justify-between">
-              <Switch
-                id="special-rounds"
-                data-testid="special-rounds"
-                checked={lobby.config.hasSpecialRounds}
-                onCheckedChange={(checked) =>
-                  changeConfig({ hasSpecialRounds: checked })}
-                disabled={disabled || hasLobbySeed}
-              />
-              <FieldDescription>
-
-                <Label htmlFor="special-rounds">Has special Rounds </Label>
-              </FieldDescription>
-
-            </Field>
-          </div>
-        </article>
-        <article className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
-          <h2 className="mb-8">Seed</h2>
-          <form autoComplete="off" onSubmit={handleSubmit(onSubmitSeed)}>
-            <InputGroup id={DRIVER_IDS.LOBBY_SEED}>
-              <InputGroupInput
-                placeholder="Paste seed here"
-                data-testid="seed-input"
-                disabled={isLoading || disabled}
-                {...register("seed")}
-                onPaste={(e) => {
-                  if (e.clipboardData.getData("text")) setTimeout(() => handleSubmit(onSubmitSeed)(), 0)
-                }}
-              />
-              <InputGroupAddon>
-                {!hasLobbySeed && (
-                  <InputGroupButton
-                    data-testid="apply-seed-button"
-                    type="submit"
+                  <SelectTrigger
+                    data-testid="select-number-rounds-trigger"
+                    className="w-20"
                   >
-                    <ArrowRight className="size-4" />
-                  </InputGroupButton>
-                )}
+                    <SelectValue
+                      placeholder={`Number of rounds: ${lobby.config.numberOfRounds}`}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OPTIONS_NUMBER_OF_ROUNDS.map((roundNumber) => (
+                      <SelectItem
+                        data-testid={`select-number-rounds-${roundNumber}-item`}
 
-                {hasLobbySeed && (
-                  <InputGroupButton
-                    data-testid="clear-seed-button"
-                    onClick={async () => applySeed({ lobbyId: lobby.id, seedId: "" })}
+                        key={roundNumber}
+                        value={roundNumber.toString()}
+                      >
+                        {roundNumber}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+              </Field>
+              <Separator orientation="horizontal" />
+
+              <Field orientation="horizontal" className="justify-between">
+                <FieldDescription>
+                  Players lives:
+                </FieldDescription>
+                <Select
+                  value={lobby.config.playersLives?.toString()}
+                  onValueChange={(value) => changeConfig({ playersLives: value !== "null" ? Number.parseInt(value) : null })}
+                  disabled={disabled}
+
+                >
+                  <SelectTrigger
+                    data-testid="select-player-live-trigger"
+                    className="w-20"
                   >
-                    <Trash className="size-4" />
-                  </InputGroupButton>
-                )}
-              </InputGroupAddon>
-            </InputGroup>
+                    <SelectValue placeholder={`Players lives: ${lobby.config.playersLives || "Unlimited"}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OPTIONS_PLAYERS_LIVES.map((playerLive) => (
+                      <SelectItem
+                        data-testid={`select-player-live-${playerLive}-item`}
+                        key={playerLive}
+                        value={playerLive?.toString() || "null"}
+                      >
+                        {playerLive || "Unlimited"}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Separator orientation="horizontal" />
+              <Field orientation="horizontal" className="justify-between">
+                <FieldDescription>
+                  Round duration:
+                </FieldDescription>
+                <Select
+                  value={lobby.config.roundDuration?.toString()}
+                  onValueChange={(value) => changeConfig({ roundDuration: Number.parseInt(value) })}
+                  disabled={disabled}
+                >
+                  <SelectTrigger
+                    data-testid="select-round-duration-trigger"
+                    className="w-20"
+                  >
+                    <SelectValue placeholder={`Rounds duration: ${lobby.config.roundDuration}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OPTIONS_ROUND_DURATIONS.map((roundDuration) => (
+                      <SelectItem
+                        data-testid={`select-round-duration-${roundDuration}-item`}
+                        key={roundDuration}
+                        value={roundDuration.toString()}
+                      >
+                        {roundDuration}s
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Separator orientation="horizontal" />
 
-          </form>
-        </article>
-      </section>
-      <section className="w-full flex justify-center border border-dashed items-center gap-4 p-6 ">
-        <Button id={DRIVER_IDS.JOIN_LOBBY_LINK} variant="marathon-white" onClick={copyUrl}>
-          Join this lobby: {lobby.code} <ArrowUpRightFromSquareIcon className="size-4" />
-        </Button>
+              <Field orientation="horizontal" className="justify-between">
+                <FieldDescription>
+                  <Label htmlFor="special-rounds">Enable special rounds </Label>
+                </FieldDescription>
+                <Switch
+                  id="special-rounds"
+                  data-testid="special-rounds"
+                  checked={lobby.config.hasSpecialRounds}
+                  onCheckedChange={(checked) =>
+                    changeConfig({ hasSpecialRounds: checked })}
+                  disabled={disabled || hasLobbySeed}
+                />
 
-        {isOnlyPlayer && <Button
-          id={DRIVER_IDS.START_BUTTON_SOLO}
-          data-testid="start-lobby-button-solo"
-          onClick={async () => {
-            updatePlayerReady({
-              lobbyId,
-              playerId: userId,
-              isReady: !isMeReady
-            })
-            await startLobby({ lobbyId })
-          }}>Play!</Button>}
-        {!isOnlyPlayer &&
-          <>
-            <Button
-              id={DRIVER_IDS.READY_BUTTON}
-              data-testid="ready-button"
-              variant={isMeReady ? "marathon-outline" : "marathon"}
-              onClick={() => updatePlayerReady({
+
+              </Field>
+            </div>
+          </article>
+          <article className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
+            <h2 className="mb-8">Seed</h2>
+            <form autoComplete="off" onSubmit={handleSubmit(onSubmitSeed)}>
+              <InputGroup id={DRIVER_IDS.LOBBY_SEED}>
+                <InputGroupInput
+                  placeholder="Paste seed here"
+                  data-testid="seed-input"
+                  disabled={isLoading || disabled}
+                  {...register("seed")}
+                  onPaste={(e) => {
+                    if (e.clipboardData.getData("text")) setTimeout(() => handleSubmit(onSubmitSeed)(), 0)
+                  }}
+                />
+                <InputGroupAddon>
+                  {!hasLobbySeed && (
+                    <InputGroupButton
+                      data-testid="apply-seed-button"
+                      type="submit"
+                    >
+                      <ArrowRight className="size-4" />
+                    </InputGroupButton>
+                  )}
+
+                  {hasLobbySeed && (
+                    <InputGroupButton
+                      data-testid="clear-seed-button"
+                      onClick={async () => applySeed({ lobbyId: lobby.id, seedId: "" })}
+                    >
+                      <Trash className="size-4" />
+                    </InputGroupButton>
+                  )}
+                </InputGroupAddon>
+              </InputGroup>
+
+            </form>
+          </article>
+        </section>
+        <section className="w-full flex flex-col lg:flex-row justify-center border border-dashed items-center gap-4 p-6 ">
+          <Button id={DRIVER_IDS.JOIN_LOBBY_LINK} variant="marathon-white" onClick={copyUrl}>
+            Join this lobby: {lobby.code} <ArrowUpRightFromSquareIcon className="size-4" />
+          </Button>
+
+          {isOnlyPlayer && <Button
+            id={DRIVER_IDS.START_BUTTON_SOLO}
+            data-testid="start-lobby-button-solo"
+            onClick={async () => {
+              updatePlayerReady({
                 lobbyId,
                 playerId: userId,
                 isReady: !isMeReady
-              })}
-            >
-              {isMeReady ? "Cancel ready" : "I'm ready"}
-            </Button>
-            <HoverCard>
-              <HoverCardTrigger>
-                <Button
-                  id={DRIVER_IDS.START_BUTTON}
-                  data-testid="start-lobby-button"
-                  variant={areAllPlayersReady ? "marathon" : "marathon-outline"}
-                  disabled={disabled || !areAllPlayersReady}
-                  onClick={async () => await startLobby({ lobbyId })}
-                >
-                  Start Lobby
-                </Button>
-              </HoverCardTrigger>
-              <HoverCardContent className="text-foreground bg-primary/50 text-center">
-                Only the host can start the lobby
-              </HoverCardContent>
-            </HoverCard>
-          </>
-        }
-      </section>
+              })
+              await startLobby({ lobbyId })
+            }} className="w-full lg:w-auto">Play!</Button>}
+          {!isOnlyPlayer &&
+            <>
+              <Button
+                id={DRIVER_IDS.READY_BUTTON}
+                data-testid="ready-button"
+                variant={isMeReady ? "marathon-outline" : "marathon"}
+                onClick={() => updatePlayerReady({
+                  lobbyId,
+                  playerId: userId,
+                  isReady: !isMeReady
+                })}
+              >
+                {isMeReady ? "Cancel ready" : "I'm ready"}
+              </Button>
+              <HoverCard>
+                <HoverCardTrigger>
+                  <Button
+                    id={DRIVER_IDS.START_BUTTON}
+                    data-testid="start-lobby-button"
+                    variant={areAllPlayersReady ? "marathon" : "marathon-outline"}
+                    disabled={disabled || !areAllPlayersReady}
+                    onClick={async () => await startLobby({ lobbyId })}
+                  >
+                    Start Lobby
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent className="text-foreground bg-primary/50 text-center">
+                  Only the host can start the lobby
+                </HoverCardContent>
+              </HoverCard>
+            </>
+          }
+        </section>
       </div>
 
     </main>

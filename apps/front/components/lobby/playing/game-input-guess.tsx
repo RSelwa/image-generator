@@ -12,6 +12,7 @@ import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { useGetAllGamesNamesQuery } from "@/redux/api/games"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 
 
@@ -20,6 +21,7 @@ const GameInputGuess = () => {
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const gameFormRef = useRef<HTMLFormElement>(null)
+  const isMobile = useIsMobile()
 
   const [submitRoundAnswer] = useSubmitRoundAnswerMutation()
   const [incrementLivesUsed] = useIncrementPlayerLivesUsedMutation()
@@ -32,6 +34,8 @@ const {data: allGamesNames} = useGetAllGamesNamesQuery()
   const selectedOption = useAppSelector(selectSelectedOption(lobbyId, roundIndex))
   const config = useAppSelector(selectLobbyConfig(lobbyId))
   const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
+
+  const gameList = allGamesNames?.filter(({title}) => title.includes("")) || []
 
   const verifyGameName = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -67,7 +71,7 @@ const {data: allGamesNames} = useGetAllGamesNamesQuery()
   }
 
   return (
-    <form ref={gameFormRef} onSubmit={verifyGameName} autoComplete="off" className="absolute z-10 left-1/2 -translate-1/2 bottom-8 flex flex-col items-center gap-4">
+    <form ref={gameFormRef} onSubmit={verifyGameName} autoComplete="off" className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-8 flex flex-col items-center gap-4">
       {config?.playersLives && (
 
         <div data-testid="lives-container" className="w-full flex justify-center items-center gap-8">
@@ -108,8 +112,8 @@ const {data: allGamesNames} = useGetAllGamesNamesQuery()
         name="input"
         type="text"
         placeholder="Your answer"
-        autoFocus
-        className="bg-background/50! text-2xl! font-bold placeholder:text-foreground/70 text-foreground min-w-96 py-6"
+        autoFocus={!isMobile}
+        className="bg-background/50! text-2xl! font-bold placeholder:text-foreground/70 text-foreground w-5/6 lg:w-96 py-6"
       />
     </form>
   )

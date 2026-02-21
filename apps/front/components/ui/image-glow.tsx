@@ -67,7 +67,7 @@ export const ImageGlow = ({
   if (typeof baseImage !== "string") return null
 
   return (
-    <div className={cn("relative")} onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
+    <div className={cn("relative", className)} onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
       {styledImage}
       <div style={blurStyle(baseImage, radius, saturation, isBlurOnHover ? isHover ? 1 : 0 : opacity)} />
     </div>

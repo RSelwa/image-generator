@@ -41,7 +41,7 @@ export const LobbyAvatars = () => {
   }
 
   return (
-    <div className="flex gap-4 items-center justify-center">
+    <div className="grid grid-cols-4 lg:grid-cols-8 gap-4 items-center justify-center">
 
       {Array.from({ length: lobby.config.maxPlayers }, (_, i) => {
         const player = lobby.players?.[i]

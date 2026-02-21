@@ -4,6 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-sans: var(--font-shapiro);
+  --font-mono: var(--font-fraktion-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -47,12 +49,11 @@
 }
 
 @theme {
-  --font-sans: var(--font-shapiro), sans-serif;
-  --font-mono: var(--font-fraktion-mono), monospace;
   --font-fraktion: var(--font-fraktion), sans-serif;
   --font-fraktion-mono: var(--font-fraktion-mono), monospace;
   --font-interference: var(--font-interference), sans-serif;
   --font-shapiro: var(--font-shapiro), sans-serif;
+  --font-shapiro-wide: var(--font-shapiro-wide), sans-serif;
   --inset-shadow-marathon: inset 0 0px 0px 1px var(--primary);
   --inset-shadow-marathon-white: inset 0 0px 0px 1px var(--foreground);
   --shadow-glow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25);

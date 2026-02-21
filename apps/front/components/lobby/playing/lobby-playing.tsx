@@ -14,6 +14,7 @@ import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRo
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 import LoadingGameData from "@/components/lobby/playing/loading-game-data"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 const LobbyPlaying = () => {
   const pathname = usePathname()
@@ -41,6 +42,7 @@ const LobbyPlaying = () => {
   const timerStart = isWaitingForSelection ? null : ((isMapPhase && myAnswer?.submittedAt) || myAnswer?.selectedOptionAt || lobby?.roundStartedAt)
 
   const { isExpired } = useCountdown(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
+  const isMobile = useIsMobile()
 
   const hasSubmittedAnswer = Boolean((gameTitle && myAnswer?.isCorrect))
   const hasFinishedRound = (hasSubmittedAnswer && !currentRoundData?.mapId) || (hasSubmittedAnswer && (currentRoundData?.mapId && myAnswer?.position))
@@ -48,6 +50,7 @@ const LobbyPlaying = () => {
   const isDisplayTimer = !isDisplayGame && Boolean(timerStart)
   const isDisplayInput = !myAnswer?.isCorrect && !isExpired && !isEliminated && !isWaitingForSelection
   const isDisplayMap = isMapPhase && !isDisplayGame && !isEliminated && currentRoundData?.mapPosition
+  const isDisplayRoundInfos = !isMobile && !isDisplayGame
 
   if (isLobbyLoading || !lobby) return <div>Loading...</div>
 
@@ -59,7 +62,7 @@ const LobbyPlaying = () => {
       {isDisplayTimer && <Timer />}
       {isDisplayGame && <DisplayGame />}
 
-      <RoundInfos />
+      {isDisplayRoundInfos && <RoundInfos />}
 
       {isDisplayInput && <GameInputGuess />}
 

@@ -63,6 +63,7 @@
   - [ ] Add a button How to play wich gonna open a modal wich gonna be carousel with examples
   - [ ] Ajouter des tests sur ces bouttons
   - [ ] Utiliser driver js pour présenter les trucs des rounds spéciaux 
+  - [ ] When playing close window and try to get back, verify that it's allowed
   - [ ] Ajouter une image pour le share seo
   - [ ] Ajouter les meta pour chaque page
   - [ ] Ajouter une belle page 404

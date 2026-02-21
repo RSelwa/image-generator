@@ -42,6 +42,11 @@ const shapiro = localFont({
   variable: "--font-shapiro",
 })
 
+const shapiroWide = localFont({
+  src: "../public/fonts/Shapiro-wide.woff2",
+  variable: "--font-shapiro-wide",
+})
+
 export const metadata: Metadata = {
   title: APP_NAME,
   description: "The geo-guessr for games",
@@ -56,7 +61,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         data-marathon
-        className={`${geistSans.variable} ${fraktion.variable} ${fraktionMono.variable} ${interference.variable} ${shapiro.variable} antialiased dark`}
+        className={`${geistSans.variable} ${fraktion.variable} ${shapiroWide.variable} ${fraktionMono.variable} ${interference.variable} ${shapiro.variable} antialiased dark`}
       >
         <Suspense>
           <NuqsAdapter>

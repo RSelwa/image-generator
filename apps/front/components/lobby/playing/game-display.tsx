@@ -1,7 +1,7 @@
 import { Separator } from "@radix-ui/react-separator"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Fragment, useEffect, useState } from "react"
+import { ComponentProps, Fragment, useEffect, useState } from "react"
 import * as React from "react"
 import MiniMap from "@/components/mini-map"
 import { Button } from "@/components/ui/button"
@@ -17,7 +17,7 @@ import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 import LoadingGameData from "@/components/lobby/playing/loading-game-data"
 
-const NextRoundButton = () => {
+const NextRoundButton = (props:ComponentProps<"button">) => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
@@ -30,7 +30,7 @@ const NextRoundButton = () => {
 
   if (isEveryoneReady) {
     return (
-      <Button data-testid="next-round-button" onClick={() => nextRound({ lobbyId })}>
+      <Button data-testid="next-round-button" onClick={() => nextRound({ lobbyId })} {...props}>
         Next round
       </Button>
     )
@@ -39,7 +39,7 @@ const NextRoundButton = () => {
   return (
     <Popover open={popOverOpen} onOpenChange={setPopOverOpen}>
       <PopoverTrigger asChild>
-        <Button data-testid="next-round-button-popover">
+        <Button data-testid="next-round-button-popover" {...props}>
           Next round
         </Button>
 
@@ -60,7 +60,8 @@ const NextRoundButton = () => {
 }
 
 const Rounds = ({ currentRound, numberOfRounds }: { currentRound: number, numberOfRounds: number }) => (
-  <article className="flex items-center gap-3 text-white font-bold">
+  <>
+  <article className="hidden lg:flex items-center gap-3 text-foreground font-bold font-interference">
     {Array.from({ length: numberOfRounds }, (_, i) => (
       <Fragment key={i}>
         <div
@@ -75,6 +76,11 @@ const Rounds = ({ currentRound, numberOfRounds }: { currentRound: number, number
 
     ))}
   </article>
+  <article className="flex lg:hidden items-center gap-3 text-primary font-bold font-interference">
+      <span> {currentRound} </span>/ <span>{numberOfRounds}</span>
+    </article>
+  </>
+
 )
 
 const InfoRoundSpecial = () => {
@@ -90,7 +96,7 @@ const InfoRoundSpecial = () => {
       <ImageGlow>
         <Image data-testid={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || FALL_BACK_IMAGE} height={300} width={300} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
       </ImageGlow>
-      <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-white text-lg" initialDelay={1.5} />
+      <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-foreground text-lg" initialDelay={1.5} />
     </>
   )
 }
@@ -136,9 +142,9 @@ const InfosRoundNormal = () => {
 
   return (
 
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center justify-center gap-2">
       {(!hasGuessedGame) && (
-        <ImageGlow>
+        <ImageGlow className="max-w-5/6 flex items-center justify-center">
           <Image data-testid={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || FALL_BACK_IMAGE} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
         </ImageGlow>
       )}
@@ -162,10 +168,10 @@ const InfosRoundNormal = () => {
         />
       )}
 
-      <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-white text-lg" initialDelay={1.5} />
+      <TextRevealTW text={`Game guessed: +${currentAnswer?.gamePoints}pts`} className="text-foreground text-lg" initialDelay={1.5} />
 
-      <TextRevealTW text={targetPoints.toString()} className="text-white text-lg" initialDelay={2} />
-      <div className="text-white text-lg text-shadow flex items-center gap-2 transition-opacity duration-500 delay-[2s]">
+      <TextRevealTW text={targetPoints.toString()} className="text-foreground text-lg" initialDelay={2} />
+      <div className="text-foreground text-lg text-shadow flex items-center gap-2 transition-opacity duration-500 delay-[2s]">
         <span>
           0
         </span>
@@ -175,7 +181,7 @@ const InfosRoundNormal = () => {
         </span>
       </div>
 
-      <TextRevealTW initialDelay={4} text={`Total: +${currentAnswer?.points} Pts`} className="text-white text-lg" />
+      <TextRevealTW initialDelay={4} text={`Total: +${currentAnswer?.points} Pts`} className="text-foreground text-lg" />
 
     </div>
   )
@@ -222,15 +228,15 @@ export const DisplayGame = () => {
   if (!currentRoundData) return <LoadingGameData />
 
   return (
-    <section className="h-full-height absolute z-10 bg-background/90 w-full">
-      <div className="flex flex-col gap-8 justify-center items-center size-full">
+    <section className="h-full-height absolute z-10 bg-background/90 w-full font-mono">
+      <div className="flex flex-col lg:gap-8 gap-8 justify-center items-center size-full">
         <Rounds currentRound={lobby?.currentRound || 0} numberOfRounds={lobby?.config?.numberOfRounds || 0} />
-        <TextRevealTW text={currentRoundInfos?.gameTitle || "Game title"} className="text-white font-bold text-2xl" />
+        <TextRevealTW text={currentRoundInfos?.gameTitle || "Game title"} className="text-foreground font-bold font-shapiro-wide text-2xl" />
         {isRoundSpecial && <InfoRoundSpecial /> }
 
         {!isRoundSpecial && <InfosRoundNormal /> }
 
-        {isOwner && <NextRoundButton />}
+        {isOwner && <NextRoundButton className="mt-2" />}
       </div>
     </section>
   )
