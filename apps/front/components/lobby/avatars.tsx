@@ -13,7 +13,7 @@ import { getAvatarUrl } from "@/utils/file"
 
 const AvatarPlayer = ({ p, isOwner, isOnlyPlayer}: { p: Player, isOwner?: boolean, isOnlyPlayer?:boolean }) => (
   <Avatar>
-    <AvatarImage data-ready={p.isReady || isOnlyPlayer} className="data-[ready=true]:bg-primary  data-[ready=false]:bg-destructive" src={getAvatarUrl(p.avatar)} />
+    <AvatarImage style={{}} data-ready={p.isReady || isOnlyPlayer} className="data-[ready=true]:bg-primary  data-[ready=false]:bg-destructive" src={getAvatarUrl(p.avatar)} />
     <AvatarFallback className="font-bold">{firstLetter(p.name)}</AvatarFallback>
     {isOwner && <Crown className="absolute fill-primary -top-4 left-1/2 -translate-x-1/2 stroke-0" size={16} />}
   </Avatar>

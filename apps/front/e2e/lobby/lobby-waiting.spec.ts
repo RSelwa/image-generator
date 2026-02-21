@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker"
 import { expect, test } from "@playwright/test"
 import { TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
+import { rtdb } from "@repo/providers/firebase"
 import { createFirestoreDoc } from "@repo/testing/emulator"
 import { lobbyFactory, roundFactory, seedFactory } from "@repo/testing/factory"
 import {
@@ -16,28 +17,10 @@ import {
 } from "../helpers/lobby"
 
 test.describe("lobby Waiting", () => {
-  test.describe("when closing the tab", () => {
-    test.skip("should remove me from the players", async ({ page }) => {
-      const user = await setupUser()
-      await loginViaUI(page, user.email)
-      
-      await hideDriverTutorial(page)
 
-      const lobbyId = await createLobbyViaUI(page)
-      const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
-
-      expect(lobbyDoc.data()?.players.map((player) => player.uid)).toContain(user.id)
-
-      await page.close({ runBeforeUnload: true })
-
-      const removedDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
-
-      expect(removedDoc.data()?.players.map((player) => player.uid)).not.toContain(user.id)
-    })
-  })
-
-  test.describe("when changing tab", () => {
-    test("should remove me from the players", async ({ page }) => {
+  test.describe("when leaving the lobby", () => {
+    test("should remove me from the players if lobby is in waiting", async ({ page }) => {
+      test.setTimeout(60000)
       const user = await setupUser()
       await loginViaUI(page, user.email)
 
@@ -49,16 +32,57 @@ test.describe("lobby Waiting", () => {
       expect(lobbyDoc.data()?.players.map((player) => player.uid)).toContain(user.id)
       expect(lobbyDoc.data()?.playersIds).toContain(user.id)
 
-      await page.goto("/")
+      // Wait for RTDB presence to be set before closing
+      await expect.poll(async () => {
+        const snap = await rtdb.ref(`lobbies/${lobbyId}/players/${user.id}`).get()
+        console.log("[TEST] RTDB presence check:", snap.exists(), snap.val())
+        return snap.exists()
+      }, { timeout: 15000 }).toBe(true)
 
+      await page.close()
+
+      // Wait for onDisconnect + Cloud Function to remove the player from Firestore
       await expect.poll(async () => {
         const doc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
         return doc.data()?.playersIds?.includes(user.id)
-      }, { timeout: 5000 }).toBe(false)
+      }, { timeout: 30000 }).toBe(false)
 
       const removedDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
       expect(removedDoc.data()?.players.map((player) => player.uid)).not.toContain(user.id)
       expect(removedDoc.data()?.playersIds).not.toContain(user.id)
+    })
+
+    test("should not remove me from the players if lobby is in progress", async ({ page }) => {
+      test.setTimeout(60000)
+      const user = await setupUser()
+      const player = createPlayerFromUserDoc(user)
+
+      const lobby = lobbyFactory({
+        hostId: user.id,
+        players: [player],
+        status: "playing",
+      })
+
+      await createFirestoreLobbyDoc(lobby)
+
+      await loginViaUI(page, user.email)
+      await hideDriverTutorial(page)
+
+      await page.goto(`/lobby/${lobby.id}`)
+      await page.waitForURL(`/lobby/${lobby.id}`)
+
+      // Wait for RTDB presence — should NOT be set since lobby is not WAITING
+      await page.waitForTimeout(3000)
+      const snap = await rtdb.ref(`lobbies/${lobby.id}/players/${user.id}`).get()
+      expect(snap.exists()).toBe(false)
+
+      await page.close()
+
+      // Player should still be in Firestore since no RTDB presence was set
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobby.id).get()
+      expect(lobbyDoc.data()?.players.map((p) => p.uid)).toContain(user.id)
+      expect(lobbyDoc.data()?.playersIds).toContain(user.id)
     })
   })
 

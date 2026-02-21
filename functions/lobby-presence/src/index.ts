@@ -12,6 +12,11 @@ export const on_lobby_player_disconnected = onValueDeleted(
   async (event) => {
     const { lobbyId, userId } = event.params
 
+    logger.log(`[lobby-presence] Trigger fired!`)
+    logger.log(`[lobby-presence] Event ref: ${event.ref}`)
+    logger.log(`[lobby-presence] Event instance: ${event.instance}`)
+    logger.log(`[lobby-presence] Params: lobbyId=${lobbyId}, userId=${userId}`)
+    logger.log(`[lobby-presence] Deleted value: ${JSON.stringify(event.data.val())}`)
     logger.log(`Player ${userId} disconnected from lobby ${lobbyId}`)
 
     const lobbyRef = refs[TABLES.LOBBIES].doc(lobbyId)

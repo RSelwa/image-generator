@@ -31,14 +31,14 @@ if (!admin.apps.length) {
   if (process.env.FIRESTORE_EMULATOR_HOST) {
     admin.initializeApp({
       projectId: PROJECT_ID,
-      databaseURL: `http://${process.env.FIREBASE_DATABASE_EMULATOR_HOST || "127.0.0.1:9000"}?ns=${PROJECT_ID}`,
+      databaseURL: `http://${process.env.FIREBASE_DATABASE_EMULATOR_HOST || "127.0.0.1:9000"}?ns=${PROJECT_ID}-default-rtdb`,
     })
   } else {
     const credential = getCredential()
     admin.initializeApp({
       credential,
       storageBucket: `${PROJECT_ID}.firebasestorage.app`,
-      databaseURL: `https://${PROJECT_ID}-default-rtdb.europe-west1.firebasedatabase.app`,
+      databaseURL: `https://${PROJECT_ID}-default-rtdb.firebasedatabase.app`,
     })
   }
 

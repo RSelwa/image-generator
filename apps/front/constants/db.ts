@@ -14,7 +14,7 @@ const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 export const firebaseConfig = {
   apiKey,
   authDomain: `${projectId}.firebaseapp.com`,
-  databaseURL: `https://${projectId}.firebaseio.com`,
+  databaseURL: `https://${projectId}-default-rtdb.firebaseio.com`,
   projectId,
   storageBucket: `${projectId}.appspot.com`,
   messagingSenderId,

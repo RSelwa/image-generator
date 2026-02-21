@@ -12,7 +12,6 @@ import LobbyPlaying from "@/components/lobby/playing/lobby-playing"
 import { Button } from "@/components/ui/button"
 import { rtdb } from "@/constants/db"
 import { QUERY_PARAMS } from "@/constants/mapping"
-
 import { PAGES } from "@/constants/pages"
 import { useJoinLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
@@ -56,11 +55,21 @@ const LobbyMain = () => {
   useEffect(() => {
     if (!lobbyId || !user?.id || lobby?.status !== LOBBY_STATUS.WAITING) return
 
-    const presenceRef = ref(rtdb, `lobbies/${lobbyId}/players/${user.id}`)
+    const path = `lobbies/${lobbyId}/players/${user.id}`
+    const presenceRef = ref(rtdb, path)
+    console.log("[RTDB] Setting presence at path:", path)
+    console.log("[RTDB] Database URL:", rtdb.app.options.databaseURL)
     set(presenceRef, true)
+      .then(() => console.log("[RTDB] Presence set successfully at", path))
+      .catch((err) => console.error("[RTDB] Failed to set presence:", err))
     onDisconnect(presenceRef).remove()
+      .then(() => console.log("[RTDB] onDisconnect registered at", path))
+      .catch((err) => console.error("[RTDB] Failed to register onDisconnect:", err))
 
-    return () => { remove(presenceRef) }
+    return () => {
+      console.log("[RTDB] Cleanup: removing presence at", path)
+      remove(presenceRef)
+    }
   }, [lobbyId, user?.id, lobby?.status])
 
   useEffect(() => {
@@ -68,13 +77,6 @@ const LobbyMain = () => {
 
     // Demo lobbies are already started with the player joined — skip join logic
     if (lobby.isDemo) return
-
-    if (lobby.status !== LOBBY_STATUS.WAITING && lobby.status !== LOBBY_STATUS.FINISHED) {
-      toast.error("This lobby is no longer accepting players")
-      router.replace(PAGES.HOME)
-
-      return
-    }
 
     if ((isSessionReady && !user) || !user) {
       console.info("User not logged in, redirecting to login page")
@@ -93,8 +95,20 @@ const LobbyMain = () => {
       return
     }
 
+    // Allow existing players to reconnect regardless of lobby status
+    const isAlreadyInLobby = lobby.players.some((p) => p.uid === user.id)
+    if (isAlreadyInLobby) return
+
+    // Only allow new players to join during WAITING
+    if (lobby.status !== LOBBY_STATUS.WAITING) {
+      toast.error("This lobby is no longer accepting players")
+      router.replace(PAGES.HOME)
+
+      return
+    }
+
     const player = createPlayerFromSessionUser(user)
-    if (lobby.status === LOBBY_STATUS.WAITING) joinLobby({ lobbyId: lobby.id, player }).unwrap()
+    joinLobby({ lobbyId: lobby.id, player }).unwrap()
   }, [isSessionReady, user, user?.isAnonymous])
 
   const isUserInLobby = lobby?.players.some((p) => p.uid === user?.id)

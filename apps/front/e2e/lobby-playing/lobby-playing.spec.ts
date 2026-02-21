@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test"
+import { lobbyFactory } from "@repo/testing/factory"
 import { SELECTORS } from "@/constants/testing"
-import { createLobbyViaUI, hideDriverTutorial, loginViaUI, retrieveGamesFromLobby, setupUser, startLobbyViaUI, startSoloLobbyViaUI, waitForInputToBeVisible, waitToBeLogged } from "@/e2e/helpers/lobby"
+import { createFirestoreLobbyDoc, createLobbyViaUI, createPlayerFromUserDoc, hideDriverTutorial, loginViaUI, retrieveGamesFromLobby, setupUser, startSoloLobbyViaUI, waitForInputToBeVisible, waitToBeLogged } from "@/e2e/helpers/lobby"
+import { LOBBY_STATUS } from "@repo/common"
 
 test.describe("lobby playing", () => {
   test.describe("when is display game", () => {
@@ -12,6 +14,54 @@ test.describe("lobby playing", () => {
   test.describe("when is special round", () => {
     test.skip("should not start the timer while the player has not selected an option", () => {
 
+    })
+  })
+
+  test.describe("when joining a lobby while playing", () => {
+    test("should allow me to join and display the current game if already part of the player", async ({ page }) => {
+      const host = await setupUser()
+      const player2 = await setupUser()
+
+      const playerHost = createPlayerFromUserDoc(host)
+      const player2Player = createPlayerFromUserDoc(player2)
+
+      const lobby = lobbyFactory({
+        hostId: host.id,
+        players: [playerHost, player2Player],
+        status: LOBBY_STATUS.PLAYING,
+      })
+
+      await createFirestoreLobbyDoc(lobby)
+
+      await loginViaUI(page, player2.email)
+      await hideDriverTutorial(page)
+
+      await page.goto(`/lobby/${lobby.id}`)
+
+      await expect(page).toHaveURL(`/lobby/${lobby.id}`, { timeout: 10000 })
+    })
+
+    test("should not allow me to join and display the current game if not part of the player", async ({ page }) => {
+      const host = await setupUser()
+      const outsider = await setupUser()
+
+      const playerHost = createPlayerFromUserDoc(host)
+
+      const lobby = lobbyFactory({
+        hostId: host.id,
+        players: [playerHost],
+        status: LOBBY_STATUS.PLAYING,
+      })
+
+      await createFirestoreLobbyDoc(lobby)
+
+      await loginViaUI(page, outsider.email)
+      await hideDriverTutorial(page)
+
+      await page.goto(`/lobby/${lobby.id}`)
+
+      // Should be redirected home since outsider is not in players
+      await expect(page).toHaveURL("/", { timeout: 10000 })
     })
   })
 
