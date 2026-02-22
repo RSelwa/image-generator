@@ -18,6 +18,9 @@ import pyautogui
 
 # --- Configuration ---
 
+CLICK_MODE = False     # True = hold mouse button to move camera (default), False = just move mouse (Steam games)
+PRESS_ALT_TAB = False     # Whether to switch to the game window with Alt+Tab at the start (default: True)
+
 ROWS = 7              # vertical levels (bottom to top)
 COLS = 10             # horizontal screenshots per full 360° rotation
 
@@ -44,12 +47,16 @@ def main():
     print(f"Capturing {ROWS} rows x {COLS} cols = {TOTAL_SCREENSHOTS} screenshots")
     print(f"Full 360° = {FULL_ROTATION_PIXELS}px ({HORIZONTAL_STEP}px per step)")
     print(f"Output directory: {output_dir}")
-    print(f"Starting in {INITIAL_DELAY} seconds — focus your 3D environment now!")
+    print(f"Click mode: {'ON' if CLICK_MODE else 'OFF (Steam)'}")
+    print(f"Switching to game window...")
+    if CLICK_MODE:
+        pyautogui.hotkey('alt', 'tab')
     time.sleep(INITIAL_DELAY)
 
     screenshot_index = 0
 
-    pyautogui.mouseDown()
+    if CLICK_MODE:
+        pyautogui.mouseDown()
     try:
         for row in range(ROWS):
             for col in range(COLS):
@@ -74,7 +81,8 @@ def main():
                 pyautogui.moveRel(0, -VERTICAL_STEP, duration=0.3)
                 time.sleep(DELAY_BETWEEN_SHOTS)
     finally:
-        pyautogui.mouseUp()
+        if CLICK_MODE:
+            pyautogui.mouseUp()
 
     print(f"\nDone! {screenshot_index} screenshots saved to {output_dir}")
 
@@ -85,13 +93,16 @@ def debug():
     total = 0
 
     print(f"Starting debug mode — moving {step}px continuously. Press Ctrl+C to stop.")
-    print(f"Starting in {INITIAL_DELAY} seconds — focus your 3D environment!")
+    print(f"Click mode: {'ON' if CLICK_MODE else 'OFF (Steam)'}")
+    print(f"Switching to game window...")
+    pyautogui.hotkey('alt', 'tab')
     time.sleep(INITIAL_DELAY)
 
     screen_w, screen_h = pyautogui.size()
     center_x, center_y = screen_w // 2, screen_h // 2
     pyautogui.moveTo(center_x, center_y)
-    pyautogui.mouseDown()
+    if CLICK_MODE:
+        pyautogui.mouseDown()
     try:
         while True:
             pyautogui.moveRel(step, 0, duration=0.3)
@@ -101,7 +112,8 @@ def debug():
     except KeyboardInterrupt:
         pass
     finally:
-        pyautogui.mouseUp()
+        if CLICK_MODE:
+            pyautogui.mouseUp()
 
     print(f"\nTotal distance moved: {total}px")
     print(f"Set FULL_ROTATION_PIXELS = {total}")
@@ -113,13 +125,16 @@ def debug_vertical():
     total = 0
 
     print(f"Starting vertical debug — moving {step}px up continuously. Press Ctrl+C to stop.")
-    print(f"Starting in {INITIAL_DELAY} seconds — focus your 3D environment!")
+    print(f"Click mode: {'ON' if CLICK_MODE else 'OFF (Steam)'}")
+    print(f"Switching to game window...")
+    pyautogui.hotkey('alt', 'tab')
     time.sleep(INITIAL_DELAY)
 
     screen_w, screen_h = pyautogui.size()
     center_x, center_y = screen_w // 2, screen_h // 2
     pyautogui.moveTo(center_x, center_y)
-    pyautogui.mouseDown()
+    if CLICK_MODE:
+        pyautogui.mouseDown()
     try:
         while True:
             pyautogui.moveRel(0, -step, duration=0.3)
@@ -129,7 +144,8 @@ def debug_vertical():
     except KeyboardInterrupt:
         pass
     finally:
-        pyautogui.mouseUp()
+        if CLICK_MODE:
+            pyautogui.mouseUp()
 
     print(f"\nTotal distance moved (bottom to top 180°): {total}px")
     print(f"Set VERTICAL_STEP = {total // ROWS} (total / ROWS = {total} / {ROWS})")
