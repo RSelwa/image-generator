@@ -159,7 +159,12 @@ export const waitForAnonymousAuth = async (page: Page) => {
   return anonymousUid || ""
 }
 
-export const hideDriverTutorial = async (page: Page) =>
+export const hideDriverTutorial = async (page: Page) =>{
   await page.evaluate((key) => {
     localStorage.setItem(key, "true")
   }, STORAGE_KEYS.DRIVER_WAITING_ROOM)
+
+  await page.evaluate((key) => {
+    localStorage.setItem(key, "true")
+  }, STORAGE_KEYS.DRIVER_SPECIAL_ROUND)
+}

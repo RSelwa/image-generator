@@ -276,8 +276,17 @@
 }
 
 /* Arrow pointing towards the highlighted element */
-.driver-popover-arrow {
+.driver-popover-arrow-side-bottom {
   @apply border-t-transparent border-l-transparent border-r-transparent border-b-primary!;
+}
+/* Arrow pointing towards the highlighted element */
+.driver-popover-arrow-side-left {
+  @apply border-t-transparent border-l-primary! border-r-transparent border-b-transparent;
+}
+
+/* Arrow pointing towards the highlighted element */
+.driver-popover-arrow-side-right {
+  @apply border-t-transparent border-l-transparent border-b-transparent border-r-primary!;
 }
 
 /* Title and description */

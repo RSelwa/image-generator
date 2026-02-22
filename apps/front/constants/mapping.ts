@@ -110,4 +110,5 @@ export const AVATARS_BACKGROUND_URLS = {
 
 export const STORAGE_KEYS = {
   DRIVER_WAITING_ROOM: "driver_waiting_room",
+  DRIVER_SPECIAL_ROUND: "driver_special_round",
 } as const
