@@ -12,7 +12,7 @@
   ],
   "json.validate.enable": false,
   "deno.lint": false,
-  "editor.defaultFormatter": "biomejs.biome",
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "biome.notifyErrors": false,
   "files.eol": "\n",
   "terminal.integrated.env.windows": {
@@ -26,7 +26,7 @@
   },
   // Disable the default formatter, use eslint instead
   "prettier.enable": false,
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
 
   // Auto fix
   "editor.codeActionsOnSave": {
@@ -47,6 +47,9 @@
     { "rule": "*quotes", "severity": "off", "fixable": true },
     { "rule": "*semi", "severity": "off", "fixable": true }
   ],
+
+  // Enable eslint as a formatter
+  "eslint.format.enable": true,
 
   // Enable eslint for all supported languages
   "eslint.validate": [
@@ -76,10 +79,4 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
-  "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "vscode.css-language-features"
-  }
 }

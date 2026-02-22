@@ -26,6 +26,8 @@ const GameInputGuess = () => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
+  const isMobile = useIsMobile()
+
   const [submitRoundAnswer] = useSubmitRoundAnswerMutation()
   const [incrementLivesUsed] = useIncrementPlayerLivesUsedMutation()
 
@@ -55,7 +57,6 @@ const GameInputGuess = () => {
   const lowerCaseInput = (watch("input") || "").toLocaleLowerCase().trim()
 
   const gameList = allGamesNames?.filter(({ title }) => title.trim().toLocaleLowerCase().includes(lowerCaseInput)) || []
-console.log(gameList);
 
   const verifyGameName = async (data: Schema) => {
     const input = data.input.trim()
@@ -116,7 +117,7 @@ console.log(gameList);
           data-testid="game-input-guess"
           type="text"
           placeholder="Your answer"
-          autoFocus
+          autoFocus={!isMobile}
           className="dark:bg-background/50 font-mono! text-2xl font-bold placeholder:text-foreground/70 text-foreground w-96 py-6"
           onKeyDown={(e) => e.key === "Enter" && handleSubmit(verifyGameName)()}
           {...register("input")}

@@ -55,7 +55,7 @@
   - [x] When solo in a lobby, Should have only one button that will set ready and start the game
   - [x] on the lobby waiting, put in background the glyph that is in the references, little white text
   - [x] Pour les avatar, reprendre le design des cartes du fan made marathon, c'est un gars du groupe twitter
-  - [x] Utiliser driver js pour présenter le lobby 
+  - [x] Utiliser driver js pour présenter le lobby
   - [x] ajouter des bouttons back to lobby / new game, when in finished screen
   - [x] Fix starting screen when game is Loading
   - [x] end game screen⌛️
@@ -70,27 +70,30 @@
   - [x] In lobby fix the timer that make everything re render everry seconds
   - [x] When user close the tab should remove them from the players only if the status is waiting
   - [x] Change map icons
+  - [x] Utiliser driver js pour présenter les trucs des rounds spéciaux
+  - [x] Désactiver l'auto focus quand on est en mobile ?
+  - [x] reduce input size in mobile
+  - [x] ajouter description pour le round special
+  - [x] Change icons on minimap
+  - [x] Buy domain name
+  - [x] Create a document with all games to lower read in firestore
+  - [x] Create an e2e test with DEMO_SEED
+  - [x] Adapter storybook et les comportements
+  - [x] Ajouter la selection d'avatar sur la popup pseudo after login
   - [ ] in Seed maker, when round is special should not allow images without thumbnails
-  - [ ] Utiliser driver js pour présenter les trucs des rounds spéciaux 
   - [ ] Add a button How to play wich gonna open a modal wich gonna be carousel with examples
-  - [ ] Ajouter des tests sur ces bouttons
-  - [ ] Ajouter la selection d'avatar sur la popup pseudo after login
   - [ ] Ajouter une image pour le share seo
   - [ ] Ajouter les meta pour chaque page
   - [ ] Ajouter une belle page 404
-  - [ ] Désactiver l'auto focus quand on est en mobile ?
   - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
-  - [ ] reduce input size in mobile
   - [ ] Implémenter le buy me coffee
   - [ ] Scrap lostgamer for the images of the maps
   - [ ] Add sound
   - [ ] Implement modals system for pubing/infos
   - [ ] implement seeds that will be featured like flim discover
-  - [ ] ajouter description pour le round special
   - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
   - [ ] ADMIN -Improve the empty card whe no map/no games etc... with shadcn empty components
   - [ ] can copy the seedId in the maker
-  - [ ] Change icons on minimap
   - [ ] Share seed at the end of a lobby
   - [ ] Seed maker, better tags, which games has sphericals and which has flats, wich means better handling listeners
   - [ ] Integrate ads
@@ -98,15 +101,11 @@
   - [ ] Add firebase admin for front libs
   - [ ] Improve the security for the update for lobbies
   - [ ] friends invitations
-  - [x] Buy domain name
   - [ ] Setup Reels Insta et tiktok
   - [ ] Implement a system to interact with twitch chat, maybe to vote for games
   - [ ] Fix: e2e test driver test localstorage
   - [ ] Implement a chat room inside
   - [ ] When problem of connexion, auto send a report to me
-  - [x] Create a document with all games to lower read in firestore
-  - [x] Create an e2e test with DEMO_SEED
-  - [x] Adapter storybook et les comportements 
   - [ ] Fix tests storage suggestions update unauthenticated
 
 </details>
