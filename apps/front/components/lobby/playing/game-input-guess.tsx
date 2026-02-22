@@ -93,9 +93,11 @@ const GameInputGuess = () => {
     handleSubmit(verifyGameName)()
   }
 
+  console.log(gameList, lowerCaseInput);
+
+
   return (
-    <form onSubmit={handleSubmit(verifyGameName)} autoComplete="off" className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-8 flex flex-col items-center gap-4">
-      <Button onClick={() => { reset(); setComboboxKey((k) => k + 1) }}>Test </Button>
+    <form onSubmit={handleSubmit(verifyGameName)} autoComplete="off" className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-0 flex flex-col items-center gap-4">
       {config?.playersLives && (
         <div data-testid="lives-container" className="w-full flex justify-center items-center gap-8">
           {

@@ -104,7 +104,7 @@ test.describe("lobby playing", () => {
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
     await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[0].game?.title))).toBeVisible()
@@ -137,9 +137,9 @@ test.describe("lobby playing", () => {
     await page.waitForTimeout(61_000)
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[2].game?.title))).toBeVisible()
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toHaveCount(0)
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toHaveCount(0)
     await expect(page.getByTestId(SELECTORS.MAP_LINE)).toHaveCount(0)
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("green"))).toHaveCount(1)
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("primary"))).toHaveCount(1)
 
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
@@ -152,7 +152,7 @@ test.describe("lobby playing", () => {
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
     await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[3].game?.title))).toBeVisible()
@@ -167,7 +167,7 @@ test.describe("lobby playing", () => {
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
     await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[4].game?.title))).toBeVisible()

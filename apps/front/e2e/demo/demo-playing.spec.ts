@@ -28,7 +28,7 @@ test.describe("demo playing", () => {
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
     await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[0].game?.title))).toBeVisible()
@@ -60,7 +60,7 @@ test.describe("demo playing", () => {
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
     await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[2].game?.title))).toBeVisible()
@@ -75,7 +75,7 @@ test.describe("demo playing", () => {
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
     await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[3].game?.title))).toBeVisible()
@@ -90,7 +90,7 @@ test.describe("demo playing", () => {
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
     await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue"))).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
     await expect(page.getByTestId(SELECTORS.GAME_MAP(games[4].game?.title))).toBeVisible()

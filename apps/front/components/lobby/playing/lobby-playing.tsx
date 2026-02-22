@@ -8,7 +8,7 @@ import PlayingNormalRound from "@/components/lobby/playing/normal-round"
 import { RoundInfos } from "@/components/lobby/playing/round-infos"
 import PlayingSpecialRound from "@/components/lobby/playing/special-round"
 import Timer from "@/components/lobby/playing/timer"
-import { useCountdown } from "@/hooks/use-countdown"
+import { useIsExpired } from "@/hooks/use-countdown"
 import { useListenRoundAnswerQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectHasSelectedOption, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining } from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -41,7 +41,7 @@ const LobbyPlaying = () => {
   const isWaitingForSelection = currentRoundData?.isSpecial && !hasSelectedOption
   const timerStart = isWaitingForSelection ? null : ((isMapPhase && myAnswer?.submittedAt) || myAnswer?.selectedOptionAt || lobby?.roundStartedAt)
 
-  const { isExpired } = useCountdown(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
+  const isExpired = useIsExpired(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
   const isMobile = useIsMobile()
 
   const hasSubmittedAnswer = Boolean((gameTitle && myAnswer?.isCorrect))

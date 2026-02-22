@@ -1,7 +1,6 @@
 "use client"
 
 import { LOBBY_STATUS } from "@repo/common"
-import { onDisconnect, ref, remove, set } from "firebase/database"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { toast } from "sonner"
@@ -10,8 +9,8 @@ import LobbyStarting from "@/components/lobby/lobby-starting"
 import LobbyWaiting from "@/components/lobby/lobby-waiting"
 import LobbyPlaying from "@/components/lobby/playing/lobby-playing"
 import { Button } from "@/components/ui/button"
-import { rtdb } from "@/constants/db"
 import { QUERY_PARAMS } from "@/constants/mapping"
+import { usePresence } from "@/hooks/use-presence"
 import { PAGES } from "@/constants/pages"
 import { useJoinLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
@@ -24,6 +23,19 @@ const LoadingLobby = () => (
     <p className="text-lg text-muted-primary-foreground">Loading...</p>
   </main>
 )
+
+const NoUserInLobby = () => {
+  const router = useRouter()
+
+  return (
+    <main className="min-h-full-height flex items-center justify-center text-primary bg-background">
+      <p className="text-lg">You're not allowed in this lobby</p>
+      <Button variant="marathon-outline" className="ml-4" onClick={() => router.push(PAGES.HOME)}>
+        Go back home
+      </Button>
+    </main>
+  )
+}
 
 const NoLobby = () => {
   const router = useRouter()
@@ -52,37 +64,21 @@ const LobbyMain = () => {
     skip: !lobbyId,
   })
 
-  useEffect(() => {
-    if (!lobbyId || !user?.id || lobby?.status !== LOBBY_STATUS.WAITING) return
-
-    const path = `lobbies/${lobbyId}/players/${user.id}`
-    const presenceRef = ref(rtdb, path)
-    console.log("[RTDB] Setting presence at path:", path)
-    console.log("[RTDB] Database URL:", rtdb.app.options.databaseURL)
-    set(presenceRef, true)
-      .then(() => console.log("[RTDB] Presence set successfully at", path))
-      .catch((err) => console.error("[RTDB] Failed to set presence:", err))
-    onDisconnect(presenceRef).remove()
-      .then(() => console.log("[RTDB] onDisconnect registered at", path))
-      .catch((err) => console.error("[RTDB] Failed to register onDisconnect:", err))
-
-    return () => {
-      console.log("[RTDB] Cleanup: removing presence at", path)
-      remove(presenceRef)
-    }
-  }, [lobbyId, user?.id, lobby?.status])
+  usePresence(lobbyId, user?.id, lobby?.status)
 
   useEffect(() => {
-    if (isLoading || !lobby) return
+    if (isLoading || !lobby || lobby?.isDemo) return
 
-    // Demo lobbies are already started with the player joined — skip join logic
-    if (lobby.isDemo) return
+    console.log("A");
+
 
     if ((isSessionReady && !user) || !user) {
       console.info("User not logged in, redirecting to login page")
 
       return
     }
+    console.log("B");
+
 
     if (user.isAnonymous) {
       toast.error("You need to be logged to join the lobby")
@@ -95,9 +91,16 @@ const LobbyMain = () => {
       return
     }
 
+    console.log("C");
+
+
     // Allow existing players to reconnect regardless of lobby status
     const isAlreadyInLobby = lobby.players.some((p) => p.uid === user.id)
+    console.log("Already in lobby? ", isAlreadyInLobby, lobby, user);
+    
     if (isAlreadyInLobby) return
+
+  console.log("D");
 
     // Only allow new players to join during WAITING
     if (lobby.status !== LOBBY_STATUS.WAITING) {
@@ -106,6 +109,8 @@ const LobbyMain = () => {
 
       return
     }
+    console.log("E");
+    
 
     const player = createPlayerFromSessionUser(user)
     joinLobby({ lobbyId: lobby.id, player }).unwrap()
@@ -115,7 +120,8 @@ const LobbyMain = () => {
 
   if (isLoading) return <LoadingLobby />
 
-  if ((!lobby || !isUserInLobby)) return <NoLobby />
+  if ((!lobby )) return <NoLobby />
+  if ((!isUserInLobby)) return <NoUserInLobby />
 
   if (lobby.status === LOBBY_STATUS.WAITING) return <LobbyWaiting />
   if (lobby.status === LOBBY_STATUS.STARTING) return <LobbyStarting />

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { ComponentProps, useCallback, useRef, useState } from "react"
 import {
   type ReactZoomPanPinchRef
 } from "react-zoom-pan-pinch"
@@ -12,6 +12,8 @@ import {
 } from "react-zoom-pan-pinch"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { MapPin, MapPinVertical } from "@/components/icons"
+import { cn } from "@/utils"
 
 // Types for the map system
 export type Position = {
@@ -53,6 +55,7 @@ const ZoomControls = ({ isExpanded }: { isExpanded: boolean }) => {
   )
 }
 
+export type MarkerColor = "blue-accent" | "primary"
 // Markers layer - contains all markers and uses transform context for scale
 const MarkersLayer = ({
   guessPosition,
@@ -68,10 +71,7 @@ const MarkersLayer = ({
   const { transformState } = useTransformContext()
   const scale = transformState.scale
 
-  const renderMarker = (position: Position, color: "blue" | "green") => {
-    const bgColor = color === "blue" ? "bg-blue-500" : "bg-green-500"
-    const borderColor =
-      color === "blue" ? "border-t-blue-500" : "border-t-green-500"
+  const renderMarker = (position: Position, color: MarkerColor) => {
 
     return (
       <div
@@ -85,12 +85,8 @@ const MarkersLayer = ({
         }}
       >
         <div className="relative">
-          <div
-            className={`size-4 rounded-full ${bgColor} border-2 border-primary-foreground shadow-lg`}
-          />
-          <div
-            className={`absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent ${borderColor}`}
-          />
+          {color === "primary" && <MapPinVertical className={cn("h-16",`text-primary`)} />}
+          { color === "blue-accent" &&<MapPin className={cn("h-12",`text-primary`)} />}
         </div>
       </div>
     )
@@ -120,10 +116,10 @@ const MarkersLayer = ({
       {/* Correct position marker */}
       {showCorrectMarker &&
         correctPosition &&
-        renderMarker(correctPosition, "green")}
+        renderMarker(correctPosition, "primary")}
 
       {/* Guess marker */}
-      {guessPosition && renderMarker(guessPosition, "blue")}
+      {guessPosition && renderMarker(guessPosition, "blue-accent")}
 
     </>
   )
@@ -177,10 +173,11 @@ export const MiniMap = ({
 
   const isExpanded = alwaysExpanded || isHoveredOrParent
   const currentSize = isMobile ? (isExpanded ? MINI_MAP_EXPANDED_MOBILE : MINI_MAP_COLLAPSED_MOBILE) :(isExpanded ? expandedSize : collapsedSize)
+  const isMobileExpanded = isMobile && isExpanded
 
   // Calculate minimum scale so image always fills the container
   const minScale = Math.max(
-    currentSize.width / mapData.size.width,
+    (isMobileExpanded ? window.innerWidth * 0.8 : currentSize.width) / mapData.size.width,
     currentSize.height / mapData.size.height,
   )
 
@@ -263,7 +260,7 @@ export const MiniMap = ({
       ref={wrapperClickRef}
       className={`${inline ? "relative" : "fixed bottom-6 right-6 z-50"} rounded-lg overflow-hidden border-2 border-white/50 shadow-2xl transition-all bg-neutral-950/90 duration-300 ease-out ${disabled || hasSubmitted ? "cursor-default" : "cursor-crosshair"} ${className ?? ""}`}
       style={{
-        width: currentSize.width,
+        width: isMobileExpanded ? "80vw" : currentSize.width,
         height: currentSize.height,
       }}
       onMouseEnter={() => setIsHovered(true)}

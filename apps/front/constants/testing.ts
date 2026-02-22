@@ -1,3 +1,5 @@
+import { MarkerColor } from "@/components/mini-map";
+
 export const SELECTORS = {
   GAME_INPUT_GUESS: "game-input-guess",
   GAME_MAP_GUESS_FORM: "game-map-guess-form",
@@ -12,6 +14,6 @@ export const SELECTORS = {
   GAME_THUMBNAIL_OPTION: (index?: string) => `game-thumbnail-option-${index}`,
   GAME_THUMBNAIL_TITLE: (gameTitle?: string) => `game-thumbnail-${gameTitle}`,
   GAME_MAP: (gameTitle?: string) => `game-map-${gameTitle}`,
-  MAP_MARKER: (color?: string) => `marker-${color}`,
+  MAP_MARKER: (color?: MarkerColor) => `marker-${color}`,
   MAP_LINE: "marker-line"
 } as const

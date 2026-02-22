@@ -63,16 +63,18 @@
   - [x] Add a modal for suggestions only, not particulary games
   - [x] mettre un array players qui contient que les id à la racine du doc de lobby pour simplifier firestore query
   - [x] When no pin already on map, should have the outline color for the button
-  - [ ] Fix, when users is closing the tab, it should remove them from the lobby
-  - [ ] Add tests, when user close / change tab when status is other than waiting, it doesn't remove him from the lobby
-  - [ ] When playing close window and try to get back, verify that it's allowed
-  - [ ] Add test, when user is in a lobby playing and inside the players array and paste the url, he can can see the game where it's going (not adding him inside the players array, he should be in it)
+  - [x] Fix, when users is closing the tab, it should remove them from the lobby
+  - [x] Add tests, when user close / change tab when status is other than waiting, it doesn't remove him from the lobby
+  - [x] When playing close window and try to get back, verify that it's allowed
+  - [x] Add test, when user is in a lobby playing and inside the players array and paste the url, he can can see the game where it's going (not adding him inside the players array, he should be in it)
+  - [x] In lobby fix the timer that make everything re render everry seconds
+  - [x] When user close the tab should remove them from the players only if the status is waiting
+  - [x] Change map icons
+  - [ ] in Seed maker, when round is special should not allow images without thumbnails
+  - [ ] Utiliser driver js pour présenter les trucs des rounds spéciaux 
   - [ ] Add a button How to play wich gonna open a modal wich gonna be carousel with examples
-  - In lobby fix the timer that make everything re render everry seconds
-  - [ ] When user close the tab should remove them from the players only if the status is waiting
   - [ ] Ajouter des tests sur ces bouttons
   - [ ] Ajouter la selection d'avatar sur la popup pseudo after login
-  - [ ] Utiliser driver js pour présenter les trucs des rounds spéciaux 
   - [ ] Ajouter une image pour le share seo
   - [ ] Ajouter les meta pour chaque page
   - [ ] Ajouter une belle page 404
