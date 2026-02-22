@@ -7,6 +7,7 @@ import { FieldValue } from "firebase-admin/firestore"
 export const on_lobby_player_disconnected = onValueDeleted(
   {
     ref: "lobbies/{lobbyId}/players/{userId}",
+    instance: "tiktok-generator-fa261-default-rtdb",
     region: "us-central1",
   },
   async (event) => {
