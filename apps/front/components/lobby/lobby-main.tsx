@@ -69,16 +69,11 @@ const LobbyMain = () => {
   useEffect(() => {
     if (isLoading || !lobby || lobby?.isDemo) return
 
-    console.log("A");
-
-
     if ((isSessionReady && !user) || !user) {
       console.info("User not logged in, redirecting to login page")
 
       return
     }
-    console.log("B");
-
 
     if (user.isAnonymous) {
       toast.error("You need to be logged to join the lobby")
@@ -91,16 +86,10 @@ const LobbyMain = () => {
       return
     }
 
-    console.log("C");
-
-
     // Allow existing players to reconnect regardless of lobby status
     const isAlreadyInLobby = lobby.players.some((p) => p.uid === user.id)
-    console.log("Already in lobby? ", isAlreadyInLobby, lobby, user);
     
     if (isAlreadyInLobby) return
-
-  console.log("D");
 
     // Only allow new players to join during WAITING
     if (lobby.status !== LOBBY_STATUS.WAITING) {
@@ -109,8 +98,6 @@ const LobbyMain = () => {
 
       return
     }
-    console.log("E");
-    
 
     const player = createPlayerFromSessionUser(user)
     joinLobby({ lobbyId: lobby.id, player }).unwrap()

@@ -35,7 +35,6 @@ test.describe("lobby Waiting", () => {
       // Wait for RTDB presence to be set before closing
       await expect.poll(async () => {
         const snap = await rtdb.ref(`lobbies/${lobbyId}/players/${user.id}`).get()
-        console.log("[TEST] RTDB presence check:", snap.exists(), snap.val())
         return snap.exists()
       }, { timeout: 15000 }).toBe(true)
 

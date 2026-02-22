@@ -4,40 +4,46 @@ import { useEffect, useRef } from "react"
 import { rtdb } from "@/constants/db"
 
 export const usePresence = (lobbyId: string | null, userId: string | undefined, lobbyStatus: string | undefined) => {
-  const lobbyStatusRef = useRef(lobbyStatus)
-  lobbyStatusRef.current = lobbyStatus
-
+  const presenceSetRef = useRef(false)
   const presenceNodeRef = useRef<ReturnType<typeof ref> | null>(null)
-  const disconnectNodeRef = useRef<ReturnType<typeof onDisconnect> | null>(null)
+  const cleanupTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    if (!lobbyId || !userId) return
-    if (lobbyStatusRef.current !== LOBBY_STATUS.WAITING) return
+    if (!lobbyId || !userId || lobbyStatus !== LOBBY_STATUS.WAITING || presenceSetRef.current) return
 
+    // Cancel any pending cleanup from strict mode's fake unmount
+    if (cleanupTimeoutRef.current) {
+      clearTimeout(cleanupTimeoutRef.current)
+      cleanupTimeoutRef.current = null
+      console.info("[RTDB] Cancelled pending cleanup (strict mode remount)")
+    }
+
+    presenceSetRef.current = true
     const path = `lobbies/${lobbyId}/players/${userId}`
     const presenceRefNode = ref(rtdb, path)
     const disconnectRefNode = onDisconnect(presenceRefNode)
 
     presenceNodeRef.current = presenceRefNode
-    disconnectNodeRef.current = disconnectRefNode
 
     console.info("[RTDB] Setting presence at path:", path)
-    set(presenceRefNode, true)
+    // Register onDisconnect BEFORE setting the value, so the server
+    // knows to clean up even if the connection drops immediately after set
+    disconnectRefNode.remove()
       .then(() => {
-        console.info("[RTDB] Presence set successfully at", path)
-        return disconnectRefNode.remove()
+        console.info("[RTDB] onDisconnect registered at", path)
+        return set(presenceRefNode, true)
       })
-      .then(() => console.info("[RTDB] onDisconnect registered at", path))
+      .then(() => console.info("[RTDB] Presence set successfully at", path))
       .catch((err) => console.error("[RTDB] Failed to set presence:", err))
-  }, [lobbyId, userId])
 
-  useEffect(() => {
     return () => {
-      if (presenceNodeRef.current) {
+      presenceSetRef.current = false
+      cleanupTimeoutRef.current = setTimeout(() => {
         console.info("[RTDB] Cleanup: removing presence on unmount")
-        disconnectNodeRef.current?.cancel()
-        remove(presenceNodeRef.current)
-      }
+        remove(presenceRefNode)
+        presenceNodeRef.current = null
+        cleanupTimeoutRef.current = null
+      }, 100)
     }
-  }, [])
+  }, [lobbyId, userId, lobbyStatus])
 }

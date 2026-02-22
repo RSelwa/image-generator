@@ -1,12 +1,14 @@
 import { expect, test } from "@playwright/test"
 import { SELECTORS } from "@/constants/testing"
-import { retrieveGamesFromLobby, waitForAnonymousAuth, waitForInputToBeVisible } from "@/e2e/helpers/lobby"
+import { hideDriverTutorial, retrieveGamesFromLobby, waitForAnonymousAuth, waitForInputToBeVisible } from "@/e2e/helpers/lobby"
 
 test.describe("demo playing", () => {
   test("should play a demo game until the end", async ({ page }) => {
     test.setTimeout(120_000)
 
     await waitForAnonymousAuth(page)
+
+    await hideDriverTutorial(page)
 
     await page.getByTestId("create-lobby-button-demo").click()
 
