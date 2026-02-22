@@ -44,7 +44,7 @@ const GameInputGuess = () => {
   const {
     handleSubmit,
     register,
-    getValues,
+    watch,
     setValue,
     reset,
   } = useForm<Schema>({
@@ -52,9 +52,10 @@ const GameInputGuess = () => {
     defaultValues: { input: "" },
   })
 
-  const lowerCaseInput = (getValues("input") || "").toLocaleLowerCase().trim()
+  const lowerCaseInput = (watch("input") || "").toLocaleLowerCase().trim()
 
   const gameList = allGamesNames?.filter(({ title }) => title.trim().toLocaleLowerCase().includes(lowerCaseInput)) || []
+console.log(gameList);
 
   const verifyGameName = async (data: Schema) => {
     const input = data.input.trim()
