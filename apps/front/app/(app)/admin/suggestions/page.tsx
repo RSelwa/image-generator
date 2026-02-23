@@ -1,83 +1,17 @@
 "use client"
 
-import { Timestamp } from "@firebase/firestore"
 import { getDateFromString } from "@repo/common"
-import { EyeOff, Search } from "lucide-react"
-import Image from "next/image"
+import { Search } from "lucide-react"
 import { useQueryState } from "nuqs"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { SuggestionSheet } from "@/components/sheet/suggestion-sheet"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { QUERY_PARAMS, SUGGESTIONS_TYPE_TO_BADGE_VARIANT } from "@/constants/mapping"
-import { useGetAllSuggestionsInfiniteQuery, useGetSuggestionByIdQuery, useGetSuggestionsCountQuery, useUpdateSuggestionMutation } from "@/redux/api/suggestions"
-
-const EmptySheet = () => (
-  <SheetContent>
-    <SheetHeader>
-      <SheetTitle>No data found</SheetTitle>
-      <SheetDescription>No data found for the id given.</SheetDescription>
-    </SheetHeader>
-  </SheetContent>
-)
-
-const SuggestionSheet = () => {
-  const [suggestionId, setSuggestionId] = useQueryState(QUERY_PARAMS.SUGGESTION_ID)
-
-  const { data: suggestion } = useGetSuggestionByIdQuery({ id: suggestionId || "" }, { skip: !suggestionId })
-  const [updateSuggestion] = useUpdateSuggestionMutation()
-
-  const open = Boolean(suggestionId)
-
-  if (!suggestion) return <Sheet open={open} onOpenChange={(open) => !open && setSuggestionId(null)}><EmptySheet /></Sheet>
-
-  const hasImages = suggestion.imagesUrls && suggestion.imagesUrls.length > 0
-
-  const markAsUnread = () => {
-    updateSuggestion({ id: suggestion.id, viewedAt: null })
-    setSuggestionId(null)
-  }
-
-  const close = async (open: boolean) => {
-    if (open) return
-    updateSuggestion({ id: suggestion.id, viewedAt: Timestamp.now() })
-    setSuggestionId(null)
-  }
-
-  return (
-    <Sheet open={open} onOpenChange={close}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{suggestion.type}</SheetTitle>
-          <SheetDescription>{suggestion.id}</SheetDescription>
-        </SheetHeader>
-        <section className="px-4 font-shapiro">
-          <p className="mb-2"><span className="font-semibold">Title:</span> {suggestion.title}</p>
-          <p>
-            <span className="font-semibold">Message:</span>
-            <br />
-            {suggestion.message}
-          </p>
-        </section>
-        <section className="grid flex-1 lg:grid-cols-3 grid-cols-1 auto-rows-min gap-6 px-4">
-          {hasImages && suggestion.imagesUrls?.map((url, index) => (
-            <Image key={url} src={url} alt={`Suggestion image ${index + 1}`} width={200} height={200} className="rounded" />
-          ))}
-        </section>
-        <SheetFooter>
-          <Button variant="marathon" onClick={markAsUnread}>
-            <EyeOff className="size-4" />
-            Mark as unread
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
-  )
-}
+import { useGetAllSuggestionsInfiniteQuery, useGetSuggestionsCountQuery } from "@/redux/api/suggestions"
 
 const Page = () => {
   const [_, setSuggestionId] = useQueryState(QUERY_PARAMS.SUGGESTION_ID)
@@ -149,7 +83,12 @@ const Page = () => {
 
               return (
                 <TableRow key={suggestion.id} onClick={() => setSuggestionId(suggestion.id)} data-viewed={Boolean(suggestion.viewedAt)} className="data-[viewed=false]:bg-muted/50 cursor-pointer">
-                  <TableCell><Checkbox checked={checked} onCheckedChange={onCheckedChange} /></TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={onCheckedChange}
+                    />
+                  </TableCell>
                   <TableCell>{suggestion.id}</TableCell>
                   <TableCell className="font-medium">{suggestion.title}</TableCell>
                   <TableCell>

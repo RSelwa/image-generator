@@ -24,7 +24,8 @@ export const suggestionsApi = createApi({
             error: globalErrorHandler(error),
           }
         }
-      }
+      },
+      providesTags: () => [{ type: "SuggestionList" }]
     }),
     getSuggestionById: builder.query<SuggestionDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
@@ -222,12 +223,12 @@ export const suggestionsApi = createApi({
         "SuggestionList",
       ],
     }),
-    deleteSuggestion: builder.mutation<void, { id: string }>({
+    deleteSuggestion: builder.mutation<null, { id: string }>({
       queryFn: async ({ id }) => {
         try {
           await deleteDoc(getSuggestionRef(id))
 
-          return { data: undefined }
+          return { data: null }
         } catch (error) {
           console.error(`Error deleting suggestion ${id}:`, error)
 

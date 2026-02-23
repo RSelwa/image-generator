@@ -13,7 +13,7 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "destructive", "outline", "secondary", "ghost", "link","marathon", "marathon-white", "marathon-outline","marathon-link"],
+      options: ["default", "destructive", "outline", "secondary", "ghost", "link", "marathon", "marathon-white", "marathon-outline", "marathon-link", "marathon-destructive"],
     },
     size: {
       control: "select",
@@ -37,6 +37,13 @@ export const Default: Story = {
 export const Destructive: Story = {
   args: {
     variant: "destructive",
+    children: "Delete",
+  },
+}
+
+export const MarathonDestructive: Story = {
+  args: {
+    variant: "marathon-destructive",
     children: "Delete",
   },
 }
