@@ -12,6 +12,7 @@ export const TABLES = {
   ROUND_ANSWERS: "roundAnswers",
   SUGGESTIONS: "suggestions",
   METADATA: "metadata",
+  SOCIALS: "socials",
 } as const
 
 export const METADATA_DOCS = {
@@ -24,7 +25,8 @@ export const STORAGE_PATHS = {
   MAP_IMAGES: "map-thumbnails",
   FLAT_IMAGES: "flat-images",
   FLAT_THUMBNAILS: "flat-thumbnails",
-  SUGGESTIONS: "suggestions"
+  SUGGESTIONS: "suggestions",
+  SOCIALS: "socials",
 } as const
 
 export const USER_RIGHT = {
@@ -34,7 +36,7 @@ export const USER_RIGHT = {
 
 export const BUCKETS_ACTIONS = {
   CREATE: "create",
-  UPDATE: "DELETE",
+  UPDATE: "update",
   DELETE: "delete"
 } as const
 
@@ -84,4 +86,10 @@ export const RIGHTS_CREATE_TO_BUCKETS = {
         USER_RIGHT.ICONOGRAPH,
     rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
   }],
+  [STORAGE_PATHS.SOCIALS]: [{
+    role:
+      USER_RIGHT.ADMIN,
+    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE, BUCKETS_ACTIONS.DELETE],
+  }],
+
 } as const
