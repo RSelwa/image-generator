@@ -4,12 +4,22 @@
   "version": "1.0.0",
   "private": true,
   "description": "Cloud Run Job for 360° video capture",
-  "main": "src/index.js",
+  "main": "./dist/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node src/index.js"
+    "compile": "tsc --noEmit",
+    "build": "tsdown",
+    "start": "node dist/index.js",
+    "dev": "node dist/index.js",
+    "clean": "del-cli dist tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "@playwright/test": "^1.58.1"
+  },
+  "devDependencies": {
+    "@codecompose/typescript-config": "^2.2.0",
+    "@types/node": "^22.10.10",
+    "del-cli": "^6.0.0",
+    "tsdown": "^0.15.6",
+    "typescript": "^5.9.0"
   }
 }

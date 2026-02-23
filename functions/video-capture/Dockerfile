@@ -16,11 +16,17 @@ WORKDIR /app
 # Copy package file
 COPY package.json ./
 
-# Install dependencies
-RUN pnpm install --prod
+# Install all dependencies (including devDependencies for build)
+RUN pnpm install
 
 # Copy application code
 COPY . .
 
-# Run the capture script
-CMD ["node", "src/index.js"]
+# Build TypeScript
+RUN pnpm build
+
+# Remove devDependencies after build
+RUN pnpm install --prod
+
+# Run the compiled capture script
+CMD ["node", "dist/index.js"]

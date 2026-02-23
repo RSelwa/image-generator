@@ -1,8 +1,27 @@
-import { chromium } from '@playwright/test'
-import { spawn } from 'child_process'
+import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process"
+import { chromium, type Page } from "@playwright/test"
+
+declare const window: {
+  setCamera: (yaw: number, pitch: number) => void
+  sceneReady: boolean
+}
+
+type CaptureConfig = {
+  width: number
+  height: number
+  fps: number
+  duration: number
+  panRange: number
+  pitchAmplitude: number
+  captureUrl: string
+  imageUrl: string | undefined
+  outputPath: string
+  projectId: string | undefined
+  storageBucket: string | undefined
+}
 
 // Configuration
-const CONFIG = {
+const CONFIG: CaptureConfig = {
   // Video settings
   width: 1080,
   height: 1920,
@@ -14,46 +33,52 @@ const CONFIG = {
   pitchAmplitude: 0.1, // Subtle vertical wave
 
   // URLs
-  captureUrl: process.env.CAPTURE_URL || 'https://www.geo-gamer.net/capture',
+  captureUrl: process.env.CAPTURE_URL || "https://www.geo-gamer.net/capture",
   imageUrl: process.env.IMAGE_URL,
 
   // Output
-  outputPath: process.env.OUTPUT_PATH || 'output.mp4',
+  outputPath: process.env.OUTPUT_PATH || "output.mp4",
 
   // Firebase (for Cloud Run Job)
   projectId: process.env.FIREBASE_PROJECT_ID,
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
 }
 
-const log = (message) => console.log(`[Capture] ${message}`)
-const error = (message) => console.error(`[Error] ${message}`)
+const log = (message: string) => console.log(`[Capture] ${message}`)
+const logError = (message: string) => console.error(`[Error] ${message}`)
 
 /**
  * Spawns FFmpeg process and pipes frames to it
  */
-const createFFmpegProcess = (outputPath, fps) => {
+const createFFmpegProcess = (outputPath: string, fps: number): ChildProcessWithoutNullStreams => {
   const args = [
-    '-y', // Overwrite output file
-    '-f', 'image2pipe', // Input format: piped images
-    '-framerate', String(fps),
-    '-i', '-', // Read from stdin
-    '-c:v', 'libx264', // H.264 codec
-    '-pix_fmt', 'yuv420p', // Pixel format for compatibility
-    '-preset', 'fast', // Encoding speed
+    "-y", // Overwrite output file
+    "-f",
+    "image2pipe", // Input format: piped images
+    "-framerate",
+    String(fps),
+    "-i",
+    "-", // Read from stdin
+    "-c:v",
+    "libx264", // H.264 codec
+    "-pix_fmt",
+    "yuv420p", // Pixel format for compatibility
+    "-preset",
+    "fast", // Encoding speed
     outputPath,
   ]
 
-  log(`Starting FFmpeg: ffmpeg ${args.join(' ')}`)
+  log(`Starting FFmpeg: ffmpeg ${args.join(" ")}`)
 
-  const ffmpeg = spawn('ffmpeg', args)
+  const ffmpeg = spawn("ffmpeg", args)
 
-  ffmpeg.stderr.on('data', (data) => {
+  ffmpeg.stderr.on("data", (data: Buffer) => {
     // FFmpeg outputs progress to stderr
     process.stderr.write(data)
   })
 
-  ffmpeg.on('error', (err) => {
-    error(`FFmpeg error: ${err.message}`)
+  ffmpeg.on("error", (err: Error) => {
+    logError(`FFmpeg error: ${err.message}`)
   })
 
   return ffmpeg
@@ -62,9 +87,8 @@ const createFFmpegProcess = (outputPath, fps) => {
 /**
  * Animates camera and captures frames
  */
-const captureFrames = async (page, config) => {
+const captureFrames = async (page: Page, config: CaptureConfig) => {
   const totalFrames = config.duration * config.fps
-  const frameInterval = 1000 / config.fps
 
   log(`Capturing ${totalFrames} frames at ${config.fps} fps`)
 
@@ -93,7 +117,7 @@ const captureFrames = async (page, config) => {
 
     // Capture screenshot
     const screenshot = await page.screenshot({
-      type: 'png',
+      type: "png",
       clip: {
         x: 0,
         y: 0,
@@ -116,8 +140,8 @@ const captureFrames = async (page, config) => {
   ffmpeg.stdin.end()
 
   // Wait for FFmpeg to finish
-  await new Promise((resolve, reject) => {
-    ffmpeg.on('close', (code) => {
+  await new Promise<void>((resolve, reject) => {
+    ffmpeg.on("close", (code: number | null) => {
       if (code === 0) {
         log(`Video saved to ${config.outputPath}`)
         resolve()
@@ -131,18 +155,18 @@ const captureFrames = async (page, config) => {
 /**
  * Main capture function
  */
-const capture = async (imageUrl, outputPath) => {
-  log('Starting video capture service...')
+const capture = async (imageUrl: string, outputPath?: string) => {
+  log("Starting video capture service...")
 
   if (!imageUrl) {
-    throw new Error('IMAGE_URL is required')
+    throw new Error("IMAGE_URL is required")
   }
 
   const config = { ...CONFIG, imageUrl, outputPath: outputPath || CONFIG.outputPath }
 
   const browser = await chromium.launch({
     headless: true,
-    args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox'],
+    args: ["--disable-dev-shm-usage", "--no-sandbox", "--disable-setuid-sandbox"],
   })
 
   const context = await browser.newContext({
@@ -160,23 +184,22 @@ const capture = async (imageUrl, outputPath) => {
     const url = `${config.captureUrl}?image=${encodeURIComponent(config.imageUrl)}`
     log(`Navigating to ${url}`)
 
-    await page.goto(url, { waitUntil: 'load', timeout: 60000 })
+    await page.goto(url, { waitUntil: "load", timeout: 60000 })
 
     // Wait for scene to be ready
-    log('Page loaded, waiting for viewer to initialize...')
+    log("Page loaded, waiting for viewer to initialize...")
     await page.waitForFunction(() => window.sceneReady === true, { timeout: 60000 })
 
-    log('Scene ready! Starting capture...')
+    log("Scene ready! Starting capture...")
 
     // Capture frames
     await captureFrames(page, config)
 
-    log('Capture complete!')
+    log("Capture complete!")
 
     return config.outputPath
-
   } catch (err) {
-    error(`Capture failed: ${err.message}`)
+    logError(`Capture failed: ${(err as Error).message}`)
     throw err
   } finally {
     await browser.close()
@@ -192,7 +215,7 @@ const main = async () => {
     const outputPath = process.env.OUTPUT_PATH
 
     if (!imageUrl) {
-      error('IMAGE_URL environment variable is required')
+      logError("IMAGE_URL environment variable is required")
       process.exit(1)
     }
 
@@ -206,9 +229,8 @@ const main = async () => {
     // TODO: Create Firestore document
 
     process.exit(0)
-
   } catch (err) {
-    error(`Job failed: ${err.stack}`)
+    logError(`Job failed: ${(err as Error).stack}`)
     process.exit(1)
   }
 }
