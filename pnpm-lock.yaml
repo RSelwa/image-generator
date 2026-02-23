@@ -540,11 +540,57 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
 
+  functions/socials:
+    dependencies:
+      '@google-cloud/functions-framework':
+        specifier: ^4.0.0
+        version: 4.0.1
+      '@google-cloud/run':
+        specifier: ^1.0.0
+        version: 1.5.1(encoding@0.1.13)
+      '@repo/common':
+        specifier: workspace:*
+        version: link:../../libs/common
+      '@repo/providers':
+        specifier: workspace:*
+        version: link:../../libs/providers
+      '@repo/schemas':
+        specifier: workspace:*
+        version: link:../../libs/schemas
+      del-cli:
+        specifier: ^6.0.0
+        version: 6.0.0
+      firebase-admin:
+        specifier: ^13.4.0
+        version: 13.6.0(encoding@0.1.13)
+      firebase-functions:
+        specifier: ^6.3.2
+        version: 6.6.0(firebase-admin@13.6.0(encoding@0.1.13))
+    devDependencies:
+      '@codecompose/typescript-config':
+        specifier: ^2.0.1
+        version: 2.3.0
+      '@types/node':
+        specifier: ^22.10.10
+        version: 22.19.7
+      tsdown:
+        specifier: ^0.15.6
+        version: 0.15.12(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
   functions/video-capture:
     dependencies:
       '@playwright/test':
         specifier: ^1.58.1
         version: 1.58.1
+      '@repo/common':
+        specifier: workspace:*
+        version: link:../../libs/common
+      firebase-admin:
+        specifier: ^13.4.0
+        version: 13.6.0(encoding@0.1.13)
     devDependencies:
       '@codecompose/typescript-config':
         specifier: ^2.2.0
@@ -2004,6 +2050,10 @@ packages:
 
   '@google-cloud/pubsub@4.11.0':
     resolution: {integrity: sha512-xWxJAlyUGd6OPp97u8maMcI3xVXuHjxfwh6Dr7P/P+6NK9o446slJobsbgsmK0xKY4nTK8m5uuJrhEKapfZSmQ==}
+    engines: {node: '>=14.0.0'}
+
+  '@google-cloud/run@1.5.1':
+    resolution: {integrity: sha512-4SHyaRMOIHc/EwaiDbi6mtBsTxBmxQTN4VHe3Yp7EHVfodSIY8YJThya3YJkGR1eayyWGmfYFoW6qiepLEmP2g==}
     engines: {node: '>=14.0.0'}
 
   '@google-cloud/storage@7.18.0':
@@ -11711,6 +11761,13 @@ snapshots:
       - encoding
       - supports-color
 
+  '@google-cloud/run@1.5.1(encoding@0.1.13)':
+    dependencies:
+      google-gax: 4.6.1(encoding@0.1.13)
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
   '@google-cloud/storage@7.18.0(encoding@0.1.13)':
     dependencies:
       '@google-cloud/paginator': 5.0.2
@@ -12485,7 +12542,7 @@ snapshots:
       '@npmcli/name-from-folder': 4.0.0
       '@npmcli/package-json': 7.0.4
       glob: 13.0.3
-      minimatch: 10.1.1
+      minimatch: 10.2.0
 
   '@npmcli/metavuln-calculator@9.0.3':
     dependencies:

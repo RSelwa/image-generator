@@ -1,12 +1,16 @@
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process"
+import { readFileSync } from "node:fs"
+import { resolve } from "node:path"
 import { chromium, type Page } from "@playwright/test"
+import { SOCIALS_STATUS, STORAGE_PATHS, TABLES } from "@repo/common"
+import admin from "firebase-admin"
 
 declare const window: {
   setCamera: (yaw: number, pitch: number) => void
   sceneReady: boolean
 }
 
-type CaptureConfig = {
+interface CaptureConfig {
   width: number
   height: number
   fps: number
@@ -16,36 +20,74 @@ type CaptureConfig = {
   captureUrl: string
   imageUrl: string | undefined
   outputPath: string
-  projectId: string | undefined
-  storageBucket: string | undefined
 }
+
+// Parse CLI args: --key=value format
+const parseArgs = (args: string[]) => {
+  const parsed: Record<string, string> = {}
+
+  for (const arg of args) {
+    const match = arg.match(/^--([^=]+)=(.+)$/)
+
+    if (match && match[1] && match[2]) {
+      parsed[match[1]] = match[2]
+    }
+  }
+
+  return parsed
+}
+
+const cliArgs = parseArgs(process.argv.slice(2))
+
+// CLI args take priority over env vars
+const getParam = (cliKey: string, envKey: string) => cliArgs[cliKey] || process.env[envKey]
 
 // Configuration
 const CONFIG: CaptureConfig = {
-  // Video settings
   width: 1080,
   height: 1920,
   fps: 30,
-  duration: 5, // seconds
-
-  // Camera animation settings
-  panRange: Math.PI / 2, // 90 degrees pan
-  pitchAmplitude: 0.1, // Subtle vertical wave
-
-  // URLs
-  captureUrl: process.env.CAPTURE_URL || "https://www.geo-gamer.net/capture",
-  imageUrl: process.env.IMAGE_URL,
-
-  // Output
-  outputPath: process.env.OUTPUT_PATH || "output.mp4",
-
-  // Firebase (for Cloud Run Job)
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  duration: 5,
+  panRange: Math.PI / 2,
+  pitchAmplitude: 0.1,
+  captureUrl: getParam("capture-url", "CAPTURE_URL") || "https://www.geo-gamer.net/capture",
+  imageUrl: getParam("image-url", "IMAGE_URL"),
+  outputPath: getParam("output-path", "OUTPUT_PATH") || "output.mp4",
 }
+
+const PROJECT_ID = getParam("project-id", "FIREBASE_PROJECT_ID") || "tiktok-generator-fa261"
 
 const log = (message: string) => console.log(`[Capture] ${message}`)
 const logError = (message: string) => console.error(`[Error] ${message}`)
+
+// Initialize Firebase Admin
+const initFirebase = () => {
+  if (admin.apps.length) return
+
+  const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS
+  const serviceAccountKey = process.env.SERVICE_ACCOUNT_KEY
+
+  if (credentialsPath) {
+    admin.initializeApp({
+      credential: admin.credential.cert(
+        JSON.parse(readFileSync(resolve(credentialsPath), "utf-8")),
+      ),
+      storageBucket: `${PROJECT_ID}.firebasestorage.app`,
+    })
+  } else if (serviceAccountKey) {
+    admin.initializeApp({
+      credential: admin.credential.cert(JSON.parse(serviceAccountKey)),
+      storageBucket: `${PROJECT_ID}.firebasestorage.app`,
+    })
+  } else {
+    admin.initializeApp({
+      credential: admin.credential.applicationDefault(),
+      storageBucket: `${PROJECT_ID}.firebasestorage.app`,
+    })
+  }
+
+  admin.firestore().settings({ ignoreUndefinedProperties: true, preferRest: true })
+}
 
 /**
  * Spawns FFmpeg process and pipes frames to it
@@ -73,7 +115,6 @@ const createFFmpegProcess = (outputPath: string, fps: number): ChildProcessWitho
   const ffmpeg = spawn("ffmpeg", args)
 
   ffmpeg.stderr.on("data", (data: Buffer) => {
-    // FFmpeg outputs progress to stderr
     process.stderr.write(data)
   })
 
@@ -99,23 +140,16 @@ const captureFrames = async (page: Page, config: CaptureConfig) => {
   for (let i = 0; i < totalFrames; i++) {
     const progress = i / totalFrames
 
-    // Calculate camera position
-    // Slow horizontal pan
     const yaw = progress * config.panRange
-
-    // Subtle vertical sine wave
     const pitch = Math.sin(progress * Math.PI * 2) * config.pitchAmplitude
 
-    // Set camera position
     await page.evaluate(
       ({ yaw, pitch }) => window.setCamera(yaw, pitch),
       { yaw, pitch }
     )
 
-    // Small delay to let Three.js render
     await page.waitForTimeout(16)
 
-    // Capture screenshot
     const screenshot = await page.screenshot({
       type: "png",
       clip: {
@@ -126,7 +160,6 @@ const captureFrames = async (page: Page, config: CaptureConfig) => {
       },
     })
 
-    // Pipe to FFmpeg
     ffmpeg.stdin.write(screenshot)
 
     framesCaptured++
@@ -136,10 +169,8 @@ const captureFrames = async (page: Page, config: CaptureConfig) => {
     }
   }
 
-  // Close FFmpeg stdin to signal end of input
   ffmpeg.stdin.end()
 
-  // Wait for FFmpeg to finish
   await new Promise<void>((resolve, reject) => {
     ffmpeg.on("close", (code: number | null) => {
       if (code === 0) {
@@ -180,19 +211,16 @@ const capture = async (imageUrl: string, outputPath?: string) => {
   const page = await context.newPage()
 
   try {
-    // Navigate to capture page
     const url = `${config.captureUrl}?image=${encodeURIComponent(config.imageUrl)}`
     log(`Navigating to ${url}`)
 
     await page.goto(url, { waitUntil: "load", timeout: 60000 })
 
-    // Wait for scene to be ready
     log("Page loaded, waiting for viewer to initialize...")
     await page.waitForFunction(() => window.sceneReady === true, { timeout: 60000 })
 
     log("Scene ready! Starting capture...")
 
-    // Capture frames
     await captureFrames(page, config)
 
     log("Capture complete!")
@@ -207,15 +235,51 @@ const capture = async (imageUrl: string, outputPath?: string) => {
 }
 
 /**
+ * Upload video to Firebase Storage and update Firestore social doc
+ */
+const uploadAndUpdateDoc = async (videoPath: string, socialDocId: string) => {
+  initFirebase()
+
+  const storage = admin.storage()
+  const db = admin.firestore()
+
+  const storagePath = `${STORAGE_PATHS.SOCIALS}/${socialDocId}.mp4`
+
+  log(`Uploading ${videoPath} to Storage at ${storagePath}`)
+
+  const bucket = storage.bucket()
+  await bucket.upload(videoPath, {
+    destination: storagePath,
+    metadata: { contentType: "video/mp4" },
+  })
+
+  const file = bucket.file(storagePath)
+  const [url] = await file.getSignedUrl({
+    action: "read",
+    expires: "03-01-2030",
+  })
+
+  log(`Upload complete. Updating social doc ${socialDocId}`)
+
+  await db.collection(TABLES.SOCIALS).doc(socialDocId).update({
+    urlSphericalVideoStorage: url,
+    status: SOCIALS_STATUS.IN_PROGRESS_CUSTOMIZATION,
+  })
+
+  log(`Social doc ${socialDocId} updated with video URL and status IN_PROGRESS_CUSTOMIZATION`)
+}
+
+/**
  * Main entry point for Cloud Run Job
  */
 const main = async () => {
   try {
-    const imageUrl = process.env.IMAGE_URL
-    const outputPath = process.env.OUTPUT_PATH
+    const imageUrl = getParam("image-url", "IMAGE_URL")
+    const outputPath = getParam("output-path", "OUTPUT_PATH")
+    const socialDocId = getParam("social-doc-id", "SOCIAL_DOC_ID")
 
     if (!imageUrl) {
-      logError("IMAGE_URL environment variable is required")
+      logError("IMAGE_URL is required (--image-url=... or IMAGE_URL env var)")
       process.exit(1)
     }
 
@@ -225,11 +289,29 @@ const main = async () => {
 
     log(`Success! Video created at: ${videoPath}`)
 
-    // TODO: Upload to Firebase Storage
-    // TODO: Create Firestore document
+    if (socialDocId) {
+      await uploadAndUpdateDoc(videoPath, socialDocId)
+    } else {
+      log("No SOCIAL_DOC_ID provided — skipping upload and Firestore update")
+    }
 
     process.exit(0)
   } catch (err) {
+    const socialDocId = getParam("social-doc-id", "SOCIAL_DOC_ID")
+
+    if (socialDocId) {
+      try {
+        initFirebase()
+        const db = admin.firestore()
+        await db.collection(TABLES.SOCIALS).doc(socialDocId).update({
+          status: SOCIALS_STATUS.ERROR,
+          errorInfo: (err as Error).message,
+        })
+      } catch (updateErr) {
+        logError(`Failed to update social doc with error status: ${(updateErr as Error).message}`)
+      }
+    }
+
     logError(`Job failed: ${(err as Error).stack}`)
     process.exit(1)
   }

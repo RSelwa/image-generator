@@ -46,7 +46,6 @@ export default antfu({
     "antfu/top-level-function": "off",
 
     // Typescript rules
-    "ts/consistent-type-definitions": ["error", "type"],
     "ts/no-use-before-define": "warn",
     "ts/no-import-type-side-effects": "off",
 
@@ -59,5 +58,7 @@ export default antfu({
     "react-refresh/only-export-components": "off",
     "antfu/curly": "off",
     "no-console": ["warn", { allow: ["warn", "error", "info"] }],
+    // "ts/consistent-type-definitions": ["error", "type"],
+    "ts/consistent-type-definitions": "warn"
   },
 })

@@ -1,5 +1,5 @@
 import { TABLES } from "@repo/common"
-import { type FlatDoc, type GameDoc, type GamesListDoc, type LobbyDoc, type MapDoc, type RoundAnswerDoc, type SeedDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
+import { type FlatDoc, type GameDoc, type GamesListDoc, type LobbyDoc, type MapDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
 import {
   type CollectionGroup,
   type CollectionReference,
@@ -50,6 +50,10 @@ export const refs = {
   [TABLES.METADATA]: db.collection(TABLES.METADATA) as CollectionReference<
     GamesListDoc,
     GamesListDoc
+  >,
+  [TABLES.SOCIALS]: db.collection(TABLES.SOCIALS) as CollectionReference<
+    SocialDoc,
+    SocialDoc
   >,
 }
 

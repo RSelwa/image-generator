@@ -1,0 +1,36 @@
+{
+  "name": "@repo/socials",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "files": [
+    ".env.*",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "compile": "tsc --noEmit",
+    "lint": "biome check",
+    "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
+    "clean": "del-cli dist isolate tsconfig.tsbuildinfo coverage"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^4.0.0",
+    "@google-cloud/run": "^1.0.0",
+    "@repo/common": "workspace:*",
+    "@repo/providers": "workspace:*",
+    "@repo/schemas": "workspace:*",
+    "del-cli": "^6.0.0",
+    "firebase-admin": "^13.4.0",
+    "firebase-functions": "^6.3.2"
+  },
+  "devDependencies": {
+    "@codecompose/typescript-config": "^2.0.1",
+    "@types/node": "^22.10.10",
+    "tsdown": "^0.15.6",
+    "typescript": "^5.7.3"
+  }
+}

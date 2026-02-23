@@ -5,6 +5,7 @@ import { WITH_ID } from "~/zod"
 export const socialDocSchema = z.object({
   errorInfo: z.string().nullish().default(null),
   hook: z.string().nullish().default(null),
+  gameId: z.string().nullish().default(null),
   sphericalId: z.string().nullish().default(null),
   duration: z.number().nullish().default(null),
   status: z.enum(SOCIALS_STATUS).nullish().default(null),

@@ -44,6 +44,15 @@
         "pnpm build:lobby-presence"
       ],
       "codebase": "lobby-presence"
+    },
+    {
+      "source": "functions/socials",
+      "runtime": "nodejs22",
+      "isolate": true,
+      "predeploy": [
+        "pnpm build:socials"
+      ],
+      "codebase": "socials"
     }
   ],
   "emulators": {
