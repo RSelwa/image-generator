@@ -1872,6 +1872,192 @@ describe("firebase Security Rules", () => {
     })
   })
 
+  describe("socials collection", () => {
+    it("should be able to read as admin", async () => {
+      const adminUid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+        await setDoc(doc(context.firestore(), "socials/social1"), {
+          name: "Test Social",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+      await assertSucceeds(getDoc(doc(adminDb, "socials/social1")))
+    })
+
+    it("should be able to create as admin", async () => {
+      const adminUid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+      await assertSucceeds(
+        setDoc(doc(adminDb, "socials/social1"), { name: "Test Social" }),
+      )
+    })
+
+    it("should be able to update as admin", async () => {
+      const adminUid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+        await setDoc(doc(context.firestore(), "socials/social1"), {
+          name: "Test Social",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+      await assertSucceeds(
+        updateDoc(doc(adminDb, "socials/social1"), { name: "Updated Social" }),
+      )
+    })
+
+    it("should be able to delete as admin", async () => {
+      const adminUid = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+        await setDoc(doc(context.firestore(), "socials/social1"), {
+          name: "Test Social",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+      await assertSucceeds(deleteDoc(doc(adminDb, "socials/social1")))
+    })
+
+    it("should not be able to read as regular user", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "socials/social1"), {
+          name: "Test Social",
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(getDoc(doc(authedUserDb, "socials/social1")))
+    })
+
+    it("should not be able to create as regular user", async () => {
+      const uid = "user1"
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        setDoc(doc(authedUserDb, "socials/social1"), { name: "Test Social" }),
+      )
+    })
+
+    it("should not be able to update as regular user", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "socials/social1"), {
+          name: "Test Social",
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        updateDoc(doc(authedUserDb, "socials/social1"), {
+          name: "Updated Social",
+        }),
+      )
+    })
+
+    it("should not be able to delete as regular user", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "socials/social1"), {
+          name: "Test Social",
+        })
+      })
+
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(deleteDoc(doc(authedUserDb, "socials/social1")))
+    })
+
+    it("should not be able to read as iconograph", async () => {
+      const uid = "icono1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${uid}`), {
+          uid,
+          right: "iconograph",
+        })
+        await setDoc(doc(context.firestore(), "socials/social1"), {
+          name: "Test Social",
+        })
+      })
+
+      const iconoDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(getDoc(doc(iconoDb, "socials/social1")))
+    })
+
+    it("should not be able to write as iconograph", async () => {
+      const uid = "icono1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${uid}`), {
+          uid,
+          right: "iconograph",
+        })
+      })
+
+      const iconoDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(
+        setDoc(doc(iconoDb, "socials/social1"), { name: "Test Social" }),
+      )
+    })
+
+    it("should not be able to read when not logged in", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "socials/social1"), {
+          name: "Test Social",
+        })
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(getDoc(doc(unauthedDb, "socials/social1")))
+    })
+
+    it("should not be able to write when not logged in", async () => {
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(
+        setDoc(doc(unauthedDb, "socials/social1"), { name: "Test Social" }),
+      )
+    })
+  })
+
   describe("lobbies collection", () => {
     const createLobbyData = (hostId: string, playerUids: string[]) => ({
       code: "ABC123",

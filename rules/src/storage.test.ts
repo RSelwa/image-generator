@@ -927,6 +927,146 @@ describe("firebase Storage Rules", () => {
     })
   })
 
+  describe("socials", () => {
+    it("should deny unauthenticated read", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "socials/test.png"), testFile)
+      })
+
+      const unauthedStorage = testEnv.unauthenticatedContext().storage()
+
+      await assertFails(
+        getDownloadURL(ref(unauthedStorage, "socials/test.png")),
+      )
+    })
+
+    it("should deny non-admin read", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "socials/test.png"), testFile)
+      })
+
+      const authedStorage = testEnv
+        .authenticatedContext(NON_ADMIN_UID)
+        .storage()
+
+      await assertFails(
+        getDownloadURL(ref(authedStorage, "socials/test.png")),
+      )
+    })
+
+    it("should deny unauthenticated create", async () => {
+      const unauthedStorage = testEnv.unauthenticatedContext().storage()
+
+      await assertFails(
+        uploadBytes(ref(unauthedStorage, "socials/test.png"), testFile),
+      )
+    })
+
+    it("should deny non-admin create", async () => {
+      const authedStorage = testEnv
+        .authenticatedContext(NON_ADMIN_UID)
+        .storage()
+
+      await assertFails(
+        uploadBytes(ref(authedStorage, "socials/test.png"), testFile),
+      )
+    })
+
+    it("should deny non-admin update", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "socials/test.png"), testFile)
+      })
+
+      const authedStorage = testEnv
+        .authenticatedContext(NON_ADMIN_UID)
+        .storage()
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+
+      await assertFails(
+        uploadBytes(ref(authedStorage, "socials/test.png"), updatedFile),
+      )
+    })
+
+    it("should deny non-admin delete", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "socials/test.png"), testFile)
+      })
+
+      const authedStorage = testEnv
+        .authenticatedContext(NON_ADMIN_UID)
+        .storage()
+
+      await assertFails(
+        deleteObject(ref(authedStorage, "socials/test.png")),
+      )
+    })
+
+    it("should deny unauthenticated delete", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "socials/test.png"), testFile)
+      })
+
+      const unauthedStorage = testEnv.unauthenticatedContext().storage()
+
+      await assertFails(
+        deleteObject(ref(unauthedStorage, "socials/test.png")),
+      )
+    })
+
+    it.skip("should allow admin read", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "socials/test.png"), testFile)
+      })
+
+      const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
+
+      await assertSucceeds(
+        getDownloadURL(ref(adminStorage, "socials/test.png")),
+      )
+    })
+
+    it.skip("should allow admin create", async () => {
+      const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
+
+      await assertSucceeds(
+        uploadBytes(ref(adminStorage, "socials/test.png"), testFile),
+      )
+    })
+
+    it.skip("should allow admin update", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "socials/test.png"), testFile)
+      })
+
+      const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
+      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+
+      await assertSucceeds(
+        uploadBytes(ref(adminStorage, "socials/test.png"), updatedFile),
+      )
+    })
+
+    it.skip("should allow admin delete", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const storage = context.storage()
+        await uploadBytes(ref(storage, "socials/test.png"), testFile)
+      })
+
+      const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
+
+      await assertSucceeds(
+        deleteObject(ref(adminStorage, "socials/test.png")),
+      )
+    })
+  })
+
   describe("other paths", () => {
     it("should deny unauthenticated read on unlisted paths", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {

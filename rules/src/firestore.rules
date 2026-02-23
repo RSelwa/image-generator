@@ -137,6 +137,11 @@ service cloud.firestore {
       }
     }
 
+    // Socials collection
+    match /socials/{socialId} {
+      allow read, write: if signedInAdmin();
+    }
+
     // CollectionGroup queries
     match /{path=**}/spherical/{spherical} {
       allow write: if signedInAdmin();
@@ -165,7 +170,6 @@ service cloud.firestore {
 
       allow read: if true;
     }
-
     
 
   }
