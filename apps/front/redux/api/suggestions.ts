@@ -1,7 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES } from "@repo/common"
 import { type SuggestionDoc, type SuggestionDocWithId, suggestionsDocWithIdSchema } from "@repo/schemas"
-import { addDoc, deleteDoc, documentId, getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, serverTimestamp, startAfter, updateDoc, where } from "firebase/firestore"
+import { addDoc, deleteDoc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, serverTimestamp, startAfter, Timestamp, updateDoc, where } from "firebase/firestore"
 import { DEFAULT_SIZE_SUGGESTIONS } from "@/constants/api"
 import { getSuggestionRef, TABLE_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
@@ -51,7 +51,6 @@ export const suggestionsApi = createApi({
       },
       providesTags: (_result, _error, { id }) => [{ type: "Suggestion", id }],
     }),
-
     getMySuggestions: builder.query<SuggestionDocWithId[], { userId: string }>({
       queryFn: async ({ userId }) => {
         try {
@@ -86,20 +85,19 @@ export const suggestionsApi = createApi({
       },
       providesTags: ["SuggestionList"],
     }),
-
     getAllSuggestions: builder.infiniteQuery<
       SuggestionDocWithId[],
       void,
-      { limit?: number, startAfter?: string }
+      { limit?: number, startAfter?: number }
     >({
       queryFn: async ({ pageParam }) => {
         try {
           const constraints: QueryConstraint[] = [
-            orderBy(documentId()),
+            orderBy("createdAt", "desc"),
           ]
 
           if (pageParam.startAfter) {
-            constraints.push(startAfter(pageParam.startAfter))
+            constraints.push(startAfter(Timestamp.fromMillis(pageParam.startAfter)))
           }
 
           if (pageParam.limit) {
@@ -137,7 +135,7 @@ export const suggestionsApi = createApi({
       infiniteQueryOptions: {
         initialPageParam: {
           limit: DEFAULT_SIZE_SUGGESTIONS,
-          startAfter: "",
+          startAfter: 0,
         },
         getNextPageParam: (_, allPages, lastPageParams) => {
           const lastPage = allPages.at(-1)
@@ -150,7 +148,7 @@ export const suggestionsApi = createApi({
           }
 
           return {
-            startAfter: lastSuggestion?.id,
+            startAfter: lastSuggestion?.createdAt?.toMillis() || 0,
             limit: limitValue,
           }
         },
@@ -163,7 +161,6 @@ export const suggestionsApi = createApi({
           "SuggestionList",
         ] : ["SuggestionList"],
     }),
-
     createSuggestion: builder.mutation<SuggestionDocWithId, Omit<SuggestionDoc, "createdAt" | "updatedAt">>({
       queryFn: async (input) => {
         try {
@@ -191,8 +188,7 @@ export const suggestionsApi = createApi({
       },
       invalidatesTags: ["SuggestionList"],
     }),
-
-    updateSuggestion: builder.mutation<void, { id: string } & Partial<SuggestionDoc>>({
+    updateSuggestion: builder.mutation<null, { id: string } & Partial<SuggestionDoc>>({
       queryFn: async ({ id, ...updates }) => {
         try {
           await updateDoc(getSuggestionRef(id), {
@@ -200,11 +196,25 @@ export const suggestionsApi = createApi({
             updatedAt: serverTimestamp(),
           })
 
-          return { data: undefined }
+          return { data: null }
         } catch (error) {
           console.error(`Error updating suggestion ${id}:`, error)
 
           return { error: globalErrorHandler(error) }
+        }
+      },
+      onQueryStarted: async ({ id, ...updates }, { dispatch, queryFulfilled }) => {
+        const patchResult = dispatch(
+          suggestionsApi.util.updateQueryData("getSuggestionById", { id }, (draft) => {
+            if (!draft) return
+            Object.assign(draft, updates, { id })
+          })
+        )
+
+        try {
+          await queryFulfilled
+        } catch {
+          patchResult.undo()
         }
       },
       invalidatesTags: (_result, _error, { id }) => [
@@ -212,7 +222,6 @@ export const suggestionsApi = createApi({
         "SuggestionList",
       ],
     }),
-
     deleteSuggestion: builder.mutation<void, { id: string }>({
       queryFn: async ({ id }) => {
         try {

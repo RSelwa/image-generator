@@ -1,8 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { OPTIONS_NUMBER_OF_ROUNDS, OPTIONS_PLAYERS_LIVES, OPTIONS_ROUND_DURATIONS } from "@repo/common"
 import { type LobbyDoc } from "@repo/schemas"
+import { type DriveStep } from "driver.js"
+import { driver } from "driver.js"
 import { ArrowRight, ArrowUpRightFromSquareIcon, Trash } from "lucide-react"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
@@ -15,20 +19,17 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
+import { DRIVER_IDS, STEPS } from "@/constants/driver"
+import { ASSET_URLS, STORAGE_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { useLocalStorage } from "@/hooks/use-storage"
 import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyConfigMutation, useUpdatePlayerReadyMutation } from "@/redux/api/lobby"
 import { useApplySeedToLobbyMutation } from "@/redux/api/local"
 import { selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
-import { useLocalStorage } from "@/hooks/use-storage"
-import { ASSET_URLS, STORAGE_KEYS } from "@/constants/mapping"
-import { driver, DriveStep } from "driver.js";
-import "driver.js/dist/driver.css";
-import { useEffect } from "react"
-import { DRIVER_IDS, STEPS } from "@/constants/driver"
-import Image from "next/image"
+import "driver.js/dist/driver.css"
 
 const seedForm = z.object({
   seed: z.string("Seed cannot be empty"),
@@ -63,6 +64,38 @@ const LobbyWaiting = () => {
       seed: lobby?.seedId || "",
     },
   })
+
+  const initDriver = () => {
+    if (isSkipDriver) return
+
+    const steps: DriveStep[] = [
+      STEPS.LOBBY_PLAYERS,
+    ]
+
+    if (isOwner) {
+      steps.push(STEPS.LOBBY_CONFIG, STEPS.LOBBY_SEED, STEPS.JOIN_LOBBY_LINK)
+
+      if (isOnlyPlayer)
+        steps.push(STEPS.START_BUTTON_SOLO)
+      else
+        steps.push(STEPS.READY_BUTTON, STEPS.START_BUTTON)
+    } else
+      steps.push(STEPS.READY_BUTTON)
+
+    const driverObj = driver({
+      showProgress: true,
+      steps,
+      allowKeyboardControl: true,
+      onDestroyed: () => setIsSkipDriver(true)
+    })
+
+    driverObj.drive()
+  }
+
+  useEffect(() => {
+    if (!lobby) return
+    initDriver()
+  }, [])
 
   if (!lobby) return null
 
@@ -107,37 +140,6 @@ const LobbyWaiting = () => {
     }
   }
 
-  const initDriver = () => {
-    if (isSkipDriver) return
-
-    const steps: DriveStep[] = [
-      STEPS.LOBBY_PLAYERS,
-    ]
-
-    if (isOwner) {
-      steps.push(STEPS.LOBBY_CONFIG, STEPS.LOBBY_SEED, STEPS.JOIN_LOBBY_LINK)
-
-      if (isOnlyPlayer)
-        steps.push(STEPS.START_BUTTON_SOLO)
-      else
-        steps.push(STEPS.READY_BUTTON, STEPS.START_BUTTON)
-
-    } else
-      steps.push(STEPS.READY_BUTTON)
-
-    const driverObj = driver({
-      showProgress: true,
-      steps,
-      allowKeyboardControl: true,
-      onDestroyed: () => setIsSkipDriver(true)
-    });
-
-    driverObj.drive();
-  }
-
-  useEffect(initDriver, [])
-
-
   return (
     <main className="min-h-full-height flex items-center justify-center relative bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
       <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0" />
@@ -145,13 +147,15 @@ const LobbyWaiting = () => {
         <section id={DRIVER_IDS.LOBBY_PLAYERS} className="w-full flex flex-col border border-dashed items-center gap-4 p-6  text-muted-primary-foreground">
           <p className="text-lg ">Players in lobby: {lobby.players.length}/{lobby.config.maxPlayers}</p>
           <LobbyAvatars />
-          {!isOnlyPlayer && <p>
-            Ready:
-            {" "}
-            {lobby.players.filter((p) => p.isReady).length}
-            /
-            {lobby.players.length}
-          </p>}
+          {!isOnlyPlayer && (
+            <p>
+              Ready:
+              {" "}
+              {lobby.players.filter((p) => p.isReady).length}
+              /
+              {lobby.players.length}
+            </p>
+          )}
         </section>
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <article id={DRIVER_IDS.LOBBY_CONFIG} className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
@@ -266,7 +270,6 @@ const LobbyWaiting = () => {
                   disabled={disabled || hasLobbySeed}
                 />
 
-
               </Field>
             </div>
           </article>
@@ -312,18 +315,24 @@ const LobbyWaiting = () => {
             Join this lobby: {lobby.code} <ArrowUpRightFromSquareIcon className="size-4" />
           </Button>
 
-          {isOnlyPlayer && <Button
-            id={DRIVER_IDS.START_BUTTON_SOLO}
-            data-testid="start-lobby-button-solo"
-            onClick={async () => {
-              updatePlayerReady({
-                lobbyId,
-                playerId: userId,
-                isReady: !isMeReady
-              })
-              await startLobby({ lobbyId })
-            }} className="w-full lg:w-auto">Play!</Button>}
-          {!isOnlyPlayer &&
+          {isOnlyPlayer && (
+            <Button
+              id={DRIVER_IDS.START_BUTTON_SOLO}
+              data-testid="start-lobby-button-solo"
+              onClick={async () => {
+                updatePlayerReady({
+                  lobbyId,
+                  playerId: userId,
+                  isReady: !isMeReady
+                })
+                await startLobby({ lobbyId })
+              }}
+              className="w-full lg:w-auto"
+            >
+              Play!
+            </Button>
+          )}
+          {!isOnlyPlayer && (
             <>
               <Button
                 id={DRIVER_IDS.READY_BUTTON}
@@ -354,7 +363,7 @@ const LobbyWaiting = () => {
                 </HoverCardContent>
               </HoverCard>
             </>
-          }
+          )}
         </section>
       </div>
 

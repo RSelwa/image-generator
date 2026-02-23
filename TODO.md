@@ -80,17 +80,21 @@
   - [x] Create an e2e test with DEMO_SEED
   - [x] Adapter storybook et les comportements
   - [x] Ajouter la selection d'avatar sur la popup pseudo after login
-  - [ ] in Seed maker, when round is special should not allow images without thumbnails
+  - [x] Put by default specials rounds
+  - [x] order suggestions by creation data
+  - [x] Bug try to login with google on already created account
+  - [x] Add a field viewedAt on suggestions
+  - [ ] implement seeds that will be featured like flim discover
   - [ ] Add a button How to play wich gonna open a modal wich gonna be carousel with examples
   - [ ] Ajouter une image pour le share seo
   - [ ] Ajouter les meta pour chaque page
   - [ ] Ajouter une belle page 404
   - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
   - [ ] Implémenter le buy me coffee
+  - [ ] in Seed maker, when round is special should not allow images without thumbnails
   - [ ] Scrap lostgamer for the images of the maps
   - [ ] Add sound
   - [ ] Implement modals system for pubing/infos
-  - [ ] implement seeds that will be featured like flim discover
   - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
   - [ ] ADMIN -Improve the empty card whe no map/no games etc... with shadcn empty components
   - [ ] can copy the seedId in the maker

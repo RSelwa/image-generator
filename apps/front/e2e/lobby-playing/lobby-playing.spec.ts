@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test"
+import { LOBBY_STATUS } from "@repo/common"
 import { lobbyFactory } from "@repo/testing/factory"
 import { SELECTORS } from "@/constants/testing"
 import { createFirestoreLobbyDoc, createLobbyViaUI, createPlayerFromUserDoc, hideDriverTutorial, loginViaUI, retrieveGamesFromLobby, setupUser, startSoloLobbyViaUI, waitForInputToBeVisible, waitToBeLogged } from "@/e2e/helpers/lobby"
-import { LOBBY_STATUS } from "@repo/common"
 
 test.describe("lobby playing", () => {
   test.describe("when is display game", () => {
@@ -65,7 +65,7 @@ test.describe("lobby playing", () => {
     })
   })
 
-  test("should play a game until the end",async ({ page }) => {
+  test("should play a game until the end", async ({ page }) => {
     test.setTimeout(120_000)
     const user = await setupUser()
 
@@ -84,7 +84,6 @@ test.describe("lobby playing", () => {
     await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText("6")
 
     const specialRoundsSwitch = page.getByTestId("special-rounds")
-    await specialRoundsSwitch.click()
     await expect(specialRoundsSwitch).toBeChecked()
 
     await startSoloLobbyViaUI(page)
@@ -140,7 +139,6 @@ test.describe("lobby playing", () => {
     await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toHaveCount(0)
     await expect(page.getByTestId(SELECTORS.MAP_LINE)).toHaveCount(0)
     await expect(page.getByTestId(SELECTORS.MAP_MARKER("primary"))).toHaveCount(1)
-
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
 

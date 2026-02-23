@@ -3,7 +3,7 @@ import { Crown } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { Fragment } from "react/jsx-runtime"
 import { toast } from "sonner"
-import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
 import { useExcludePlayerMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -11,9 +11,9 @@ import { useAppSelector } from "@/redux/store"
 import { firstLetter, getLobbyIdFromPathname } from "@/utils"
 import { getAvatarUrl } from "@/utils/file"
 
-const AvatarPlayer = ({ p, isOwner, isOnlyPlayer}: { p: Player, isOwner?: boolean, isOnlyPlayer?:boolean }) => (
+const AvatarPlayer = ({ p, isOwner, isOnlyPlayer }: { p: Player, isOwner?: boolean, isOnlyPlayer?: boolean }) => (
   <Avatar>
-    <AvatarImage style={{}} data-ready={p.isReady || isOnlyPlayer} className="data-[ready=true]:bg-primary  data-[ready=false]:bg-destructive" src={getAvatarUrl(p.avatar)} />
+    <AvatarImage style={{}} data-ready={p.isReady || isOnlyPlayer} className="data-[ready=true]:bg-ready  data-[ready=false]:bg-destructive" src={getAvatarUrl(p.avatar)} />
     <AvatarFallback className="font-bold">{firstLetter(p.name)}</AvatarFallback>
     {isOwner && <Crown className="absolute fill-primary -top-4 left-1/2 -translate-x-1/2 stroke-0" size={16} />}
   </Avatar>

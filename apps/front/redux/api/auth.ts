@@ -72,11 +72,12 @@ export const authApi = createApi({
               const credential = EmailAuthProvider.credential(email, data.password)
               await linkWithCredential(auth.currentUser, credential)
               await updateDoc(getUserRef(auth.currentUser.uid), { email, isAnonymousUser: false,
-               }).catch((error) => {
+              }).catch((error) => {
                 console.error("Error updating user", auth.currentUser?.uid, error)
               })
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
             } catch (linkError: unknown) {
+              console.error("Error creating user auth", linkError)
               const firebaseError = linkError as { code?: string }
               if (firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED) {
                 toast.error("An account with this email already exists. Please log in instead.")
@@ -107,20 +108,14 @@ export const authApi = createApi({
               const result = await linkWithPopup(auth.currentUser, googleProvider)
               const email = result.user.email
               if (email) {
-                await updateDoc(getUserRef(auth.currentUser.uid), { email, pseudo: auth.currentUser.displayName, isAnonymousUser:false, avatar: getRandomAvatar() }).catch((error) => {
+                await updateDoc(getUserRef(auth.currentUser.uid), { email, pseudo: auth.currentUser.displayName, isAnonymousUser: false, avatar: getRandomAvatar() }).catch((error) => {
                   console.error("Error updating user", auth.currentUser?.uid, error)
                 })
               }
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
             } catch (linkError: unknown) {
               const firebaseError = linkError as { code?: string, customData?: unknown }
-              if (firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED) {
-                toast.error("An account with this email already exists. Please log in instead.")
-
-                return { data: null }
-              }
-
-              if (firebaseError?.code === FIREBASE_ERRORS.CREDENTIAL_ALREADY_IN_USE) {
+              if (firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED || firebaseError?.code === FIREBASE_ERRORS.CREDENTIAL_ALREADY_IN_USE) {
                 const credential = GoogleAuthProvider.credentialFromError(firebaseError as any)
                 if (credential) {
                   await signInWithCredential(auth, credential)
@@ -173,7 +168,7 @@ export const authApi = createApi({
               const userRef = getUserRef(user.uid)
               const userDoc = await getDoc(userRef)
               const pseudo = generateUsername()
-              
+
               if (!userDoc.exists()) {
                 await setDoc(userRef, {
                   email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,

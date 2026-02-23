@@ -12,7 +12,8 @@ export const suggestionsDocSchema = z.object({
   type: z.enum(SUGGESTIONS_TYPE).nullish().default(null),
   title: z.string().nullish().default(null),
   message: z.string().nullish().default(null),
-  imagesUrls: z.string().array().nullish().default([])
+  imagesUrls: z.string().array().nullish().default([]),
+  viewedAt: timestampSchema.nullish().default(null),
 })
 
 export const suggestionsDocWithIdSchema = z.object({

@@ -39,6 +39,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-ready: var(--ready);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -195,10 +196,14 @@
 [data-marathon] {
   --background: oklch(0 0 0);
   --foreground: oklch(1 0 0);
-  --primary: oklch(0.9209 0.2325 125.54);
+  /* --primary: oklch(0.9209 0.2325 125.54); */
+  --primary: oklch(0.6484 0.239166 33.0098);
+  --ready: oklch(0.9209 0.2325 125.54);
+  /* --primary: oklch(0.6723 0.239166 18.94); */
   --primary-foreground: oklch(0 0 0);
-  --ring: oklch(0.95 0.1994 117.42);
-  --blue-accent: oklch(0.4426 0.306677 264.052);
+  --ring: oklch(0.6416 0.2133 32.82);
+  --blue-accent: oklch(0.6416 0.2133 250.94);
+  /* --blue-accent: oklch(0.4426 0.306677 264.052); */
   --blue-accent-foreground: oklch(0.4426 0.306677 264.052);
 
 }

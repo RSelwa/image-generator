@@ -1,6 +1,6 @@
 "use client"
 
-import { ComponentProps, useCallback, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import {
   type ReactZoomPanPinchRef
 } from "react-zoom-pan-pinch"
@@ -10,9 +10,9 @@ import {
   useControls,
   useTransformContext,
 } from "react-zoom-pan-pinch"
+import { MapPin, MapPinVertical } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { MapPin, MapPinVertical } from "@/components/icons"
 import { cn } from "@/utils"
 
 // Types for the map system
@@ -72,7 +72,6 @@ const MarkersLayer = ({
   const scale = transformState.scale
 
   const renderMarker = (position: Position, color: MarkerColor) => {
-
     return (
       <div
         data-testid={`marker-${color}`}
@@ -85,8 +84,8 @@ const MarkersLayer = ({
         }}
       >
         <div className="relative">
-          {color === "primary" && <MapPinVertical className={cn("h-16",`text-primary`)} />}
-          { color === "blue-accent" &&<MapPin className={cn("h-12",`text-primary`)} />}
+          {color === "primary" && <MapPinVertical className={cn("h-16", `text-${color}`)} />}
+          {color === "blue-accent" && <MapPin className={cn("h-12", `text-${color}`)} />}
         </div>
       </div>
     )
@@ -172,7 +171,7 @@ export const MiniMap = ({
   const isHoveredOrParent = isHovered || isParentHover
 
   const isExpanded = alwaysExpanded || isHoveredOrParent
-  const currentSize = isMobile ? (isExpanded ? MINI_MAP_EXPANDED_MOBILE : MINI_MAP_COLLAPSED_MOBILE) :(isExpanded ? expandedSize : collapsedSize)
+  const currentSize = isMobile ? (isExpanded ? MINI_MAP_EXPANDED_MOBILE : MINI_MAP_COLLAPSED_MOBILE) : (isExpanded ? expandedSize : collapsedSize)
   const isMobileExpanded = isMobile && isExpanded
 
   // Calculate minimum scale so image always fills the container

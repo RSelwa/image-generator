@@ -17,7 +17,6 @@ import {
 } from "../helpers/lobby"
 
 test.describe("lobby Waiting", () => {
-
   test.describe("when leaving the lobby", () => {
     test("should remove me from the players if lobby is in waiting", async ({ page }) => {
       test.setTimeout(60000)
@@ -35,6 +34,7 @@ test.describe("lobby Waiting", () => {
       // Wait for RTDB presence to be set before closing
       await expect.poll(async () => {
         const snap = await rtdb.ref(`lobbies/${lobbyId}/players/${user.id}`).get()
+
         return snap.exists()
       }, { timeout: 15000 }).toBe(true)
 
@@ -43,6 +43,7 @@ test.describe("lobby Waiting", () => {
       // Wait for onDisconnect + Cloud Function to remove the player from Firestore
       await expect.poll(async () => {
         const doc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
+
         return doc.data()?.playersIds?.includes(user.id)
       }, { timeout: 30000 }).toBe(false)
 
@@ -114,7 +115,7 @@ test.describe("lobby Waiting", () => {
       const specialRoundsSwitch = page.getByTestId("special-rounds")
       await specialRoundsSwitch.click()
 
-      await expect(specialRoundsSwitch).toBeChecked()
+      await expect(specialRoundsSwitch).not.toBeChecked()
     })
 
     test("can start a game if everyone is ready", async ({ page }) => {
@@ -286,7 +287,7 @@ test.describe("lobby Waiting", () => {
       const hostPage = await hostContext.newPage()
       await loginViaUI(hostPage, host.email)
       await hideDriverTutorial(hostPage)
-      
+
       await hostPage.goto(`/lobby/${lobby.id}`)
 
       const playerContext = await browser.newContext()
@@ -401,7 +402,6 @@ test.describe("lobby Waiting", () => {
       await page.goto(`/join-lobby/${lobby.code}`)
 
       await expect(page).toHaveURL(new RegExp(`/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
-
 
       await page.getByLabel("Email").fill(joiner.email)
       await page.getByLabel("Password").fill(PASSWORD)
