@@ -7,7 +7,8 @@ on:
       - .github/workflows/e2e-front.yml
       - apps/front/**
       - libs/**
-      - functions/**
+      - functions/create-user-document
+      - functions/lobby-presence
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

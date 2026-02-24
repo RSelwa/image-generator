@@ -97,6 +97,8 @@ const createFFmpegProcess = (outputPath: string, fps: number): ChildProcessWitho
     "-y", // Overwrite output file
     "-f",
     "image2pipe", // Input format: piped images
+    "-c:v",
+    "mjpeg", // Input codec: JPEG
     "-framerate",
     String(fps),
     "-i",
@@ -148,10 +150,9 @@ const captureFrames = async (page: Page, config: CaptureConfig) => {
       { yaw, pitch }
     )
 
-    await page.waitForTimeout(16)
-
     const screenshot = await page.screenshot({
-      type: "png",
+      type: "jpeg",
+      quality: 90,
       clip: {
         x: 0,
         y: 0,

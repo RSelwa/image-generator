@@ -43,7 +43,7 @@ export const listen_social_written = onDocumentWritten(
       await handleWaitingCapture(socialId, after)
     }
 
-    if (after.status === SOCIALS_STATUS.IN_PROGRESS_CUSTOMIZATION) {
+    if (after.status === SOCIALS_STATUS.WAITING_CUSTOMIZATION) {
       await handleInProgressCustomization(socialId, after)
     }
   },

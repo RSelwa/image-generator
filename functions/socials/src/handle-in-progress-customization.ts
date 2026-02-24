@@ -23,6 +23,11 @@ export const handleInProgressCustomization = async (socialId: string, social: So
     return
   }
 
+  // Set status immediately to prevent re-trigger
+  await refs[TABLES.SOCIALS].doc(socialId).update({
+    status: SOCIALS_STATUS.IN_PROGRESS_CUSTOMIZATION,
+  })
+
   try {
     const jobName = `projects/${CLOUD_RUN_PROJECT_ID}/locations/${CLOUD_RUN_REGION}/jobs/${POST_PRODUCTION_JOB_NAME}`
 

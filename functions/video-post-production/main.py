@@ -85,6 +85,27 @@ def generate_signed_url(blob, expiration_days: int = 7) -> str:
     )
 
 
+def wrap_text(text: str, font, max_width: int, draw) -> list[str]:
+    words = text.split()
+    lines = []
+    current_line = ""
+
+    for word in words:
+        test_line = f"{current_line} {word}".strip() if current_line else word
+        bbox = draw.textbbox((0, 0), test_line, font=font)
+        if bbox[2] - bbox[0] <= max_width:
+            current_line = test_line
+        else:
+            if current_line:
+                lines.append(current_line)
+            current_line = word
+
+    if current_line:
+        lines.append(current_line)
+
+    return lines
+
+
 def create_text_overlay(hook: str, video_width: int, video_height: int, output_path: str):
     from PIL import Image, ImageDraw, ImageFont
     from pilmoji import Pilmoji
@@ -99,11 +120,18 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
     font = ImageFont.truetype(FONT_PATH, font_size)
     padding_x = 20
     padding_y = 12
+    max_text_width = int(video_width * 0.85)
 
     temp_draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
-    bbox = temp_draw.textbbox((0, 0), hook, font=font)
-    text_w = bbox[2] - bbox[0]
-    text_h = bbox[3] - bbox[1]
+    lines = wrap_text(hook, font, max_text_width, temp_draw)
+
+    line_bboxes = [temp_draw.textbbox((0, 0), line, font=font) for line in lines]
+    line_heights = [bb[3] - bb[1] for bb in line_bboxes]
+    line_widths = [bb[2] - bb[0] for bb in line_bboxes]
+    line_spacing = 8
+
+    text_w = max(line_widths)
+    text_h = sum(line_heights) + line_spacing * (len(lines) - 1)
 
     box_w = text_w + padding_x * 2
     box_h = text_h + padding_y * 2
@@ -114,7 +142,12 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
     draw.rectangle([box_x, box_y, box_x + box_w, box_y + box_h], fill=(255, 255, 255, 230))
 
     with Pilmoji(img) as pilmoji_obj:
-        pilmoji_obj.text((box_x + padding_x, box_y + padding_y), hook, fill=(0, 0, 0, 255), font=font)
+        y = box_y + padding_y
+        for i, line in enumerate(lines):
+            line_w = line_widths[i]
+            x = box_x + (box_w - line_w) // 2
+            pilmoji_obj.text((x, y), line, fill=(0, 0, 0, 255), font=font)
+            y += line_heights[i] + line_spacing
 
     img.save(output_path, "PNG")
 
