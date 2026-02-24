@@ -3,6 +3,7 @@ import { type SocialDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
 import { onSchedule } from "firebase-functions/scheduler"
+import { handleInProgressCustomization } from "~/handle-in-progress-customization"
 import { handleWaitingCapture } from "~/handle-waiting-capture"
 import { createScheduledSocial } from "~/schedule-social"
 
@@ -40,6 +41,10 @@ export const listen_social_written = onDocumentWritten(
 
     if (after.status === SOCIALS_STATUS.WAITING_CAPTURE) {
       await handleWaitingCapture(socialId, after)
+    }
+
+    if (after.status === SOCIALS_STATUS.IN_PROGRESS_CUSTOMIZATION) {
+      await handleInProgressCustomization(socialId, after)
     }
   },
 )

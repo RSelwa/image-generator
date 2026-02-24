@@ -1,8 +1,11 @@
 import { SOCIALS_STATUS } from "@repo/common"
 import z from "zod"
-import { WITH_ID } from "~/zod"
+import { timestampSchema, WITH_ID } from "~/zod"
 
 export const socialDocSchema = z.object({
+  createdAt: timestampSchema.nullish().default(() => null),
+  updatedAt: timestampSchema.nullish().default(() => null),
+
   errorInfo: z.string().nullish().default(null),
   hook: z.string().nullish().default(null),
   gameId: z.string().nullish().default(null),

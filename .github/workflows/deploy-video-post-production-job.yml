@@ -1,0 +1,68 @@
+name: 🚀 Deploy video-post-production Cloud Run Job
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/deploy-video-post-production-job.yml
+      - functions/video-post-production/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy video-post-production Cloud Run Job
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    environment: prod
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: ⚙️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: 🐳 Build and push Docker image
+        run: |
+          BUILD_ID=$(gcloud builds submit \
+            --config functions/video-post-production/cloudbuild.yaml \
+            --project ${{ secrets.PROJECT_ID }} \
+            --async \
+            --format='value(id)')
+          echo "Build submitted: $BUILD_ID"
+          echo "Waiting for build to complete..."
+          while true; do
+            STATUS=$(gcloud builds describe "$BUILD_ID" \
+              --project ${{ secrets.PROJECT_ID }} \
+              --format='value(status)')
+            echo "Build status: $STATUS"
+            if [ "$STATUS" = "SUCCESS" ]; then
+              echo "Build completed successfully!"
+              break
+            elif [ "$STATUS" = "FAILURE" ] || [ "$STATUS" = "INTERNAL_ERROR" ] || [ "$STATUS" = "TIMEOUT" ] || [ "$STATUS" = "CANCELLED" ]; then
+              echo "Build failed with status: $STATUS"
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: 🚀 Deploy Cloud Run Job
+        run: |
+          gcloud run jobs deploy video-post-production \
+            --image gcr.io/${{ secrets.PROJECT_ID }}/video-post-production \
+            --region us-central1 \
+            --memory 2Gi \
+            --cpu 2 \
+            --task-timeout 10m \
+            --max-retries 1 \
+            --project ${{ secrets.PROJECT_ID }}
+
+      - name: ✅ Deployment complete
+        run: echo "Video post-production job deployed successfully!"
