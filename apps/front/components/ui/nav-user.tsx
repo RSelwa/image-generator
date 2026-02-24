@@ -1,11 +1,9 @@
 "use client"
 
 import {
-  ChevronsUpDown,
   Gamepad2,
   Globe2,
   Image,
-  LayoutDashboard,
   Lightbulb,
   LogOut,
   Sprout,
@@ -13,6 +11,8 @@ import {
 } from "lucide-react"
 
 import Link from "next/link"
+import { HelperMenuContent } from "@/components/helper"
+import { LobbyDebug } from "@/components/lobby/lobby-debug"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -28,11 +28,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { PAGES } from "@/constants/pages"
 import { useLogoutMutation } from "@/redux/api/auth"
-import { selectHasRightToDashBoard, selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
+import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { firstLetter } from "@/utils"
-import { HelperMenuContent } from "@/components/helper"
-import { LobbyDebug } from "@/components/lobby/lobby-debug"
 
 export const NavUser = () => {
   const user = useAppSelector(selectUser)
@@ -63,7 +61,7 @@ export const NavUser = () => {
         sideOffset={8}
         alignOffset={-8}
       >
-        {isAdmin &&
+        {isAdmin && (
           <>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Admin</DropdownMenuSubTrigger>
@@ -110,12 +108,18 @@ export const NavUser = () => {
                     My Seeds
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={PAGES.ADMIN_SOCIALS} className="cursor-pointer">
+                    <Sprout />
+                    Socials
+                  </Link>
+                </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <LobbyDebug />
             <DropdownMenuSeparator />
           </>
-        }
+        )}
         <DropdownMenuGroup>
           <DropdownMenuLabel>Account</DropdownMenuLabel>
           <DropdownMenuItem asChild>

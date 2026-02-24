@@ -9,6 +9,7 @@ import { localApi } from "@/redux/api/local"
 import { mapApi } from "@/redux/api/maps"
 import { seedApi } from "@/redux/api/seed"
 import { seedMakerApi } from "@/redux/api/seed-maker"
+import { socialsApi } from "@/redux/api/socials"
 import { sphericalApi } from "@/redux/api/spherical"
 import { suggestionsApi } from "@/redux/api/suggestions"
 import { userApi } from "@/redux/api/user"
@@ -29,6 +30,7 @@ export const makeStore = () =>
       [seedApi.reducerPath]: seedApi.reducer,
       [lobbyApi.reducerPath]: lobbyApi.reducer,
       [seedMakerApi.reducerPath]: seedMakerApi.reducer,
+      [socialsApi.reducerPath]: socialsApi.reducer,
       [sessionSlice.name]: sessionSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -44,6 +46,7 @@ export const makeStore = () =>
         .concat(flatApi.middleware)
         .concat(authApi.middleware)
         .concat(seedMakerApi.middleware)
+        .concat(socialsApi.middleware)
         .concat(suggestionsApi.middleware),
   })
 
