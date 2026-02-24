@@ -54,6 +54,24 @@ def get_video_duration(path: str) -> float:
     return float(result.stdout.strip())
 
 
+def get_video_dimensions(path: str) -> tuple[int, int]:
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v", "error",
+            "-select_streams", "v:0",
+            "-show_entries", "stream=width,height",
+            "-of", "csv=p=0",
+            path,
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    parts = result.stdout.strip().split(",")
+    return int(parts[0]), int(parts[1])
+
+
 def generate_signed_url(blob, expiration_days: int = 7) -> str:
     creds, _ = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
     auth_req = google.auth.transport.requests.Request()
@@ -67,93 +85,124 @@ def generate_signed_url(blob, expiration_days: int = 7) -> str:
     )
 
 
-def escape_drawtext(text: str) -> str:
-    return text.replace("\\", "\\\\").replace("'", "\\'").replace(":", "\\:")
+def create_text_overlay(hook: str, video_width: int, video_height: int, output_path: str):
+    from PIL import Image, ImageDraw, ImageFont
+    from pilmoji import Pilmoji
+
+    img = Image.new("RGBA", (video_width, video_height), (0, 0, 0, 0))
+
+    if not hook.strip():
+        img.save(output_path, "PNG")
+        return
+
+    font_size = 42
+    font = ImageFont.truetype(FONT_PATH, font_size)
+    padding_x = 20
+    padding_y = 12
+
+    temp_draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
+    bbox = temp_draw.textbbox((0, 0), hook, font=font)
+    text_w = bbox[2] - bbox[0]
+    text_h = bbox[3] - bbox[1]
+
+    box_w = text_w + padding_x * 2
+    box_h = text_h + padding_y * 2
+    box_x = (video_width - box_w) // 2
+    box_y = int(video_height * 0.85) - box_h // 2
+
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([box_x, box_y, box_x + box_w, box_y + box_h], fill=(255, 255, 255, 230))
+
+    with Pilmoji(img) as pilmoji_obj:
+        pilmoji_obj.text((box_x + padding_x, box_y + padding_y), hook, fill=(0, 0, 0, 255), font=font)
+
+    img.save(output_path, "PNG")
 
 
 def run_post_production(input_path: str, output_path: str, hook: str):
     duration = get_video_duration(input_path)
-    hook_escaped = escape_drawtext(hook)
+    video_width, video_height = get_video_dimensions(input_path)
+
+    text_overlay_path = f"/tmp/text_overlay_{SOCIAL_DOC_ID}.png"
+    create_text_overlay(hook, video_width, video_height, text_overlay_path)
 
     has_music = os.path.exists(MUSIC_PATH)
     has_logo = os.path.exists(LOGO_PATH)
 
-    if has_music and has_logo:
-        filter_complex = (
-            f"[0:v]drawtext=text='{hook_escaped}':fontfile={FONT_PATH}:fontsize=42:"
-            f"fontcolor=white:x=(w-text_w)/2:y=h*0.85:"
-            f"shadowcolor=black@0.8:shadowx=2:shadowy=2[v_text];"
-            f"[v_text][2:v]overlay=W-w-20:20[v_out];"
-            f"[1:a]volume=0.3,atrim=0:{duration},asetpts=PTS-STARTPTS[audio_out]"
-        )
-        cmd = [
-            "ffmpeg", "-y",
-            "-i", input_path,
-            "-stream_loop", "-1", "-i", MUSIC_PATH,
-            "-i", LOGO_PATH,
-            "-filter_complex", filter_complex,
-            "-map", "[v_out]",
-            "-map", "[audio_out]",
-            "-c:v", "libx264", "-preset", "fast", "-crf", "23",
-            "-c:a", "aac", "-b:a", "128k",
-            "-shortest",
-            output_path,
-        ]
-    elif has_logo:
-        filter_complex = (
-            f"[0:v]drawtext=text='{hook_escaped}':fontfile={FONT_PATH}:fontsize=42:"
-            f"fontcolor=white:x=(w-text_w)/2:y=h*0.85:"
-            f"shadowcolor=black@0.8:shadowx=2:shadowy=2[v_text];"
-            f"[v_text][1:v]overlay=W-w-20:20[v_out]"
-        )
-        cmd = [
-            "ffmpeg", "-y",
-            "-i", input_path,
-            "-i", LOGO_PATH,
-            "-filter_complex", filter_complex,
-            "-map", "[v_out]",
-            "-map", "0:a?",
-            "-c:v", "libx264", "-preset", "fast", "-crf", "23",
-            "-c:a", "aac", "-b:a", "128k",
-            output_path,
-        ]
-    elif has_music:
-        filter_complex = (
-            f"[0:v]drawtext=text='{hook_escaped}':fontfile={FONT_PATH}:fontsize=42:"
-            f"fontcolor=white:x=(w-text_w)/2:y=h*0.85:"
-            f"shadowcolor=black@0.8:shadowx=2:shadowy=2[v_out];"
-            f"[1:a]volume=0.3,atrim=0:{duration},asetpts=PTS-STARTPTS[audio_out]"
-        )
-        cmd = [
-            "ffmpeg", "-y",
-            "-i", input_path,
-            "-stream_loop", "-1", "-i", MUSIC_PATH,
-            "-filter_complex", filter_complex,
-            "-map", "[v_out]",
-            "-map", "[audio_out]",
-            "-c:v", "libx264", "-preset", "fast", "-crf", "23",
-            "-c:a", "aac", "-b:a", "128k",
-            "-shortest",
-            output_path,
-        ]
-    else:
-        filter_complex = (
-            f"[0:v]drawtext=text='{hook_escaped}':fontfile={FONT_PATH}:fontsize=42:"
-            f"fontcolor=white:x=(w-text_w)/2:y=h*0.85:"
-            f"shadowcolor=black@0.8:shadowx=2:shadowy=2[v_out]"
-        )
-        cmd = [
-            "ffmpeg", "-y",
-            "-i", input_path,
-            "-filter_complex", filter_complex,
-            "-map", "[v_out]",
-            "-map", "0:a?",
-            "-c:v", "libx264", "-preset", "fast", "-crf", "23",
-            "-c:a", "aac", "-b:a", "128k",
-            output_path,
-        ]
+    try:
+        if has_music and has_logo:
+            filter_complex = (
+                f"[0:v][1:v]overlay=0:0[v_text];"
+                f"[v_text][3:v]overlay=W-w-20:20[v_out];"
+                f"[2:a]volume=0.3,atrim=0:{duration},asetpts=PTS-STARTPTS[audio_out]"
+            )
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", input_path,
+                "-i", text_overlay_path,
+                "-stream_loop", "-1", "-i", MUSIC_PATH,
+                "-i", LOGO_PATH,
+                "-filter_complex", filter_complex,
+                "-map", "[v_out]",
+                "-map", "[audio_out]",
+                "-c:v", "libx264", "-preset", "fast", "-crf", "23",
+                "-c:a", "aac", "-b:a", "128k",
+                "-shortest",
+                output_path,
+            ]
+        elif has_logo:
+            filter_complex = (
+                f"[0:v][1:v]overlay=0:0[v_text];"
+                f"[v_text][2:v]overlay=W-w-20:20[v_out]"
+            )
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", input_path,
+                "-i", text_overlay_path,
+                "-i", LOGO_PATH,
+                "-filter_complex", filter_complex,
+                "-map", "[v_out]",
+                "-map", "0:a?",
+                "-c:v", "libx264", "-preset", "fast", "-crf", "23",
+                "-c:a", "aac", "-b:a", "128k",
+                output_path,
+            ]
+        elif has_music:
+            filter_complex = (
+                f"[0:v][1:v]overlay=0:0[v_out];"
+                f"[2:a]volume=0.3,atrim=0:{duration},asetpts=PTS-STARTPTS[audio_out]"
+            )
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", input_path,
+                "-i", text_overlay_path,
+                "-stream_loop", "-1", "-i", MUSIC_PATH,
+                "-filter_complex", filter_complex,
+                "-map", "[v_out]",
+                "-map", "[audio_out]",
+                "-c:v", "libx264", "-preset", "fast", "-crf", "23",
+                "-c:a", "aac", "-b:a", "128k",
+                "-shortest",
+                output_path,
+            ]
+        else:
+            filter_complex = "[0:v][1:v]overlay=0:0[v_out]"
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", input_path,
+                "-i", text_overlay_path,
+                "-filter_complex", filter_complex,
+                "-map", "[v_out]",
+                "-map", "0:a?",
+                "-c:v", "libx264", "-preset", "fast", "-crf", "23",
+                "-c:a", "aac", "-b:a", "128k",
+                output_path,
+            ]
 
-    subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True)
+    finally:
+        if os.path.exists(text_overlay_path):
+            os.unlink(text_overlay_path)
 
 
 def main():
