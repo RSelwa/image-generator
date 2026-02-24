@@ -13,20 +13,29 @@ RUN npm install -g pnpm@10.28.2
 # Set working directory
 WORKDIR /app
 
-# Copy package file
-COPY package.json ./
+# Copy root workspace config
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 
-# Install all dependencies (including devDependencies for build)
-RUN pnpm install
+# Copy libs needed by video-capture
+COPY libs/common/package.json libs/common/
+COPY libs/common/dist/ libs/common/dist/
 
-# Copy application code
-COPY . .
+# Copy video-capture package
+COPY functions/video-capture/package.json functions/video-capture/
+
+# Install dependencies (workspace resolves @repo/common)
+RUN pnpm install --filter @repo/video-capture
+
+# Copy video-capture source
+COPY functions/video-capture/ functions/video-capture/
 
 # Build TypeScript
-RUN pnpm build
+RUN pnpm --filter @repo/video-capture build
 
 # Remove devDependencies after build
-RUN pnpm install --prod
+RUN CI=true pnpm install --filter @repo/video-capture --prod
+
+WORKDIR /app/functions/video-capture
 
 # Run the compiled capture script
 CMD ["node", "dist/index.js"]

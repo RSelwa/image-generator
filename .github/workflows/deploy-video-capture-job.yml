@@ -7,6 +7,7 @@ on:
       - .github/workflows/deploy-video-capture-job.yml
       - functions/video-capture/**
       - apps/front/app/capture/**
+      - libs/common/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,6 +23,12 @@ jobs:
       - name: ✨ Checkout
         uses: actions/checkout@v4
 
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: ✨ Build libs
+        run: pnpm build:libs
+
       - name: 🔐 Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -32,10 +39,27 @@ jobs:
 
       - name: 🐳 Build and push Docker image
         run: |
-          cd functions/video-capture
-          gcloud builds submit \
-            --tag gcr.io/${{ secrets.PROJECT_ID }}/video-capture \
-            --project ${{ secrets.PROJECT_ID }}
+          BUILD_ID=$(gcloud builds submit \
+            --config functions/video-capture/cloudbuild.yaml \
+            --project ${{ secrets.PROJECT_ID }} \
+            --async \
+            --format='value(id)')
+          echo "Build submitted: $BUILD_ID"
+          echo "Waiting for build to complete..."
+          while true; do
+            STATUS=$(gcloud builds describe "$BUILD_ID" \
+              --project ${{ secrets.PROJECT_ID }} \
+              --format='value(status)')
+            echo "Build status: $STATUS"
+            if [ "$STATUS" = "SUCCESS" ]; then
+              echo "Build completed successfully!"
+              break
+            elif [ "$STATUS" = "FAILURE" ] || [ "$STATUS" = "INTERNAL_ERROR" ] || [ "$STATUS" = "TIMEOUT" ] || [ "$STATUS" = "CANCELLED" ]; then
+              echo "Build failed with status: $STATUS"
+              exit 1
+            fi
+            sleep 10
+          done
 
       - name: 🚀 Deploy Cloud Run Job
         run: |

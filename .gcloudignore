@@ -1,0 +1,25 @@
+# Ignore everything
+*
+
+# Include only what the video-capture Dockerfile needs
+!package.json
+!pnpm-workspace.yaml
+!pnpm-lock.yaml
+
+# Must un-ignore parent directories before their contents can be included
+!libs/
+!libs/common/
+!libs/common/package.json
+!libs/common/dist/
+!libs/common/dist/**
+
+!functions/
+!functions/video-capture/
+!functions/video-capture/**
+
+# Re-ignore unnecessary files in included dirs
+functions/video-capture/node_modules/
+functions/video-capture/*.mp4
+functions/video-capture/*.avi
+functions/video-capture/*.mov
+functions/video-capture/output.*

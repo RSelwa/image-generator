@@ -1,4 +1,4 @@
-import { JobsClient } from "@google-cloud/run/build/src/v2"
+import { JobsClient } from "@google-cloud/run/build/src/v2/index.js"
 import { SOCIALS_STATUS, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { type SocialDoc } from "@repo/schemas"
