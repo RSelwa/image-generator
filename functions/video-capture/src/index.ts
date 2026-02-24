@@ -186,14 +186,14 @@ const captureFrames = async (page: Page, config: CaptureConfig) => {
 /**
  * Main capture function
  */
-const capture = async (imageUrl: string, outputPath?: string) => {
+const capture = async (imageUrl: string, outputPath?: string, duration?: number) => {
   log("Starting video capture service...")
 
   if (!imageUrl) {
     throw new Error("IMAGE_URL is required")
   }
 
-  const config = { ...CONFIG, imageUrl, outputPath: outputPath || CONFIG.outputPath }
+  const config = { ...CONFIG, imageUrl, outputPath: outputPath || CONFIG.outputPath, ...(duration && { duration }) }
 
   const browser = await chromium.launch({
     headless: true,
@@ -285,7 +285,20 @@ const main = async () => {
 
     log(`Starting job for image: ${imageUrl}`)
 
-    const videoPath = await capture(imageUrl, outputPath)
+    let duration: number | undefined
+
+    if (socialDocId) {
+      initFirebase()
+      const socialDoc = await admin.firestore().collection(TABLES.SOCIALS).doc(socialDocId).get()
+      const socialData = socialDoc.data()
+
+      if (socialData?.duration) {
+        duration = socialData.duration
+        log(`Using duration from social doc: ${duration}s`)
+      }
+    }
+
+    const videoPath = await capture(imageUrl, outputPath, duration)
 
     log(`Success! Video created at: ${videoPath}`)
 

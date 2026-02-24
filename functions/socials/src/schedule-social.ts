@@ -1,5 +1,6 @@
-import { DOCUMENTS_STATUS, SOCIALS_HOOKS, SOCIALS_STATUS, TABLES } from "@repo/common"
+import { DEFAULT_DURATION_SECONDS, DOCUMENTS_STATUS, SOCIALS_HOOKS, SOCIALS_STATUS, TABLES } from "@repo/common"
 import { collectionGroupRefs, refs } from "@repo/providers/db-refs"
+import { Timestamp } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 
 const hookValues = Object.values(SOCIALS_HOOKS)
@@ -56,11 +57,13 @@ export const createScheduledSocial = async () => {
   const hook = getRandomHook()
 
   await refs[TABLES.SOCIALS].add({
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
     gameId,
     sphericalId: sphericalDoc.id,
     hook,
     status: SOCIALS_STATUS.WAITING_CAPTURE,
-    duration: null,
+    duration: DEFAULT_DURATION_SECONDS,
     errorInfo: null,
     urlSphericalVideoStorage: null,
     urlCustomizedVideoStorage: null,

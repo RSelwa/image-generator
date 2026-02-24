@@ -34,3 +34,5 @@ export const SOCIALS_STATUS = {
   READY_TO_POST: "ready_to_post",
   UPLOADED: "uploaded",
 } as const
+
+export const DEFAULT_DURATION_SECONDS = 15

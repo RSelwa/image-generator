@@ -1,6 +1,5 @@
 import { DEFAULT_NUMBERS_ROUNDS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { auth } from "@repo/providers/firebase"
 import { seedDocSchema } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
 import z from "zod"
