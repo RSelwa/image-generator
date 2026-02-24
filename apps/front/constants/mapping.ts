@@ -15,6 +15,7 @@ export const QUERY_PARAMS = {
   LOBBY_CODE: "code",
   REDIRECT: "redirect",
   SUGGESTION_ID: "suggestion-id",
+  SOCIAL_ID: "social-id",
   USER_ID: "user-id",
 } as const
 
@@ -31,6 +32,7 @@ export const MODAL_KEYS = {
   SUGGEST_GAME: "suggest-game",
   REPORT_BUG: "report-bug",
   MAKE_SUGGESTION: "suggestion",
+  NEW_SOCIALS: "new-socials",
 } as const
 
 export const SORT_OPTIONS = {
@@ -52,7 +54,8 @@ export const FALL_BACK_IMAGE = "/placeholder.svg"
 export const APP_NAME = "Geo gamer"
 export const CONTACT_EMAIL = "contact.geogamer@gmail.com"
 
-const BADGE_VARIANTS = {
+export const BADGE_VARIANTS = {
+  BLUE: "blue",
   GREEN: "green",
   ORANGE: "orange",
   RED: "red",
@@ -91,7 +94,7 @@ export const FIREBASE_ERRORS = {
 export const ASSET_URLS = {
   STRIP_ICONS: "/assets/left-icons.png",
   CREATOR_BACKGROUND: "/creator-background.svg",
-  BOTTOM_GB:"/gb-br.png",
+  BOTTOM_GB: "/gb-br.png",
 } as const
 
 export const AVATARS_URLS = {

@@ -4,8 +4,9 @@ import { ImageIcon, XIcon } from "lucide-react"
 import { useRef, useState } from "react"
 import { toast } from "sonner"
 import Loader from "@/components/icons/loader"
+import { cn } from "@/utils"
 
-type ImageDropzoneProps = {
+interface ImageDropzoneProps {
   imageUrl: string | null
   onFileSelect: (file: File) => Promise<void>
   onRemove: () => void
@@ -146,9 +147,8 @@ export const ImageDropzone = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !displayImage && openFilePicker()}
-        className={`relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden border-2 border-dashed transition-colors ${
-          isDragging ? "border-primary bg-primary/10" : "border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50"
-        } ${className ?? ""}`}
+        data-isDragging={isDragging}
+        className={cn("relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden border-2 border-dashed transition-colors data-[isDragging=true]:border-primary data-[isDragging=true]:bg-primary/10 data-[isDragging=false]:border-border data-[isDragging=false]:bg-muted/30 data-[isDragging=false]:hover:border-primary/50 data-[isDragging=false]:hover:bg-muted/50", className)}
       >
         {displayImage ? (
           <>

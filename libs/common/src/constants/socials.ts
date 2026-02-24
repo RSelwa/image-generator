@@ -20,6 +20,8 @@ export const SOCIALS_HOOKS = {
   ENGAGEMENT_BAIT_4: "Tag a friend who grinded this game back in the day! 🏷️"
 } as const
 
+export const DEFAULT_SOCIAL_HOOK = SOCIALS_HOOKS.CHALLENGE_EGO_1
+
 export const SOCIALS_NAMES = {
   TIK_TOK: "tiktok",
   INSTAGRAM: "instagram",
@@ -41,7 +43,7 @@ export const SOCIALS_STATUS_WORDING = {
   [SOCIALS_STATUS.DRAFT]: "Draft",
   [SOCIALS_STATUS.WAITING_CAPTURE]: "Waiting for capture",
   [SOCIALS_STATUS.IN_PROGRESS_SPHERE]: "Capturing",
-  [SOCIALS_STATUS.WAITING_CUSTOMIZATION]: "Waiting for capture",
+  [SOCIALS_STATUS.WAITING_CUSTOMIZATION]: "Waiting for customization",
   [SOCIALS_STATUS.IN_PROGRESS_CUSTOMIZATION]: "Customizing",
   [SOCIALS_STATUS.READY_TO_POST]: "Ready to post",
   [SOCIALS_STATUS.UPLOADED]: "Uploaded",

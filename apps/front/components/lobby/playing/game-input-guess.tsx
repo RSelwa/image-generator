@@ -1,20 +1,18 @@
 import { Timestamp } from "@firebase/firestore"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { isSameNormalized, ROUND_POINTS } from "@repo/common"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
+import { useForm } from "react-hook-form"
+import z from "zod"
+import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { useGetAllGamesNamesQuery } from "@/redux/api/games"
 import { useIncrementPlayerLivesUsedMutation, useSubmitRoundAnswerMutation } from "@/redux/api/lobby"
 import { selectCurrentRoundData, selectCurrentRoundIndex, selectLobbyConfig, selectMyLivesRemaining, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
-import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
-import { useGetAllGamesNamesQuery } from "@/redux/api/games"
-import { useIsMobile } from "@/hooks/use-mobile"
-import z from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button"
-
 
 const schema = z.object({
   input: z.string().min(1, "Answer cannot be empty"),
@@ -39,7 +37,6 @@ const GameInputGuess = () => {
   const selectedOption = useAppSelector(selectSelectedOption(lobbyId, roundIndex))
   const config = useAppSelector(selectLobbyConfig(lobbyId))
   const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
-
 
   const [comboboxKey, setComboboxKey] = useState(0)
 
@@ -95,7 +92,6 @@ const GameInputGuess = () => {
     handleSubmit(verifyGameName)()
   }
 
-
   return (
     <form onSubmit={handleSubmit(verifyGameName)} autoComplete="off" className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-0 flex flex-col items-center gap-4">
       {config?.playersLives && (
@@ -122,16 +118,17 @@ const GameInputGuess = () => {
           onKeyDown={(e) => e.key === "Enter" && handleSubmit(verifyGameName)()}
           {...register("input")}
         />
-        {gameList?.length > 0 && <ComboboxContent sideOffset={8} side="top" align="center">
-          <ComboboxList>
-            {gameList?.map((game) => (
-              <ComboboxItem key={game.id} value={game.title} className="font-mono" onClick={() => handleClickItem(game.title)}>
-                {game.title}
-              </ComboboxItem>
-            ))}
-          </ComboboxList>
-        </ComboboxContent>
-        }
+        {gameList?.length > 0 && (
+          <ComboboxContent sideOffset={8} side="top" align="center">
+            <ComboboxList>
+              {gameList?.map((game) => (
+                <ComboboxItem key={game.id} value={game.title} className="font-mono" onClick={() => handleClickItem(game.title)}>
+                  {game.title}
+                </ComboboxItem>
+              ))}
+            </ComboboxList>
+          </ComboboxContent>
+        )}
       </Combobox>
     </form>
   )

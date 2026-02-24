@@ -1,7 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { TABLES } from "@repo/common"
+import { SOCIALS_STATUS, TABLES } from "@repo/common"
 import { type SocialDoc, socialDocSchema, type SocialDocWithId, socialDocWithIdSchema } from "@repo/schemas"
-import { addDoc, deleteDoc, documentId, getDoc, getDocs, orderBy, query, Timestamp, updateDoc } from "firebase/firestore"
+import { addDoc, deleteDoc, getDoc, getDocs, orderBy, query, Timestamp, updateDoc } from "firebase/firestore"
 import { getSocialRef, TABLE_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
@@ -14,7 +14,7 @@ export const socialsApi = createApi({
       queryFn: async () => {
         try {
           const snapshot = await getDocs(
-            query(TABLE_REFS[TABLES.SOCIALS], orderBy(documentId())),
+            query(TABLE_REFS[TABLES.SOCIALS], orderBy("createdAt", "desc")),
           )
 
           const socials = snapshot.docs
@@ -153,6 +153,43 @@ export const socialsApi = createApi({
         "SocialList",
       ],
     }),
+    retriggerPostProduction: builder.mutation<SocialDocWithId, { id: string }>({
+      queryFn: async ({ id }) => {
+        try {
+          const socialRef = getSocialRef(id)
+
+          await updateDoc(socialRef, {
+            status: SOCIALS_STATUS.WAITING_CUSTOMIZATION,
+            errorInfo: null,
+            urlCustomizedVideoStorage: null,
+            updatedAt: Timestamp.now(),
+          })
+
+          const docSnap = await getDoc(socialRef)
+
+          if (!docSnap.exists()) {
+            throw new Error("Social not found")
+          }
+
+          const { data, error } = socialDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error(`Error retriggering post production for social with ID: ${id}`, error)
+
+          return { error: globalErrorHandler(error) }
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Social", id },
+        "SocialList",
+      ],
+    }),
   }),
 })
 
@@ -162,4 +199,5 @@ export const {
   useCreateSocialMutation,
   useUpdateSocialByIdMutation,
   useDeleteSocialByIdMutation,
+  useRetriggerPostProductionMutation
 } = socialsApi

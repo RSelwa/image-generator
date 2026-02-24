@@ -2,6 +2,7 @@ import type * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
+import { BADGE_VARIANTS } from "@/constants/mapping"
 import { cn } from "@/utils"
 
 const badgeVariants = cva(
@@ -19,12 +20,13 @@ const badgeVariants = cva(
           "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         link: "text-primary underline-offset-4 [a&]:hover:underline",
-        green: "border-green-600 bg-green-400/50 text-green-800",
-        red: "border-red-600 bg-red-300/80 text-red-600 backdrop-blur-sm",
-        "light-grey": "border-neutral-100 bg-transparent backdrop-blur-sm text-neutral-100",
-        neutral: "border-neutral-500 bg-neutral-900/90 text-white",
-        orange:
-          "border-orange-600 bg-orange-400/50 text-orange-800",
+        [BADGE_VARIANTS.GREEN]: "border-green-600 bg-green-400/50 text-green-200",
+        [BADGE_VARIANTS.BLUE]: "border-blue-accent bg-blue-accent/50 text-blue-100",
+        [BADGE_VARIANTS.RED]: "border-red-600 bg-red-300/80 text-red-200 backdrop-blur-sm",
+        "light-grey": "border-neutral-100 bg-transparent backdrop-blur-sm text-neutral-200",
+        [BADGE_VARIANTS.NEUTRAL]: "border-neutral-500 bg-neutral-900/90 text-white",
+        [BADGE_VARIANTS.ORANGE]:
+          "border-orange-600 bg-orange-400/50 text-orange-200",
       },
     },
     defaultVariants: {

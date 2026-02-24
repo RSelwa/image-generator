@@ -1,21 +1,63 @@
 "use client"
 
 import { getDateFromString } from "@repo/common"
+import { type SuggestionDocWithId } from "@repo/schemas"
 import { Search } from "lucide-react"
 import { useQueryState } from "nuqs"
+import { type Dispatch, type SetStateAction } from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
+import OpenFirestoreDoc from "@/components/open-firestore"
 import { SuggestionSheet } from "@/components/sheet/suggestion-sheet"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { getSuggestionRef } from "@/constants/db-refs"
 import { QUERY_PARAMS, SUGGESTIONS_TYPE_TO_BADGE_VARIANT } from "@/constants/mapping"
 import { useGetAllSuggestionsInfiniteQuery, useGetSuggestionsCountQuery } from "@/redux/api/suggestions"
 
-const Page = () => {
+const SuggestionRow = ({ suggestion, checkedIds, setCheckedIds }: {
+  suggestion: SuggestionDocWithId
+  checkedIds: string[]
+  setCheckedIds: Dispatch<SetStateAction<string[]>>
+}) => {
   const [_, setSuggestionId] = useQueryState(QUERY_PARAMS.SUGGESTION_ID)
 
+  const checked = checkedIds.includes(suggestion.id)
+  const onCheckedChange = (value: boolean) =>
+    setCheckedIds((prev) => value ? [...prev, suggestion.id] : prev.filter((id) => id !== suggestion.id))
+
+  return (
+    <TableRow key={suggestion.id} onClick={() => setSuggestionId(suggestion.id)} data-viewed={Boolean(suggestion.viewedAt)} className="data-[viewed=false]:bg-muted/50 cursor-pointer">
+      <TableCell onClick={(e) => e.stopPropagation()}>
+        <Checkbox
+          checked={checked}
+          onCheckedChange={onCheckedChange}
+        />
+      </TableCell>
+      <TableCell>
+        {suggestion.id}
+        <OpenFirestoreDoc docRef={getSuggestionRef(suggestion.id)} />
+
+      </TableCell>
+      <TableCell className="font-medium">{suggestion.title}</TableCell>
+      <TableCell>
+        {
+          suggestion.type && (
+            <Badge variant={SUGGESTIONS_TYPE_TO_BADGE_VARIANT[suggestion.type]}>
+              {suggestion.type}
+            </Badge>
+          )
+        }
+      </TableCell>
+      <TableCell>{suggestion.createdBy}</TableCell>
+      <TableCell>{getDateFromString(suggestion.createdAt?.toDate())}</TableCell>
+    </TableRow>
+  )
+}
+
+const Page = () => {
   const { data: suggestionsCount } = useGetSuggestionsCountQuery()
   const { data: suggestions, fetchNextPage, hasNextPage, isFetching } = useGetAllSuggestionsInfiniteQuery()
   const captionRef = useRef<HTMLTableCaptionElement>(null)
@@ -76,35 +118,7 @@ const Page = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {flatSuggestions.map((suggestion) => {
-              const checked = checkedIds.includes(suggestion.id)
-              const onCheckedChange = (value: boolean) =>
-                setCheckedIds((prev) => value ? [...prev, suggestion.id] : prev.filter((id) => id !== suggestion.id))
-
-              return (
-                <TableRow key={suggestion.id} onClick={() => setSuggestionId(suggestion.id)} data-viewed={Boolean(suggestion.viewedAt)} className="data-[viewed=false]:bg-muted/50 cursor-pointer">
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={onCheckedChange}
-                    />
-                  </TableCell>
-                  <TableCell>{suggestion.id}</TableCell>
-                  <TableCell className="font-medium">{suggestion.title}</TableCell>
-                  <TableCell>
-                    {
-                      suggestion.type && (
-                        <Badge variant={SUGGESTIONS_TYPE_TO_BADGE_VARIANT[suggestion.type]}>
-                          {suggestion.type}
-                        </Badge>
-                      )
-                    }
-                  </TableCell>
-                  <TableCell>{suggestion.createdBy}</TableCell>
-                  <TableCell>{getDateFromString(suggestion.createdAt?.toDate())}</TableCell>
-                </TableRow>
-              )
-            })}
+            {flatSuggestions.map((suggestion) => <SuggestionRow key={suggestion.id} {...{ setCheckedIds, checkedIds, suggestion }} />)}
           </TableBody>
         </Table>
       </ScrollArea>

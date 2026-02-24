@@ -1,25 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { AVATARS_KEYS } from "@repo/common"
+import Image from "next/image"
 import * as React from "react"
 import { type SubmitHandler } from "react-hook-form"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import Loader from "@/components/icons/loader"
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { AVATARS_BACKGROUND_URLS, MODAL_KEYS } from "@/constants/mapping"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { useModal } from "@/hooks/use-modal"
 import { useUpdateUserDocMutation } from "@/redux/api/user"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { AVATARS_KEYS } from "@repo/common"
-import { getAvatarKeyFromUrl, getAvatarUrl } from "@/utils/file"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { firstLetter } from "@/utils"
-import Image from "next/image"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { getAvatarKeyFromUrl, getAvatarUrl } from "@/utils/file"
 
 const key = MODAL_KEYS.CHANGE_PSEUDO
 
@@ -42,7 +42,8 @@ const ChangePseudoModal = () => {
     register,
     reset,
     watch,
-    setValue, formState: { isDirty },
+    setValue,
+    formState: { isDirty },
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -68,7 +69,6 @@ const ChangePseudoModal = () => {
   const watchAvatar = watch("avatar")
   const avatar = watchAvatar ? getAvatarUrl(watchAvatar) : user.avatar
 
-
   return (
     <AlertDialog open>
       <AlertDialogContent data-testid="change-pseudo-modal" className="max-h-[80vh] overflow-y-auto" asChild>
@@ -91,11 +91,13 @@ const ChangePseudoModal = () => {
               </PopoverTrigger>
               <PopoverContent align={isMobile ? "start" : "center"} className="w-auto grid grid-cols-4 gap-4">
                 {Object.values(AVATARS_KEYS).map((avatarKey) => (
-                  <button key={avatarKey} className="size-16 lg:size-24 hover:bg-primary! cursor-pointer bg-cover"
+                  <button
+                    key={avatarKey}
+                    className="size-16 lg:size-24 hover:bg-primary! cursor-pointer bg-cover"
                     style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})` }}
                     onClick={() =>
-                      setValue("avatar", avatarKey, { shouldDirty: true })
-                    }>
+                      setValue("avatar", avatarKey, { shouldDirty: true })}
+                  >
                     <Image src={getAvatarUrl(avatarKey)} alt={`Avatar of ${avatarKey}`} width={370} height={370} />
                   </button>
                 ))}

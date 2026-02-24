@@ -5,15 +5,16 @@ import ChangePseudoModal from "@/components/modals/change-pseudo"
 import { ModalFlatId } from "@/components/modals/flat-id"
 import { FlatsGallery } from "@/components/modals/flats-gallery"
 import { ModalGame } from "@/components/modals/game"
+import { MakeSuggestion } from "@/components/modals/make-suggestion"
 import { ModalMapId } from "@/components/modals/map-id"
 import { MapsGallery } from "@/components/modals/maps-gallery"
+import NewSocial from "@/components/modals/new-social"
 import { ReportBugModal } from "@/components/modals/report-bug"
 import { SeedDetailModal } from "@/components/modals/seed-detail"
 import { SphericalGalleryModal } from "@/components/modals/spherical-gallery"
 import { ModalSphericalId } from "@/components/modals/spherical-id"
 import { SuggestGameModal } from "@/components/modals/suggest-game"
 import { MODAL_KEYS } from "@/constants/mapping"
-import { MakeSuggestion } from "@/components/modals/make-suggestion"
 
 export const ModalProvider = () => {
   const searchParams = useSearchParams()
@@ -22,6 +23,7 @@ export const ModalProvider = () => {
 
   if (type === MODAL_KEYS.CHANGE_PSEUDO) return <ChangePseudoModal />
 
+  if (type === MODAL_KEYS.NEW_SOCIALS) return <NewSocial />
   if (type === MODAL_KEYS.MAKE_SUGGESTION) return <MakeSuggestion />
   if (type === MODAL_KEYS.REPORT_BUG) return <ReportBugModal />
   if (type === MODAL_KEYS.SUGGEST_GAME) return <SuggestGameModal />

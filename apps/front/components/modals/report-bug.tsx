@@ -112,13 +112,14 @@ export const ReportBugModal = () => {
         <InputGroup>
           <InputGroupTextarea placeholder="Describe your problem" {...register("description")} />
         </InputGroup>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="flex flex-col lg:flex-row flex-wrap gap-2">
           <ImageDropzone
             key={imageUrls.length}
             imageUrl={null}
             onFileSelect={handleFileSelect}
             onRemove={() => { }}
             isUploading={isUploading}
+            className="size-32"
             alt="Bug screenshot"
           />
           {imageUrls.map((url, index) => (
@@ -127,6 +128,7 @@ export const ReportBugModal = () => {
               imageUrl={url}
               onFileSelect={handleFileSelect}
               onRemove={() => handleRemoveImage(index)}
+              className="size-32"
               alt={`Bug screenshot ${index + 1}`}
             />
           ))}

@@ -22,7 +22,7 @@ const buttonVariants = cva(
         "marathon-white": "text-primary-foreground uppercase bg-foreground hover:text-primary hover:bg-background inset-shadow-marathon-white hover:inset-shadow-marathon rounded-none font-interference transition-none",
         "marathon-destructive": "text-foreground bg-destructive uppercase hover:text-foreground hover:bg-destructive/90 rounded-none border-none font-interference",
         "marathon-outline": "text-foreground bg-background uppercase hover:text-primary hover:bg-background inset-shadow-marathon-white hover:inset-shadow-marathon rounded-none font-interference transition-none",
-        "marathon-link": "text-foreground bg-background uppercase hover:text-primary hover:bg-background hover:bg-primary hover:text-primary-foreground rounded-none font-mono transition-none",
+        "marathon-link": "text-foreground bg-transparent uppercase hover:text-primary hover:bg-primary hover:text-primary-foreground rounded-none font-mono transition-none",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
