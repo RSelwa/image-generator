@@ -85,6 +85,7 @@
   - [x] Bug try to login with google on already created account
   - [x] Add a field viewedAt on suggestions
   - [ ] implement seeds that will be featured like flim discover
+  - [ ] When selecting special rounds, could display the mouse of other users to see what they chose
   - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples
   - [ ] Ajouter une image pour le share seo
   - [ ] Ajouter les meta pour chaque page

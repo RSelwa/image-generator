@@ -2,19 +2,20 @@
 
 import { getDateFromString } from "@repo/common"
 import { Search } from "lucide-react"
+import { useQueryState } from "nuqs"
 import { useCallback, useEffect, useRef, useState } from "react"
+import OpenFirestoreDoc from "@/components/open-firestore"
+import SheetAdminUser from "@/components/sheet/user-admin"
 import { Checkbox } from "@/components/ui/checkbox"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useGetUsersCountQuery, useGetUsersInfiniteQuery } from "@/redux/api/user"
-import SheetAdminUser from "@/components/sheet/user-admin"
+import { getUserRef } from "@/constants/db-refs"
 import { QUERY_PARAMS } from "@/constants/mapping"
-import { useQueryState } from "nuqs"
+import { useGetUsersCountQuery, useGetUsersInfiniteQuery } from "@/redux/api/user"
 
 const Page = () => {
   const [_, setUserId] = useQueryState(QUERY_PARAMS.USER_ID)
-
 
   const { data: usersCount } = useGetUsersCountQuery()
   const { data: users, fetchNextPage, hasNextPage, isFetching } = useGetUsersInfiniteQuery()
@@ -83,7 +84,7 @@ const Page = () => {
               return (
                 <TableRow key={user.id} onClick={() => setUserId(user.id)}>
                   <TableCell><Checkbox checked={checked} onCheckedChange={onCheckedChange} /></TableCell>
-                  <TableCell>{user.id}</TableCell>
+                  <TableCell>{user.id} <OpenFirestoreDoc docRef={getUserRef(user.id)} /></TableCell>
                   <TableCell className="font-medium">{user.email}</TableCell>
                   <TableCell>{user.pseudo}</TableCell>
                   <TableCell>{getDateFromString(user.createdAt?.toDate())}</TableCell>

@@ -18,7 +18,7 @@ const SocialSheet = () => {
     const open = Boolean(socialId)
 
     const [retriggerPostProduction] = useRetriggerPostProductionMutation()
-    const { data: social } = useGetSocialByIdQuery({ id: socialId || "" }, { skip: !socialId })
+    const { data: social } = useGetSocialByIdQuery({ id: socialId || "" }, { skip: !socialId, refetchOnMountOrArgChange: true })
 
     if (!social || !socialId) return <Sheet open={open} onOpenChange={(open) => !open && setSocialId(null)}><EmptySheet /></Sheet>
 
@@ -43,7 +43,7 @@ const SocialSheet = () => {
                 </SheetHeader>
                 <ScrollArea className="h-5/6 space-y-2">
                     {social.errorInfo && (
-                        <section className="bg-destructive text-destructive-foreground px-4 mx-4">
+                        <section className="bg-destructive text-destructive-foreground px-4 w-3/4 mx-auto">
                             {social.errorInfo}
                         </section>
                     )}
@@ -52,7 +52,7 @@ const SocialSheet = () => {
                             {social.urlCustomizedVideoStorage && (
                                 <>
 
-                                    <video controls autoPlay className="w-full h-auto">
+                                    <video controls autoPlay loop className="w-full h-auto">
                                         <source src={social.urlCustomizedVideoStorage} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
@@ -70,7 +70,7 @@ const SocialSheet = () => {
                             {social.urlSphericalVideoStorage && (
                                 <>
                                     <Badge className="absolute top-2 left-2">Raw capture</Badge>
-                                    <video controls autoPlay className="w-full h-auto">
+                                    <video controls autoPlay loop className="w-full h-auto">
                                         <source src={social.urlSphericalVideoStorage} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>

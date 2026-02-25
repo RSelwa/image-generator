@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Label } from "@radix-ui/react-dropdown-menu"
-import { getRandomHook, SOCIALS_HOOKS, SOCIALS_STATUS } from "@repo/common"
+import { DEFAULT_DURATION_SECONDS, getRandomHook, SOCIALS_HOOKS, SOCIALS_STATUS } from "@repo/common"
 import { socialDocSchema } from "@repo/schemas"
 import Image from "next/image"
 import * as React from "react"
@@ -10,10 +10,12 @@ import z from "zod"
 import { ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
 import { Field, FieldContent } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
+import YoutubeEmbed from "@/components/youtube-embed"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import { useCreateSocialMutation } from "@/redux/api/socials"
@@ -27,6 +29,7 @@ const socialFormSchema = z.object({
         gameId: true,
         duration: true,
         hook: true,
+        youtubeLink: true,
     }).shape
 })
 type SocialFormSchema = z.input<typeof socialFormSchema>
@@ -48,7 +51,7 @@ const NewSocial = () => {
     } = useForm<SocialFormSchema>({
         resolver: zodResolver(socialFormSchema),
         defaultValues: {
-            duration: 30,
+            duration: DEFAULT_DURATION_SECONDS,
             hook: getRandomHook(),
         },
     })
@@ -67,36 +70,46 @@ const NewSocial = () => {
     return (
         <ModalBase modalKey={KEY} className="lg:max-w-4xl">
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8  space-y-4">
-                <Field>
-                    <Popover>
-                        <PopoverTrigger data-hasImage={Boolean(watch("sphericalId"))} className="data-[hasImage=true]:border-muted data-[hasImage=false]:border-primary border p-2 size-32 border-dashed w-fit!">
-                            {watch("sphericalId") && <Image src={allSphericals.find((s) => s.id === watch("sphericalId"))?.image || ""} alt="Selected Spherical" width={112} height={112} className="aspect-square object-cover " />}
-                            {!watch("sphericalId") && <span>No image</span>}
-                        </PopoverTrigger>
-                        <PopoverContent asChild>
-                            <ScrollArea className="h-64 w-96">
-                                <div className=" grid grid-cols-5 gap-4">
+                <section className="flex items-center gap-8 justify-between">
+                    <Field>
+                        <Popover>
+                            <PopoverTrigger data-hasImage={Boolean(watch("sphericalId"))} className="data-[hasImage=true]:border-muted flex items-center justify-center data-[hasImage=false]:border-primary border p-2 size-32! border-dashed">
+                                {watch("sphericalId") && <Image src={allSphericals.find((s) => s.id === watch("sphericalId"))?.image || ""} alt="Selected Spherical" width={112} height={112} className="aspect-square object-cover " />}
 
-                                    {allSphericals?.map((spherical) => (
-                                        <button
-                                            key={spherical.id}
-                                            value={spherical.id}
-                                            className="font-mono"
-                                            onClick={() => {
-                                                setValue("sphericalId", spherical.id, { shouldDirty: true })
-                                                setValue("gameId", spherical.gameId, { shouldDirty: true })
-                                            }}
-                                        >
-                                            <img src={spherical.image} alt={spherical.game.title} className="size-16 object-cover" />
-                                        </button>
-                                    ))}
-                                </div>
+                            </PopoverTrigger>
+                            <PopoverContent asChild>
+                                <ScrollArea className="h-64 w-96">
+                                    <div className=" grid grid-cols-5 gap-4">
 
-                            </ScrollArea>
-                        </PopoverContent>
-                    </Popover>
-                </Field>
+                                        {allSphericals?.map((spherical) => (
+                                            <button
+                                                key={spherical.id}
+                                                value={spherical.id}
+                                                className="font-mono"
+                                                onClick={() => {
+                                                    setValue("sphericalId", spherical.id, { shouldDirty: true })
+                                                    setValue("gameId", spherical.gameId, { shouldDirty: true })
+                                                }}
+                                            >
+                                                <img src={spherical.image} alt={spherical.game.title} className="size-16 object-cover" />
+                                            </button>
+                                        ))}
+                                    </div>
 
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
+                    </Field>
+                    <Field>
+                        <Label className="text-lg">Youtube Link</Label>
+                        <Input {...register("youtubeLink")} placeholder="https://www.youtube.com/watch?v=..." />
+                        {watch("youtubeLink") && (
+                            <YoutubeEmbed youtubeLink={watch("youtubeLink") || ""} />
+
+                        )}
+                    </Field>
+
+                </section>
                 <section className="flex items-center gap-8 justify-between">
                     <Field>
                         <Label className="text-lg" />

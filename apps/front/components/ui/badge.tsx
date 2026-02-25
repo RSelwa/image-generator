@@ -22,7 +22,7 @@ const badgeVariants = cva(
         link: "text-primary underline-offset-4 [a&]:hover:underline",
         [BADGE_VARIANTS.GREEN]: "border-green-600 bg-green-400/50 text-green-200",
         [BADGE_VARIANTS.BLUE]: "border-blue-accent bg-blue-accent/50 text-blue-100",
-        [BADGE_VARIANTS.RED]: "border-red-600 bg-red-300/80 text-red-200 backdrop-blur-sm",
+        [BADGE_VARIANTS.RED]: "border-destructive bg-destructive/80 text-destructive-foreground backdrop-blur-sm",
         "light-grey": "border-neutral-100 bg-transparent backdrop-blur-sm text-neutral-200",
         [BADGE_VARIANTS.NEUTRAL]: "border-neutral-500 bg-neutral-900/90 text-white",
         [BADGE_VARIANTS.ORANGE]:
