@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { expect, test } from "@playwright/test"
 import { SELECTORS } from "@/constants/testing"
+import { handleGoogleAuthEmulatorPopup } from "@/e2e/helpers/google-auth"
 import { waitForAnonymousAuth } from "@/e2e/helpers/lobby"
 
 test("signup and redirect to home", async ({ page }) => {
@@ -20,4 +21,17 @@ test("signup and redirect to home", async ({ page }) => {
 
   await expect(page.getByTestId(SELECTORS.CHANGE_PSEUDO_MODAL)).toBeVisible()
   await expect(page.getByTestId("nav-user-dropdown-trigger")).toBeVisible()
+})
+
+test("signup with Google provider and redirect to home", async ({ page }) => {
+  const email = faker.internet.email({ provider: "yopmail.com" }).toLowerCase()
+
+  await waitForAnonymousAuth(page)
+  await page.goto("/signup")
+
+  await handleGoogleAuthEmulatorPopup(page, email)
+
+  await expect(page).toHaveURL("/?new-pseudo=")
+  await expect(page.getByRole("link", { name: "Join" })).toHaveCount(0)
+  await expect(page.getByTestId(SELECTORS.CHANGE_PSEUDO_MODAL)).toBeVisible()
 })

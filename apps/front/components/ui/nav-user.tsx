@@ -132,7 +132,7 @@ export const NavUser = () => {
         <DropdownMenuSeparator />
         <HelperMenuContent />
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => logout()}>
+        <DropdownMenuItem data-testid="logout-button" onClick={() => logout()}>
           <LogOut />
           Log out
         </DropdownMenuItem>

@@ -7,10 +7,10 @@ import { userDocSchema } from "@repo/schemas"
 import { createAuthUser, createFirestoreDoc } from "@repo/testing/emulator"
 import { userFactory } from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"
-import { SELECTORS } from "@/constants/testing"
-import { createPlayerFromSessionUser } from "@/utils/player"
-import { getAvatarUrl } from "@/utils/file"
 import { STORAGE_KEYS } from "@/constants/mapping"
+import { SELECTORS } from "@/constants/testing"
+import { getAvatarUrl } from "@/utils/file"
+import { createPlayerFromSessionUser } from "@/utils/player"
 
 export const PASSWORD = "cacayolo"
 
@@ -75,7 +75,7 @@ export const startLobbyViaUI = async (page: Page) => {
 export const waitForInputToBeVisible = async (page: Page) =>
   await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10000 })
 
-export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", isAnonymous: false, avatar: getAvatarUrl(user.avatar|| getRandomAvatar()) })
+export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", isAnonymous: false, avatar: getAvatarUrl(user.avatar || getRandomAvatar()) })
 
 export const createFirestoreLobbyDoc = async (
   lobby: LobbyDoc,
@@ -159,7 +159,7 @@ export const waitForAnonymousAuth = async (page: Page) => {
   return anonymousUid || ""
 }
 
-export const hideDriverTutorial = async (page: Page) =>{
+export const hideDriverTutorial = async (page: Page) => {
   await page.evaluate((key) => {
     localStorage.setItem(key, "true")
   }, STORAGE_KEYS.DRIVER_WAITING_ROOM)
@@ -167,4 +167,15 @@ export const hideDriverTutorial = async (page: Page) =>{
   await page.evaluate((key) => {
     localStorage.setItem(key, "true")
   }, STORAGE_KEYS.DRIVER_SPECIAL_ROUND)
+}
+
+export const closeModalChangePseudo = async (page: Page) => {
+  await page.getByTestId("skip-pseudo").click()
+}
+
+export const logoutViaUI = async (page: Page) => {
+  await page.getByTestId("nav-user-dropdown-trigger").click()
+  await page.getByTestId("logout-button").click()
+
+  await expect(page.getByTestId("nav-user-dropdown-trigger")).toHaveCount(0)
 }

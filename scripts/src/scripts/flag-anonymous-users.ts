@@ -15,7 +15,7 @@ await Promise.all(
     const isAnonymousEmail = email.startsWith("anonymous-") && email.endsWith(SUFFIX_ANONYMOUS_USER)
 
     if (isAnonymousEmail) {
-      console.log(`User ${user.id} is should be anonymous:`, userData.email)
+      console.info(`User ${user.id} is should be anonymous:`, userData.email)
     }
     await refs[TABLES.USERS].doc(user.id).update({
       isAnonymousUser: isAnonymousEmail,

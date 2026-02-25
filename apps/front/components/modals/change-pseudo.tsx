@@ -114,7 +114,7 @@ const ChangePseudoModal = () => {
           </div>
 
           <AlertDialogFooter>
-            <Button variant="ghost" type="button" onClick={closeModal}>Skip for now</Button>
+            <Button data-testid="skip-pseudo" variant="ghost" type="button" onClick={closeModal}>Skip for now</Button>
             <Button type="submit" variant={isDirty ? "marathon" : "marathon-outline"}>Save {isLoading && <Loader />}</Button>
           </AlertDialogFooter>
         </form>

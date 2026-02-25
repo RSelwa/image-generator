@@ -119,6 +119,7 @@ export const authApi = createApi({
                 const credential = GoogleAuthProvider.credentialFromError(firebaseError as any)
                 if (credential) {
                   await signInWithCredential(auth, credential)
+                  await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
 
                   return { data: null }
                 }
@@ -233,14 +234,13 @@ export const authApi = createApi({
       queryFn: async (_, { dispatch }) => {
         try {
           const user = auth.currentUser
-
           if (!user) throw new Error("No user found")
 
           dispatch(updateSessionAuthUser(user))
 
           const payload = { ref: getUserRef(user.uid) }
 
-          await dispatch(authApi.endpoints.listenToUserDoc.initiate(payload))
+          await dispatch(authApi.endpoints.listenToUserDoc.initiate(payload, { forceRefetch: true })).unwrap()
 
           return { data: null }
         } catch (error) {

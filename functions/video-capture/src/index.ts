@@ -57,7 +57,7 @@ const CONFIG: CaptureConfig = {
 
 const PROJECT_ID = getParam("project-id", "FIREBASE_PROJECT_ID") || "tiktok-generator-fa261"
 
-const log = (message: string) => console.log(`[Capture] ${message}`)
+const log = (message: string) => console.info(`[Capture] ${message}`)
 const logError = (message: string) => console.error(`[Error] ${message}`)
 
 // Initialize Firebase Admin

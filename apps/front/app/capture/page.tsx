@@ -19,7 +19,7 @@ const CapturePage = () => {
   const viewerRef = useRef<Viewer | null>(null)
 
   const handleReady = useCallback((instance: Viewer) => {
-    console.log("Viewer onReady triggered")
+    console.info("Viewer onReady triggered")
     viewerRef.current = instance
     window.viewer = instance
     window.sceneReady = true
@@ -32,7 +32,7 @@ const CapturePage = () => {
       })
     }
 
-    console.log("Capture page ready - window.sceneReady =", window.sceneReady)
+    console.info("Capture page ready - window.sceneReady =", window.sceneReady)
   }, [])
 
   if (!imageUrl) {
@@ -45,8 +45,8 @@ const CapturePage = () => {
 
   const src = `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
 
-  console.log("Loading capture page with image:", imageUrl)
-  console.log("Proxy URL:", src)
+  console.info("Loading capture page with image:", imageUrl)
+  console.info("Proxy URL:", src)
 
   return (
     <div

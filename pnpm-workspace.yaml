@@ -17,3 +17,5 @@ onlyBuiltDependencies:
 shellEmulator: true
 
 trustPolicy: no-downgrade
+overrides:
+  reselect: 5.1.0
