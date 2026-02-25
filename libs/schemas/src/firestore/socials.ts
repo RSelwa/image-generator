@@ -5,9 +5,12 @@ import { timestampSchema, WITH_ID } from "~/zod"
 export const socialDocSchema = z.object({
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
-
   errorInfo: z.string().nullish().default(null),
+
+  youtubeLink: z.string().nullish().default(null),
+  audioLink: z.string().nullish().default(null),
   hook: z.string().nullish().default(null),
+
   gameId: z.string().nullish().default(null),
   sphericalId: z.string().nullish().default(null),
   duration: z.number().nullish().default(null),

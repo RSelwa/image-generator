@@ -18,10 +18,45 @@ ASSETS_DIR = os.path.join(os.path.dirname(__file__), "assets")
 MUSIC_PATH = os.path.join(ASSETS_DIR, "music.mp3")
 LOGO_PATH = os.path.join(ASSETS_DIR, "logo.png")
 
-FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-
+FONT_PATH = os.path.join(ASSETS_DIR, "TikTokSans-Medium.ttf")
+COOKIES_PATH = "/tmp/cookies.txt"
 SOCIALS_STATUS_ERROR = "error"
 SOCIALS_STATUS_READY_TO_POST = "ready_to_post"
+
+PROXY_URL = f"socks5://{os.environ.get('PROXY_KEY', '')}@161.77.142.146:50101"
+
+
+def write_cookies_file():
+    cookies_content = os.environ.get("YOUTUBE_COOKIES")
+    if not cookies_content:
+        raise RuntimeError("YOUTUBE_COOKIES environment variable is not set")
+    with open(COOKIES_PATH, "w") as f:
+        f.write(cookies_content)
+
+
+def extract_audio_from_youtube(youtube_url: str) -> str:
+    """Extract audio from YouTube via yt-dlp through ISP proxy + cookies + ffmpeg."""
+    write_cookies_file()
+    output_path = f"/tmp/{SOCIAL_DOC_ID}_youtube_audio"
+
+    subprocess.run([
+        "yt-dlp", "--list-formats",
+        "--proxy", PROXY_URL,
+        "--cookies", COOKIES_PATH,
+        youtube_url,
+    ])
+
+    subprocess.run([
+        "yt-dlp", "-f", "bestaudio*/best",
+        "--proxy", PROXY_URL,
+        "--cookies", COOKIES_PATH,
+        "--no-playlist",
+        "-x", "--audio-format", "mp3",
+        "-o", f"{output_path}.%(ext)s",
+        youtube_url,
+    ], check=True)
+
+    return f"{output_path}.mp3"
 
 
 def init_firebase():
@@ -116,10 +151,11 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
         img.save(output_path, "PNG")
         return
 
-    font_size = 42
+    font_size = 56
     font = ImageFont.truetype(FONT_PATH, font_size)
-    padding_x = 20
-    padding_y = 12
+    padding_x = 28
+    padding_y = 18
+    border_radius = 20
     max_text_width = int(video_width * 0.85)
 
     temp_draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
@@ -128,7 +164,7 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
     line_bboxes = [temp_draw.textbbox((0, 0), line, font=font) for line in lines]
     line_heights = [bb[3] - bb[1] for bb in line_bboxes]
     line_widths = [bb[2] - bb[0] for bb in line_bboxes]
-    line_spacing = 8
+    line_spacing = 10
 
     text_w = max(line_widths)
     text_h = sum(line_heights) + line_spacing * (len(lines) - 1)
@@ -136,10 +172,14 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
     box_w = text_w + padding_x * 2
     box_h = text_h + padding_y * 2
     box_x = (video_width - box_w) // 2
-    box_y = int(video_height * 0.85) - box_h // 2
+    box_y = int(video_height * 0.10)
 
     draw = ImageDraw.Draw(img)
-    draw.rectangle([box_x, box_y, box_x + box_w, box_y + box_h], fill=(255, 255, 255, 230))
+    draw.rounded_rectangle(
+        [box_x, box_y, box_x + box_w, box_y + box_h],
+        radius=border_radius,
+        fill=(255, 255, 255, 230),
+    )
 
     with Pilmoji(img) as pilmoji_obj:
         y = box_y + padding_y
@@ -152,14 +192,15 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
     img.save(output_path, "PNG")
 
 
-def run_post_production(input_path: str, output_path: str, hook: str):
+def run_post_production(input_path: str, output_path: str, hook: str, audio_path: str = ""):
     duration = get_video_duration(input_path)
     video_width, video_height = get_video_dimensions(input_path)
 
     text_overlay_path = f"/tmp/text_overlay_{SOCIAL_DOC_ID}.png"
     create_text_overlay(hook, video_width, video_height, text_overlay_path)
 
-    has_music = os.path.exists(MUSIC_PATH)
+    music_path = audio_path or (MUSIC_PATH if os.path.exists(MUSIC_PATH) else "")
+    has_music = bool(music_path)
     has_logo = os.path.exists(LOGO_PATH)
 
     try:
@@ -173,7 +214,7 @@ def run_post_production(input_path: str, output_path: str, hook: str):
                 "ffmpeg", "-y",
                 "-i", input_path,
                 "-i", text_overlay_path,
-                "-stream_loop", "-1", "-i", MUSIC_PATH,
+                "-stream_loop", "-1", "-i", music_path,
                 "-i", LOGO_PATH,
                 "-filter_complex", filter_complex,
                 "-map", "[v_out]",
@@ -209,7 +250,7 @@ def run_post_production(input_path: str, output_path: str, hook: str):
                 "ffmpeg", "-y",
                 "-i", input_path,
                 "-i", text_overlay_path,
-                "-stream_loop", "-1", "-i", MUSIC_PATH,
+                "-stream_loop", "-1", "-i", music_path,
                 "-filter_complex", filter_complex,
                 "-map", "[v_out]",
                 "-map", "[audio_out]",
@@ -253,6 +294,8 @@ def main():
     social_data = social_doc.to_dict()
     url_spherical = social_data.get("urlSphericalVideoStorage")
     hook = social_data.get("hook") or ""
+    audio_link = social_data.get("audioLink") or ""
+    youtube_link = social_data.get("youtubeLink") or ""
 
     if not url_spherical:
         raise RuntimeError(f"Social doc {SOCIAL_DOC_ID} has no urlSphericalVideoStorage")
@@ -263,10 +306,33 @@ def main():
         response.raise_for_status()
         tmp_input.write(response.content)
 
+    audio_path = ""
+    if not audio_link and youtube_link:
+        print(f"Extracting audio from YouTube: {youtube_link}")
+        audio_path = extract_audio_from_youtube(youtube_link)
+
+        audio_storage_path = f"socials/{SOCIAL_DOC_ID}_audio.mp3"
+        audio_blob = bucket.blob(audio_storage_path)
+        audio_blob.upload_from_filename(audio_path, content_type="audio/mpeg")
+        audio_signed_url = generate_signed_url(audio_blob)
+
+        social_ref.update({"audioLink": audio_signed_url})
+        print(f"Audio extracted and uploaded for social {SOCIAL_DOC_ID}")
+    elif audio_link:
+        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp_audio:
+            audio_path = tmp_audio.name
+            audio_response = requests.get(audio_link, timeout=120)
+            audio_response.raise_for_status()
+            tmp_audio.write(audio_response.content)
+
     output_path = f"/tmp/{SOCIAL_DOC_ID}_customized.mp4"
     storage_path = f"socials/{SOCIAL_DOC_ID}_customized.mp4"
 
-    run_post_production(input_path, output_path, hook)
+    try:
+        run_post_production(input_path, output_path, hook, audio_path)
+    finally:
+        if audio_path and os.path.exists(audio_path):
+            os.unlink(audio_path)
 
     blob = bucket.blob(storage_path)
     blob.upload_from_filename(output_path, content_type="video/mp4")

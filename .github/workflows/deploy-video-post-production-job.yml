@@ -62,6 +62,7 @@ jobs:
             --cpu 2 \
             --task-timeout 10m \
             --max-retries 1 \
+            --set-secrets="PROXY_KEY=proxy-key:latest,YOUTUBE_COOKIES=youtube-cookies:latest" \
             --project ${{ secrets.PROJECT_ID }}
 
       - name: ✅ Deployment complete

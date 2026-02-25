@@ -9,6 +9,7 @@ declare global {
   interface Window {
     sceneReady: boolean
     setCamera: (yaw: number, pitch: number) => void
+    setZoom: (level: number) => void
     viewer: Viewer | null
   }
 }
@@ -24,12 +25,16 @@ const CapturePage = () => {
     window.viewer = instance
     window.sceneReady = true
 
-    // Expose setCamera for Playwright control
+    // Expose setCamera and setZoom for Playwright control
     window.setCamera = (yaw: number, pitch: number) => {
       instance.rotate({
         yaw,
         pitch,
       })
+    }
+
+    window.setZoom = (level: number) => {
+      instance.zoom(level)
     }
 
     console.info("Capture page ready - window.sceneReady =", window.sceneReady)

@@ -38,3 +38,5 @@ scripts/screenshots/*
 isolate
 
 **.secret.local
+
+**/cookies.txt

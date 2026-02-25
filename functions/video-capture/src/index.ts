@@ -7,6 +7,7 @@ import admin from "firebase-admin"
 
 declare const window: {
   setCamera: (yaw: number, pitch: number) => void
+  setZoom: (level: number) => void
   sceneReady: boolean
 }
 
@@ -128,7 +129,49 @@ const createFFmpegProcess = (outputPath: string, fps: number): ChildProcessWitho
 }
 
 /**
- * Animates camera and captures frames
+ * Generates a smooth zoom curve with random segments.
+ * Returns a zoom level (0-100) for each frame, starting and ending at the same level for looping.
+ */
+const generateZoomCurve = (totalFrames: number) => {
+  const ZOOM_MIN = 20
+  const ZOOM_MAX = 65
+  const START_ZOOM = 40
+
+  // Generate 4-6 random keyframes spread across the duration
+  const segmentCount = Math.floor(Math.random() * 3) + 4
+  const keyframes: { frame: number, zoom: number }[] = [{ frame: 0, zoom: START_ZOOM }]
+
+  for (let i = 1; i < segmentCount; i++) {
+    const frame = Math.floor((i / segmentCount) * totalFrames)
+    const zoom = Math.random() * (ZOOM_MAX - ZOOM_MIN) + ZOOM_MIN
+    keyframes.push({ frame, zoom })
+  }
+
+  // End at the same zoom as start for seamless looping
+  keyframes.push({ frame: totalFrames, zoom: START_ZOOM })
+
+  // Smooth interpolation (ease in-out) between keyframes
+  const curve: number[] = []
+  let keyIndex = 0
+
+  for (let i = 0; i < totalFrames; i++) {
+    while (keyIndex < keyframes.length - 2 && keyframes[keyIndex + 1]!.frame <= i) {
+      keyIndex++
+    }
+
+    const from = keyframes[keyIndex]!
+    const to = keyframes[keyIndex + 1]!
+    const segProgress = (i - from.frame) / (to.frame - from.frame)
+    // Smooth ease in-out using cosine interpolation
+    const eased = (1 - Math.cos(segProgress * Math.PI)) / 2
+    curve.push(from.zoom + (to.zoom - from.zoom) * eased)
+  }
+
+  return curve
+}
+
+/**
+ * Animates camera and captures frames with full 360° rotation, smooth zoom, and loopable start/end.
  */
 const captureFrames = async (page: Page, config: CaptureConfig) => {
   const totalFrames = config.duration * config.fps
@@ -137,17 +180,28 @@ const captureFrames = async (page: Page, config: CaptureConfig) => {
 
   const ffmpeg = createFFmpegProcess(config.outputPath, config.fps)
 
+  const zoomCurve = generateZoomCurve(totalFrames)
+
+  log(`Generated smooth zoom curve with ${zoomCurve.length} values`)
+
   let framesCaptured = 0
 
   for (let i = 0; i < totalFrames; i++) {
     const progress = i / totalFrames
 
-    const yaw = progress * config.panRange
-    const pitch = Math.sin(progress * Math.PI * 2) * config.pitchAmplitude
+    // Full 360° rotation (starts and ends at same yaw for looping)
+    const yaw = progress * Math.PI * 2
+    // Multi-frequency pitch using full-cycle sines so pitch returns to 0 at progress=1
+    const pitch =
+      Math.sin(progress * Math.PI * 4) * config.pitchAmplitude * 2.5 +
+      Math.sin(progress * Math.PI * 6) * config.pitchAmplitude * 1.5
 
     await page.evaluate(
-      ({ yaw, pitch }) => window.setCamera(yaw, pitch),
-      { yaw, pitch }
+      ({ yaw, pitch, zoom }) => {
+        window.setCamera(yaw, pitch)
+        window.setZoom(zoom)
+      },
+      { yaw, pitch, zoom: zoomCurve[i] || 40 }
     )
 
     const screenshot = await page.screenshot({
@@ -264,7 +318,7 @@ const uploadAndUpdateDoc = async (videoPath: string, socialDocId: string) => {
 
   await db.collection(TABLES.SOCIALS).doc(socialDocId).update({
     urlSphericalVideoStorage: url,
-    status: SOCIALS_STATUS.IN_PROGRESS_CUSTOMIZATION,
+    status: SOCIALS_STATUS.WAITING_CUSTOMIZATION,
   })
 
   log(`Social doc ${socialDocId} updated with video URL and status IN_PROGRESS_CUSTOMIZATION`)
