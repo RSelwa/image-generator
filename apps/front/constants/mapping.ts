@@ -16,6 +16,7 @@ export const QUERY_PARAMS = {
   REDIRECT: "redirect",
   SUGGESTION_ID: "suggestion-id",
   SOCIAL_ID: "social-id",
+  SOUND_ID: "social-id",
   USER_ID: "user-id",
 } as const
 
@@ -33,6 +34,7 @@ export const MODAL_KEYS = {
   REPORT_BUG: "report-bug",
   MAKE_SUGGESTION: "suggestion",
   NEW_SOCIALS: "new-socials",
+  NEW_SOUND: "new-sound",
 } as const
 
 export const SORT_OPTIONS = {

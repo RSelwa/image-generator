@@ -29,7 +29,7 @@ const SocialSheet = () => {
     }
 
     return (
-        <Sheet open={open} onOpenChange={close}>
+        <Sheet key={socialId} open={open} onOpenChange={close}>
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>{social.id} <OpenFirestoreDoc docRef={getSocialRef(socialId)} /></SheetTitle>

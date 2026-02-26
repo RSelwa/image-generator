@@ -9,6 +9,7 @@ import { MakeSuggestion } from "@/components/modals/make-suggestion"
 import { ModalMapId } from "@/components/modals/map-id"
 import { MapsGallery } from "@/components/modals/maps-gallery"
 import NewSocial from "@/components/modals/new-social"
+import NewSound from "@/components/modals/new-sound"
 import { ReportBugModal } from "@/components/modals/report-bug"
 import { SeedDetailModal } from "@/components/modals/seed-detail"
 import { SphericalGalleryModal } from "@/components/modals/spherical-gallery"
@@ -23,6 +24,7 @@ export const ModalProvider = () => {
 
   if (type === MODAL_KEYS.CHANGE_PSEUDO) return <ChangePseudoModal />
 
+  if (type === MODAL_KEYS.NEW_SOUND) return <NewSound />
   if (type === MODAL_KEYS.NEW_SOCIALS) return <NewSocial />
   if (type === MODAL_KEYS.MAKE_SUGGESTION) return <MakeSuggestion />
   if (type === MODAL_KEYS.REPORT_BUG) return <ReportBugModal />

@@ -1,18 +1,12 @@
 "use client"
 
 import {
-  Gamepad2,
-  Globe2,
-  Image,
-  Lightbulb,
   LogOut,
-  Sprout,
   User,
 } from "lucide-react"
 
 import Link from "next/link"
 import { HelperMenuContent } from "@/components/helper"
-import { LobbyDebug } from "@/components/lobby/lobby-debug"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -21,11 +15,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import NavUserAdmin from "@/components/ui/nav-user.admin"
 import { PAGES } from "@/constants/pages"
 import { useLogoutMutation } from "@/redux/api/auth"
 import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
@@ -62,63 +54,7 @@ export const NavUser = () => {
         alignOffset={-8}
       >
         {isAdmin && (
-          <>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Admin</DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem asChild>
-                  <Link href={PAGES.ADMIN_USERS} className="cursor-pointer">
-                    <User />
-                    Users
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={PAGES.ADMIN_GAMES} className="cursor-pointer">
-                    <Gamepad2 />
-                    Games
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={PAGES.ADMIN_SPHERICAL} className="cursor-pointer">
-                    <Globe2 />
-                    Sphericals
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={PAGES.ADMIN_FLATS} className="cursor-pointer">
-                    <Image />
-                    Flats
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={PAGES.ADMIN_SUGGESTIONS} className="cursor-pointer">
-                    <Lightbulb />
-                    Suggestions
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={PAGES.SEED_MAKER} className="cursor-pointer">
-                    <Gamepad2 />
-                    Make a round
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={PAGES.MY_SEEDS} className="cursor-pointer">
-                    <Sprout />
-                    My Seeds
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={PAGES.ADMIN_SOCIALS} className="cursor-pointer">
-                    <Sprout />
-                    Socials
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-            <LobbyDebug />
-            <DropdownMenuSeparator />
-          </>
+          <NavUserAdmin />
         )}
         <DropdownMenuGroup>
           <DropdownMenuLabel>Account</DropdownMenuLabel>

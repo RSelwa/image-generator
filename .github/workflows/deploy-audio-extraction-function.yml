@@ -61,6 +61,7 @@ jobs:
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated \
+            --memory 2Gi \
             --timeout 3600 \
             --set-secrets YOUTUBE_COOKIES=youtube-cookies:latest,PROXY_KEY=proxy-key:latest \
             --project ${{ secrets.PROJECT_ID }}

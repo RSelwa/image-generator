@@ -26,7 +26,7 @@ const SocialRow = ({ social, checkedIds, setCheckedIds }: {
     checkedIds: string[]
     setCheckedIds: Dispatch<SetStateAction<string[]>>
 }) => {
-    const [_, setSuggestionId] = useQueryState(QUERY_PARAMS.SOCIAL_ID)
+    const [_, setSocialId] = useQueryState(QUERY_PARAMS.SOCIAL_ID)
 
     const [updateSocialDoc] = useUpdateSocialByIdMutation()
     const [retriggerPostProduction] = useRetriggerPostProductionMutation()
@@ -45,7 +45,7 @@ const SocialRow = ({ social, checkedIds, setCheckedIds }: {
                 },
             }).unwrap()
 
-            setSuggestionId(social.id)
+            setSocialId(social.id)
         } catch (error) {
             console.error("Error retriggering post production:", error)
         }
@@ -54,14 +54,14 @@ const SocialRow = ({ social, checkedIds, setCheckedIds }: {
     return (
         <ContextMenu>
             <ContextMenuTrigger asChild>
-                <TableRow key={social.id} onClick={() => setSuggestionId(social.id)} data-viewed={Boolean(social.createdAt)} className="data-[viewed=false]:bg-muted/50 cursor-pointer">
+                <TableRow key={social.id} onClick={() => setSocialId(social.id)} data-viewed={Boolean(social.createdAt)} className="data-[viewed=false]:bg-muted/50 cursor-pointer">
                     <TableCell onClick={(e) => e.stopPropagation()}>
                         <Checkbox
                             checked={checked}
                             onCheckedChange={onCheckedChange}
                         />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="truncate lg:w-auto w-14">
                         {social.id}
                         <OpenFirestoreDoc docRef={getSocialRef(social.id)} />
 
@@ -131,27 +131,27 @@ const Page = () => {
 
     return (
         <main className="h-full-height-admin max-h-full-height-admin p-4 space-y-4">
-            <section className="flex justify-between items-center">
-                <article className="flex items-center gap-8">
-                    <h1 className="text-2xl font-bold">
-                        Socials - <span className="text-primary">{socials?.length}</span>
-                    </h1>
-                    <InputGroup className="w-fit min-w-72">
-                        <InputGroupAddon>
-                            <Search />
-                        </InputGroupAddon>
-                        <InputGroupInput value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search by id" autoComplete="off" />
-                    </InputGroup>
+            <section className="flex flex-col gap-2 lg:gap-8 lg:flex-row justify-between lg:items-center">
+                <h1 className="text-2xl font-bold space-x-4">
+                    Socials -
+                    {" "}
+                    <span className="text-primary">{socials?.length}</span>
                     <Button size="icon" variant="marathon-white" onClick={refetch}>
                         <RefreshCcw className="size-4" />
                     </Button>
-                </article>
-                <Button onClick={() => openModal()}>
+                </h1>
+                <InputGroup className="lg:w-fit w-full min-w-72">
+                    <InputGroupAddon>
+                        <Search />
+                    </InputGroupAddon>
+                    <InputGroupInput value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search by id" autoComplete="off" />
+                </InputGroup>
+                <Button onClick={() => openModal()} className="lg:ml-auto">
                     <PlusIcon className="size-4" />
                     New Social
                 </Button>
             </section>
-            <ScrollArea className="h-5/6">
+            <ScrollArea className="h-5/6 w-full m-0">
                 <Table noWrapper>
                     <TableCaption ref={captionRef}>
                         {isLoading && "Loading..."}

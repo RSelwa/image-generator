@@ -53,11 +53,6 @@
         "pnpm build:socials"
       ],
       "codebase": "socials"
-    },
-    {
-      "source": "functions/audio-extraction",
-      "runtime": "python312",
-      "codebase": "audio-extraction"
     }
   ],
   "emulators": {

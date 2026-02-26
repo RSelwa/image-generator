@@ -59,6 +59,6 @@ export default antfu({
     "antfu/curly": "off",
     "no-console": ["warn", { allow: ["warn", "error", "info"] }],
     // "ts/consistent-type-definitions": ["error", "type"],
-    "ts/consistent-type-definitions": "warn"
+    "ts/consistent-type-definitions": "off"
   },
 })

@@ -34,6 +34,9 @@ export const TABLE_REFS = {
   [TABLES.SOCIALS]: collection(db, TABLES.SOCIALS) as CustomCollectionRef<
     typeof TABLES.SOCIALS
   >,
+  [TABLES.SOUNDS]: collection(db, TABLES.SOUNDS) as CustomCollectionRef<
+    typeof TABLES.SOUNDS
+  >,
 } as const
 
 export const TABLES_GROUP_REFS = {
@@ -99,6 +102,9 @@ export const getSuggestionRef = (suggestionId: string | undefined) =>
 
 export const getSocialRef = (socialId: string | undefined) =>
   socialId ? doc(TABLE_REFS[TABLES.SOCIALS], socialId) : doc(TABLE_REFS[TABLES.SOCIALS])
+
+export const getSoundRef = (socialId: string | undefined) =>
+  socialId ? doc(TABLE_REFS[TABLES.SOUNDS], socialId) : doc(TABLE_REFS[TABLES.SOUNDS])
 
 export const getRoundAnswerRef = (lobbyId: string, roundAnswerId: string) =>
   doc(TABLES_SUB_REFS[TABLES.ROUND_ANSWERS](lobbyId), roundAnswerId)

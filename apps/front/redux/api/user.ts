@@ -1,4 +1,4 @@
-import { documentId, getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
+import { getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES, USERS_FIELDS } from "@repo/common"
 import { type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
@@ -21,7 +21,7 @@ export const userApi = createApi({
       queryFn: async ({ pageParam }) => {
         try {
           const constraints: QueryConstraint[] = [
-            orderBy(documentId()),
+            orderBy("createdAt", "desc"),
             ignoreAnonymousUsersConstraint,
           ]
 
@@ -141,20 +141,20 @@ export const userApi = createApi({
 
           if (error) {
             console.error(`Error parsing user with ID: ${id}`, error)
+
             return { error: { status: 500, data: "Data parsing error" } }
           }
 
           return { data }
-
-      }
-        catch (error) {
+        } catch (error) {
           console.error(`Error fetching user with ID: ${id}`, error)
 
           return {
             error: globalErrorHandler(error),
           }
         }
-  }})
+      }
+    })
   }),
 })
 

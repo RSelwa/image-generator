@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { SOCIALS_STATUS, TABLES } from "@repo/common"
+import { getRandomHook, SOCIALS_STATUS, TABLES } from "@repo/common"
 import { type SocialDoc, socialDocSchema, type SocialDocWithId, socialDocWithIdSchema } from "@repo/schemas"
 import { addDoc, deleteDoc, getDoc, getDocs, orderBy, query, Timestamp, updateDoc } from "firebase/firestore"
 import { getSocialRef, TABLE_REFS } from "@/constants/db-refs"
@@ -194,6 +194,43 @@ export const socialsApi = createApi({
         "SocialList",
       ],
     }),
+    createSocialFromSphericalId: builder.mutation<SocialDocWithId, { sphericalId: string }>({
+      queryFn: async ({ sphericalId }) => {
+        try {
+          const now = Timestamp.now()
+
+          const hook = getRandomHook()
+          const parsed = socialDocSchema.safeParse({
+            sphericalId,
+            status: SOCIALS_STATUS.WAITING_JOB_START,
+            createdAt: now,
+            updatedAt: now,
+            hook
+          })
+
+          if (!parsed.success) {
+            throw new Error(parsed.error.message || "Validation error")
+          }
+
+          const docRef = await addDoc(TABLE_REFS[TABLES.SOCIALS], parsed.data)
+
+          const docSnap = await getDoc(docRef)
+
+          const { data, error } = socialDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
+
+          if (error) throw new Error(error.message || "Data parsing error")
+
+          return { data }
+        } catch (error) {
+          console.error("Error creating social from spherical ID:", error)
+
+          return { error: globalErrorHandler(error) }
+        }
+      }
+    })
   }),
 })
 
