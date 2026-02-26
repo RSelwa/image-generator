@@ -22,9 +22,6 @@ jobs:
       - name: ✨ Checkout
         uses: actions/checkout@v4
 
-      - name: ⚙️ Initialize Python Environment
-        uses: ./.github/actions/python-initialization
-
       - name: 🔐 Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -57,13 +54,16 @@ jobs:
             sleep 10
           done
 
-      - name: ⚙️ Install Firebase tools
-        run: npm install -g firebase-tools
-
-      - name: 🚀 Deploy to Firebase
-        run: npx firebase deploy --project "$PROJECT_ID" --only functions:audio-extraction --force
-        env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      - name: 🚀 Deploy to Cloud Run
+        run: |
+          gcloud run deploy audio-extraction \
+            --image gcr.io/${{ secrets.PROJECT_ID }}/audio-extraction \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --timeout 3600 \
+            --set-secrets YOUTUBE_COOKIES=youtube-cookies:latest,PROXY_KEY=proxy-key:latest \
+            --project ${{ secrets.PROJECT_ID }}
 
       - name: ✅ Deployment complete
         run: echo "Audio extraction function deployed successfully!"
