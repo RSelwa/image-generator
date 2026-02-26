@@ -4,6 +4,7 @@ import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
 import { onSchedule } from "firebase-functions/scheduler"
 import { handleInProgressCustomization } from "~/handle-in-progress-customization"
+import { handleJobStart } from "~/handle-job-start"
 import { handleWaitingCapture } from "~/handle-waiting-capture"
 import { createScheduledSocial } from "~/schedule-social"
 
@@ -12,7 +13,7 @@ export const schedule_create_social = onSchedule("every day 10:00", async () => 
 })
 
 export const listen_social_written = onDocumentWritten(
-  `${TABLES.SOCIALS}/{socialId}`,
+  { document: `${TABLES.SOCIALS}/{socialId}`, timeoutSeconds: 120 },
   async (event) => {
     const socialId = event.params.socialId
 
@@ -39,12 +40,13 @@ export const listen_social_written = onDocumentWritten(
       return
     }
 
-    if (after.status === SOCIALS_STATUS.WAITING_CAPTURE) {
-      await handleWaitingCapture(socialId, after)
-    }
+    if (after.status === SOCIALS_STATUS.WAITING_JOB_START)
+      await handleJobStart(socialId, after)
 
-    if (after.status === SOCIALS_STATUS.WAITING_CUSTOMIZATION) {
+    if (after.status === SOCIALS_STATUS.WAITING_CAPTURE)
+      await handleWaitingCapture(socialId, after)
+
+    if (after.status === SOCIALS_STATUS.WAITING_CUSTOMIZATION)
       await handleInProgressCustomization(socialId, after)
-    }
   },
 )

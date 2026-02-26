@@ -22,6 +22,8 @@ export const sphericalDocSchema = z.object({
   mapId: z.string().optional(), //* Sphericals with map
   mapPosition: mapPositionSchema.optional(), //* Sphericals with map
   thumbnail: z.string().optional(), // ? Sphericals with thumbnails
+
+  youtubeLink: z.string().optional(),
 })
 
 export const sphericalDocWithIdSchema = z.object({ ...sphericalDocSchema.shape, ...WITH_ID.shape })

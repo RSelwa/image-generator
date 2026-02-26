@@ -163,12 +163,61 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
     img.save(output_path, "PNG")
 
 
+def create_cta_overlay(video_width: int, video_height: int, output_path: str):
+    from PIL import Image, ImageDraw, ImageFont
+    from pilmoji import Pilmoji
+
+    img = Image.new("RGBA", (video_width, video_height), (0, 0, 0, 0))
+
+    cta_text = "Link in bio!\n ⬇⬇⬇"
+    font_size = 48
+    font = ImageFont.truetype(FONT_PATH, font_size)
+    padding_x = 24
+    padding_y = 14
+    border_radius = 20
+
+    temp_draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
+    lines = cta_text.split("\n")
+
+    line_bboxes = [temp_draw.textbbox((0, 0), line, font=font) for line in lines]
+    line_heights = [bb[3] - bb[1] for bb in line_bboxes]
+    line_widths = [bb[2] - bb[0] for bb in line_bboxes]
+    line_spacing = 10
+
+    text_w = max(line_widths)
+    text_h = sum(line_heights) + line_spacing * (len(lines) - 1)
+
+    box_w = text_w + padding_x * 2
+    box_h = text_h + padding_y * 2
+    box_x = (video_width - box_w) // 2
+    box_y = int(video_height * 0.82)
+
+    draw = ImageDraw.Draw(img)
+    draw.rounded_rectangle(
+        [box_x, box_y, box_x + box_w, box_y + box_h],
+        radius=border_radius,
+        fill=(255, 255, 255, 230),
+    )
+
+    with Pilmoji(img) as pilmoji_obj:
+        y = box_y + padding_y
+        for i, line in enumerate(lines):
+            line_w = line_widths[i]
+            x = box_x + (box_w - line_w) // 2
+            pilmoji_obj.text((x, y), line, fill=(0, 0, 0, 255), font=font)
+            y += line_heights[i] + line_spacing
+
+    img.save(output_path, "PNG")
+
+
 def run_post_production(input_path: str, output_path: str, hook: str, audio_path: str = ""):
     duration = get_video_duration(input_path)
     video_width, video_height = get_video_dimensions(input_path)
 
     text_overlay_path = f"/tmp/text_overlay_{SOCIAL_DOC_ID}.png"
+    cta_overlay_path = f"/tmp/cta_overlay_{SOCIAL_DOC_ID}.png"
     create_text_overlay(hook, video_width, video_height, text_overlay_path)
+    create_cta_overlay(video_width, video_height, cta_overlay_path)
 
     music_path = audio_path or (MUSIC_PATH if os.path.exists(MUSIC_PATH) else "")
     has_music = bool(music_path)
@@ -178,13 +227,15 @@ def run_post_production(input_path: str, output_path: str, hook: str, audio_path
         if has_music and has_logo:
             filter_complex = (
                 f"[0:v][1:v]overlay=0:0[v_text];"
-                f"[v_text][3:v]overlay=W-w-20:20[v_out];"
-                f"[2:a]volume=0.3,atrim=0:{duration},asetpts=PTS-STARTPTS[audio_out]"
+                f"[v_text][2:v]overlay=0:0:enable='gte(t,3)'[v_cta];"
+                f"[v_cta][4:v]overlay=W-w-20:20[v_out];"
+                f"[3:a]volume=0.3,atrim=0:{duration},asetpts=PTS-STARTPTS[audio_out]"
             )
             cmd = [
                 "ffmpeg", "-y",
                 "-i", input_path,
                 "-i", text_overlay_path,
+                "-i", cta_overlay_path,
                 "-stream_loop", "-1", "-i", music_path,
                 "-i", LOGO_PATH,
                 "-filter_complex", filter_complex,
@@ -198,12 +249,14 @@ def run_post_production(input_path: str, output_path: str, hook: str, audio_path
         elif has_logo:
             filter_complex = (
                 f"[0:v][1:v]overlay=0:0[v_text];"
-                f"[v_text][2:v]overlay=W-w-20:20[v_out]"
+                f"[v_text][2:v]overlay=0:0:enable='gte(t,3)'[v_cta];"
+                f"[v_cta][3:v]overlay=W-w-20:20[v_out]"
             )
             cmd = [
                 "ffmpeg", "-y",
                 "-i", input_path,
                 "-i", text_overlay_path,
+                "-i", cta_overlay_path,
                 "-i", LOGO_PATH,
                 "-filter_complex", filter_complex,
                 "-map", "[v_out]",
@@ -214,13 +267,15 @@ def run_post_production(input_path: str, output_path: str, hook: str, audio_path
             ]
         elif has_music:
             filter_complex = (
-                f"[0:v][1:v]overlay=0:0[v_out];"
-                f"[2:a]volume=0.3,atrim=0:{duration},asetpts=PTS-STARTPTS[audio_out]"
+                f"[0:v][1:v]overlay=0:0[v_text];"
+                f"[v_text][2:v]overlay=0:0:enable='gte(t,3)'[v_out];"
+                f"[3:a]volume=0.3,atrim=0:{duration},asetpts=PTS-STARTPTS[audio_out]"
             )
             cmd = [
                 "ffmpeg", "-y",
                 "-i", input_path,
                 "-i", text_overlay_path,
+                "-i", cta_overlay_path,
                 "-stream_loop", "-1", "-i", music_path,
                 "-filter_complex", filter_complex,
                 "-map", "[v_out]",
@@ -231,11 +286,15 @@ def run_post_production(input_path: str, output_path: str, hook: str, audio_path
                 output_path,
             ]
         else:
-            filter_complex = "[0:v][1:v]overlay=0:0[v_out]"
+            filter_complex = (
+                f"[0:v][1:v]overlay=0:0[v_text];"
+                f"[v_text][2:v]overlay=0:0:enable='gte(t,3)'[v_out]"
+            )
             cmd = [
                 "ffmpeg", "-y",
                 "-i", input_path,
                 "-i", text_overlay_path,
+                "-i", cta_overlay_path,
                 "-filter_complex", filter_complex,
                 "-map", "[v_out]",
                 "-map", "0:a?",
@@ -248,6 +307,8 @@ def run_post_production(input_path: str, output_path: str, hook: str, audio_path
     finally:
         if os.path.exists(text_overlay_path):
             os.unlink(text_overlay_path)
+        if os.path.exists(cta_overlay_path):
+            os.unlink(cta_overlay_path)
 
 
 def main():

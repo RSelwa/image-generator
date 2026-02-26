@@ -12,6 +12,8 @@ export const gameDocSchema = z.object({
   hasSpecialImagesReady: z.boolean().optional().default(false),
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
+
+  youtubeLink: z.string().optional()
 })
 
 export const gameDocWithIdSchema = z.object({

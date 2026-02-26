@@ -60,8 +60,9 @@ def extract_youtube_id(youtube_url: str) -> str:
     raise RuntimeError(f"Could not extract YouTube ID from: {youtube_url}")
 
 
-def extract_audio_from_youtube(youtube_url: str, youtube_id: str) -> str:
-    """Extract audio from YouTube via yt-dlp through ISP proxy + cookies + ffmpeg."""
+def extract_audio_from_youtube(youtube_url: str, youtube_id: str) -> tuple[str, str]:
+    """Extract audio from YouTube via yt-dlp through ISP proxy + cookies + ffmpeg.
+    Returns (audio_path, youtube_title)."""
     write_cookies_file()
     output_path = f"/tmp/{youtube_id}_youtube_audio"
 
@@ -71,6 +72,15 @@ def extract_audio_from_youtube(youtube_url: str, youtube_id: str) -> str:
         "--cookies", COOKIES_PATH,
         youtube_url,
     ])
+
+    title_result = subprocess.run([
+        "yt-dlp", "--print", "title",
+        "--proxy", PROXY_URL,
+        "--cookies", COOKIES_PATH,
+        "--no-playlist",
+        youtube_url,
+    ], capture_output=True, text=True, check=True)
+    youtube_title = title_result.stdout.strip()
 
     subprocess.run([
         "yt-dlp", "-f", "bestaudio*/best",
@@ -82,7 +92,7 @@ def extract_audio_from_youtube(youtube_url: str, youtube_id: str) -> str:
         youtube_url,
     ], check=True)
 
-    return f"{output_path}.mp3"
+    return f"{output_path}.mp3", youtube_title
 
 
 def generate_signed_url(blob, expiration_days: int = 7) -> str:
@@ -106,6 +116,11 @@ def process_audio(youtube_link: str) -> str:
     youtube_id = extract_youtube_id(youtube_link)
     print(f"YouTube ID: {youtube_id}")
 
+    # Set all matching sounds to pending at the start of the job
+    pending_sounds = db.collection("sounds").where("youtubeId", "==", youtube_id).get()
+    for doc in pending_sounds:
+        doc.reference.update({"status": "pending"})
+
     existing_sounds = db.collection("sounds").where("youtubeId", "==", youtube_id).limit(1).get()
     existing_sound_doc = existing_sounds[0] if existing_sounds else None
 
@@ -117,7 +132,8 @@ def process_audio(youtube_link: str) -> str:
             return existing_sound_doc.id
 
     print(f"Extracting audio from YouTube: {youtube_link}")
-    audio_path = extract_audio_from_youtube(youtube_link, youtube_id)
+    audio_path, youtube_title = extract_audio_from_youtube(youtube_link, youtube_id)
+    print(f"YouTube title: {youtube_title}")
 
     audio_storage_path = f"sounds/{youtube_id}_audio.mp3"
     audio_blob = bucket.blob(audio_storage_path)
@@ -128,6 +144,8 @@ def process_audio(youtube_link: str) -> str:
         existing_sound_doc.reference.update({
             "updatedAt": firestore.SERVER_TIMESTAMP,
             "storagePath": audio_signed_url,
+            "youtubeTitle": youtube_title,
+            "status": "processed",
         })
         sound_id = existing_sound_doc.id
         print(f"Sound document updated for YouTube ID {youtube_id}")
@@ -135,9 +153,11 @@ def process_audio(youtube_link: str) -> str:
         _, new_sound_ref = db.collection("sounds").add({
             "createdAt": firestore.SERVER_TIMESTAMP,
             "updatedAt": firestore.SERVER_TIMESTAMP,
+            "status": "processed",
             "storagePath": audio_signed_url,
             "youtubeLink": youtube_link,
             "youtubeId": youtube_id,
+            "youtubeTitle": youtube_title,
         })
         sound_id = new_sound_ref.id
         print(f"Sound document created for YouTube ID {youtube_id}")

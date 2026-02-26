@@ -24,7 +24,11 @@ export const socialsApi = createApi({
                 ...doc.data(),
               })
 
-              if (error) return null
+              if (error) {
+                console.error(`Error parsing social with ID: ${doc.id}`, error)
+
+                return null
+              }
 
               return data
             })
@@ -72,7 +76,7 @@ export const socialsApi = createApi({
       queryFn: async (input) => {
         try {
           const now = Timestamp.now()
-          const { data: validatedInput, error: validationError } = socialDocSchema.safeParse(input)
+          const { data: validatedInput, error: validationError } = socialDocSchema.safeParse({ ...input, status: SOCIALS_STATUS.WAITING_JOB_START })
 
           if (validationError) {
             throw new Error(validationError.message || "Validation error")

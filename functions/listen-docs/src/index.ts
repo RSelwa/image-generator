@@ -1,9 +1,9 @@
-import { METADATA_DOCS, TABLES } from "@repo/common"
-import { type FlatDoc, type GameDoc, type SphericalDoc } from "@repo/schemas"
+import { AUDIO_EXTRACT_ENDPOINT, SOUND_STATUS, TABLES } from "@repo/common"
+import { type FlatDoc, type GameDoc, type SoundDoc, type SphericalDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
-import { updateFlatStatus, updateGameStatus, updateSphericalStatus } from "~/updates-status"
 import { updateGamesList } from "~/updates-games-list"
+import { updateFlatStatus, updateGameStatus, updateSphericalStatus } from "~/updates-status"
 
 export const listen_doc_spherical_written = onDocumentWritten(
   `${TABLES.GAMES}/{gameId}/${TABLES.SPHERICAL}/{sphericalId}`,
@@ -54,18 +54,61 @@ export const listen_doc_games_written = onDocumentWritten(
   `${TABLES.GAMES}/{gameId}`,
   async (event) => {
     try {
-    const gameId = event.params.gameId
+      const gameId = event.params.gameId
 
-    if (!gameId) {
-      logger.error(`Game ID is undefined in document path: ${event.document}`)
+      if (!gameId) {
+        logger.error(`Game ID is undefined in document path: ${event.document}`)
 
-      return
+        return
+      }
+
+      const before = event.data?.before.data() as GameDoc | undefined
+      const after = event.data?.after.data() as GameDoc | undefined
+
+      await updateGamesList(gameId, before, after)
+    } catch (error) {
+      console.error(`Error in listen_doc_games_written for document ${event.document}:`, error)
     }
+  },
+)
 
-    const before = event.data?.before.data() as GameDoc | undefined
-    const after = event.data?.after.data() as GameDoc | undefined
+export const listen_sounds_written = onDocumentWritten(
+  `${TABLES.SOUNDS}/{soundId}`,
+  async (event) => {
+    try {
+      const soundId = event.params.soundId
 
-    await updateGamesList(gameId, before, after)
+      if (!soundId) {
+        logger.error(`Sound ID is undefined in document path: ${event.document}`)
+
+        return
+      }
+
+      const before = event.data?.before.data() as SoundDoc | undefined
+      const after = event.data?.after.data() as SoundDoc | undefined
+
+      if (!after) {
+        logger.info(`Sound ${soundId} was deleted, skipping`)
+
+        return
+      }
+
+      const hasYoutubeLinkChanged = before?.youtubeLink !== after?.youtubeLink
+      const isWaitingForExtraction = after.status === SOUND_STATUS.WAITING_FOR_EXTRACTION
+
+      if (hasYoutubeLinkChanged || isWaitingForExtraction) {
+        logger.info(`Sound ${soundId} has changed and is waiting for extraction, triggering audio extraction`)
+
+        await fetch(AUDIO_EXTRACT_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            youtubeLink: after.youtubeLink,
+          }),
+        })
+      }
     } catch (error) {
       console.error(`Error in listen_doc_games_written for document ${event.document}:`, error)
     }

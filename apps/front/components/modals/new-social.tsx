@@ -30,8 +30,11 @@ const socialFormSchema = z.object({
         duration: true,
         hook: true,
         youtubeLink: true,
+        status: true,
+        urlSphericalVideoStorage: true,
     }).shape
 })
+
 type SocialFormSchema = z.input<typeof socialFormSchema>
 
 const NewSocial = () => {
@@ -53,6 +56,7 @@ const NewSocial = () => {
         defaultValues: {
             duration: DEFAULT_DURATION_SECONDS,
             hook: getRandomHook(),
+            status: SOCIALS_STATUS.WAITING_JOB_START,
         },
     })
 
@@ -69,13 +73,12 @@ const NewSocial = () => {
 
     return (
         <ModalBase modalKey={KEY} className="lg:max-w-4xl">
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8  space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8 space-y-4">
                 <section className="flex items-center gap-8 justify-between">
                     <Field>
                         <Popover>
                             <PopoverTrigger data-hasImage={Boolean(watch("sphericalId"))} className="data-[hasImage=true]:border-muted flex items-center justify-center data-[hasImage=false]:border-primary border p-2 size-32! border-dashed">
                                 {watch("sphericalId") && <Image src={allSphericals.find((s) => s.id === watch("sphericalId"))?.image || ""} alt="Selected Spherical" width={112} height={112} className="aspect-square object-cover " />}
-
                             </PopoverTrigger>
                             <PopoverContent asChild>
                                 <ScrollArea className="h-64 w-96">
@@ -108,15 +111,12 @@ const NewSocial = () => {
 
                         )}
                     </Field>
-
                 </section>
                 <section className="flex items-center gap-8 justify-between">
                     <Field>
-                        <Label className="text-lg" />
                         <Select {...register("hook")}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select your hook" />
-
                             </SelectTrigger>
                             <SelectContent className="h-64">
                                 {Object.values(SOCIALS_HOOKS).map((hook) => (
@@ -144,7 +144,26 @@ const NewSocial = () => {
                         />
                     </Field>
                 </section>
-
+                <section className="flex items-center gap-8 justify-between">
+                    <Field>
+                        <Select {...register("status")}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent className="h-64">
+                                {Object.values(SOCIALS_STATUS).map((status) => (
+                                    <SelectItem key={status} value={status}>
+                                        {status}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </Field>
+                    <Field>
+                        <Label className="text-lg">Url spherical video storage</Label>
+                        <Input {...register("urlSphericalVideoStorage")} placeholder="Paste here the url of raw video storage" />
+                    </Field>
+                </section>
                 <section className="flex justify-end items-center gap-2">
                     <Button type="submit">
                         Create
