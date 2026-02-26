@@ -46,10 +46,15 @@ export const SOCIALS_STATUS = {
 export const SOCIALS_STATUS_WORDING = {
   [SOCIALS_STATUS.ERROR]: "Error",
   [SOCIALS_STATUS.DRAFT]: "Draft",
+  [SOCIALS_STATUS.WAITING_JOB_START]: "Waiting for capture",
   [SOCIALS_STATUS.WAITING_CAPTURE]: "Waiting for capture",
   [SOCIALS_STATUS.IN_PROGRESS_CAPTURE]: "Capturing",
+  [SOCIALS_STATUS.WAITING_AUDIO_EXTRACTION]: "Waiting for audio extraction",
+  [SOCIALS_STATUS.IN_PROGRESS_AUDIO_EXTRACTION]: "Extracting audio",
   [SOCIALS_STATUS.WAITING_CUSTOMIZATION]: "Waiting for customization",
   [SOCIALS_STATUS.IN_PROGRESS_CUSTOMIZATION]: "Customizing",
+  [SOCIALS_STATUS.WAITING_FOR_POST]: "Waiting for posting",
+  [SOCIALS_STATUS.IN_PROGRESS_POSTING]: "Posting",
   [SOCIALS_STATUS.READY_TO_POST]: "Ready to post",
   [SOCIALS_STATUS.UPLOADED]: "Uploaded",
 } as const
