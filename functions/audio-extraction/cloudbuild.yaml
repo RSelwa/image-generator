@@ -1,0 +1,11 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - gcr.io/$PROJECT_ID/audio-extraction
+      - -f
+      - functions/audio-extraction/Dockerfile
+      - functions/audio-extraction
+images:
+  - gcr.io/$PROJECT_ID/audio-extraction

@@ -1,0 +1,20 @@
+name: 🐍 Initialize Python Environment
+description:
+  Initialize the Python environment for all Python functions by setting up
+  Python 3.12 and creating virtual environments with dependencies installed
+
+runs:
+  using: composite
+  steps:
+    - name: ⚙️ Setup Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: 🐍 Setup venv for audio-extraction
+      shell: bash
+      working-directory: functions/audio-extraction
+      run: |
+        python3.12 -m venv venv
+        . venv/bin/activate && python3.12 -m pip install -r requirements.txt
+

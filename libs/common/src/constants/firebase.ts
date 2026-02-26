@@ -13,6 +13,7 @@ export const TABLES = {
   SUGGESTIONS: "suggestions",
   METADATA: "metadata",
   SOCIALS: "socials",
+  SOUNDS: "sounds",
 } as const
 
 export const METADATA_DOCS = {

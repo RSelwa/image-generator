@@ -1,0 +1,6 @@
+firebase-admin==6.7.0
+flask>=3.0.0
+google-auth==2.38.0
+gunicorn>=22.0.0
+requests==2.32.3
+PySocks>=1.7.1

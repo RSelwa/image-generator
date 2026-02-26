@@ -7,9 +7,12 @@ export const socialDocSchema = z.object({
   updatedAt: timestampSchema.nullish().default(() => null),
   errorInfo: z.string().nullish().default(null),
 
+  soundId: z.string().nullish().default(null),
   youtubeLink: z.string().nullish().default(null),
   audioLink: z.string().nullish().default(null),
+
   hook: z.string().nullish().default(null),
+  isAutoPostingEnabled: z.boolean().optional().default(false),
 
   gameId: z.string().nullish().default(null),
   sphericalId: z.string().nullish().default(null),

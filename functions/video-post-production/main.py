@@ -19,44 +19,9 @@ MUSIC_PATH = os.path.join(ASSETS_DIR, "music.mp3")
 LOGO_PATH = os.path.join(ASSETS_DIR, "logo.png")
 
 FONT_PATH = os.path.join(ASSETS_DIR, "TikTokSans-Medium.ttf")
-COOKIES_PATH = "/tmp/cookies.txt"
 SOCIALS_STATUS_ERROR = "error"
 SOCIALS_STATUS_READY_TO_POST = "ready_to_post"
-
-PROXY_URL = f"socks5://{os.environ.get('PROXY_KEY', '')}@161.77.142.146:50101"
-
-
-def write_cookies_file():
-    cookies_content = os.environ.get("YOUTUBE_COOKIES")
-    if not cookies_content:
-        raise RuntimeError("YOUTUBE_COOKIES environment variable is not set")
-    with open(COOKIES_PATH, "w") as f:
-        f.write(cookies_content)
-
-
-def extract_audio_from_youtube(youtube_url: str) -> str:
-    """Extract audio from YouTube via yt-dlp through ISP proxy + cookies + ffmpeg."""
-    write_cookies_file()
-    output_path = f"/tmp/{SOCIAL_DOC_ID}_youtube_audio"
-
-    subprocess.run([
-        "yt-dlp", "--list-formats",
-        "--proxy", PROXY_URL,
-        "--cookies", COOKIES_PATH,
-        youtube_url,
-    ])
-
-    subprocess.run([
-        "yt-dlp", "-f", "bestaudio*/best",
-        "--proxy", PROXY_URL,
-        "--cookies", COOKIES_PATH,
-        "--no-playlist",
-        "-x", "--audio-format", "mp3",
-        "-o", f"{output_path}.%(ext)s",
-        youtube_url,
-    ], check=True)
-
-    return f"{output_path}.mp3"
+SOCIALS_STATUS_WAITING_FOR_POST= "waiting_for_post"
 
 
 def init_firebase():
@@ -121,22 +86,28 @@ def generate_signed_url(blob, expiration_days: int = 7) -> str:
 
 
 def wrap_text(text: str, font, max_width: int, draw) -> list[str]:
-    words = text.split()
+    paragraphs = text.split("\n")
     lines = []
-    current_line = ""
 
-    for word in words:
-        test_line = f"{current_line} {word}".strip() if current_line else word
-        bbox = draw.textbbox((0, 0), test_line, font=font)
-        if bbox[2] - bbox[0] <= max_width:
-            current_line = test_line
-        else:
-            if current_line:
-                lines.append(current_line)
-            current_line = word
+    for paragraph in paragraphs:
+        if not paragraph.strip():
+            lines.append("")
+            continue
+        words = paragraph.split()
+        current_line = ""
 
-    if current_line:
-        lines.append(current_line)
+        for word in words:
+            test_line = f"{current_line} {word}".strip() if current_line else word
+            bbox = draw.textbbox((0, 0), test_line, font=font)
+            if bbox[2] - bbox[0] <= max_width:
+                current_line = test_line
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = word
+
+        if current_line:
+            lines.append(current_line)
 
     return lines
 
@@ -295,7 +266,7 @@ def main():
     url_spherical = social_data.get("urlSphericalVideoStorage")
     hook = social_data.get("hook") or ""
     audio_link = social_data.get("audioLink") or ""
-    youtube_link = social_data.get("youtubeLink") or ""
+    has_auto_posting = social_data.get("isAutoPostingEnabled", False)
 
     if not url_spherical:
         raise RuntimeError(f"Social doc {SOCIAL_DOC_ID} has no urlSphericalVideoStorage")
@@ -307,18 +278,7 @@ def main():
         tmp_input.write(response.content)
 
     audio_path = ""
-    if not audio_link and youtube_link:
-        print(f"Extracting audio from YouTube: {youtube_link}")
-        audio_path = extract_audio_from_youtube(youtube_link)
-
-        audio_storage_path = f"socials/{SOCIAL_DOC_ID}_audio.mp3"
-        audio_blob = bucket.blob(audio_storage_path)
-        audio_blob.upload_from_filename(audio_path, content_type="audio/mpeg")
-        audio_signed_url = generate_signed_url(audio_blob)
-
-        social_ref.update({"audioLink": audio_signed_url})
-        print(f"Audio extracted and uploaded for social {SOCIAL_DOC_ID}")
-    elif audio_link:
+    if audio_link:
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp_audio:
             audio_path = tmp_audio.name
             audio_response = requests.get(audio_link, timeout=120)
@@ -341,7 +301,7 @@ def main():
 
     social_ref.update({
         "urlCustomizedVideoStorage": signed_url,
-        "status": SOCIALS_STATUS_READY_TO_POST,
+        "status":  SOCIALS_STATUS_WAITING_FOR_POST if has_auto_posting else SOCIALS_STATUS_READY_TO_POST,
     })
 
     print(f"Post-production complete for social {SOCIAL_DOC_ID}")

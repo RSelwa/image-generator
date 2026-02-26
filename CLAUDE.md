@@ -6,6 +6,7 @@
 
 # Code style
 
+- For jobs, don't clean dockerfile
 - In front, if you want to have a page that take the full height, use the class `h-full-height` instead of `h-[calc(...)]`
 - In test wait for url in "" instead of anti slash
 - Use pnpm instead of npm

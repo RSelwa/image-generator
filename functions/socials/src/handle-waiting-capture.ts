@@ -25,7 +25,7 @@ export const handleWaitingCapture = async (socialId: string, social: SocialDoc) 
 
   // Set status immediately to prevent re-trigger
   await refs[TABLES.SOCIALS].doc(socialId).update({
-    status: SOCIALS_STATUS.IN_PROGRESS_SPHERE,
+    status: SOCIALS_STATUS.IN_PROGRESS_CAPTURE,
   })
 
   try {
