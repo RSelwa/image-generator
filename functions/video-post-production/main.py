@@ -16,13 +16,21 @@ STORAGE_BUCKET = os.environ.get("FIREBASE_STORAGE_BUCKET", f"{PROJECT_ID}.fireba
 
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), "assets")
 MUSIC_PATH = os.path.join(ASSETS_DIR, "music.mp3")
-LOGO_PATH = os.path.join(ASSETS_DIR, "logo.png")
 
-FONT_PATH = os.path.join(ASSETS_DIR, "TikTokSans-Medium.ttf")
+FONT_SIZE = 70
+FONT_PATH = os.path.join(ASSETS_DIR, "FreshMango-Italic.ttf")
+
 SOCIALS_STATUS_ERROR = "error"
 SOCIALS_STATUS_READY_TO_POST = "ready_to_post"
 SOCIALS_STATUS_WAITING_FOR_POST= "waiting_for_post"
 
+CTA_TEXT = "Discover my game here \n ⬆️ Link in bio  ⬆️"
+TEXT_COLOR = (0, 0, 0, 255)
+TEXT_STROKE_COLOR = (255, 255, 255, 255)
+STROKE_WIDTH = 4
+
+HOOK_TEXT_POSITION = 0.80
+CTA_TEXT_POSITION = 0.10
 
 def init_firebase():
     service_account_key = os.environ.get("SERVICE_ACCOUNT_KEY")
@@ -122,11 +130,10 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
         img.save(output_path, "PNG")
         return
 
-    font_size = 112
+    font_size = FONT_SIZE
     font = ImageFont.truetype(FONT_PATH, font_size)
     padding_x = 28
-    padding_y = 18
-    border_radius = 20
+    padding_y = 24
     max_text_width = int(video_width * 0.85)
 
     temp_draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
@@ -138,43 +145,33 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
     line_spacing = 10
 
     text_w = max(line_widths)
-    text_h = sum(line_heights) + line_spacing * (len(lines) - 1)
 
     box_w = text_w + padding_x * 2
-    box_h = text_h + padding_y * 2
     box_x = (video_width - box_w) // 2
-    box_y = int(video_height * 0.10)
-
-    draw = ImageDraw.Draw(img)
-    draw.rounded_rectangle(
-        [box_x, box_y, box_x + box_w, box_y + box_h],
-        radius=border_radius,
-        fill=(255, 255, 255, 230),
-    )
+    box_y = int(video_height * HOOK_TEXT_POSITION)
 
     with Pilmoji(img) as pilmoji_obj:
         y = box_y + padding_y
         for i, line in enumerate(lines):
             line_w = line_widths[i]
             x = box_x + (box_w - line_w) // 2
-            pilmoji_obj.text((x, y), line, fill=(0, 0, 0, 255), font=font, stroke_width=2, stroke_fill=(0, 0, 0, 255))
+            pilmoji_obj.text((x, y), line, fill=TEXT_COLOR, font=font, stroke_width=STROKE_WIDTH, stroke_fill=TEXT_STROKE_COLOR)
             y += line_heights[i] + line_spacing
 
     img.save(output_path, "PNG")
 
 
 def create_cta_overlay(video_width: int, video_height: int, output_path: str):
-    from PIL import Image, ImageDraw, ImageFont
+    from PIL import Image, ImageFont
     from pilmoji import Pilmoji
 
     img = Image.new("RGBA", (video_width, video_height), (0, 0, 0, 0))
 
-    cta_text = "Link in bio!\n ⬇⬇⬇"
-    font_size = 96
+    cta_text = CTA_TEXT
+    font_size = FONT_SIZE
     font = ImageFont.truetype(FONT_PATH, font_size)
     padding_x = 24
     padding_y = 14
-    border_radius = 20
 
     lines = cta_text.split("\n")
     line_spacing = 10
@@ -187,26 +184,17 @@ def create_cta_overlay(video_width: int, video_height: int, output_path: str):
         line_heights = [s[1] for s in line_sizes]
 
     text_w = max(line_widths)
-    text_h = sum(line_heights) + line_spacing * (len(lines) - 1)
 
     box_w = text_w + padding_x * 2
-    box_h = text_h + padding_y * 2
     box_x = (video_width - box_w) // 2
-    box_y = int(video_height * 0.82)
-
-    draw = ImageDraw.Draw(img)
-    draw.rounded_rectangle(
-        [box_x, box_y, box_x + box_w, box_y + box_h],
-        radius=border_radius,
-        fill=(255, 255, 255, 230),
-    )
+    box_y = int(video_height * CTA_TEXT_POSITION)
 
     with Pilmoji(img) as pilmoji_obj:
         y = box_y + padding_y
         for i, line in enumerate(lines):
             line_w = line_widths[i]
             x = box_x + (box_w - line_w) // 2
-            pilmoji_obj.text((x, y), line, fill=(0, 0, 0, 255), font=font, stroke_width=2, stroke_fill=(0, 0, 0, 255))
+            pilmoji_obj.text((x, y), line, fill=TEXT_COLOR, font=font, stroke_width=STROKE_WIDTH, stroke_fill=TEXT_STROKE_COLOR)
             y += line_heights[i] + line_spacing
 
     img.save(output_path, "PNG")
@@ -223,51 +211,9 @@ def run_post_production(input_path: str, output_path: str, hook: str, audio_path
 
     music_path = audio_path or (MUSIC_PATH if os.path.exists(MUSIC_PATH) else "")
     has_music = bool(music_path)
-    has_logo = os.path.exists(LOGO_PATH)
 
     try:
-        if has_music and has_logo:
-            filter_complex = (
-                f"[0:v][1:v]overlay=0:0[v_text];"
-                f"[v_text][2:v]overlay=0:0:enable='gte(t,3)'[v_cta];"
-                f"[v_cta][4:v]overlay=W-w-20:20[v_out];"
-                f"[3:a]volume=0.3,atrim=0:{duration},asetpts=PTS-STARTPTS[audio_out]"
-            )
-            cmd = [
-                "ffmpeg", "-y",
-                "-i", input_path,
-                "-i", text_overlay_path,
-                "-i", cta_overlay_path,
-                "-stream_loop", "-1", "-i", music_path,
-                "-i", LOGO_PATH,
-                "-filter_complex", filter_complex,
-                "-map", "[v_out]",
-                "-map", "[audio_out]",
-                "-c:v", "libx264", "-preset", "fast", "-crf", "23",
-                "-c:a", "aac", "-b:a", "128k",
-                "-shortest",
-                output_path,
-            ]
-        elif has_logo:
-            filter_complex = (
-                f"[0:v][1:v]overlay=0:0[v_text];"
-                f"[v_text][2:v]overlay=0:0:enable='gte(t,3)'[v_cta];"
-                f"[v_cta][3:v]overlay=W-w-20:20[v_out]"
-            )
-            cmd = [
-                "ffmpeg", "-y",
-                "-i", input_path,
-                "-i", text_overlay_path,
-                "-i", cta_overlay_path,
-                "-i", LOGO_PATH,
-                "-filter_complex", filter_complex,
-                "-map", "[v_out]",
-                "-map", "0:a?",
-                "-c:v", "libx264", "-preset", "fast", "-crf", "23",
-                "-c:a", "aac", "-b:a", "128k",
-                output_path,
-            ]
-        elif has_music:
+        if has_music:
             filter_complex = (
                 f"[0:v][1:v]overlay=0:0[v_text];"
                 f"[v_text][2:v]overlay=0:0:enable='gte(t,3)'[v_out];"
