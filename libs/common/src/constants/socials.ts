@@ -60,3 +60,13 @@ export const SOCIALS_STATUS_WORDING = {
 } as const
 
 export const DEFAULT_DURATION_SECONDS = 15
+
+export const PLATFORMS = {
+  TIK_TOK: "tiktok",
+  INSTAGRAM: "instagram",
+} as const
+
+export const UPLOAD_POST_PROFILES = {
+  BOUNCING_BALLS: "instagram_bouncing_balls",
+  GEO_GAMER: "geo-gamer",
+} as const

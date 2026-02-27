@@ -18,8 +18,9 @@ const getUnusedSpherical = async () => {
   const [sphericalsSnapshot, socialsSnapshot] = await Promise.all([
     collectionGroupRefs[TABLES.SPHERICAL]
       .where("status", "==", DOCUMENTS_STATUS.READY)
+      .limit(100)
       .get(),
-    refs[TABLES.SOCIALS].get(),
+    refs[TABLES.SOCIALS].limit(100).get(),
   ])
 
   const usedSphericalIds = new Set(

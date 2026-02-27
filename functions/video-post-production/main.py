@@ -29,8 +29,8 @@ TEXT_COLOR = (0, 0, 0, 255)
 TEXT_STROKE_COLOR = (255, 255, 255, 255)
 STROKE_WIDTH = 4
 
-HOOK_TEXT_POSITION = 0.80
-CTA_TEXT_POSITION = 0.10
+HOOK_TEXT_POSITION = 0.70 # bottom 70% of the video
+CTA_TEXT_POSITION = 0.10  # TOP 10% of the video
 
 def init_firebase():
     service_account_key = os.environ.get("SERVICE_ACCOUNT_KEY")
