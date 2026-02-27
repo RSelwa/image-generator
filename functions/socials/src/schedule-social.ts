@@ -63,6 +63,8 @@ const getSound = async (sphericalDoc: SphericalDoc, gameId: string) => {
       soundId: availableSound.id,
       audioLink: availableSound.data().storagePath,
     }
+
+  logger.warn("No sound with storagePath available — social will be created without audio")
 }
 
 export const createScheduledSocial = async () => {

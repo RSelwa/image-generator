@@ -124,11 +124,20 @@ def process_audio(youtube_link: str) -> str:
     existing_sounds = db.collection("sounds").where("youtubeId", "==", youtube_id).limit(1).get()
     existing_sound_doc = existing_sounds[0] if existing_sounds else None
 
+    # Fallback: the doc may have been created with only youtubeLink (youtubeId not yet indexed)
+    if not existing_sound_doc:
+        existing_by_link = db.collection("sounds").where("youtubeLink", "==", youtube_link).limit(1).get()
+        existing_sound_doc = existing_by_link[0] if existing_by_link else None
+        if existing_sound_doc:
+            print(f"Found existing sound doc by youtubeLink for YouTube ID {youtube_id}, pre-populating youtubeId")
+            existing_sound_doc.reference.update({"youtubeId": youtube_id, "status": "pending"})
+
     if existing_sound_doc:
         sound_data = existing_sound_doc.to_dict()
         audio_signed_url = sound_data.get("storagePath") or ""
         if audio_signed_url:
             print(f"Sound document already exists for YouTube ID {youtube_id}, reusing it")
+            existing_sound_doc.reference.update({"status": "processed"})
             return existing_sound_doc.id
 
     print(f"Extracting audio from YouTube: {youtube_link}")
@@ -144,6 +153,7 @@ def process_audio(youtube_link: str) -> str:
         existing_sound_doc.reference.update({
             "updatedAt": firestore.SERVER_TIMESTAMP,
             "storagePath": audio_signed_url,
+            "youtubeId": youtube_id,
             "youtubeTitle": youtube_title,
             "status": "processed",
         })

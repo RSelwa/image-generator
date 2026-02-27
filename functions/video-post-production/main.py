@@ -122,7 +122,7 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
         img.save(output_path, "PNG")
         return
 
-    font_size = 56
+    font_size = 112
     font = ImageFont.truetype(FONT_PATH, font_size)
     padding_x = 28
     padding_y = 18
@@ -157,7 +157,7 @@ def create_text_overlay(hook: str, video_width: int, video_height: int, output_p
         for i, line in enumerate(lines):
             line_w = line_widths[i]
             x = box_x + (box_w - line_w) // 2
-            pilmoji_obj.text((x, y), line, fill=(0, 0, 0, 255), font=font)
+            pilmoji_obj.text((x, y), line, fill=(0, 0, 0, 255), font=font, stroke_width=2, stroke_fill=(0, 0, 0, 255))
             y += line_heights[i] + line_spacing
 
     img.save(output_path, "PNG")
@@ -170,19 +170,21 @@ def create_cta_overlay(video_width: int, video_height: int, output_path: str):
     img = Image.new("RGBA", (video_width, video_height), (0, 0, 0, 0))
 
     cta_text = "Link in bio!\n ⬇⬇⬇"
-    font_size = 48
+    font_size = 96
     font = ImageFont.truetype(FONT_PATH, font_size)
     padding_x = 24
     padding_y = 14
     border_radius = 20
 
-    temp_draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
     lines = cta_text.split("\n")
-
-    line_bboxes = [temp_draw.textbbox((0, 0), line, font=font) for line in lines]
-    line_heights = [bb[3] - bb[1] for bb in line_bboxes]
-    line_widths = [bb[2] - bb[0] for bb in line_bboxes]
     line_spacing = 10
+
+    # Use Pilmoji for measurement so emoji characters are sized correctly
+    temp_img = Image.new("RGBA", (1, 1))
+    with Pilmoji(temp_img) as temp_pilmoji:
+        line_sizes = [temp_pilmoji.getsize(line, font=font) for line in lines]
+        line_widths = [s[0] for s in line_sizes]
+        line_heights = [s[1] for s in line_sizes]
 
     text_w = max(line_widths)
     text_h = sum(line_heights) + line_spacing * (len(lines) - 1)
@@ -204,7 +206,7 @@ def create_cta_overlay(video_width: int, video_height: int, output_path: str):
         for i, line in enumerate(lines):
             line_w = line_widths[i]
             x = box_x + (box_w - line_w) // 2
-            pilmoji_obj.text((x, y), line, fill=(0, 0, 0, 255), font=font)
+            pilmoji_obj.text((x, y), line, fill=(0, 0, 0, 255), font=font, stroke_width=2, stroke_fill=(0, 0, 0, 255))
             y += line_heights[i] + line_spacing
 
     img.save(output_path, "PNG")
