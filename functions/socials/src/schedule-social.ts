@@ -101,6 +101,7 @@ export const createScheduledSocial = async () => {
     hook,
     status: SOCIALS_STATUS.WAITING_JOB_START,
     duration: DEFAULT_DURATION_SECONDS,
+    isAutoPostingEnabled: true,
   })
 
   await refs[TABLES.SOCIALS].add(data)

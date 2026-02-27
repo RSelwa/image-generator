@@ -1,101 +1,18 @@
 "use client"
 
-import { getDateString, SOCIALS_STATUS, SOCIALS_STATUS_WORDING } from "@repo/common"
-import { type SocialDocWithId } from "@repo/schemas"
 import { PlusIcon, RefreshCcw, Search, Trash2 } from "lucide-react"
-import { useQueryState } from "nuqs"
-import { type Dispatch, type SetStateAction } from "react"
 import { useRef, useState } from "react"
-import OpenFirestoreDoc from "@/components/open-firestore"
+import { SocialRow } from "@/app/(app)/admin/socials/row"
 import SocialSheet from "@/components/sheet/social-sheet"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuLabel, ContextMenuTrigger } from "@/components/ui/context-menu"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { getSocialRef } from "@/constants/db-refs"
-import { MODAL_KEYS, QUERY_PARAMS } from "@/constants/mapping"
-import { SOCIALS_STATUS_TO_BADGE_VARIANT } from "@/constants/social"
+import { Table, TableBody, TableCaption, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
-import { useDeleteSocialByIdMutation, useGetAllSocialsQuery, useRetriggerPostProductionMutation, useUpdateSocialByIdMutation } from "@/redux/api/socials"
-
-const SocialRow = ({ social, checkedIds, setCheckedIds }: {
-    social: SocialDocWithId
-    checkedIds: string[]
-    setCheckedIds: Dispatch<SetStateAction<string[]>>
-}) => {
-    const [_, setSocialId] = useQueryState(QUERY_PARAMS.SOCIAL_ID)
-
-    const [updateSocialDoc] = useUpdateSocialByIdMutation()
-    const [retriggerPostProduction] = useRetriggerPostProductionMutation()
-
-    const checked = checkedIds.includes(social.id)
-    const onCheckedChange = (value: boolean) =>
-        setCheckedIds((prev) => value ? [...prev, social.id] : prev.filter((id) => id !== social.id))
-
-    const reloadCapture = async () => {
-        try {
-            await updateSocialDoc({
-                id: social.id,
-                data: {
-                    status: SOCIALS_STATUS.WAITING_CAPTURE,
-                    errorInfo: null,
-                },
-            }).unwrap()
-
-            setSocialId(social.id)
-        } catch (error) {
-            console.error("Error retriggering post production:", error)
-        }
-    }
-
-    return (
-        <ContextMenu>
-            <ContextMenuTrigger asChild>
-                <TableRow key={social.id} onClick={() => setSocialId(social.id)} data-viewed={Boolean(social.createdAt)} className="data-[viewed=false]:bg-muted/50 cursor-pointer">
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                            checked={checked}
-                            onCheckedChange={onCheckedChange}
-                        />
-                    </TableCell>
-                    <TableCell className="truncate lg:w-auto w-14">
-                        {social.id}
-                        <OpenFirestoreDoc docRef={getSocialRef(social.id)} />
-
-                    </TableCell>
-                    <TableCell>
-                        {social.status && (
-                            <Badge variant={SOCIALS_STATUS_TO_BADGE_VARIANT[social.status]}>
-                                {SOCIALS_STATUS_WORDING[social.status]}
-                            </Badge>
-                        )}
-                    </TableCell>
-                    <TableCell className="font-medium">{getDateString(social.createdAt?.toDate())}</TableCell>
-                </TableRow>
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-                {social.errorInfo && (
-                    <ContextMenuGroup>
-                        <ContextMenuLabel>Errors</ContextMenuLabel>
-                        <ContextMenuItem variant="destructive" onClick={reloadCapture}>
-                            Reload capture
-                        </ContextMenuItem>
-                    </ContextMenuGroup>
-                )}
-                <ContextMenuGroup>
-                    <ContextMenuLabel>Actions</ContextMenuLabel>
-                    <ContextMenuItem onClick={() => retriggerPostProduction({ id: social.id })}>
-                        Redo Post production
-                    </ContextMenuItem>
-                </ContextMenuGroup>
-            </ContextMenuContent>
-        </ContextMenu>
-    )
-}
+import { useDeleteSocialByIdMutation, useGetAllSocialsQuery } from "@/redux/api/socials"
 
 const Page = () => {
     const { openModal } = useModal(MODAL_KEYS.NEW_SOCIALS, "new")

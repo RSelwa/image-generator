@@ -31,11 +31,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import YoutubeEmbed from "@/components/youtube-embed"
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
 import { useGetAllGamesQuery } from "@/redux/api/games"
 import { useGetMapsByGameIdQuery } from "@/redux/api/maps"
+import { useCreateSocialFromSphericalIdMutation } from "@/redux/api/socials"
 import {
   useCreateSphericalMutation,
   useGetSphericalByIdQuery,
@@ -98,6 +100,7 @@ const SphericalForm = ({
       difficulty: DIFFICULTIES.EASY,
       status: DOCUMENTS_STATUS.NEED_VERIFICATION,
       thumbnail: "",
+      youtubeLink: ""
     },
   })
 
@@ -106,6 +109,7 @@ const SphericalForm = ({
   const selectedMapId = watch("mapId")
   const mapPosition = watch("mapPosition")
   const thumbnail = watch("thumbnail")
+  const youtubeLink = watch("youtubeLink")
 
   const { openModal: openSphericalGallery } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID, gameId)
   const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalId)
@@ -116,6 +120,8 @@ const SphericalForm = ({
     { gameId, id: sphericalId },
     { skip: isNew || !gameId },
   )
+
+  const [createSocial] = useCreateSocialFromSphericalIdMutation()
   const [createSpherical, { isLoading: isCreating }] =
     useCreateSphericalMutation()
   const [updateSpherical, { isLoading: isUpdating }] =
@@ -167,6 +173,7 @@ const SphericalForm = ({
         difficulty: data.difficulty || DIFFICULTIES.EASY,
         status: data.status || DOCUMENTS_STATUS.NEED_VERIFICATION,
         thumbnail: data.thumbnail || "",
+        youtubeLink: data.youtubeLink || "",
       })
     }
   }, [data, reset])
@@ -254,6 +261,20 @@ const SphericalForm = ({
       if (error) return
 
       toast.success("Spherical updated successfully")
+    }
+  }
+
+  const handleCreateSocial = async () => {
+    try {
+      const { data: createdSocial } = await createSocial({
+        sphericalId,
+        gameId,
+      })
+
+      toast.success(`Social created successfully ${createdSocial?.id}`)
+    } catch (error) {
+      console.error("Error creating social from spherical ID:", error)
+      toast.error("Failed to create social")
     }
   }
 
@@ -528,28 +549,41 @@ const SphericalForm = ({
                   )}
                 />
               </Field>
+              <Field>
+                <FieldLabel htmlFor="youtubeLink">YouTube Link</FieldLabel>
+                <Input
+                  {...register("youtubeLink")}
+                  placeholder="https://www.youtube.com/watch?v=example"
+                  aria-invalid={!!errors.youtubeLink}
+                />
+              </Field>
             </div>
 
-            {data && (
-              <div className="text-muted-primary-foreground mt-2 space-y-1 text-xs">
-                <p>
-                  <strong>ID:</strong> {data.id}
-                </p>
-                <p>
-                  <strong>Game ID:</strong> {data.gameId}
-                </p>
-                <p>
-                  <strong>Created:</strong>
-                  {" "}
-                  {data.createdAt?.toDate().toLocaleString()}
-                </p>
-                <p>
-                  <strong>Updated:</strong>
-                  {" "}
-                  {data.updatedAt?.toDate().toLocaleString()}
-                </p>
-              </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
+              {data && (
+                <div className="text-muted-primary-foreground mt-2 space-y-1 text-xs">
+                  <p>
+                    <strong>ID:</strong> {data.id}
+                  </p>
+                  <p>
+                    <strong>Game ID:</strong> {data.gameId}
+                  </p>
+                  <p>
+                    <strong>Created:</strong>
+                    {" "}
+                    {data.createdAt?.toDate().toLocaleString()}
+                  </p>
+                  <p>
+                    <strong>Updated:</strong>
+                    {" "}
+                    {data.updatedAt?.toDate().toLocaleString()}
+                  </p>
+                </div>
+              )}
+              {youtubeLink && (
+                <YoutubeEmbed youtubeLink={youtubeLink} className="h-12" />
+              )}
+            </div>
           </FieldGroup>
 
           <div className="flex flex-col gap-3">
@@ -575,6 +609,7 @@ const SphericalForm = ({
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
+          <Button variant="marathon-outline" onClick={handleCreateSocial} type="button">Create Social</Button>
           <Button type="submit" disabled={isCreating || isUpdating || !isDirty || (isNew && !gameId)}>
             {isCreating || isUpdating ? (
               <>

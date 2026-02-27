@@ -84,22 +84,24 @@
   - [x] order suggestions by creation data
   - [x] Bug try to login with google on already created account
   - [x] Add a field viewedAt on suggestions
+  - [ ] Add sound
+  - [ ] Add scoreboard at the end
+  - [ ] Improve comments on instagram
   - [ ] implement seeds that will be featured like flim discover
-  - [ ] When selecting special rounds, could display the mouse of other users to see what they chose
+  - [ ] Share seed at the end of a lobby
   - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples
   - [ ] Ajouter une image pour le share seo
   - [ ] Ajouter les meta pour chaque page
   - [ ] Ajouter une belle page 404
   - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
-  - [ ] Implémenter le buy me coffee
   - [ ] in Seed maker, when round is special should not allow images without thumbnails
+  - [ ] Implémenter le buy me coffee
   - [ ] Scrap lostgamer for the images of the maps
-  - [ ] Add sound
   - [ ] Implement modals system for pubing/infos
   - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
+  - [ ] When selecting special rounds, could display the mouse of other users to see what they chose
   - [ ] ADMIN -Improve the empty card whe no map/no games etc... with shadcn empty components
   - [ ] can copy the seedId in the maker
-  - [ ] Share seed at the end of a lobby
   - [ ] Seed maker, better tags, which games has sphericals and which has flats, wich means better handling listeners
   - [ ] Integrate ads
   - [ ] Add tests on api endpoints

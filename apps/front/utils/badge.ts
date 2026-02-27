@@ -1,5 +1,23 @@
-import { type ConstantValues, SOUND_STATUS } from "@repo/common"
+import { type ConstantValues, SOCIALS_STATUS, SOUND_STATUS } from "@repo/common"
 import { BADGE_VARIANTS } from "@/constants/mapping"
+
+export const getBadgeVariantSocials = (status: ConstantValues<typeof SOCIALS_STATUS> | null) => {
+  if (status === SOCIALS_STATUS.ERROR) return BADGE_VARIANTS.RED
+
+  if (status === SOCIALS_STATUS.DRAFT) return BADGE_VARIANTS.NEUTRAL
+
+  if (status === SOCIALS_STATUS.IN_PROGRESS_AUDIO_EXTRACTION ||
+    status === SOCIALS_STATUS.IN_PROGRESS_CAPTURE ||
+    status === SOCIALS_STATUS.IN_PROGRESS_CUSTOMIZATION ||
+    status === SOCIALS_STATUS.WAITING_FOR_POST
+  ) return BADGE_VARIANTS.ORANGE
+
+  if (status === SOCIALS_STATUS.READY_TO_POST) return BADGE_VARIANTS.BLUE
+
+  if (status === SOCIALS_STATUS.UPLOADED) return BADGE_VARIANTS.GREEN
+
+  return BADGE_VARIANTS.NEUTRAL
+}
 
 export const getBadgeVariantSounds = (status: ConstantValues<typeof SOUND_STATUS> | null) => {
   if (status === SOUND_STATUS.DRAFT) return BADGE_VARIANTS.NEUTRAL
