@@ -47,7 +47,14 @@ const SoundSheet = () => {
                         {sound.id} <OpenFirestoreDoc docRef={getSoundRef(soundId)} />
                     </SheetDescription>
                 </SheetHeader>
-                <section className="">
+                <section className="space-y-2">
+                    <p>Youtube Id: {sound.youtubeId}</p>
+                    {sound.storagePath && (
+                        <audio controls className="w-full mb-4">
+                            <source src={sound.storagePath} type="audio/mpeg" />
+                            Your browser does not support the audio element.
+                        </audio>
+                    )}
                     {sound.youtubeLink && (
                         <YoutubeEmbed
                             youtubeLink={sound.youtubeLink}

@@ -8,15 +8,18 @@ import { type Dispatch, type SetStateAction } from "react"
 import { useRef, useState } from "react"
 import OpenFirestoreDoc from "@/components/open-firestore"
 import SoundSheet from "@/components/sheet/sound-sheet"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { getSoundRef } from "@/constants/db-refs"
 import { MODAL_KEYS, QUERY_PARAMS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
-import { useGetAllSoundsQuery } from "@/redux/api/sounds"
+import { useGetAllSoundsQuery, useUpdateSoundByIdMutation } from "@/redux/api/sounds"
+import { getBadgeTextBoolean, getBadgeVariantBoolean, getBadgeVariantSounds } from "@/utils/badge"
 
 const SocialRow = ({ sound, checkedIds, setCheckedIds }: {
     sound: SoundDocWithId
@@ -25,9 +28,12 @@ const SocialRow = ({ sound, checkedIds, setCheckedIds }: {
 }) => {
     const [_, setSoundId] = useQueryState(QUERY_PARAMS.SOUND_ID)
 
+    const [updateSoundDoc, { isLoading: isLoadingUpdate }] = useUpdateSoundByIdMutation()
     const checked = checkedIds.includes(sound.id)
     const onCheckedChange = (value: boolean) =>
         setCheckedIds((prev) => value ? [...prev, sound.id] : prev.filter((id) => id !== sound.id))
+
+    const disabled = isLoadingUpdate
 
     return (
         <TableRow key={sound.id} onClick={() => setSoundId(sound.id)} data-viewed={Boolean(sound.createdAt)} className="data-[viewed=false]:bg-muted/50 cursor-pointer">
@@ -41,8 +47,27 @@ const SocialRow = ({ sound, checkedIds, setCheckedIds }: {
                 {sound.id}
                 <OpenFirestoreDoc docRef={getSoundRef(sound.id)} />
             </TableCell>
-            <TableCell>{sound.status}</TableCell>
-            <TableCell>{sound.storagePath ? "true" : "False"}</TableCell>
+            <TableCell>
+                <Badge variant={getBadgeVariantSounds(sound.status)}>
+                    {sound.status}
+                </Badge>
+            </TableCell>
+            <TableCell>
+                <Switch
+                    disabled={disabled}
+                    checked={sound.canBeUsedInPosts}
+                    onCheckedChange={async (checked) => await updateSoundDoc({
+                        id: sound.id,
+                        data: { canBeUsedInPosts: checked }
+                    })}
+                    onClick={(e) => e.stopPropagation()}
+                />
+            </TableCell>
+            <TableCell>
+                <Badge variant={getBadgeVariantBoolean(Boolean(sound.storagePath))}>
+                    {getBadgeTextBoolean(Boolean(sound.storagePath))}
+                </Badge>
+            </TableCell>
             <TableCell>{sound.youtubeTitle}</TableCell>
             <TableCell className="font-medium">{getDateString(sound.createdAt?.toDate())}</TableCell>
 
@@ -115,6 +140,7 @@ const Page = () => {
                             <TableHead className="w-14"><Checkbox checked={isAllChecked} onCheckedChange={toggleAllChecked} /></TableHead>
                             <TableHead className="w-14">Id</TableHead>
                             <TableHead className="w-14">Status</TableHead>
+                            <TableHead className="w-14">Usable</TableHead>
                             <TableHead className="w-14">Has storage</TableHead>
                             <TableHead className="w-14">Title</TableHead>
                             <TableHead className="w-14">Created At</TableHead>

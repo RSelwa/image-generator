@@ -1,3 +1,6 @@
+shellEmulator: true
+
+trustPolicy: no-downgrade
 packages:
   - libs/*
   - functions/*
@@ -5,17 +8,13 @@ packages:
   - apps/*
   - scripts
 
+overrides:
+  reselect: 5.1.0
 onlyBuiltDependencies:
-  - '@firebase/util'
+  - "@firebase/util"
   - esbuild
   - msw
   - protobufjs
   - re2
   - sharp
   - unrs-resolver
-
-shellEmulator: true
-
-trustPolicy: no-downgrade
-overrides:
-  reselect: 5.1.0

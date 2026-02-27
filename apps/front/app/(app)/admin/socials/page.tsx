@@ -2,12 +2,13 @@
 
 import { getDateString, SOCIALS_STATUS, SOCIALS_STATUS_WORDING } from "@repo/common"
 import { type SocialDocWithId } from "@repo/schemas"
-import { PlusIcon, RefreshCcw, Search } from "lucide-react"
+import { PlusIcon, RefreshCcw, Search, Trash2 } from "lucide-react"
 import { useQueryState } from "nuqs"
 import { type Dispatch, type SetStateAction } from "react"
 import { useRef, useState } from "react"
 import OpenFirestoreDoc from "@/components/open-firestore"
 import SocialSheet from "@/components/sheet/social-sheet"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -19,7 +20,7 @@ import { getSocialRef } from "@/constants/db-refs"
 import { MODAL_KEYS, QUERY_PARAMS } from "@/constants/mapping"
 import { SOCIALS_STATUS_TO_BADGE_VARIANT } from "@/constants/social"
 import { useModal } from "@/hooks/use-modal"
-import { useGetAllSocialsQuery, useRetriggerPostProductionMutation, useUpdateSocialByIdMutation } from "@/redux/api/socials"
+import { useDeleteSocialByIdMutation, useGetAllSocialsQuery, useRetriggerPostProductionMutation, useUpdateSocialByIdMutation } from "@/redux/api/socials"
 
 const SocialRow = ({ social, checkedIds, setCheckedIds }: {
     social: SocialDocWithId
@@ -74,7 +75,6 @@ const SocialRow = ({ social, checkedIds, setCheckedIds }: {
                         )}
                     </TableCell>
                     <TableCell className="font-medium">{getDateString(social.createdAt?.toDate())}</TableCell>
-
                 </TableRow>
             </ContextMenuTrigger>
             <ContextMenuContent>
@@ -100,18 +100,25 @@ const SocialRow = ({ social, checkedIds, setCheckedIds }: {
 const Page = () => {
     const { openModal } = useModal(MODAL_KEYS.NEW_SOCIALS, "new")
 
+    const [deleteSocialById] = useDeleteSocialByIdMutation()
     const { data: socials, isLoading, refetch } = useGetAllSocialsQuery()
     const captionRef = useRef<HTMLTableCaptionElement>(null)
 
     const [input, setInput] = useState("")
     const [checkedIds, setCheckedIds] = useState<string[]>([])
 
+    const hasChecked = checkedIds.length > 0
     const isAllChecked = socials ? socials.length > 0 && socials.every((social) => checkedIds.includes(social.id)) : false
 
     const toggleAllChecked = (value: boolean) => {
         if (!socials) return
 
         setCheckedIds(value ? socials.map((social) => social.id) : [])
+    }
+
+    const deleteSocials = async () => {
+        await Promise.all(checkedIds.map((id) => deleteSocialById({ id })))
+        setCheckedIds([])
     }
 
     if (!socials) {
@@ -131,7 +138,7 @@ const Page = () => {
 
     return (
         <main className="h-full-height-admin max-h-full-height-admin p-4 space-y-4">
-            <section className="flex flex-col gap-2 lg:gap-8 lg:flex-row justify-between lg:items-center">
+            <section className="flex flex-col gap-2 lg:gap-4 lg:flex-row justify-between lg:items-center">
                 <h1 className="text-2xl font-bold space-x-4">
                     Socials -
                     {" "}
@@ -146,7 +153,36 @@ const Page = () => {
                     </InputGroupAddon>
                     <InputGroupInput value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search by id" autoComplete="off" />
                 </InputGroup>
-                <Button onClick={() => openModal()} className="lg:ml-auto">
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="marathon-destructive" className="lg:ml-auto" disabled={!hasChecked}>
+                            <Trash2 className="size-4" />
+                            Delete
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Delete socials</AlertDialogTitle>
+                            <AlertDialogDescription> Are you sure you want to delete the selected socials? This action cannot be undone.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel asChild>
+                                <Button variant="marathon-outline" className="rounded-none">
+                                    Cancel
+                                </Button>
+                            </AlertDialogCancel>
+                            <AlertDialogAction variant="marathon-destructive" asChild>
+                                <Button
+                                    disabled={checkedIds.length === 0}
+                                    onClick={deleteSocials}
+                                >
+                                    Yes, delete {checkedIds.length} social{checkedIds.length > 1 ? "s" : ""}
+                                </Button>
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+                <Button onClick={() => openModal()}>
                     <PlusIcon className="size-4" />
                     New Social
                 </Button>
