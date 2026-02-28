@@ -37,6 +37,8 @@ scripts/screenshots/*
 # isolate-package output
 isolate
 
+**/tiles/**
+
 **.secret.local
 
 **/cookies.txt
