@@ -33,7 +33,7 @@ export const ModalProvider = () => {
   if (type === MODAL_KEYS.GAME_ID) return <ModalGame />
   if (type === MODAL_KEYS.SPHERICAL_GALLERY_ID)
     return <SphericalGalleryModal />
-  if (type === MODAL_KEYS.SPHERICAL_ID) return <ModalSphericalId />
+  if (type === MODAL_KEYS.EDIT_SPHERICAL_ID) return <ModalSphericalId />
 
   if (type === MODAL_KEYS.MAPS_GALLERY_ID) return <MapsGallery />
   if (type === MODAL_KEYS.MAP_ID) return <ModalMapId />

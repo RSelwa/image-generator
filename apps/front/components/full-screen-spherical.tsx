@@ -21,7 +21,7 @@ export const SphericalFullScreen = (props: { id: string, gameId: string }) => {
 
   return (
     <div className="h-full-height w-full">
-      {data?.image && <ReactSphere src={data.image} />}
+      {data?.image && <ReactSphere src={data.image} hideCursor />}
     </div>
   )
 }

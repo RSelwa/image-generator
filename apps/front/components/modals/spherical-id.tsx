@@ -47,7 +47,7 @@ import { uploadFileToBucket } from "@/utils/file"
 
 type SphericalFormSchema = z.input<typeof createSphericalInputSchema>
 
-const KEY = MODAL_KEYS.SPHERICAL_ID
+const KEY = MODAL_KEYS.EDIT_SPHERICAL_ID
 
 // Helper to parse combined param format: "gameId_sphericalId"
 export const parseSphericalModalParam = (
@@ -112,7 +112,7 @@ const SphericalForm = ({
   const youtubeLink = watch("youtubeLink")
 
   const { openModal: openSphericalGallery } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID, gameId)
-  const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalId)
+  const { closeModal } = useModal(KEY, sphericalId)
   const { openModal } = useModal(MODAL_KEYS.MAP_ID, `${gameId}_${NEW_SEARCH_PARAM}`)
 
   const { data: gamesData, isLoading: isGamesLoading } = useGetAllGamesQuery()

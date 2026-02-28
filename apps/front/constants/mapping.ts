@@ -18,14 +18,16 @@ export const QUERY_PARAMS = {
   SOCIAL_ID: "social-id",
   SOUND_ID: "social-id",
   USER_ID: "user-id",
+  SPHERICAL_ID: "spherical-id",
 } as const
 
 export const MODAL_KEYS = {
   GAME_ID: "game-id",
-  SPHERICAL_ID: "spherical-id",
+  EDIT_SPHERICAL_ID: "edit-spherical-id",
   MAPS_GALLERY_ID: "maps-gallery-id",
   MAP_ID: "map-id",
   SPHERICAL_GALLERY_ID: "spherical-gallery-id",
+  SPHERICAL_ID: "spherical-id",
   FLAT_GALLERY_ID: "flat-gallery-id",
   FLAT_ID: "flat-id",
   CHANGE_PSEUDO: "new-pseudo",
