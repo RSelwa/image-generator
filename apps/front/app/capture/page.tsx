@@ -55,7 +55,7 @@ const CapturePage = () => {
 
   return (
     <div
-      className="h-screen w-screen overflow-hidden bg-black"
+      className="h-screen -translate-y-header-height w-screen overflow-hidden bg-black"
       data-testid="capture-container"
     >
       <ReactPhotoSphereViewer

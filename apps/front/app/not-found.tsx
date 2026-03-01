@@ -1,25 +1,35 @@
+import { type Metadata } from "next"
 import Link from "next/link"
+import HomeFooter from "@/components/home/home-footer"
+import { Button } from "@/components/ui/button"
+import { LogoHeader } from "@/components/ui/navbar"
+import { PAGES } from "@/constants/pages"
+
+export const metadata: Metadata = {
+  title: "404 - Page Not Found",
+  description: "The geo-guessr for games",
+}
 
 export default function NotFound() {
   return (
-    <main className="min-h-full-height">
-      <section className="container mx-auto px-4 py-20 flex flex-col items-center justify-center text-center space-y-8">
-        <div className="space-y-4 max-w-3xl">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            404
-          </h1>
-          <p className="text-lg text-muted-primary-foreground sm:text-xl md:text-2xl max-w-2xl mx-auto">
-            Page not found. The page you are looking for does not exist.
+    <main className="min-h-screen -translate-y-header-height">
+      <nav className="flex h-header-height w-full">
+        <LogoHeader />
+      </nav>
+      <section className="uppercase lg:text-lg text-xs font-mono flex items-center justify-center h-full-height">
+        <article className="space-y-2">
+          <Link href={PAGES.HOME}>
+            <Button className="mb-8">Go home</Button>
+          </Link>
+          <p className="mb-8">404 - YOU SHOULDN'T BE H~~~~%^&*+:"?~~</p>
+          <p>
+            //////////////PLEASE//////////////////
           </p>
-        </div>
-
-        <Link
-          href="/"
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-foreground hover:bg-primary/90 h-11 px-8"
-        >
-          Go back home
-        </Link>
+          <p>////////////////TRY///////////////////</p>
+          <p>////////////////AGAIN/////////////////</p>
+        </article>
       </section>
+      <HomeFooter />
     </main>
   )
 }

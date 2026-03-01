@@ -3,9 +3,11 @@
 import {
   LogOut,
   User,
+  Zap,
 } from "lucide-react"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { HelperMenuContent } from "@/components/helper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -20,17 +22,32 @@ import {
 import NavUserAdmin from "@/components/ui/nav-user.admin"
 import { PAGES } from "@/constants/pages"
 import { useLogoutMutation } from "@/redux/api/auth"
+import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { firstLetter } from "@/utils"
 
 export const NavUser = () => {
+  const router = useRouter()
+
   const user = useAppSelector(selectUser)
   const isAdmin = useAppSelector(selectIsAdmin)
+
+  const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
 
   const [logout] = useLogoutMutation()
 
   if (!user || user.isAnonymous) return null
+
+  const handleCreateLobby = async () => {
+    try {
+      const lobby = await createLobbyDoc({ user }).unwrap()
+
+      router.push(`${PAGES.LOBBY}/${lobby.id}`)
+    } catch (error) {
+      console.error("Failed to create lobby:", error)
+    }
+  }
 
   return (
     <DropdownMenu>
@@ -56,6 +73,13 @@ export const NavUser = () => {
         {isAdmin && (
           <NavUserAdmin />
         )}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Play</DropdownMenuLabel>
+          <DropdownMenuItem onClick={handleCreateLobby} disabled={isLoading} className="cursor-pointer">
+            <Zap />
+            Play
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuGroup>
           <DropdownMenuLabel>Account</DropdownMenuLabel>
           <DropdownMenuItem asChild>

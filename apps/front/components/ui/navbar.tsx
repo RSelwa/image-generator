@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { type ComponentProps } from "react"
+import { CreateLobbyButton } from "@/components/home/home-create-lobby"
 import { NewLogoIcon } from "@/components/icons"
 import { Logo } from "@/components/icons/logo"
 import { Button } from "@/components/ui/button"
@@ -13,7 +14,7 @@ import { cn } from "@/utils"
 
 export const LogoHeader = ({ href, className }: ComponentProps<"a">) => (
   <Link href={href || PAGES.HOME} className={cn("flex items-center gap-4", className)}>
-    <NewLogoIcon className="size-15 bg-primary p-4 text-primary-foreground" />
+    <NewLogoIcon className="size-header-height bg-primary p-4 text-primary-foreground" />
     <Logo className="h-10 hidden lg:block text-primary" />
   </Link>
 )
@@ -22,8 +23,14 @@ const Navbar = () => {
   const user = useAppSelector(selectUser)
 
   return (
-    <nav className="flex justify-between pr-4 h-15">
+    <nav className="flex fixed top-0 left-0 w-full z-50 bg-background justify-between gap-0 pr-4 h-header-height">
       <LogoHeader />
+      <div className="lg:hidden flex items-center">
+
+        <CreateLobbyButton>
+          Play now
+        </CreateLobbyButton>
+      </div>
       {user && !user.isAnonymous && (
         <article className="flex items-center gap-3">
           <NavUser />

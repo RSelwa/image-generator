@@ -1,5 +1,6 @@
 import { SOCIALS_STATUS } from "@repo/common"
 import { BADGE_VARIANTS } from "@/constants/mapping"
+import { PAGES } from "@/constants/pages"
 
 export const SOCIALS_STATUS_TO_BADGE_VARIANT = {
   [SOCIALS_STATUS.ERROR]: BADGE_VARIANTS.RED,
@@ -16,3 +17,27 @@ export const SOCIALS_STATUS_TO_BADGE_VARIANT = {
   [SOCIALS_STATUS.READY_TO_POST]: BADGE_VARIANTS.GREEN,
   [SOCIALS_STATUS.UPLOADED]: BADGE_VARIANTS.GREEN,
 } as const
+
+export const FOOTER_SOCIALS = [
+  {
+    label: "Tiktok",
+    href: "https://www.tiktok.com/@geo.gamer.net"
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/geo_gamer_v0/"
+  },
+] as const
+
+export const FOOTER_LEGALS = [
+  {
+    label: "Terms",
+    href: PAGES.TERMS
+  },
+  {
+    label: "Privacy",
+    href: PAGES.PRIVACY
+  },
+]
+
+export const PORTFOLIO_LINK = "https://raphael-selwa.la-source.work/"

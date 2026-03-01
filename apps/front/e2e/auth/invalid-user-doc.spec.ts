@@ -37,7 +37,7 @@ test.describe("invalid user document", () => {
     await page.getByRole("button", { name: "Login" }).click()
 
     // Should fall back to anonymous after sign-out
-    await expect(page.getByTestId("create-lobby-button-demo")).toBeVisible({ timeout: 10000 })
+    await expect(page.getByTestId("video-create-lobby-button-demo")).toBeVisible({ timeout: 10000 })
     await expect(page.getByTestId("nav-user-dropdown-trigger")).toHaveCount(0)
 
     // The original user doc should still not exist
@@ -58,7 +58,7 @@ test.describe("invalid user document", () => {
     await page.getByLabel("Password").fill(PASSWORD)
     await page.getByRole("button", { name: "Login" }).click()
 
-    await expect(page.getByTestId("create-lobby-button-demo")).toBeVisible({ timeout: 10000 })
+    await expect(page.getByTestId("video-create-lobby-button-demo")).toBeVisible({ timeout: 10000 })
     await expect(page.getByTestId("nav-user-dropdown-trigger")).toHaveCount(0)
   })
 
@@ -75,7 +75,7 @@ test.describe("invalid user document", () => {
     await page.getByLabel("Password").fill(PASSWORD)
     await page.getByRole("button", { name: "Login" }).click()
 
-    await expect(page.getByTestId("create-lobby-button-demo")).toBeVisible({ timeout: 10000 })
+    await expect(page.getByTestId("video-create-lobby-button-demo")).toBeVisible({ timeout: 10000 })
     await expect(page.getByTestId("nav-user-dropdown-trigger")).toHaveCount(0)
   })
 

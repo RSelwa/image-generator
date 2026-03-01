@@ -5,6 +5,7 @@
 
 @theme inline {
   --font-sans: var(--font-shapiro);
+  --default-font-family: var(--font-shapiro);
   --font-mono: var(--font-fraktion-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -48,6 +49,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --spacing-header-height: var(--header-height);
 }
 
 @theme {
@@ -217,7 +219,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-shapiro;
   }
 
   .psv-navbar {

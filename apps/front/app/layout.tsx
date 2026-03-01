@@ -1,10 +1,9 @@
+import { Analytics } from "@vercel/analytics/next"
 import { type Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist } from "next/font/google"
 import localFont from "next/font/local"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { Suspense } from "react"
-import { Analytics } from '@vercel/analytics/next';
-import { HelperMenu } from "@/components/helper"
 import { ModalProvider } from "@/components/modals"
 import StoreProvider from "@/components/providers/redux-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -61,7 +60,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         data-marathon
-        className={`${geistSans.variable} ${fraktion.variable} ${shapiroWide.variable} ${fraktionMono.variable} ${interference.variable} ${shapiro.variable} antialiased dark`}
+        className={`${geistSans.variable} ${fraktion.variable} ${shapiroWide.variable} ${fraktionMono.variable} ${interference.variable} ${shapiro.variable} antialiased dark pt-header-height`}
       >
         <Suspense>
           <NuqsAdapter>

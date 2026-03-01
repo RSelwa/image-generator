@@ -10,7 +10,7 @@ test.describe("demo playing", () => {
 
     await hideDriverTutorial(page)
 
-    await page.getByTestId("create-lobby-button-demo").click()
+    await page.getByTestId("video-create-lobby-button-demo").click()
 
     await page.waitForURL(/\/lobby\//)
 

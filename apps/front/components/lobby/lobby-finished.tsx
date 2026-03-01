@@ -1,18 +1,18 @@
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import * as React from "react"
+import { CreateLobbyButton } from "@/components/home/home-create-lobby"
+import { LogoWithIcon } from "@/components/icons"
+import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Progress } from "@/components/ui/progress"
-import { APP_NAME, ASSET_URLS } from "@/constants/mapping"
+import { ASSET_URLS } from "@/constants/mapping"
+import { PAGES } from "@/constants/pages"
 import { useGetNumberGameFoundByPlayerQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectLobbyConfig, selectPlayerMyself } from "@/redux/lobby/lobby.selectors"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
-import { LogoWithIcon } from "@/components/icons"
-import { Button } from "@/components/ui/button"
-import CreateLobbyButton from "@/components/home-create-lobby"
-import Link from "next/link"
-import { PAGES } from "@/constants/pages"
 
 const LobbyFinished = () => {
   const pathname = usePathname()
@@ -60,7 +60,7 @@ const LobbyFinished = () => {
         </Field>
         <article className="flex items-center justify-center gap-4">
           <Link href={PAGES.HOME} passHref>
-          <Button  variant="marathon-outline">Home</Button>
+            <Button variant="marathon-outline">Home</Button>
           </Link>
           <CreateLobbyButton>Play again</CreateLobbyButton>
         </article>
