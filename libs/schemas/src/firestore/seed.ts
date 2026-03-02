@@ -11,6 +11,7 @@ export const seedDocSchema = z.object({
   timesUsed: z.number().default(0), // Track popularity
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
+  featuredAt: timestampSchema.nullish().default(() => null),
 })
 
 export const seedDocWithIdSchema = z.object({

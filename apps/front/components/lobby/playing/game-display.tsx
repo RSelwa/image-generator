@@ -1,8 +1,10 @@
 import { Separator } from "@radix-ui/react-separator"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { ComponentProps, Fragment, useEffect, useState } from "react"
-import * as React from "react"
+import { type ComponentProps } from "react"
+import { Fragment, useEffect, useState } from "react"
+import useSound from "use-sound"
+import LoadingGameData from "@/components/lobby/playing/loading-game-data"
 import MiniMap from "@/components/mini-map"
 import { Button } from "@/components/ui/button"
 import { ImageGlow } from "@/components/ui/image-glow"
@@ -10,14 +12,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Progress } from "@/components/ui/progress"
 import { TextRevealTW } from "@/components/ui/text-reveal"
 import { FALL_BACK_IMAGE } from "@/constants/mapping"
+import { SOUNDS } from "@/constants/sound"
 import { useSubmitRoundAnswerMutation, useSubscribeLobbyQuery, useUpdateNextRoundMutation, useUpdatePlayerScoreMutation } from "@/redux/api/lobby"
 import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectCurrentRoundInfos, selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
-import LoadingGameData from "@/components/lobby/playing/loading-game-data"
 
-const NextRoundButton = (props:ComponentProps<"button">) => {
+const NextRoundButton = (props: ComponentProps<"button">) => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
@@ -44,13 +46,13 @@ const NextRoundButton = (props:ComponentProps<"button">) => {
         </Button>
 
       </PopoverTrigger>
-      <PopoverContent sideOffset={12} className="text-foreground bg-background text-center flex flex-col items-center justify-center gap-2 w-96">
+      <PopoverContent sideOffset={12} className="text-foreground bg-background text-center flex flex-col items-center justify-center gap-6 w-fit font-mono">
         <span className="text-sm text-muted-primary-foreground">Not all players have finished the round. <br /> Are you sure to go next round ? (they will loose their points on this round)</span>
         <div className="flex gap-2 items-center justify-center">
-          <Button data-testid="next-round-button-confirm" onClick={() => nextRound({ lobbyId })}>
+          <Button variant="marathon-link" data-testid="next-round-button-confirm" onClick={() => nextRound({ lobbyId })}>
             Yes, go next round
           </Button>
-          <Button variant="ghost" onClick={() => setPopOverOpen(false)}>
+          <Button onClick={() => setPopOverOpen(false)}>
             No, wait for players
           </Button>
         </div>
@@ -61,22 +63,22 @@ const NextRoundButton = (props:ComponentProps<"button">) => {
 
 const Rounds = ({ currentRound, numberOfRounds }: { currentRound: number, numberOfRounds: number }) => (
   <>
-  <article className="hidden lg:flex items-center gap-3 text-foreground font-bold font-interference">
-    {Array.from({ length: numberOfRounds }, (_, i) => (
-      <Fragment key={i}>
-        <div
-          data-is-active={i + 1 === currentRound}
-          data-is-completed={i + 1 < (currentRound)}
-          className="size-6 flex items-center justify-center data-[is-completed=true]:bg-primary data-[is-completed=true]:text-primary-foreground text-primary bg-transparent data-[is-active=true]:bg-primary data-[is-active=true]:text-primary-foreground data-[is-active=true]:shadow-glow data-[is-active=true]:shadow-primary/50"
-        >
-          {i + 1}
-        </div>
-        <Separator orientation="vertical" className="h-4 w-px bg-primary" />
-      </Fragment>
+    <article className="hidden lg:flex items-center gap-3 text-foreground font-bold font-interference">
+      {Array.from({ length: numberOfRounds }, (_, i) => (
+        <Fragment key={i}>
+          <div
+            data-is-active={i + 1 === currentRound}
+            data-is-completed={i + 1 < (currentRound)}
+            className="size-6 flex items-center justify-center data-[is-completed=true]:bg-primary data-[is-completed=true]:text-primary-foreground text-primary bg-transparent data-[is-active=true]:bg-primary data-[is-active=true]:text-primary-foreground data-[is-active=true]:shadow-glow data-[is-active=true]:shadow-primary/50"
+          >
+            {i + 1}
+          </div>
+          <Separator orientation="vertical" className="h-4 w-px bg-primary" />
+        </Fragment>
 
-    ))}
-  </article>
-  <article className="flex lg:hidden items-center gap-3 text-primary font-bold font-interference">
+      ))}
+    </article>
+    <article className="flex lg:hidden items-center gap-3 text-primary font-bold font-interference">
       <span> {currentRound} </span>/ <span>{numberOfRounds}</span>
     </article>
   </>
@@ -106,6 +108,7 @@ const InfosRoundNormal = () => {
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const [animatedPoints, setAnimatedPoints] = useState(0)
+  const [playPointsCount] = useSound(SOUNDS.POINTS_COUNT)
 
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
@@ -123,6 +126,7 @@ const InfosRoundNormal = () => {
     if (!targetPoints) return
 
     const timeout = setTimeout(() => {
+      playPointsCount()
       const startTime = performance.now()
 
       const animate = (now: number) => {
@@ -232,9 +236,9 @@ export const DisplayGame = () => {
       <div className="flex flex-col lg:gap-8 gap-8 justify-center items-center size-full">
         <Rounds currentRound={lobby?.currentRound || 0} numberOfRounds={lobby?.config?.numberOfRounds || 0} />
         <TextRevealTW text={currentRoundInfos?.gameTitle || "Game title"} className="text-foreground font-bold font-shapiro-wide text-2xl" />
-        {isRoundSpecial && <InfoRoundSpecial /> }
+        {isRoundSpecial && <InfoRoundSpecial />}
 
-        {!isRoundSpecial && <InfosRoundNormal /> }
+        {!isRoundSpecial && <InfosRoundNormal />}
 
         {isOwner && <NextRoundButton className="mt-2" />}
       </div>

@@ -13,7 +13,7 @@ export const DOCUMENTS_STATUS = {
 
 // Multiplayer game constants
 export const DEMO_SEED_ID = "5dZZmsg2Ra0ctC41frIa"
-export const DEFAULT_NUMBERS_ROUNDS = 18
+export const DEFAULT_NUMBERS_ROUNDS = 12
 export const NUMBER_OF_ROUNDS_PER_STAGE = 6
 export const MAX_PLAYERS = 8
 export const DEFAULT_TIME_PER_ROUND = 60 // seconds

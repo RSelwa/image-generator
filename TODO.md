@@ -84,15 +84,15 @@
   - [x] order suggestions by creation data
   - [x] Bug try to login with google on already created account
   - [x] Add a field viewedAt on suggestions
-  - [ ] Add sound
-  - [ ] Add scoreboard at the end
+  - [x] Add sound
+  - [x] Add scoreboard at the end
+  - [x] Share seed at the end of a lobby
+  - [x] Ajouter une belle page 404
   - [ ] Improve comments on instagram
   - [ ] implement seeds that will be featured like flim discover
-  - [ ] Share seed at the end of a lobby
   - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples
   - [ ] Ajouter une image pour le share seo
   - [ ] Ajouter les meta pour chaque page
-  - [ ] Ajouter une belle page 404
   - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
   - [ ] in Seed maker, when round is special should not allow images without thumbnails
   - [ ] Implémenter le buy me coffee

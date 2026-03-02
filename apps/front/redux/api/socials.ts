@@ -3,6 +3,7 @@ import { DEFAULT_DURATION_SECONDS, getRandomHook, SOCIALS_STATUS, TABLES } from 
 import { type SocialDoc, socialDocSchema, type SocialDocWithId, socialDocWithIdSchema } from "@repo/schemas"
 import { addDoc, deleteDoc, getDoc, getDocs, orderBy, query, Timestamp, updateDoc } from "firebase/firestore"
 import { getSocialRef, TABLE_REFS } from "@/constants/db-refs"
+import { gameApi } from "@/redux/api/games"
 import { sphericalApi } from "@/redux/api/spherical"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
@@ -202,6 +203,8 @@ export const socialsApi = createApi({
 
           const sphericalDoc = await dispatch(sphericalApi.endpoints.getSphericalById.initiate({ id: sphericalId, gameId })).unwrap()
 
+          const gameDoc = await dispatch(gameApi.endpoints.getGameById.initiate({ id: gameId })).unwrap()
+
           const hook = getRandomHook()
           const parsed = socialDocSchema.safeParse({
             createdAt: now,
@@ -210,7 +213,7 @@ export const socialsApi = createApi({
             gameId,
             duration: DEFAULT_DURATION_SECONDS,
             hook,
-            youtubeLink: sphericalDoc.youtubeLink || sphericalDoc.youtubeLink || null,
+            youtubeLink: sphericalDoc.youtubeLink || gameDoc.youtubeLink || null,
             status: SOCIALS_STATUS.WAITING_JOB_START,
           })
 

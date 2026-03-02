@@ -23,7 +23,7 @@ export const SphericalCard = ({
   const sphericalParam = buildSubcollectionParam(gameId, spherical.id)
   const mapParam = buildSubcollectionParam(gameId, spherical.mapId || NEW_SEARCH_PARAM)
 
-  const { openModal: openSphericalIdModal } = useModal(MODAL_KEYS.SPHERICAL_ID, sphericalParam)
+  const { openModal: openSphericalIdModal } = useModal(MODAL_KEYS.EDIT_SPHERICAL_ID, sphericalParam)
   const { openModal: openMapIdModal } = useModal(MODAL_KEYS.MAP_ID, mapParam)
   const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID)
 
@@ -57,7 +57,7 @@ export const SphericalCard = ({
         >
           <Pencil className="size-4" />
         </Button>
-        <Button variant="secondary" asChild><Link href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${spherical.id}`}target="_blank"><SquareArrowUpRight className="size-4" /></Link></Button>
+        <Button variant="secondary" asChild><Link href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${spherical.id}`} target="_blank"><SquareArrowUpRight className="size-4" /></Link></Button>
       </article>
 
       {game && (

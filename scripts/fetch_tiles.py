@@ -7,15 +7,15 @@ from PIL import Image
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ============== CONFIGURATION ==============
-ZOOM_LEVEL = 4 # 4 or 14
+ZOOM_LEVEL = 12 # 4 or 14
 FILE_TERM = "jpg"
 
-TILE_URL_TEMPLATE = "https://tiles.mapgenie.io/games/rdr2/world/atlas-dark-v1/{z}/{x}/{y}.jpg"
+TILE_URL_TEMPLATE = "https://tiles.mapgenie.io/games/grounded/yard/simple-v1/{z}/{x}/{y}.png"
 
 # Set custom X/Y ranges for maps that don't start at 0 (e.g. MapGenie at high zoom)
 # Leave as None to auto-detect bounds by probing the tile server
-X_RANGE = None  # e.g. (8137, 8178) or None
-Y_RANGE = None # e.g. (8137, 8178) or None
+X_RANGE = (2032, 2048)  # e.g. (8137, 8178) or None
+Y_RANGE = (2032, 2048) # e.g. (8137, 8178) or None
 
 # Some tile servers use {y}/{x} instead of {x}/{y} — set to True to swap them in the URL
 SWAP_XY = False

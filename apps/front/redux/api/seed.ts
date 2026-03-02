@@ -1,4 +1,4 @@
-import { getDoc, getDocs, orderBy, query, where } from "@firebase/firestore"
+import { getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES } from "@repo/common"
 import { type SeedDocWithId, seedDocWithIdSchema } from "@repo/schemas"
@@ -8,8 +8,9 @@ import { globalErrorHandler } from "@/utils/error"
 export const seedApi = createApi({
   reducerPath: "seedApi",
   baseQuery: fakeBaseQuery(),
-  endpoints: (_builder) => ({
-    getSeedById: _builder.query({
+  tagTypes: ["Seed"],
+  endpoints: (builder) => ({
+    getSeedById: builder.query({
       queryFn: async ({ id }) => {
         try {
           const docSnap = await getDoc(getSeedRef(id))
@@ -33,9 +34,10 @@ export const seedApi = createApi({
             error: globalErrorHandler(error),
           }
         }
-      }
+      },
+      providesTags: (result, error, arg) => [{ type: "Seed", id: arg.id }],
     }),
-    getMySeeds: _builder.query<SeedDocWithId[], { userId: string }>({
+    getMySeeds: builder.query<SeedDocWithId[], { userId: string }>({
       queryFn: async ({ userId }) => {
         try {
           const q = query(
@@ -70,7 +72,33 @@ export const seedApi = createApi({
         }
       }
     }),
+    toggleFeaturedSeed: builder.mutation({
+      queryFn: async ({ id, featured }, { dispatch }) => {
+        try {
+          const seedData = await dispatch(seedApi.endpoints.getSeedById.initiate({ id })).unwrap()
+
+          if (!seedData) {
+            throw new Error("Seed not found")
+          }
+
+          const updatedFeaturedAt = (seedData.featuredAt) ? null : serverTimestamp()
+
+          await updateDoc(getSeedRef(id), {
+            featuredAt: updatedFeaturedAt,
+          })
+
+          return { data: { id, featured } }
+        } catch (error) {
+          console.error(`Error toggling featured status for seed ${id}:`, error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: (result, error, arg) => [{ type: "Seed", id: arg.id }],
+    })
   }),
 })
 
-export const { useGetSeedByIdQuery, useGetMySeedsQuery } = seedApi
+export const { useGetSeedByIdQuery, useGetMySeedsQuery, useToggleFeaturedSeedMutation } = seedApi

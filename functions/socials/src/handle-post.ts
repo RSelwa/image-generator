@@ -14,9 +14,9 @@ export const handlePost = async (socialId: string, social: SocialDoc) => {
     user: UPLOAD_POST_PROFILES.GEO_GAMER,
     title: "Geo gamer is a game where you're dropped in a random location on multiples games maps and you have to find out where you are by exploring the surroundings and looking for clues. You can play with your friends now. Share, like, follow or comment if you want to see more!",
     // title: `New video post for social ${socialId}`,
-    platforms: [PLATFORMS.INSTAGRAM],
+    platforms: [PLATFORMS.INSTAGRAM, PLATFORMS.TIK_TOK],
 
-    firstComment: "Check out our bio to play our game! #geo #gaming",
+    firstComment: "Check out our bio to play our game! 🔥🔥🔥",
   })
 
   logger.info(`Upload post response for social ${socialId}:`, response)

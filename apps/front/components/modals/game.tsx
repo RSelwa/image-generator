@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/field"
 import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { Input } from "@/components/ui/input"
+import YoutubeEmbed from "@/components/youtube-embed"
 import { BASE_FIREBASE_URL } from "@/constants/db"
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import {
@@ -243,41 +244,15 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
                   {...register("midName")}
                 />
               </Field>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field orientation="horizontal">
-                <Controller
-                  name="hasSphericalImagesReady"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      id="hasSphericalImagesReady"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  )}
+              <Field>
+                <FieldLabel htmlFor="youtubeLink">youtubeLink</FieldLabel>
+                <Input
+                  {...register("youtubeLink")}
                 />
-                <FieldLabel htmlFor="hasSphericalImagesReady">
-                  Spherical Images Ready
-                </FieldLabel>
-              </Field>
+                {watch("youtubeLink") && (
+                  <YoutubeEmbed youtubeLink={watch("youtubeLink") || ""} />
 
-              <Field orientation="horizontal">
-                <Controller
-                  name="hasSpecialImagesReady"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      id="hasSpecialImagesReady"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  )}
-                />
-                <FieldLabel htmlFor="hasSpecialImagesReady">
-                  Special Images Ready
-                </FieldLabel>
+                )}
               </Field>
             </div>
 
@@ -299,6 +274,8 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
                   {" "}
                   {data.updatedAt?.toDate().toLocaleString()}
                 </p>
+                <p>Spherical images ready {data.hasSphericalImagesReady ? "✅" : "❌"}</p>
+                <p>Specials images ready {data.hasSpecialImagesReady ? "✅" : "❌"}</p>
               </div>
             )}
           </FieldGroup>
@@ -317,7 +294,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
         </div>
 
         <div className="mt-6 flex items-center justify-between">
-          {isNew ? (
+          {isNew && (
             <label className="flex items-center gap-2 text-sm">
               <Checkbox
                 checked={createMultiple === "true"}
@@ -326,8 +303,6 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
               />
               Create multiple
             </label>
-          ) : (
-            <div />
           )}
           <Button type="submit" disabled={isCreating || isUpdating || !isDirty}>
             {isCreating || isUpdating ? (

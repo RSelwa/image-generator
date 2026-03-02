@@ -6,6 +6,7 @@ export const createSeedInputSchema = seedDocSchema.omit({
   createdAt: true,
   updatedAt: true,
   timesUsed: true,
+  featuredAt: true,
 })
 export type CreateSeedInput = z.infer<typeof createSeedInputSchema>
 

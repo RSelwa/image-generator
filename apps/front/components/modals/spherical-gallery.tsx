@@ -14,7 +14,7 @@ export const SphericalGalleryModal = () => {
   const [gameId] = useQueryState(MODAL_KEYS.SPHERICAL_GALLERY_ID)
 
   const { closeModal } = useModal(key)
-  const { openModal: openNewSphericalModal } = useModal(MODAL_KEYS.SPHERICAL_ID)
+  const { openModal: openNewSphericalModal } = useModal(MODAL_KEYS.EDIT_SPHERICAL_ID)
 
   const { data: game } = useGetGameByIdQuery({ id: gameId || "" }, { skip: !gameId })
   const { data } = useGetSphericalsByGameIdQuery({ gameId: gameId || "" })

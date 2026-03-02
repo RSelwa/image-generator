@@ -2,7 +2,7 @@
 
 import { ROUND_TYPE } from "@repo/common"
 import { type Round } from "@repo/schemas"
-import { Clock, Copy, Play } from "lucide-react"
+import { Clock, Copy, Play, Star, StarOff } from "lucide-react"
 import Image from "next/image"
 import { useQueryState } from "nuqs"
 import { toast } from "sonner"
@@ -10,14 +10,10 @@ import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DIFFICULTIES_TO_BADGE_VARIANT, FALL_BACK_IMAGE, MODAL_KEYS } from "@/constants/mapping"
-import { useGetSeedByIdQuery } from "@/redux/api/seed"
+import { useGetSeedByIdQuery, useToggleFeaturedSeedMutation } from "@/redux/api/seed"
 
-const RoundRow = ({ round, index }: { round: Round; index: number }) => {
-  const imageUrl = round.isSpecial
-    ? round.options?.[0]?.thumbnailUrl
-    : round.type === ROUND_TYPE.FLAT
-      ? round.flatImageUrl
-      : round.sphericalImageUrl
+const RoundRow = ({ round, index }: { round: Round, index: number }) => {
+  const imageUrl = round.isSpecial ? round.options?.[0]?.thumbnailUrl : round.type === ROUND_TYPE.FLAT ? round.flatImageUrl : round.sphericalImageUrl
 
   return (
     <div className="flex items-center gap-3 rounded-lg border p-3">
@@ -74,6 +70,8 @@ const RoundRow = ({ round, index }: { round: Round; index: number }) => {
 
 export const SeedDetailModal = () => {
   const [seedId] = useQueryState(MODAL_KEYS.SEED_DETAIL)
+  const [toggleFeatured, { isLoading: isLoadingUpdate }] = useToggleFeaturedSeedMutation()
+
   const { data: seed, isLoading } = useGetSeedByIdQuery(
     { id: seedId || "" },
     { skip: !seedId },
@@ -96,13 +94,9 @@ export const SeedDetailModal = () => {
     toast.success("Seed ID copied!")
   }
 
-  const createdAt = seed.createdAt
-    ? new Date(
-        "seconds" in seed.createdAt
-          ? seed.createdAt.seconds * 1000
-          : seed.createdAt,
-      ).toLocaleDateString()
-    : null
+  const createdAt = seed.createdAt ? new Date(
+    "seconds" in seed.createdAt ? seed.createdAt.seconds * 1000 : seed.createdAt,
+  ).toLocaleDateString() : null
 
   const specialCount = seed.rounds.filter((r) => r.isSpecial).length
 
@@ -111,13 +105,20 @@ export const SeedDetailModal = () => {
       <div className="space-y-4 pt-4">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold">
+            <h2 className="text-xl font-bold  flex items-center gap-4">
               {seed.name || "Unnamed seed"}
+              <button disabled={isLoadingUpdate} onClick={() => toggleFeatured({ id: seed.id })} className="disabled:bg-neutral-300">
+                {seed.featuredAt ? <Star className="size-4 fill-primary text-primary" /> : <StarOff className="size-4 text-primary" />}
+              </button>
             </h2>
             <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Play className="size-3" />
-                Used {seed.timesUsed} times
+                Used
+                {" "}
+                {seed.timesUsed}
+                {" "}
+                times
               </span>
               {createdAt && (
                 <span className="flex items-center gap-1">
@@ -127,6 +128,7 @@ export const SeedDetailModal = () => {
               )}
             </div>
           </div>
+
           <Button variant="marathon-outline" size="sm" onClick={handleCopyId}>
             <Copy className="size-4" />
             Copy ID

@@ -84,8 +84,8 @@ const MarkersLayer = ({
         }}
       >
         <div className="relative">
-          {color === "primary" && <MapPinVertical className={cn("h-16", `text-${color}`)} />}
-          {color === "blue-accent" && <MapPin className={cn("h-12", `text-${color}`)} />}
+          {color === "primary" && <MapPinVertical className={cn("h-16", `text-blue-accent`)} />}
+          {color === "blue-accent" && <MapPin className={cn("h-12", `text-primary`)} />}
         </div>
       </div>
     )

@@ -4,7 +4,9 @@ import { isSameNormalized, ROUND_POINTS } from "@repo/common"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import useSound from "use-sound"
 import z from "zod"
+import { SOUNDS } from "@/constants/sound"
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useGetAllGamesNamesQuery } from "@/redux/api/games"
@@ -39,6 +41,8 @@ const GameInputGuess = () => {
   const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
 
   const [comboboxKey, setComboboxKey] = useState(0)
+  const [playCorrect] = useSound(SOUNDS.CORRECT_GAME)
+  const [playWrong] = useSound(SOUNDS.WRONG)
 
   const {
     handleSubmit,
@@ -68,6 +72,7 @@ const GameInputGuess = () => {
     const isCorrect = Boolean(correctGameName && (isSameNormalized(correctGameName, playerAnswerValue) || alternateNames.some((name) => isSameNormalized(name, playerAnswerValue))))
 
     if (isCorrect) {
+      playCorrect()
       await submitRoundAnswer({
         lobbyId,
         roundIndex,
@@ -81,6 +86,7 @@ const GameInputGuess = () => {
         },
       })
     } else {
+      playWrong()
       await incrementLivesUsed({ lobbyId, playerId: user?.id || "", roundIndex })
       reset()
       setComboboxKey((k) => k + 1)

@@ -5,7 +5,6 @@ import { type ComponentProps, type ReactNode, type RefObject, useEffect, useRef 
 import * as React from "react"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { PAGES } from "@/constants/pages"
 import { useCreateAndJoinLobbyMutation, useCreateDemoLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAnonymous, selectUser } from "@/redux/session/session.selectors"
@@ -18,7 +17,7 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
   const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
   const [createDemoLobby] = useCreateDemoLobbyMutation()
 
-  if (!user) return <Skeleton className="h-9 bg-primary w-24" />
+  if (!user) return null
 
   const handleCreateLobby = async () => {
     try {
@@ -115,7 +114,7 @@ export const CreateLobbyContainer = () => {
   const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
   const [createDemoLobby] = useCreateDemoLobbyMutation()
 
-  if (!user) return <Skeleton className="h-9 bg-primary w-24" />
+  if (!user) return null
 
   const handleCreateLobby = async () => {
     try {

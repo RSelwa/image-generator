@@ -1,7 +1,7 @@
 "use client"
 
 import { type SeedDocWithId } from "@repo/schemas"
-import { Clock, Copy, Play } from "lucide-react"
+import { Clock, Copy, Play, Star } from "lucide-react"
 import Image from "next/image"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
@@ -17,6 +17,7 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
   const difficulties = seed.rounds.reduce(
     (acc, r) => {
       acc[r.difficulty] = (acc[r.difficulty] || 0) + 1
+
       return acc
     },
     {} as Record<string, number>,
@@ -35,13 +36,9 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
     toast.success("Seed ID copied!")
   }
 
-  const createdAt = seed.createdAt
-    ? new Date(
-        "seconds" in seed.createdAt
-          ? seed.createdAt.seconds * 1000
-          : seed.createdAt,
-      ).toLocaleDateString()
-    : null
+  const createdAt = seed.createdAt ? new Date(
+    "seconds" in seed.createdAt ? seed.createdAt.seconds * 1000 : seed.createdAt,
+  ).toLocaleDateString() : null
 
   return (
     <div
@@ -49,8 +46,9 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
       className="relative cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-card p-4 transition-shadow hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="truncate text-lg font-semibold">
+        <h3 className="truncate text-lg font-semibold flex items-center gap-2">
           {seed.name || "Unnamed seed"}
+          {seed.featuredAt && <Star className="fill-primary text-primary size-5">Featured</Star>}
         </h3>
         <button
           type="button"
@@ -101,7 +99,11 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
       <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
           <Play className="size-3" />
-          Used {seed.timesUsed} times
+          Used
+          {" "}
+          {seed.timesUsed}
+          {" "}
+          times
         </span>
         {createdAt && (
           <span className="flex items-center gap-1">
