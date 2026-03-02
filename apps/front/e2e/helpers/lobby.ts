@@ -50,7 +50,7 @@ export const waitToBeLogged = async (page: Page) => {
 }
 
 export const createLobbyViaUI = async (page: Page) => {
-  await page.getByTestId("create-lobby-button").click()
+  await page.getByTestId("video-create-lobby-button").click()
 
   await page.waitForURL(/\/lobby\//)
   const url = page.url()
@@ -151,7 +151,7 @@ export const createAnonymousUserDoc = async (uid: string) => {
 export const waitForAnonymousAuth = async (page: Page) => {
   await page.goto("/")
 
-  await expect(page.getByTestId("create-lobby-button-demo")).toBeVisible()
+  await expect(page.getByTestId("video-create-lobby-button-demo")).toBeVisible()
 
   const anonymousUid = await getAnonymousUid(page)
   expect(anonymousUid).toBeTruthy()

@@ -108,7 +108,7 @@ export const CreateLobbyContainer = () => {
   }
 
   return (
-    <button ref={containerRef} className="relative cursor-none h-full" data-testid={user.isAnonymous ? "video-create-lobby-button-demo" : "video-create-lobby-button"} onClick={handleCreateLobby} disabled={isLoading}>
+    <button ref={containerRef} className="relative cursor-none size-full" data-testid={user.isAnonymous ? "video-create-lobby-button-demo" : "video-create-lobby-button"} onClick={handleCreateLobby} disabled={isLoading}>
       <video autoPlay loop muted className="w-full cursor-none h-full object-cover">
         <source src="/home-video.mp4" />
       </video>

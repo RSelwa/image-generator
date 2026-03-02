@@ -24,4 +24,5 @@ export const PAGES = {
   MY_SEEDS: "/my-seeds",
   ACCOUNT: "/account",
   PROMO: "/promo",
+  BLOG: (slug: string) => `/blog/${slug}`,
 } as const

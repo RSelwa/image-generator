@@ -93,8 +93,7 @@ test.describe("lobby Waiting", () => {
 
       await hideDriverTutorial(page)
 
-      await page.getByRole("button", { name: "Play now!" }).click()
-      await page.waitForURL(/\/lobby\//)
+      await createLobbyViaUI(page)
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
       await expect(page.getByText("Config")).toBeVisible()
