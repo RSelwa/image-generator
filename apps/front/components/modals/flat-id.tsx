@@ -124,18 +124,15 @@ const FlatForm = ({
 
   const maps = mapsData ?? []
 
-  // Mutual exclusivity: mapId disables thumbnail, thumbnail disables mapId
   const hasMapId = !!selectedMapId
-  const hasThumbnail = !!thumbnail
 
   // Find the selected map
   const selectedMap = maps.find((map) => map.id === selectedMapId)
 
   // Map position picker display conditions
-  const isMapPositionDisabledByThumbnail = hasThumbnail
   const hasValidMapWithDimensions = !!selectedMap?.imageUrl && !!selectedMap.width && !!selectedMap.height
   const hasMapWithoutValidDimensions = hasMapId && !hasValidMapWithDimensions
-  const shouldShowManualPositionInputs = !hasThumbnail && !hasMapId
+  const shouldShowManualPositionInputs = !hasMapId
 
   // Handle map click to set position
   const handleMapClick = useCallback(
@@ -314,19 +311,14 @@ const FlatForm = ({
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="thumbnail">Thumbnail</FieldLabel>
-              {hasMapId && (
-                <FieldDescription>Disabled when a map is selected</FieldDescription>
-              )}
-              {!hasMapId && (
-                <ImageDropzone
-                  imageUrl={thumbnail || null}
-                  onFileSelect={handleThumbnailUpload}
-                  onRemove={handleRemoveThumbnail}
-                  isUploading={isUploadingThumbnail}
-                  alt="Thumbnail image"
-                  className="h-32"
-                />
-              )}
+              <ImageDropzone
+                imageUrl={thumbnail || null}
+                onFileSelect={handleThumbnailUpload}
+                onRemove={handleRemoveThumbnail}
+                isUploading={isUploadingThumbnail}
+                alt="Thumbnail image"
+                className="h-32"
+              />
               {errors.thumbnail && (
                 <FieldError>{errors.thumbnail.message}</FieldError>
               )}
@@ -343,7 +335,7 @@ const FlatForm = ({
                       value={field.value || NO_MAP_VALUE}
                       onValueChange={(value) =>
                         field.onChange(value === NO_MAP_VALUE ? "" : value)}
-                      disabled={isMapsLoading || hasThumbnail}
+                      disabled={isMapsLoading}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="No map selected" />
@@ -363,9 +355,6 @@ const FlatForm = ({
                 />
                 {isMapsLoading && (
                   <FieldDescription>Loading maps...</FieldDescription>
-                )}
-                {hasThumbnail && (
-                  <FieldDescription>Disabled when thumbnail is set</FieldDescription>
                 )}
               </Field>
               <Field>
@@ -392,14 +381,7 @@ const FlatForm = ({
               </Field>
             </div>
 
-            {/* Map Position Picker - hidden when thumbnail is set */}
-            {isMapPositionDisabledByThumbnail && (
-              <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-primary-foreground">
-                <p>Map position is disabled when using a thumbnail URL.</p>
-              </div>
-            )}
-
-            {!isMapPositionDisabledByThumbnail && hasValidMapWithDimensions && selectedMap && (
+            {hasValidMapWithDimensions && selectedMap && (
               <div className="space-y-2">
                 <FieldLabel>Position on Map</FieldLabel>
                 <FieldDescription>
@@ -443,7 +425,7 @@ const FlatForm = ({
               </div>
             )}
 
-            {!isMapPositionDisabledByThumbnail && hasMapWithoutValidDimensions && (
+            {hasMapWithoutValidDimensions && (
               <div className="bg-muted/30 rounded-md p-4 text-center text-sm text-muted-primary-foreground">
                 <p>Selected map has no image or dimensions.</p>
                 <p>

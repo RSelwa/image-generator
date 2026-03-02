@@ -12,13 +12,13 @@ import { HOME_ARTICLES } from "@/constants/articles"
 import { PAGES } from "@/constants/pages"
 
 export const metadata: Metadata = {
-  title: "Geo Gamer — The GeoGuessr for Video Games",
+  title: "Geo Gamer — GeoGuessr for Video Games | Guess Iconic Game Locations",
   description:
-    "Geo Gamer is a geography guessing game set inside iconic video game worlds. Play solo or with up to 8 players, explore 300+ scenes from your favorite games, and create custom challenges with Special Rounds.",
+    "Geo Gamer is GeoGuessr, but for video games. Explore 300+ iconic scenes from your favorite game worlds and guess where you are. Play solo or challenge up to 7 friends in real-time multiplayer.",
   openGraph: {
-    title: "Geo Gamer — The GeoGuessr for Video Games",
+    title: "Geo Gamer — GeoGuessr for Video Games | Guess Iconic Game Locations",
     description:
-      "Explore 300+ iconic video game scenes and guess where you are. Play with up to 8 friends in real-time multiplayer. Free to play in your browser.",
+      "GeoGuessr, but for video games. Explore 300+ iconic video game scenes and guess where you are. Challenge up to 7 friends in real-time multiplayer. Play in your browser.",
     type: "website",
   },
 }
@@ -30,17 +30,18 @@ const Page = () => {
         <CreateLobbyContainer />
         <HomeStrips />
         <article className="absolute bottom-18 w-5/6 left-1/2 -translate-x-1/2 lg:translate-x-0 lg:w-auto lg:bottom-9 lg:left-24">
+          <h1 className="sr-only">Geo Gamer — GeoGuessr for Video Games</h1>
           <LogoWithIcon className="lg:h-48" />
         </article>
       </section>
       <section className="grid grid-cols-1 lg:grid-cols-2">
         <article className="px-5 py-6 flex flex-col">
           <h2 className="mb-3 font-interference">Latest News</h2>
-          <h1 className="mb-6 text-4xl lg:text-6xl font-shapiro-wide">Geo Gamer</h1>
+          <h2 className="mb-6 text-4xl lg:text-6xl font-shapiro-wide">Geo Gamer</h2>
           <p className="lg:w-1/2 mb-8 font-sans opacity-60">
             Stay up to date with the latest Geo Gamer news — new scenes, multiplayer updates, and community events.
           </p>
-          <Button variant="marathon-white" className="lg:w-1/2">See all <ArrowUpRight className="size-6" /></Button>
+          <Button variant="marathon-white" className="lg:w-1/2" asChild><Link href="/blog">See all <ArrowUpRight className="size-6" /></Link></Button>
         </article>
         <article className="bg-primary text-primary-foreground flex flex-col justify-between">
           <div className="p-5">
@@ -62,13 +63,13 @@ const Page = () => {
       </section>
       <section className="grid grid-cols-1 lg:grid-cols-4">
         {HOME_ARTICLES.map((article, index) => (
-          <HomeArticles key={index} {...article} className={index === 2 ? "lg:col-start-4" : ""} />
+          <HomeArticles key={article.title} {...article} className={index === 2 ? "lg:col-start-4" : ""} />
         ))}
       </section>
       <section className="px-5 py-16 lg:py-32">
-        <h3 className="font-interference uppercase mb-3">
+        <p className="font-interference uppercase mb-3">
           The GeoGuessr for gamers
-        </h3>
+        </p>
         <h2 className="font-shapiro-wide font-bold text-5xl lg:text-9xl">
           300+ SCENES. 8 PLAYERS. ENDLESS ROUNDS.
         </h2>

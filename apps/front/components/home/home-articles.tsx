@@ -18,7 +18,7 @@ export const HomeArticles = ({ className, href, imageLink, title, description, .
             <Image src={imageLink} width={400} height={400} alt={`Image of ${description}`} className="w-full object-cover h-full lg:h-[25vw]" />
             <p className="p-3 text-base uppercase font-interference">{description}</p>
             <h2 className="pb-6 px-3 font-shapiro-wide lg:text-2xl text-3xl">{title}</h2>
-            <Button variant="marathon-white" className="self-end" size="lg">Read more <ArrowUpRight className="size-6" /></Button>
+            <Button variant="marathon-white" className="self-end mt-auto" size="lg">Read more <ArrowUpRight className="size-6" /></Button>
         </Link>
     )
 }
