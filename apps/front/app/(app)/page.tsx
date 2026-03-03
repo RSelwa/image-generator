@@ -6,10 +6,11 @@ import { ArticlesDescription, HomeArticles } from "@/components/home/home-articl
 import { CreateLobbyContainer } from "@/components/home/home-create-lobby"
 import HomeFooter from "@/components/home/home-footer"
 import { HomeStrips } from "@/components/home/home-strips"
-import { LogoWithIcon, MiniStrips } from "@/components/icons"
+import { Instagram, LogoWithIcon, MiniStrips, TikTok } from "@/components/icons"
 import { Button } from "@/components/ui/button"
-import { HOME_ARTICLES } from "@/constants/articles"
+import { ARTICLES, HOME_ARTICLES } from "@/constants/articles"
 import { PAGES } from "@/constants/pages"
+import { FOOTER_SOCIALS } from "@/constants/social"
 
 export const metadata: Metadata = {
   title: "Geo Gamer — GeoGuessr for Video Games | Guess Iconic Game Locations",
@@ -52,11 +53,14 @@ const Page = () => {
             </p>
           </div>
           <div className="border-t border-background grid grid-cols-2">
-            <Link href="#" className="p-5 border-r border-background flex items-center justify-center gap-2">
-              Instagram
+            <Link href={FOOTER_SOCIALS[0].href} target="_blank" className="p-5 hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
+              <TikTok className="size-6" />
+              {FOOTER_SOCIALS[0].label}
             </Link>
-            <Link href="#" className="p-5 border-r border-background flex items-center justify-center gap-2">
-              Tiktok
+            <Link href={FOOTER_SOCIALS[1].href} target="_blank" className="p-5  hover:text-primary hover:bg-primary-foreground flex items-center justify-center gap-2">
+              <Instagram className="size-6" />
+
+              {FOOTER_SOCIALS[1].label}
             </Link>
           </div>
         </article>
@@ -92,10 +96,10 @@ const Page = () => {
             variant="white"
           />
         </div>
-        <Image src="/articles/shoot.jpg" alt="Geo Gamer multiplayer session" height={650} width={650} className="size-full" />
+        <Image src={ARTICLES.MULTIPLAYER.imageLink} alt="Geo Gamer multiplayer session" height={650} width={650} className="size-full" />
       </section>
       <section className="relative flex flex-col">
-        <Image src="/articles/shoot.jpg" alt="Special Rounds feature" height={650} width={650} className="w-full lg:h-full-height object-cover" />
+        <Image src={ARTICLES.SPECIAL_ROUNDS.imageLink} alt="Special Rounds feature" height={650} width={650} className="w-full lg:h-full-height object-cover" />
         <ArticlesDescription
           subTitle="Customize every game"
           title="SPECIAL ROUNDS"
