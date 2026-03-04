@@ -60,7 +60,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         data-marathon
-        className={`${geistSans.variable} ${fraktion.variable} ${shapiroWide.variable} ${fraktionMono.variable} ${interference.variable} ${shapiro.variable} antialiased dark pt-header-height`}
+        className={`${geistSans.variable} ${fraktion.variable} ${shapiroWide.variable} ${fraktionMono.variable} ${interference.variable} ${shapiro.variable} antialiased dark pt-header-height!`}
       >
         <Suspense>
           <NuqsAdapter>
