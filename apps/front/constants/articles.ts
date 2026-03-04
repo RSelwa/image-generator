@@ -5,19 +5,19 @@ export const ARTICLES = {
   MULTIPLAYER: {
     title: "Multiplayer up to 8 players",
     description: "Challenge your friends in real-time geo-guessing battles across video game universes",
-    imageLink: "/articles/shoot.jpg",
+    imageLink: "/articles/multiplayer.webp",
     href: PAGES.BLOG(BLOG_POSTS.MULTIPLAYER.slug),
   },
   SCENES: {
     title: "300+ scenes available",
     description: "Hundreds of iconic environments from your favorite video games, ready to explore",
-    imageLink: "/articles/shoot.jpg",
+    imageLink: "/articles/scenes.webp",
     href: PAGES.BLOG(BLOG_POSTS.SCENES.slug),
   },
   SPECIAL_ROUNDS: {
     title: "Special Rounds",
     description: "Hand-pick scenes for each round and craft your own custom challenges",
-    imageLink: "/articles/shoot.jpg",
+    imageLink: "/articles/special-rounds.webp",
     href: PAGES.BLOG(BLOG_POSTS.SPECIAL_ROUNDS.slug),
   },
 } as const
