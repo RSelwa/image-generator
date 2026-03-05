@@ -77,7 +77,7 @@ export const ReportBugModal = () => {
     setImageUrls((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const submitSuggestion = async (data: FormSchema) => {
+  const submitBug = async (data: FormSchema) => {
     try {
       const suggestionDoc = suggestionsDocSchema.parse({
         type: SUGGESTIONS_TYPE.BUG,
@@ -92,22 +92,22 @@ export const ReportBugModal = () => {
 
       await createSuggestionDoc(suggestionDoc).unwrap()
 
-      toast.success("Thanks for your suggestion!")
+      toast.success("Thanks for your bug report!")
       reset()
       setImageUrls([])
       closeModal()
     } catch (error) {
       console.error("Failed to submit suggestion", error)
 
-      toast.error("Failed to submit suggestion")
+      toast.error("Failed to submit your bug")
     }
   }
 
   return (
-    <ModalBase title="Suggest a game" modalKey={key}>
-      <form autoComplete="off" onSubmit={handleSubmit(submitSuggestion)} className="space-y-4">
+    <ModalBase title="Report a bug" modalKey={key}>
+      <form autoComplete="off" onSubmit={handleSubmit(submitBug)} className="space-y-4">
         <InputGroup>
-          <InputGroupInput placeholder="Game title" {...register("title")} />
+          <InputGroupInput placeholder="Bug title" {...register("title")} />
         </InputGroup>
         <InputGroup>
           <InputGroupTextarea placeholder="Describe your problem" {...register("description")} />

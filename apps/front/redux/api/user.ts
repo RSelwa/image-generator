@@ -16,7 +16,7 @@ export const userApi = createApi({
     getUsers: builder.infiniteQuery<
       userDocWithId[],
       void,
-      { limit?: number, startAfter?: string }
+      { limit?: number, startAfter?: number }
     >({
       queryFn: async ({ pageParam }) => {
         try {
@@ -26,7 +26,7 @@ export const userApi = createApi({
           ]
 
           if (pageParam.startAfter)
-            constraints.push(startAfter(pageParam.startAfter))
+            constraints.push(startAfter(Timestamp.fromMillis(pageParam.startAfter)))
 
           if (pageParam.limit)
             constraints.push(limit(pageParam.limit))
@@ -62,7 +62,7 @@ export const userApi = createApi({
       infiniteQueryOptions: {
         initialPageParam: {
           limit: DEFAULT_SIZE_USERS,
-          startAfter: "",
+          startAfter: undefined,
         },
         getNextPageParam: (_, allPages, lastPageParams) => {
           const lastPage = allPages.at(-1)
@@ -75,7 +75,7 @@ export const userApi = createApi({
           }
 
           return {
-            startAfter: lastUser?.id,
+            startAfter: lastUser?.createdAt?.toMillis(),
             limit: limitValue,
           }
         },
