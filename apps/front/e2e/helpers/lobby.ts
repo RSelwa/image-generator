@@ -1,11 +1,12 @@
 import { faker } from "@faker-js/faker"
+import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
 import { expect, type Page } from "@playwright/test"
-import { generateUsername, getRandomAvatar, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER, TABLES } from "@repo/common"
+import { generateUsername, getRandomAvatar, LOBBY_STATUS, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type LobbyDoc, type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
+import { type LobbyDoc, type Round, type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
 import { userDocSchema } from "@repo/schemas"
 import { createAuthUser, createFirestoreDoc } from "@repo/testing/emulator"
-import { userFactory } from "@repo/testing/factory"
+import { lobbyFactory, seedFactory, userFactory } from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"
 import { STORAGE_KEYS } from "@/constants/mapping"
 import { SELECTORS } from "@/constants/testing"
@@ -178,4 +179,29 @@ export const logoutViaUI = async (page: Page) => {
   await page.getByTestId("logout-button").click()
 
   await expect(page.getByTestId("nav-user-dropdown-trigger")).toHaveCount(0)
+}
+
+export const createFinishedLobbyWithSeed = async ({ userId, rounds }: { userId: string, rounds: Round[] }) => {
+  const now = Timestamp.now() as unknown as ClientTimestamp
+
+  const seed = seedFactory({
+    rounds,
+    createdAt: now,
+    updatedAt: now,
+  })
+
+  await createFirestoreDoc(refs[TABLES.SEEDS], seed)
+
+  const lobby = lobbyFactory({
+    hostId: userId,
+    playersIds: [userId],
+    status: LOBBY_STATUS.FINISHED,
+    seedId: seed.id,
+    createdAt: now,
+    updatedAt: now,
+  })
+
+  await createFirestoreLobbyDoc(lobby)
+
+  return { lobby, seed }
 }

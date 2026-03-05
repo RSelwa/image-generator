@@ -10,6 +10,7 @@ export const seedFactory: FactoryDoc<SeedDocWithId> = (item = {}) => ({
   name: "",
   createdBy: null,
   timesUsed: 0,
+  featuredAt: null,
   createdAt: Timestamp.fromDate(faker.date.past()) as unknown as ClientTimestamp,
   updatedAt: Timestamp.fromDate(faker.date.recent()) as unknown as ClientTimestamp,
   rounds: [],
@@ -22,6 +23,7 @@ export const roundFactory: FactoryDoc<Round> = (item = {}) => ({
 
   gameId: faker.database.mongodbObjectId(),
   gameTitle: faker.lorem.words(3),
+  gameAlternateNames: [],
   gameThumbnailUrl: faker.image.url(),
 
   sphericalId: faker.database.mongodbObjectId(),

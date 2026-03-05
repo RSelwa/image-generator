@@ -4,7 +4,7 @@ import { type Round, roundSchema } from "@repo/schemas"
 import { formatFlatsForNormalRounds, formatSphericalsForNormalRounds } from "@/libs/round-normal"
 import { formatFlatsForSpecialRounds, formatSphericalsForSpecialRounds } from "@/libs/round-special"
 
-export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: { numberOfRounds: number, hasSpecialRounds: boolean }) => {
+export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds, recentlyPlayedGameIds = [] }: { numberOfRounds: number, hasSpecialRounds: boolean, recentlyPlayedGameIds?: string[] }) => {
   try {
     const [sphericalsWithMap, flatsWithMap, sphericalsWithThumbnails, flatWithThumbnails] = await Promise.all([
       collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
@@ -46,17 +46,29 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
           const excludedOptionIds = options.map((option) => option.gameId)
           const allExcludedIds = [...new Set([...excludedGameIds, ...excludedOptionIds])]
 
-          const specialRoundOptions = [...formattedSphericalsForSpecialRounds, ...formattedFlatsForSpecialRounds].filter(
-            (option) => option && !allExcludedIds.includes(option.gameId)
+          const allSpecialOptions = [...formattedSphericalsForSpecialRounds, ...formattedFlatsForSpecialRounds]
+          const specialRoundOptions = allSpecialOptions.filter(
+            (option) => option && !allExcludedIds.includes(option.gameId) && !recentlyPlayedGameIds.includes(option.gameId)
           )
 
+          let randomOption
+
           if (specialRoundOptions.length === 0) {
-            console.warn("No more suitable options found for special round generation.")
+            // Fallback: drop recently played exclusion, but keep current seed exclusion
+            const fallbackOptions = allSpecialOptions.filter(
+              (option) => option && !allExcludedIds.includes(option.gameId)
+            )
 
-            continue
+            if (fallbackOptions.length === 0) {
+              console.warn("No more suitable options found for special round generation.")
+
+              continue
+            }
+
+            randomOption = fallbackOptions[Math.floor(Math.random() * fallbackOptions.length)]
+          } else {
+            randomOption = specialRoundOptions[Math.floor(Math.random() * specialRoundOptions.length)]
           }
-
-          const randomOption = specialRoundOptions[Math.floor(Math.random() * specialRoundOptions.length)]
 
           options.push(randomOption)
         }
@@ -77,15 +89,24 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds }: {
       }
 
       const allNormalRounds = [...formattedSphericalsForNormalRounds, ...formattedFlatsForNormalRounds]
-      const normalRoundsFiltered = allNormalRounds.filter((round) => round.gameId && !excludedGameIds.includes(round.gameId))
+      const normalRoundsFiltered = allNormalRounds.filter((round) => round.gameId && !excludedGameIds.includes(round.gameId) && !recentlyPlayedGameIds.includes(round.gameId))
+
+      let randomRound
 
       if (normalRoundsFiltered.length === 0) {
-        console.warn("No more suitable round found for round generation.")
+        // Fallback: drop recently played exclusion, but keep current seed exclusion to avoid duplicates within this seed
+        const fallbackFiltered = allNormalRounds.filter((round) => round.gameId && !excludedGameIds.includes(round.gameId))
 
-        continue
+        if (fallbackFiltered.length === 0) {
+          console.warn("No more suitable round found for round generation.")
+
+          continue
+        }
+
+        randomRound = fallbackFiltered[Math.floor(Math.random() * fallbackFiltered.length)]
+      } else {
+        randomRound = normalRoundsFiltered[Math.floor(Math.random() * normalRoundsFiltered.length)]
       }
-
-      const randomRound = normalRoundsFiltered[Math.floor(Math.random() * normalRoundsFiltered.length)]
 
       const round = roundSchema.safeParse({
         isSpecial: false,

@@ -569,7 +569,7 @@ const SphericalForm = ({
           </FieldGroup>
 
           <div className="flex flex-col gap-3">
-            <Button variant="ghost" asChild>
+            <Button variant="marathon-link" asChild>
               <Link href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${sphericalId}`} target="_blank" className="flex gap-4 items-center cursor-pointer">
                 Spherical Image <SquareArrowOutUpRight className="size-4" />
               </Link>

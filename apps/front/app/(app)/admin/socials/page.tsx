@@ -113,7 +113,7 @@ const Page = () => {
                     <TableHeader className="sticky top-0 bg-background">
                         <TableRow>
                             <TableHead className="w-14"><Checkbox checked={isAllChecked} onCheckedChange={toggleAllChecked} /></TableHead>
-                            <TableHead className="w-14">Id</TableHead>
+                            <TableHead className="w-20">Id</TableHead>
                             <TableHead className="w-25">Status</TableHead>
                             <TableHead>Created by</TableHead>
                         </TableRow>

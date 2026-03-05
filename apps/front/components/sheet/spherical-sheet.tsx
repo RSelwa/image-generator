@@ -1,3 +1,5 @@
+import { SquareArrowOutUpRight } from "lucide-react"
+import Link from "next/link"
 import { useQueryState } from "nuqs"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import OpenFirestoreDoc from "@/components/open-firestore"
@@ -9,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { getSphericalRef } from "@/constants/db-refs"
 import { MODAL_KEYS, NEW_SEARCH_PARAM, QUERY_PARAMS, STATUS_TO_BADGE_VARIANT } from "@/constants/mapping"
+import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
 import { useGetSphericalByIdQuery } from "@/redux/api/spherical"
 
@@ -71,6 +74,13 @@ const SphericalSheet = () => {
             <div className="flex items-center gap-2">
               <Button variant="marathon-outline" onClick={() => openSphericalIdModal()}>Edit</Button>
               <Button variant="marathon-outline" onClick={() => openMapIdModal()}>Map</Button>
+              {spherical.image && (
+                <Button variant="marathon-link" asChild>
+                  <Link href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${sphericalId}`} target="_blank" className="flex gap-4 items-center cursor-pointer">
+                    Spherical Image <SquareArrowOutUpRight className="size-4" />
+                  </Link>
+                </Button>
+              )}
             </div>
           </section>
         </ScrollArea>

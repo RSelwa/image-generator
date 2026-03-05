@@ -43,9 +43,9 @@ const SocialRow = ({ sound, checkedIds, setCheckedIds }: {
                     onCheckedChange={onCheckedChange}
                 />
             </TableCell>
-            <TableCell className="truncate lg:w-auto w-14">
-                {sound.id}
+            <TableCell className="max-w-20 truncate">
                 <OpenFirestoreDoc docRef={getSoundRef(sound.id)} />
+                {sound.id}
             </TableCell>
             <TableCell>
                 <Badge variant={getBadgeVariantSounds(sound.status)}>
@@ -138,7 +138,7 @@ const Page = () => {
                     <TableHeader className="sticky top-0 bg-background">
                         <TableRow>
                             <TableHead className="w-14"><Checkbox checked={isAllChecked} onCheckedChange={toggleAllChecked} /></TableHead>
-                            <TableHead className="w-14">Id</TableHead>
+                            <TableHead className="w-20">Id</TableHead>
                             <TableHead className="w-14">Status</TableHead>
                             <TableHead className="w-14">Usable</TableHead>
                             <TableHead className="w-14">Has storage</TableHead>

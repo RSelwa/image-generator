@@ -55,10 +55,9 @@ export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
                                 onCheckedChange={onCheckedChange}
                             />
                         </TableCell>
-                        <TableCell className="truncate lg:w-auto w-14">
-                            {social.id}
+                        <TableCell className="max-w-20 truncate">
                             <OpenFirestoreDoc docRef={getSocialRef(social.id)} />
-
+                            {social.id}
                         </TableCell>
                         <TableCell>
                             {social.status && (

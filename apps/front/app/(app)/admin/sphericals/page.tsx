@@ -42,7 +42,6 @@ const Page = () => {
     setCheckedIds([])
   }
 
-
   if (!sphericals.length && !isLoading) {
     return (
       <main className="h-full-height-admin max-h-full-height-admin p-4 space-y-4">
@@ -121,7 +120,7 @@ const Page = () => {
           <TableHeader className="sticky top-0 bg-background">
             <TableRow>
               <TableHead className="w-14"><Checkbox checked={isAllChecked} onCheckedChange={toggleAllChecked} /></TableHead>
-              <TableHead className="w-14">Id</TableHead>
+              <TableHead className="w-20">Id</TableHead>
               <TableHead>Game</TableHead>
               <TableHead className="w-25">Status</TableHead>
               <TableHead>Issues</TableHead>

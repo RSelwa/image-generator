@@ -28,9 +28,9 @@ export const SphericalRow = ({ spherical, checkedIds, setCheckedIds }: {
                     onCheckedChange={onCheckedChange}
                 />
             </TableCell>
-            <TableCell className="truncate lg:w-auto w-14">
-                {spherical.id}
+            <TableCell className="max-w-20 truncate">
                 <OpenFirestoreDoc docRef={getSphericalRef(spherical.gameId, spherical.id)} />
+                {spherical.id}
             </TableCell>
             <TableCell>{spherical.game?.title || spherical.gameId}</TableCell>
             <TableCell>

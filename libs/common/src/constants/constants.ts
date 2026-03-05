@@ -21,6 +21,7 @@ export const SPECIAL_ROUND_OPTIONS_COUNT = 4 // round options count for special 
 export const DEFAULT_LIVES = 3
 export const DEFAULT_MAX_DISTANCE_POINTS = 50 // percentage of max distance - Old value : 30
 export const DEFAULT_HAS_SPECIAL_ROUNDS = true
+export const MAX_RECENT_LOBBIES_TO_EXCLUDE = 3
 
 export const PREFIX_ANONYMOUS_USER = "anon_"
 export const SUFFIX_ANONYMOUS_USER = "@demo.geogamer"

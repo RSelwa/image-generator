@@ -69,7 +69,7 @@ const Page = () => {
           <TableHeader className="sticky top-0 bg-background">
             <TableRow>
               <TableHead className="w-14"><Checkbox checked={isAllChecked} onCheckedChange={toggleAllChecked} /></TableHead>
-              <TableHead className="w-16">Id</TableHead>
+              <TableHead className="w-20">Id</TableHead>
               <TableHead className="w-25">Email</TableHead>
               <TableHead>Pseudo</TableHead>
               <TableHead>Created At</TableHead>
@@ -84,7 +84,7 @@ const Page = () => {
               return (
                 <TableRow key={user.id} onClick={() => setUserId(user.id)}>
                   <TableCell><Checkbox checked={checked} onCheckedChange={onCheckedChange} /></TableCell>
-                  <TableCell className="max-w-16 truncate">{user.id} <OpenFirestoreDoc docRef={getUserRef(user.id)} /></TableCell>
+                  <TableCell className="max-w-20 truncate"><OpenFirestoreDoc docRef={getUserRef(user.id)} />{user.id} </TableCell>
                   <TableCell className="font-medium">{user.email}</TableCell>
                   <TableCell>{user.pseudo}</TableCell>
                   <TableCell>{getDateFromString(user.createdAt?.toDate())}</TableCell>

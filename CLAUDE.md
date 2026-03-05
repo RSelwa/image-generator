@@ -1,7 +1,7 @@
 # Bash commands
 
 - pnpm --filter @repo/front build: Build the front
-- pnpm build:libs: Build all libs of the monorepo
+- pnpm build:libs: Build all libs of the monorepo and install local dependencies
 - pnpm lint: run the linter
 
 # Code style
