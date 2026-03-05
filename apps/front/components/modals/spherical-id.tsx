@@ -49,11 +49,12 @@ type SphericalFormSchema = z.input<typeof createSphericalInputSchema>
 
 const KEY = MODAL_KEYS.EDIT_SPHERICAL_ID
 
-// Helper to parse combined param format: "gameId_sphericalId"
+// Helper to parse combined param format: "gameId_sphericalId" or just "new"
 export const parseSphericalModalParam = (
   param: string | null,
 ): { gameId: string, sphericalId: string } | null => {
   if (!param) return null
+  if (param === NEW_SEARCH_PARAM) return { gameId: "", sphericalId: NEW_SEARCH_PARAM }
   const separatorIndex = param.indexOf("_")
   if (separatorIndex === -1) return null
   const gameId = param.substring(0, separatorIndex)
@@ -159,6 +160,8 @@ const SphericalForm = ({
     },
     [setValue],
   )
+
+  const sortedGames = gamesData ? [...gamesData].sort((a, b) => a.title.localeCompare(b.title)) : []
 
   useEffect(() => {
     if (data) {
@@ -319,7 +322,7 @@ const SphericalForm = ({
                     <SelectValue placeholder="Select a game" />
                   </SelectTrigger>
                   <SelectContent>
-                    {gamesData?.map((game) => (
+                    {sortedGames?.map((game) => (
                       <SelectItem key={game.id} value={game.id}>
                         {game.title}
                       </SelectItem>

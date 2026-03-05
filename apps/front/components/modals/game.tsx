@@ -67,11 +67,13 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
       alternateNames: [],
       hasSphericalImagesReady: false,
       hasSpecialImagesReady: false,
+      youtubeLink: "",
     },
   })
 
   const image = watch("image")
   const title = watch("title")
+  const youtubeLink = watch("youtubeLink")
 
   useEffect(() => {
     if (data) {
@@ -83,6 +85,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
         alternateNames: data.alternateNames || [],
         hasSphericalImagesReady: data.hasSphericalImagesReady ?? false,
         hasSpecialImagesReady: data.hasSpecialImagesReady ?? false,
+        youtubeLink: data.youtubeLink ?? "",
       })
     }
   }, [data, reset])
@@ -249,8 +252,8 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
                 <Input
                   {...register("youtubeLink")}
                 />
-                {watch("youtubeLink") && (
-                  <YoutubeEmbed youtubeLink={watch("youtubeLink") || ""} />
+                {youtubeLink && (
+                  <YoutubeEmbed youtubeLink={youtubeLink || ""} />
 
                 )}
               </Field>

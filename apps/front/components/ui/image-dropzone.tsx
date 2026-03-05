@@ -147,8 +147,8 @@ export const ImageDropzone = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !displayImage && openFilePicker()}
-        data-isDragging={isDragging}
-        className={cn("relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden border-2 border-dashed transition-colors data-[isDragging=true]:border-primary data-[isDragging=true]:bg-primary/10 data-[isDragging=false]:border-border data-[isDragging=false]:bg-muted/30 data-[isDragging=false]:hover:border-primary/50 data-[isDragging=false]:hover:bg-muted/50", className)}
+        data-isdragging={isDragging}
+        className={cn("relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden border-2 border-dashed transition-colors data-[isdragging=true]:border-primary data-[isdragging=true]:bg-primary/10 data-[isdragging=false]:border-border data-[isdragging=false]:bg-muted/30 data-[isdragging=false]:hover:border-primary/50 data-[isdragging=false]:hover:bg-muted/50", className)}
       >
         {displayImage ? (
           <>

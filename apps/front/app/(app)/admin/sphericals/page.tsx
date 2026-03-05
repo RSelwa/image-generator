@@ -15,7 +15,7 @@ import { useModal } from "@/hooks/use-modal"
 import { useDeleteSphericalMutation, useGetSphericalsInfiniteQuery } from "@/redux/api/spherical"
 
 const Page = () => {
-  const { openModal } = useModal(MODAL_KEYS.SPHERICAL_ID, `${NEW_SEARCH_PARAM}_${NEW_SEARCH_PARAM}`)
+  const { openModal } = useModal(MODAL_KEYS.EDIT_SPHERICAL_ID, NEW_SEARCH_PARAM)
 
   const [deleteSpherical] = useDeleteSphericalMutation()
   const { data, isLoading, isFetching, hasNextPage, fetchNextPage, refetch } = useGetSphericalsInfiniteQuery()

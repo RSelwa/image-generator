@@ -18,8 +18,8 @@ import pyautogui
 
 # --- Configuration ---
 
-CLICK_MODE = False     # True = hold mouse button to move camera (default), False = just move mouse (Steam games)
-PRESS_ALT_TAB = False     # Whether to switch to the game window with Alt+Tab at the start (default: True)
+CLICK_MODE = True     # True = hold mouse button to move camera (default), False = just move mouse (Steam games)
+PRESS_ALT_TAB = True     # Whether to switch to the game window with Alt+Tab at the start (default: True)
 
 ROWS = 7              # vertical levels (bottom to top)
 COLS = 10             # horizontal screenshots per full 360° rotation
