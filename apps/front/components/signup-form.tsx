@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { MODAL_KEYS, QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { IMAGES_URLS } from "@/constants/images"
 import {
   useCreateUserAuthMutation,
   useLoginWithGoogleMutation,
@@ -147,7 +148,7 @@ export const SignupForm = ({
           </form>
           <div className="bg-muted relative hidden md:block">
             <img
-              src="/signup.png"
+              src={IMAGES_URLS.SIGNUP}
               alt="Singup"
               className="absolute inset-0 h-full w-full object-cover dark:grayscale"
             />

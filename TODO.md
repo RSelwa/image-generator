@@ -89,17 +89,18 @@
   - [x] Share seed at the end of a lobby
   - [x] Ajouter une belle page 404
   - [x] Implement backlink for their urls
-  - [ ] Add new avatar, check visual goodies
+  - [x] Improve driver to explain specials rounds
+  - [x] Ajouter une image pour le share seo
+  - [x] Setup Reels Insta et tiktok
+  - [ ] Implement modals system for pubing/infos
   - [ ] implement seeds that will be featured like flim discover
-  - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples and explain specials that are every 6 rounds
-  - [ ] Ajouter une image pour le share seo
-  - [ ] Ajouter les meta pour chaque page
+  - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples
   - [ ] Improve comments on instagram
+  - [ ] Add new avatar, check visual goodies
   - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
   - [ ] in Seed maker, when round is special should not allow images without thumbnails
   - [ ] Implémenter le buy me coffee
   - [ ] Scrap lostgamer for the images of the maps
-  - [ ] Implement modals system for pubing/infos
   - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
   - [ ] When selecting special rounds, could display the mouse of other users to see what they chose
   - [ ] ADMIN -Improve the empty card whe no map/no games etc... with shadcn empty components
@@ -110,22 +111,11 @@
   - [ ] Add firebase admin for front libs
   - [ ] Improve the security for the update for lobbies
   - [ ] friends invitations
-  - [ ] Setup Reels Insta et tiktok
   - [ ] Implement a system to interact with twitch chat, maybe to vote for games
+  - [ ] Ajouter les meta pour chaque page
   - [ ] Fix: e2e test driver test localstorage
   - [ ] Implement a chat room inside
   - [ ] When problem of connexion, auto send a report to me
   - [ ] Fix tests storage suggestions update unauthenticated
 
-</details>
-
-<details>
-<summary>Front</summary>
-  - Clean footer
-  - Find DA for the website
-</details>
-
-<details>
-<summary>Ideas</summary>
-  - [ ] Multiple cursor in lobby to see everyone
 </details>

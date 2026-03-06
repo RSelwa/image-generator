@@ -343,6 +343,6 @@ Check for .env.example for environnement variables to setup
  - FIREBASE_TOKEN
 
 ## Service account
-
+Put the service account at the root of the repo
 export GOOGLE_APPLICATION_CREDENTIALS="./service-account.json"
 echo $GOOGLE_APPLICATION_CREDENTIALS

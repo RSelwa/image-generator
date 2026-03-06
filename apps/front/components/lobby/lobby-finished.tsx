@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { CreateLobbyButton } from "@/components/home/home-create-lobby"
 import { LogoWithIcon } from "@/components/icons"
 import LobbyScoreboard from "@/components/lobby/lobby-scoreboard"
+import FinishedLobbyAnonymous from "@/components/modals/finished-lobby-anonymous"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Progress } from "@/components/ui/progress"
@@ -12,7 +13,7 @@ import { ASSET_URLS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useGetNumberGameFoundByPlayerQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectLobbyConfig, selectPlayerMyself } from "@/redux/lobby/lobby.selectors"
-import { selectUserId } from "@/redux/session/session.selectors"
+import { selectUser, selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { copy, getLobbyIdFromPathname } from "@/utils"
 
@@ -21,6 +22,7 @@ const LobbyFinished = () => {
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const userId = useAppSelector(selectUserId)
+  const user = useAppSelector(selectUser)
   const player = useAppSelector(selectPlayerMyself(lobbyId))
   const config = useAppSelector(selectLobbyConfig(lobbyId))
 
@@ -33,6 +35,8 @@ const LobbyFinished = () => {
 
   const players = lobby?.players || []
   const hasMultiplePlayers = players.length > 1
+
+  const isUserAnonymous = !user || user.isAnonymous
 
   const percentageValuePoints = player && lobby ? (player.score / (lobby?.maximumPossiblePoints || 1)) * 100 : 0
   const percentageValueGamesFound = numberGameFound && config ? (numberGameFound.numberGameFound / config.numberOfRounds) * 100 : 0
@@ -48,6 +52,7 @@ const LobbyFinished = () => {
       <section className="w-1/2 flex flex-col items-center justify-center gap-8 bg-background/80">
         <LogoWithIcon className="text-primary h-52 mb-12" />
         {hasMultiplePlayers && <LobbyScoreboard />}
+        {(true || isUserAnonymous) && <FinishedLobbyAnonymous />}
         <Field className="w-full max-w-sm">
           <FieldLabel htmlFor="progress-points">
             <span>Final Score </span>
