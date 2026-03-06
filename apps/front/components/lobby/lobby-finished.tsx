@@ -52,7 +52,7 @@ const LobbyFinished = () => {
       <section className="w-1/2 flex flex-col items-center justify-center gap-8 bg-background/80">
         <LogoWithIcon className="text-primary h-52 mb-12" />
         {hasMultiplePlayers && <LobbyScoreboard />}
-        {(true || isUserAnonymous) && <FinishedLobbyAnonymous />}
+        {isUserAnonymous && <FinishedLobbyAnonymous />}
         <Field className="w-full max-w-sm">
           <FieldLabel htmlFor="progress-points">
             <span>Final Score </span>

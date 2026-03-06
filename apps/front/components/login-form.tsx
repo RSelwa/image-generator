@@ -143,9 +143,9 @@ export const LoginForm = ({
           </form>
           <div className="bg-muted relative hidden md:block">
             <img
-              src={IMAGES_URLS.SIGNUP}
+              src={IMAGES_URLS.LOGIN}
               alt="Login"
-              className="absolute inset-0 h-full w-full object-cover dark:grayscale"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
         </CardContent>

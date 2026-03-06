@@ -186,5 +186,9 @@ test.describe("lobby playing", () => {
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
     await expect(page.getByTestId(SELECTORS.LOBBY_FINISHED)).toBeVisible()
+
+    await page.waitForTimeout(1000) // Wait for the modal to appear
+
+    await expect(page.getByTestId(SELECTORS.FINISHED_LOBBY_ANONYMOUS_MODAL)).toHaveCount(0)
   })
 })

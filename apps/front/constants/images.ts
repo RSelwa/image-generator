@@ -1,6 +1,7 @@
 export const IMAGES_URLS = {
-  SIGNUP: "/signup.png",
-  ANONYMOUS: "/signup.png",
+  SIGNUP: "/signup.jpg",
+  LOGIN: "/login.jpg",
+  ANONYMOUS: "/anonymous-lobby-finished.jpg",
   ARTICLES: {
     MULTIPLAYER: "/articles/multiplayer.webp",
     SCENES: "/articles/scenes.webp",
