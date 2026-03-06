@@ -1,11 +1,14 @@
 "use client"
 
+import { UMA_STUDIO_URL } from "@repo/common"
+
 import {
+  Brush,
   LogOut,
   User,
+  Wrench,
   Zap,
 } from "lucide-react"
-
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { HelperMenuContent } from "@/components/helper"
@@ -21,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import NavUserAdmin from "@/components/ui/nav-user.admin"
 import { PAGES } from "@/constants/pages"
+import { PORTFOLIO_LINK } from "@/constants/social"
 import { useLogoutMutation } from "@/redux/api/auth"
 import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
@@ -91,6 +95,22 @@ export const NavUser = () => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <HelperMenuContent />
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>About</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link href={PORTFOLIO_LINK} target="_blank" className="cursor-pointer">
+              <Wrench />
+              Made by me
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={UMA_STUDIO_URL} target="_blank" className="cursor-pointer">
+              <Brush />
+              Interfaces by UMA Studio
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem data-testid="logout-button" onClick={() => logout()}>
           <LogOut />

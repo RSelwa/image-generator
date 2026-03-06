@@ -1,3 +1,4 @@
+import { UMA_STUDIO_URL } from "@repo/common"
 import { ArrowUpRight } from "lucide-react"
 import Link from "next/link"
 import * as React from "react"
@@ -54,6 +55,9 @@ const HomeFooter = () => {
                     . All rights reserved. This project is a fan-made, non-commercial initiative created out of passion for the game and its community. Developed by
                     {" "}
                     <Link href={PORTFOLIO_LINK} target="_blank" className="underline">me</Link>
+                    . Interfaces by
+                    {" "}
+                    <Link href={UMA_STUDIO_URL} target="_blank" className="underline">UMA Studio</Link>
                     .
                 </p>
             </section>

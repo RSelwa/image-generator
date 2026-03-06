@@ -64,6 +64,10 @@ export const BADGE_VARIANTS = {
   ORANGE: "orange",
   RED: "red",
   NEUTRAL: "neutral",
+  PURPLE: "purple",
+  YELLOW: "yellow",
+  PINK: "pink",
+  LIME: "lime",
 } as const
 
 export const DIFFICULTIES_TO_BADGE_VARIANT = {

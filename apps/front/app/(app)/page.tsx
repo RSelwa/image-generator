@@ -17,10 +17,11 @@ export const metadata: Metadata = {
   description:
     "Geo Gamer is GeoGuessr, but for video games. Explore 300+ iconic scenes from your favorite game worlds and guess where you are. Play solo or challenge up to 7 friends in real-time multiplayer.",
   openGraph: {
-    title: "Geo Gamer — GeoGuessr for Video Games | Guess Iconic Game Locations",
+    title: "Geo Gamer — GeoGuessr for Video Games",
     description:
       "GeoGuessr, but for video games. Explore 300+ iconic video game scenes and guess where you are. Challenge up to 7 friends in real-time multiplayer. Play in your browser.",
     type: "website",
+    images: [{ url: "/opengraph-image.jpg" }],
   },
 }
 

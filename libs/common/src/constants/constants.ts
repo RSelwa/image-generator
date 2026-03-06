@@ -26,7 +26,9 @@ export const MAX_RECENT_LOBBIES_TO_EXCLUDE = 3
 export const PREFIX_ANONYMOUS_USER = "anon_"
 export const SUFFIX_ANONYMOUS_USER = "@demo.geogamer"
 
+export const APP_BASE_URL = "https://geo-gamer.net"
 export const AUDIO_EXTRACT_ENDPOINT = "https://audio-extraction-79796269085.us-central1.run.app"
+export const UMA_STUDIO_URL = "https://uma-studio.fr/"
 
 export const OPTIONS_NUMBER_OF_ROUNDS = [1, 2, 3, 4].map((multiplier) => multiplier * NUMBER_OF_ROUNDS_PER_STAGE)
 export const OPTIONS_PLAYERS_LIVES = [null, 1, 3, 5]

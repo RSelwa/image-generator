@@ -88,11 +88,13 @@
   - [x] Add scoreboard at the end
   - [x] Share seed at the end of a lobby
   - [x] Ajouter une belle page 404
-  - [ ] Improve comments on instagram
+  - [x] Implement backlink for their urls
+  - [ ] Add new avatar, check visual goodies
   - [ ] implement seeds that will be featured like flim discover
-  - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples
+  - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples and explain specials that are every 6 rounds
   - [ ] Ajouter une image pour le share seo
   - [ ] Ajouter les meta pour chaque page
+  - [ ] Improve comments on instagram
   - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
   - [ ] in Seed maker, when round is special should not allow images without thumbnails
   - [ ] Implémenter le buy me coffee

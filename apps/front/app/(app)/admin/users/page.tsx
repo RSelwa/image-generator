@@ -6,6 +6,7 @@ import { useQueryState } from "nuqs"
 import { useCallback, useEffect, useRef, useState } from "react"
 import OpenFirestoreDoc from "@/components/open-firestore"
 import SheetAdminUser from "@/components/sheet/user-admin"
+import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -13,6 +14,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { getUserRef } from "@/constants/db-refs"
 import { QUERY_PARAMS } from "@/constants/mapping"
 import { useGetUsersCountQuery, useGetUsersInfiniteQuery } from "@/redux/api/user"
+import { getBadgeVariantByDate } from "@/utils/badge"
 
 const Page = () => {
   const [_, setUserId] = useQueryState(QUERY_PARAMS.USER_ID)
@@ -71,7 +73,6 @@ const Page = () => {
               <TableHead className="w-14"><Checkbox checked={isAllChecked} onCheckedChange={toggleAllChecked} /></TableHead>
               <TableHead className="w-20">Id</TableHead>
               <TableHead className="w-25">Email</TableHead>
-              <TableHead>Pseudo</TableHead>
               <TableHead>Created At</TableHead>
             </TableRow>
           </TableHeader>
@@ -85,9 +86,19 @@ const Page = () => {
                 <TableRow key={user.id} onClick={() => setUserId(user.id)}>
                   <TableCell><Checkbox checked={checked} onCheckedChange={onCheckedChange} /></TableCell>
                   <TableCell className="max-w-20 truncate"><OpenFirestoreDoc docRef={getUserRef(user.id)} />{user.id} </TableCell>
-                  <TableCell className="font-medium">{user.email}</TableCell>
-                  <TableCell>{user.pseudo}</TableCell>
-                  <TableCell>{getDateFromString(user.createdAt?.toDate())}</TableCell>
+                  <TableCell className="font-medium flex flex-col justify-start">
+                    <span className="">
+                      {user.pseudo}
+                    </span>
+                    <span className="text-neutral-400 text-xs">
+                      {user.email}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getBadgeVariantByDate(user.createdAt?.toDate())}>
+                      {getDateFromString(user.createdAt?.toDate())}
+                    </Badge>
+                  </TableCell>
                 </TableRow>
               )
             })}

@@ -256,8 +256,7 @@ const LobbyWaiting = () => {
                 </Select>
               </Field>
               <Separator orientation="horizontal" />
-
-              <Field orientation="horizontal" className="justify-between">
+              <Field id={DRIVER_IDS.LOBBY_SPECIAL_ROUNDS} orientation="horizontal" className="justify-between">
                 <FieldDescription>
                   <Label htmlFor="special-rounds">Enable special rounds </Label>
                 </FieldDescription>

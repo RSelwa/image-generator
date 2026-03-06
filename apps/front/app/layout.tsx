@@ -1,3 +1,4 @@
+import { APP_BASE_URL } from "@repo/common"
 import { Analytics } from "@vercel/analytics/next"
 import { type Metadata } from "next"
 import { Geist } from "next/font/google"
@@ -47,6 +48,7 @@ const shapiroWide = localFont({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(APP_BASE_URL),
   title: APP_NAME,
   description: "The geo-guessr for games",
 }

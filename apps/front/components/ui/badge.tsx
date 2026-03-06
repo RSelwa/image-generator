@@ -27,6 +27,10 @@ const badgeVariants = cva(
         [BADGE_VARIANTS.NEUTRAL]: "border-neutral-500 bg-neutral-900/90 text-white",
         [BADGE_VARIANTS.ORANGE]:
           "border-orange-600 bg-orange-400/50 text-orange-200",
+        [BADGE_VARIANTS.PURPLE]: "border-purple-600 bg-purple-400/50 text-purple-200",
+        [BADGE_VARIANTS.YELLOW]: "border-yellow-600 bg-yellow-400/50 text-yellow-200",
+        [BADGE_VARIANTS.PINK]: "border-pink-600 bg-pink-400/50 text-pink-200",
+        [BADGE_VARIANTS.LIME]: "border-lime-600 bg-lime-400/50 text-lime-200",
       },
     },
     defaultVariants: {

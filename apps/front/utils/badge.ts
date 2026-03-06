@@ -41,3 +41,19 @@ export const getBadgeTextSounds = (status: ConstantValues<typeof SOUND_STATUS> |
 export const getBadgeVariantBoolean = (value: boolean) => value ? BADGE_VARIANTS.GREEN : BADGE_VARIANTS.RED
 
 export const getBadgeTextBoolean = (value: boolean) => value ? "True" : "False"
+
+const DAY_VARIANTS = [
+  BADGE_VARIANTS.PINK, // Sunday
+  BADGE_VARIANTS.BLUE, // Monday
+  BADGE_VARIANTS.GREEN, // Tuesday
+  BADGE_VARIANTS.YELLOW, // Wednesday
+  BADGE_VARIANTS.ORANGE, // Thursday
+  BADGE_VARIANTS.LIME, // Friday
+  BADGE_VARIANTS.PURPLE, // Saturday
+] as const
+
+export const getBadgeVariantByDate = (date: Date | null | undefined) => {
+  if (!date) return BADGE_VARIANTS.NEUTRAL
+
+  return DAY_VARIANTS[date.getDay()]
+}
