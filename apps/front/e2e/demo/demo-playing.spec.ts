@@ -112,5 +112,6 @@ test.describe("demo playing", () => {
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
     await expect(page.getByTestId(SELECTORS.LOBBY_FINISHED)).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.FINISHED_LOBBY_ANONYMOUS_MODAL)).toBeVisible()
   })
 })

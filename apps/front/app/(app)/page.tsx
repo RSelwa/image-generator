@@ -33,7 +33,7 @@ const Page = () => {
         <HomeStrips />
         <article className="absolute bottom-18 w-5/6 left-1/2 -translate-x-1/2 lg:translate-x-0 lg:w-auto lg:bottom-9 lg:left-24">
           <h1 className="sr-only">Geo Gamer — GeoGuessr for Video Games</h1>
-          <LogoWithIcon className="lg:h-48" />
+          <LogoWithIcon className="lg:h-48 text-primary" />
         </article>
       </section>
       <section className="grid grid-cols-1 lg:grid-cols-2">

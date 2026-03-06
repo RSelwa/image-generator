@@ -18,6 +18,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { IMAGES_URLS } from "@/constants/images"
 import { QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import {
@@ -142,9 +143,9 @@ export const LoginForm = ({
           </form>
           <div className="bg-muted relative hidden md:block">
             <img
-              src="/signup.png"
+              src={IMAGES_URLS.LOGIN}
               alt="Login"
-              className="absolute inset-0 h-full w-full object-cover dark:grayscale"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
         </CardContent>

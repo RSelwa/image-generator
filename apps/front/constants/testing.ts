@@ -1,4 +1,4 @@
-import { MarkerColor } from "@/components/mini-map";
+import { type MarkerColor } from "@/components/mini-map"
 
 export const SELECTORS = {
   GAME_INPUT_GUESS: "game-input-guess",
@@ -15,5 +15,6 @@ export const SELECTORS = {
   GAME_THUMBNAIL_TITLE: (gameTitle?: string) => `game-thumbnail-${gameTitle}`,
   GAME_MAP: (gameTitle?: string) => `game-map-${gameTitle}`,
   MAP_MARKER: (color?: MarkerColor) => `marker-${color}`,
-  MAP_LINE: "marker-line"
+  MAP_LINE: "marker-line",
+  FINISHED_LOBBY_ANONYMOUS_MODAL: "finished-lobby-anonymous-modal",
 } as const

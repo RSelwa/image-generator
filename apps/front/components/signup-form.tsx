@@ -1,6 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
@@ -18,6 +19,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { IMAGES_URLS } from "@/constants/images"
 import { MODAL_KEYS, QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import {
@@ -146,10 +148,12 @@ export const SignupForm = ({
             </FieldGroup>
           </form>
           <div className="bg-muted relative hidden md:block">
-            <img
-              src="/signup.png"
-              alt="Singup"
-              className="absolute inset-0 h-full w-full object-cover dark:grayscale"
+            <Image
+              src={IMAGES_URLS.SIGNUP}
+              width={450}
+              height={610}
+              alt="Signup image"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
         </CardContent>
