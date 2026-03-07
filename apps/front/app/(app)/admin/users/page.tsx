@@ -3,7 +3,7 @@
 import { getDateFromString } from "@repo/common"
 import { Search } from "lucide-react"
 import { useQueryState } from "nuqs"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import OpenFirestoreDoc from "@/components/open-firestore"
 import SheetAdminUser from "@/components/sheet/user-admin"
 import { Badge } from "@/components/ui/badge"
@@ -21,8 +21,6 @@ const Page = () => {
 
   const { data: usersCount } = useGetUsersCountQuery()
   const { data: users, fetchNextPage, hasNextPage, isFetching } = useGetUsersInfiniteQuery()
-  const captionRef = useRef<HTMLTableCaptionElement>(null)
-
   const [input, setInput] = useState("")
   const [checkedIds, setCheckedIds] = useState<string[]>([])
   const flatUsers = (users?.pages.flat() || []).filter((user) => user.id.includes(input) || user.email?.toLowerCase()?.includes(input.toLowerCase()))
@@ -33,21 +31,13 @@ const Page = () => {
     setCheckedIds(value ? flatUsers.map((user) => user.id) : [])
   }
 
-  const handleIntersect = useCallback((entries: IntersectionObserverEntry[]) => {
-    if (entries[0]?.isIntersecting && hasNextPage && !isFetching) {
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget
+    const isBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100
+    if (isBottom && hasNextPage && !isFetching) {
       fetchNextPage()
     }
   }, [hasNextPage, isFetching, fetchNextPage])
-
-  useEffect(() => {
-    const caption = captionRef.current
-    if (!caption) return
-
-    const observer = new IntersectionObserver(handleIntersect, { threshold: 0.1 })
-    observer.observe(caption)
-
-    return () => observer.disconnect()
-  }, [handleIntersect])
 
   return (
     <main className="h-full-height-admin max-h-full-height-admin p-4 space-y-4">
@@ -62,9 +52,9 @@ const Page = () => {
           <InputGroupInput value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search by id or email" autoComplete="off" />
         </InputGroup>
       </section>
-      <ScrollArea className="h-5/6">
+      <ScrollArea onScroll={handleScroll} className="h-5/6">
         <Table noWrapper>
-          <TableCaption ref={captionRef}>
+          <TableCaption>
             {isFetching && "Loading..."}
             {!isFetching && !hasNextPage && "All users loaded"}
           </TableCaption>

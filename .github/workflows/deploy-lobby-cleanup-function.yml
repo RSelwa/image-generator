@@ -1,0 +1,51 @@
+name: 🚀 Deploy lobby-cleanup
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/deploy-lobby-cleanup-function.yml
+      - functions/lobby-cleanup/**
+      - libs/common/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    name: ⚙️ Initialize Node.js Environment
+    if: github.event_name != 'release'
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [init]
+    name: 🚀 Deploy lobby-cleanup function
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    environment: prod
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: ⚙️ Install Firebase tools
+        run: pnpm install -g firebase-tools
+
+      - name: 🚀 Deploy to Firebase
+        run: npx firebase deploy --project "$PROJECT_ID" --only functions:lobby-cleanup --force --debug
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}

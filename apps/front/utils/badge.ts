@@ -1,4 +1,4 @@
-import { type ConstantValues, SOCIALS_STATUS, SOUND_STATUS } from "@repo/common"
+import { type ConstantValues, LOBBY_STATUS, SOCIALS_STATUS, SOUND_STATUS } from "@repo/common"
 import { BADGE_VARIANTS } from "@/constants/mapping"
 
 export const getBadgeVariantSocials = (status: ConstantValues<typeof SOCIALS_STATUS> | null) => {
@@ -56,4 +56,14 @@ export const getBadgeVariantByDate = (date: Date | null | undefined) => {
   if (!date) return BADGE_VARIANTS.NEUTRAL
 
   return DAY_VARIANTS[date.getDay()]
+}
+
+export const getBadgeVariantLobbyStatus = (status: ConstantValues<typeof LOBBY_STATUS>) => {
+  if (status === LOBBY_STATUS.WAITING) return BADGE_VARIANTS.BLUE
+  if (status === LOBBY_STATUS.STARTING) return BADGE_VARIANTS.ORANGE
+  if (status === LOBBY_STATUS.PLAYING) return BADGE_VARIANTS.GREEN
+  if (status === LOBBY_STATUS.FINISHED) return BADGE_VARIANTS.PINK
+  if (status === LOBBY_STATUS.ABANDONED) return BADGE_VARIANTS.RED
+
+  return BADGE_VARIANTS.NEUTRAL
 }

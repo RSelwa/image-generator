@@ -1,6 +1,5 @@
 "use client"
 
-import { LOBBY_STATUS } from "@repo/common"
 import Link from "next/link"
 import AdminHeader from "@/components/admin-header"
 import { Badge } from "@/components/ui/badge"
@@ -15,13 +14,7 @@ import {
 import { BADGE_VARIANTS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useGetOngoingLobbiesQuery } from "@/redux/api/lobby"
-
-const STATUS_TO_VARIANT = {
-  [LOBBY_STATUS.WAITING]: BADGE_VARIANTS.BLUE,
-  [LOBBY_STATUS.STARTING]: BADGE_VARIANTS.ORANGE,
-  [LOBBY_STATUS.PLAYING]: BADGE_VARIANTS.GREEN,
-  [LOBBY_STATUS.FINISHED]: BADGE_VARIANTS.NEUTRAL,
-} as const
+import { getBadgeVariantLobbyStatus } from "@/utils/badge"
 
 const formatDate = (timestamp: unknown) => {
   if (!timestamp) return "-"
@@ -72,7 +65,7 @@ const Page = () => {
               <TableRow key={lobby.id}>
                 <TableCell className="font-mono font-bold">{lobby.code}</TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_TO_VARIANT[lobby.status]}>
+                  <Badge variant={getBadgeVariantLobbyStatus(lobby.status)}>
                     {lobby.status}
                   </Badge>
                 </TableCell>

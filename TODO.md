@@ -93,8 +93,10 @@
   - [x] Ajouter une image pour le share seo
   - [x] Setup Reels Insta et tiktok
   - [x] allow users to see their lobby history
+  - [x] implement seeds that will be featured like flim discover
+  - [x] Implement dashboard to see lobbies
+  - [x] Clean abandoned lobbies
   - [ ] Implement modals system for pubing/infos
-  - [ ] implement seeds that will be featured like flim discover
   - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples
   - [ ] Improve comments on instagram
   - [ ] Add new avatar, check visual goodies

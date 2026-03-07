@@ -360,7 +360,7 @@ export const lobbyApi = createApi({
 
           // Add player to lobby
           const updatedPlayers = [...currentPlayers, player]
-          const playersIds = [...currentPlayers.map(({uid})=>uid), player.uid]
+          const playersIds = [...currentPlayers.map(({ uid }) => uid), player.uid]
 
           await updateDoc(lobbyRef, {
             players: updatedPlayers,
