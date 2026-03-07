@@ -20,6 +20,11 @@ const Page = () => {
       image: FALL_BACK_IMAGE,
       label: "Test",
     },
+    {
+      url: PAGES.ADMIN_LOBBIES,
+      image: FALL_BACK_IMAGE,
+      label: "Lobbies",
+    },
   ]
 
   return (

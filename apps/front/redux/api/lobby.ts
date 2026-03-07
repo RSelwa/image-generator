@@ -1128,6 +1128,120 @@ export const lobbyApi = createApi({
           { type: "LobbyHistory" as const },
         ] : [{ type: "LobbyHistory" as const }],
     }),
+    subscribeAllRoundAnswers: builder.query<RoundAnswerDocWithId[], { lobbyId: string, numberOfRounds: number }>({
+      queryFn: async ({ lobbyId, numberOfRounds }) => {
+        try {
+          const rounds: RoundAnswerDocWithId[] = []
+
+          for (let i = 1; i <= numberOfRounds; i++) {
+            const roundAnswerSnap = await getDoc(getRoundAnswerRef(lobbyId, String(i)))
+
+            if (!roundAnswerSnap.exists()) continue
+
+            const { data, error } = roundAnswerDocWithIdSchema.safeParse({
+              id: roundAnswerSnap.id,
+              ...roundAnswerSnap.data(),
+            })
+
+            if (!error) rounds.push(data)
+          }
+
+          return { data: rounds }
+        } catch (error) {
+          console.error("Error fetching all round answers:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      onCacheEntryAdded: async (
+        { lobbyId, numberOfRounds },
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) => {
+        const unsubscribes: Unsubscribe[] = []
+
+        try {
+          await cacheDataLoaded
+
+          for (let i = 1; i <= numberOfRounds; i++) {
+            const roundAnswerRef = getRoundAnswerRef(lobbyId, String(i))
+
+            const unsubscribe = onSnapshot(
+              roundAnswerRef,
+              (snapshot) => {
+                if (!snapshot.exists()) return
+
+                const { data, error } = roundAnswerDocWithIdSchema.safeParse({
+                  id: snapshot.id,
+                  ...snapshot.data(),
+                })
+
+                if (error) return
+
+                updateCachedData((draft) => {
+                  const index = draft.findIndex((r) => r.roundIndex === data.roundIndex)
+
+                  if (index >= 0) {
+                    if (isEqual(draft[index], data)) return
+                    draft[index] = data
+                  } else {
+                    draft.push(data)
+                    draft.sort((a, b) => a.roundIndex - b.roundIndex)
+                  }
+                })
+              },
+              (error) => {
+                console.error(`Error in round ${i} snapshot listener:`, error)
+              },
+            )
+
+            unsubscribes.push(unsubscribe)
+          }
+        } catch (error) {
+          console.error("Error setting up round answers listeners:", error)
+        }
+
+        await cacheEntryRemoved
+        unsubscribes.forEach((unsub) => unsub())
+      },
+    }),
+    getOngoingLobbies: builder.query<LobbyDocWithId[], void>({
+      queryFn: async () => {
+        try {
+          const constraints: QueryConstraint[] = [
+            where("status", "in", [LOBBY_STATUS.WAITING, LOBBY_STATUS.STARTING, LOBBY_STATUS.PLAYING]),
+            orderBy("createdAt", "desc"),
+            limit(100),
+          ]
+
+          const q = query(TABLE_REFS[TABLES.LOBBIES], ...constraints)
+          const snapshot = await getDocs(q)
+
+          const lobbies = snapshot.docs
+            .map((doc) => {
+              const { data, error } = lobbyDocWithIdSchema.safeParse({
+                id: doc.id,
+                ...doc.data(),
+              })
+
+              if (error) return null
+
+              return data
+            })
+            .filter((l) => l !== null)
+
+          return { data: lobbies }
+        } catch (error) {
+          console.error("Error fetching ongoing lobbies:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      providesTags: ["Lobby"],
+    }),
     getNumberGameFoundByPlayer: builder.query<{ numberGameFound: number }, { lobbyId: string, playerId: string }>({
       queryFn: async ({ lobbyId, playerId }, { dispatch }) => {
         try {
@@ -1183,5 +1297,7 @@ export const {
   useSelectOptionIndexMutation,
   useGetNumberGameFoundByPlayerQuery,
   useCreateDemoLobbyMutation,
+  useSubscribeAllRoundAnswersQuery,
+  useGetOngoingLobbiesQuery,
   useGetMyLobbyHistoryInfiniteQuery,
 } = lobbyApi

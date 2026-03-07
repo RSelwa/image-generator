@@ -18,6 +18,7 @@ export const PAGES = {
   ADMIN_TEST: "/admin/test",
   ADMIN_SOCIALS: "/admin/socials",
   ADMIN_SOUNDS: "/admin/sounds",
+  ADMIN_LOBBIES: "/admin/lobbies",
   ADMIN_FULLSCREEN: "/admin/full-screen",
   ADMIN_SPHERICAL_FULLSCREEN: "/admin/spherical-full-screen",
   SEED_MAKER: "/seed-maker",

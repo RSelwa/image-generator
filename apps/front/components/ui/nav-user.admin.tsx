@@ -50,6 +50,12 @@ const NavUserAdmin = () => {
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                        <Link href={PAGES.ADMIN_LOBBIES} className="cursor-pointer">
+                            <Image />
+                            Lobbies
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                         <Link href={PAGES.ADMIN_SUGGESTIONS} className="cursor-pointer">
                             <Lightbulb />
                             Suggestions
