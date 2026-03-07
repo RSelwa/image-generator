@@ -4,7 +4,16 @@ import Link from "next/link"
 import * as React from "react"
 import { LogoIcon, StripsBlock } from "@/components/icons"
 import { Button } from "@/components/ui/button"
+import { PAGES } from "@/constants/pages"
 import { FOOTER_LEGALS, FOOTER_SOCIALS, PORTFOLIO_LINK } from "@/constants/social"
+
+const FOOTER_INTERNAL_LINKS = [
+    { label: "Dashboard", href: PAGES.DASHBOARD },
+    { label: "My Seeds", href: PAGES.MY_SEEDS },
+    { label: "Blog", href: "/blog" },
+    { label: "History", href: PAGES.HISTORY },
+    { label: "Account", href: PAGES.ACCOUNT },
+]
 
 const HomeFooter = () => {
     return (
@@ -16,6 +25,18 @@ const HomeFooter = () => {
             <section className="inset-shadow-marathon grid grid-cols-3 mt-auto lg:row-start-1 lg:col-start-1">
                 <p className="border-primary border-r p-4 ">({FOOTER_SOCIALS.length})</p>
                 <p className="p-4 col-span-2">Social Medias</p>
+            </section>
+            <section className="inset-shadow-marathon lg:col-start-1 lg:row-start-2 p-4 flex flex-col">
+                {FOOTER_INTERNAL_LINKS.map(({ label, href }) => (
+                    <Link key={label} href={href}>
+                        <Button variant="marathon-link" className="px-0! gap-0 text-primary text-xs">
+                            [
+                            <ArrowUpRight className="size-4" />
+                            ]
+                            {label}
+                        </Button>
+                    </Link>
+                ))}
             </section>
             <section className="inset-shadow-marathon lg:col-start-2 lg:row-start-2 p-4 flex flex-col">
                 {FOOTER_SOCIALS.map(({ label, href }) => (

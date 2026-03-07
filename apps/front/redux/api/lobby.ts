@@ -21,9 +21,13 @@ import {
   addDoc,
   getDoc,
   getDocs,
+  limit,
   onSnapshot,
+  orderBy,
   query,
+  type QueryConstraint,
   setDoc,
+  startAfter,
   Timestamp,
   type Unsubscribe,
   updateDoc,
@@ -31,6 +35,7 @@ import {
 } from "firebase/firestore"
 import { toast } from "sonner"
 import z from "zod"
+import { DEFAULT_SIZE_LOBBY_HISTORY } from "@/constants/api"
 import { auth } from "@/constants/db"
 import { getLobbyRef, getRoundAnswerRef, TABLE_REFS } from "@/constants/db-refs"
 import { API_ENDPOINTS } from "@/constants/mapping"
@@ -42,7 +47,7 @@ import { createPlayerFromSessionUser, generateRandomCode } from "@/utils/player"
 export const lobbyApi = createApi({
   reducerPath: "lobbyApi",
   baseQuery: fakeBaseQuery<GlobalError>(),
-  tagTypes: ["Lobby", "LobbyByCode"],
+  tagTypes: ["Lobby", "LobbyByCode", "LobbyHistory"],
   endpoints: (builder) => ({
     getLobbyById: builder.query<LobbyDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
@@ -1045,6 +1050,84 @@ export const lobbyApi = createApi({
         }
       },
     }),
+    getMyLobbyHistory: builder.infiniteQuery<
+      LobbyDocWithId[],
+      { userId: string },
+      { limit?: number, startAfterCreatedAt?: string }
+    >({
+      queryFn: async ({ queryArg, pageParam }) => {
+        try {
+          const constraints: QueryConstraint[] = [
+            where("playersIds", "array-contains", queryArg.userId),
+            orderBy("createdAt", "desc"),
+          ]
+
+          if (pageParam.startAfterCreatedAt) {
+            const date = new Date(pageParam.startAfterCreatedAt)
+            constraints.push(startAfter(Timestamp.fromDate(date)))
+          }
+
+          if (pageParam.limit) {
+            constraints.push(limit(pageParam.limit))
+          }
+
+          const q = query(TABLE_REFS[TABLES.LOBBIES], ...constraints)
+          const snapshot = await getDocs(q)
+
+          const lobbies = snapshot.docs
+            .map((doc) => {
+              const { data, error } = lobbyDocWithIdSchema.safeParse({
+                id: doc.id,
+                ...doc.data(),
+              })
+
+              if (error) return null
+
+              return data
+            })
+            .filter((l) => l !== null)
+
+          return { data: lobbies }
+        } catch (error) {
+          console.error("Error fetching lobby history:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      infiniteQueryOptions: {
+        initialPageParam: {
+          limit: DEFAULT_SIZE_LOBBY_HISTORY,
+          startAfterCreatedAt: "",
+        },
+        getNextPageParam: (_, allPages, lastPageParams) => {
+          const lastPage = allPages.at(-1)
+          const lastLobby = lastPage?.at(-1)
+
+          const limitValue = lastPageParams?.limit || DEFAULT_SIZE_LOBBY_HISTORY
+
+          if (!lastPage || lastPage.length < limitValue) {
+            return undefined
+          }
+
+          const createdAt = lastLobby?.createdAt
+          if (!createdAt) return undefined
+
+          return {
+            startAfterCreatedAt: (createdAt as unknown as { toDate: () => Date }).toDate().toISOString(),
+            limit: limitValue,
+          }
+        },
+      },
+      providesTags: (result) =>
+        result ? [
+          ...result.pages
+            .flat()
+            .map(({ id }) => ({ type: "LobbyHistory" as const, id })),
+          { type: "LobbyHistory" as const },
+        ] : [{ type: "LobbyHistory" as const }],
+    }),
     getNumberGameFoundByPlayer: builder.query<{ numberGameFound: number }, { lobbyId: string, playerId: string }>({
       queryFn: async ({ lobbyId, playerId }, { dispatch }) => {
         try {
@@ -1100,4 +1183,5 @@ export const {
   useSelectOptionIndexMutation,
   useGetNumberGameFoundByPlayerQuery,
   useCreateDemoLobbyMutation,
+  useGetMyLobbyHistoryInfiniteQuery,
 } = lobbyApi

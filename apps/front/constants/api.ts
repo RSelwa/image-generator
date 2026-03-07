@@ -4,6 +4,7 @@ export const DEFAULT_SIZE_MAPS = 100
 export const DEFAULT_SIZE_FLATS = 20
 export const DEFAULT_SIZE_SUGGESTIONS = 20
 export const DEFAULT_SIZE_USERS = 20
+export const DEFAULT_SIZE_LOBBY_HISTORY = 20
 
 export const ENDPOINTS_BASE = {
   UPLOAD_IMAGE: "/api/upload-image",

@@ -16,15 +16,17 @@ import { Field, FieldDescription } from "@/components/ui/field"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group"
 import { Label } from "@/components/ui/label"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { DRIVER_IDS, STEPS } from "@/constants/driver"
-import { ASSET_URLS, STORAGE_KEYS } from "@/constants/mapping"
+import { ASSET_URLS, FALL_BACK_IMAGE, STORAGE_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useLocalStorage } from "@/hooks/use-storage"
 import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyConfigMutation, useUpdatePlayerReadyMutation } from "@/redux/api/lobby"
 import { useApplySeedToLobbyMutation } from "@/redux/api/local"
+import { useGetFeaturedSeedsQuery } from "@/redux/api/seed"
 import { selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -42,6 +44,7 @@ const LobbyWaiting = () => {
 
   const [isSkipDriver, setIsSkipDriver] = useLocalStorage(STORAGE_KEYS.DRIVER_WAITING_ROOM, false)
 
+  const { data: featuredSeeds } = useGetFeaturedSeedsQuery()
   const { data: lobby } = useSubscribeLobbyQuery({ id: lobbyId }, {
     skip: !lobbyId,
   })
@@ -53,6 +56,7 @@ const LobbyWaiting = () => {
 
   const userId = useAppSelector(selectUserId)
   const isOwner = useAppSelector(selectIsLobbyHost(lobbyId))
+  const isOnlyPlayer = lobby?.players.length === 1
 
   const {
     handleSubmit,
@@ -64,6 +68,10 @@ const LobbyWaiting = () => {
       seed: lobby?.seedId || "",
     },
   })
+
+  useEffect(() => {
+    reset({ seed: lobby?.seedId || "" })
+  }, [lobby?.seedId])
 
   const initDriver = () => {
     if (isSkipDriver) return
@@ -103,7 +111,6 @@ const LobbyWaiting = () => {
   const hasLobbySeed = Boolean(lobby.seedId)
   const areAllPlayersReady = lobby.players.every((p) => p.isReady)
   const isMeReady = lobby.players.find((p) => p.uid === userId)?.isReady
-  const isOnlyPlayer = lobby.players.length === 1
 
   const changeConfig = (newConfig: Partial<LobbyDoc["config"]>) => {
     if (!isOwner) {
@@ -158,7 +165,7 @@ const LobbyWaiting = () => {
           )}
         </section>
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <article id={DRIVER_IDS.LOBBY_CONFIG} className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
+          <article id={DRIVER_IDS.LOBBY_CONFIG} className="w-full flex flex-col border border-dashed items-center justify-between p-6">
             <h2 className="mb-8">Config</h2>
             <div className="flex flex-col items-center gap-4">
               <Separator orientation="horizontal" />
@@ -268,45 +275,57 @@ const LobbyWaiting = () => {
                     changeConfig({ hasSpecialRounds: checked })}
                   disabled={disabled || hasLobbySeed}
                 />
-
               </Field>
             </div>
           </article>
           <article className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
-            <h2 className="mb-8">Seed</h2>
-            <form autoComplete="off" onSubmit={handleSubmit(onSubmitSeed)}>
-              <InputGroup id={DRIVER_IDS.LOBBY_SEED}>
-                <InputGroupInput
-                  placeholder="Paste seed here"
-                  data-testid="seed-input"
-                  disabled={isLoading || disabled}
-                  {...register("seed")}
-                  onPaste={(e) => {
-                    if (e.clipboardData.getData("text")) setTimeout(() => handleSubmit(onSubmitSeed)(), 0)
-                  }}
-                />
-                <InputGroupAddon>
-                  {!hasLobbySeed && (
-                    <InputGroupButton
-                      data-testid="apply-seed-button"
-                      type="submit"
-                    >
-                      <ArrowRight className="size-4" />
-                    </InputGroupButton>
-                  )}
+            <div className="flex items-center gap-8">
+              <h2>Seed</h2>
+              <form autoComplete="off" onSubmit={handleSubmit(onSubmitSeed)}>
+                <InputGroup id={DRIVER_IDS.LOBBY_SEED}>
+                  <InputGroupInput
+                    placeholder="Paste seed here"
+                    data-testid="seed-input"
+                    disabled={isLoading || disabled}
+                    {...register("seed")}
+                    onPaste={(e) => {
+                      if (e.clipboardData.getData("text")) setTimeout(() => handleSubmit(onSubmitSeed)(), 0)
+                    }}
+                  />
+                  <InputGroupAddon>
+                    {!hasLobbySeed && (
+                      <InputGroupButton
+                        data-testid="apply-seed-button"
+                        type="submit"
+                      >
+                        <ArrowRight className="size-4" />
+                      </InputGroupButton>
+                    )}
 
-                  {hasLobbySeed && (
-                    <InputGroupButton
-                      data-testid="clear-seed-button"
-                      onClick={async () => applySeed({ lobbyId: lobby.id, seedId: "" })}
-                    >
-                      <Trash className="size-4" />
-                    </InputGroupButton>
-                  )}
-                </InputGroupAddon>
-              </InputGroup>
+                    {hasLobbySeed && (
+                      <InputGroupButton
+                        data-testid="clear-seed-button"
+                        onClick={async () => applySeed({ lobbyId: lobby.id, seedId: "" })}
+                      >
+                        <Trash className="size-4" />
+                      </InputGroupButton>
+                    )}
+                  </InputGroupAddon>
+                </InputGroup>
+              </form>
+            </div>
 
-            </form>
+            <ScrollArea className="h-64 relative w-full">
+              <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-2">
+                {featuredSeeds?.map((seed) => (
+                  <button disabled={isLoading || disabled} key={seed.id} className="cursor-pointer hover:bg-primary/50 relative" onClick={() => applySeed({ lobbyId: lobby.id, seedId: seed.id })}>
+                    <Image src={seed.rounds[0]?.gameThumbnailUrl || FALL_BACK_IMAGE} alt={seed.name} width={100} height={100} className="object-cover object-center size-full max-h-28" />
+                    <p className="bg-background text-primary font-mono absolute bottom-0 left-0 w-full">{seed.name}</p>
+                  </button>
+                ))}
+              </div>
+              <span className="absolute bottom-0 left-0 w-full h-14 bg-linear-to-b from-transparent to-background/80" />
+            </ScrollArea>
           </article>
         </section>
         <section className="w-full flex flex-col lg:flex-row justify-center border border-dashed items-center gap-4 p-6 ">

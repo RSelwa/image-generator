@@ -8,7 +8,7 @@ import { globalErrorHandler } from "@/utils/error"
 export const seedApi = createApi({
   reducerPath: "seedApi",
   baseQuery: fakeBaseQuery(),
-  tagTypes: ["Seed"],
+  tagTypes: ["Seed", "Seeds"],
   endpoints: (builder) => ({
     getSeedById: builder.query({
       queryFn: async ({ id }) => {
@@ -70,7 +70,9 @@ export const seedApi = createApi({
             error: globalErrorHandler(error),
           }
         }
-      }
+      },
+      providesTags: () =>
+        [{ type: "Seeds" }],
     }),
     toggleFeaturedSeed: builder.mutation({
       queryFn: async ({ id, featured }, { dispatch }) => {
@@ -96,9 +98,71 @@ export const seedApi = createApi({
           }
         }
       },
-      invalidatesTags: (result, error, arg) => [{ type: "Seed", id: arg.id }],
+      invalidatesTags: (result, error, arg) => [{ type: "Seed", id: arg.id }, { type: "Seeds" }],
+    }),
+    changeSeedName: builder.mutation({
+      queryFn: async ({ id, name }, { dispatch }) => {
+        try {
+          const seedData = await dispatch(seedApi.endpoints.getSeedById.initiate({ id })).unwrap()
+
+          if (!seedData) {
+            throw new Error("Seed not found")
+          }
+
+          await updateDoc(getSeedRef(id), {
+            name,
+          })
+
+          return { data: { id, name } }
+        } catch (error) {
+          console.error(`Error changing name for seed ${id}:`, error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      invalidatesTags: (result, error, arg) => [{ type: "Seed", id: arg.id }, { type: "Seeds" }],
+    }),
+    getFeaturedSeeds: builder.query<SeedDocWithId[], void>({
+      queryFn: async () => {
+        try {
+          const q = query(
+            TABLE_REFS[TABLES.SEEDS],
+            where("featuredAt", "!=", null),
+            orderBy("featuredAt", "desc"),
+          )
+
+          const snapshot = await getDocs(q)
+
+          const seeds = snapshot.docs.map((docSnap) => {
+            const { data, error } = seedDocWithIdSchema.safeParse({
+              id: docSnap.id,
+              ...docSnap.data(),
+            })
+
+            if (error) {
+              console.error(`Error parsing featured seed ${docSnap.id}:`, error)
+
+              return null
+            }
+
+            return data
+          }).filter((seed) => seed !== null)
+
+          return { data: seeds }
+        } catch (error) {
+          console.error("Error fetching featured seeds:", error)
+
+          return {
+            error: globalErrorHandler(error),
+          }
+        }
+      },
+      providesTags: () =>
+        [{ type: "Seeds" }],
     })
   }),
 })
 
-export const { useGetSeedByIdQuery, useGetMySeedsQuery, useToggleFeaturedSeedMutation } = seedApi
+export const { useGetSeedByIdQuery, useGetMySeedsQuery, useToggleFeaturedSeedMutation, useChangeSeedNameMutation, useGetFeaturedSeedsQuery } = seedApi

@@ -4,6 +4,7 @@ import { UMA_STUDIO_URL } from "@repo/common"
 
 import {
   Brush,
+  History,
   LogOut,
   User,
   Wrench,
@@ -83,16 +84,20 @@ export const NavUser = () => {
             <Zap />
             Play
           </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>Account</DropdownMenuLabel>
           <DropdownMenuItem asChild>
             <Link href={PAGES.ACCOUNT} className="cursor-pointer">
               <User />
               Account
             </Link>
           </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={PAGES.HISTORY} className="cursor-pointer" data-testid="nav-history-link">
+              <History />
+              History
+            </Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
+        <DropdownMenuGroup />
         <DropdownMenuSeparator />
         <HelperMenuContent />
         <DropdownMenuSeparator />
