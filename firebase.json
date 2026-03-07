@@ -53,6 +53,15 @@
         "pnpm build:socials"
       ],
       "codebase": "socials"
+    },
+    {
+      "source": "functions/lobby-cleanup",
+      "runtime": "nodejs22",
+      "isolate": true,
+      "predeploy": [
+        "pnpm build:lobby-cleanup"
+      ],
+      "codebase": "lobby-cleanup"
     }
   ],
   "emulators": {

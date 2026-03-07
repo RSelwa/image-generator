@@ -39,6 +39,7 @@ export const LOBBY_STATUS = {
   STARTING: "starting",
   PLAYING: "playing",
   FINISHED: "finished",
+  ABANDONED: "abandoned",
 } as const
 
 export const ROUND_TYPE = {

@@ -1,7 +1,7 @@
 "use client"
 
 import { LOBBY_STATUS } from "@repo/common"
-import type { PlayerAnswer, RoundAnswerDocWithId } from "@repo/schemas"
+import { type PlayerAnswer, type RoundAnswerDocWithId } from "@repo/schemas"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
@@ -16,13 +16,7 @@ import {
 import { BADGE_VARIANTS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useSubscribeAllRoundAnswersQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
-
-const STATUS_TO_VARIANT = {
-  [LOBBY_STATUS.WAITING]: BADGE_VARIANTS.BLUE,
-  [LOBBY_STATUS.STARTING]: BADGE_VARIANTS.ORANGE,
-  [LOBBY_STATUS.PLAYING]: BADGE_VARIANTS.GREEN,
-  [LOBBY_STATUS.FINISHED]: BADGE_VARIANTS.NEUTRAL,
-} as const
+import { getBadgeVariantLobbyStatus } from "@/utils/badge"
 
 const getLobbyIdFromPathname = (pathname: string) => {
   const match = pathname.match(/\/admin\/lobbies\/([^/]+)/)
@@ -140,7 +134,7 @@ const Page = () => {
         <h1 className="text-2xl font-semibold">
           Lobby <span className="font-mono">{lobby.code}</span>
         </h1>
-        <Badge variant={STATUS_TO_VARIANT[lobby.status]}>{lobby.status}</Badge>
+        <Badge variant={getBadgeVariantLobbyStatus(lobby.status)}>{lobby.status}</Badge>
         {lobby.isDemo && <Badge variant={BADGE_VARIANTS.PURPLE}>Demo</Badge>}
       </div>
 
