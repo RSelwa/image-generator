@@ -23,6 +23,7 @@ export const PAGES = {
   SEED_MAKER: "/seed-maker",
   MY_SEEDS: "/my-seeds",
   ACCOUNT: "/account",
+  HISTORY: "/history",
   PROMO: "/promo",
   BLOG: (slug: string) => `/blog/${slug}`,
 } as const

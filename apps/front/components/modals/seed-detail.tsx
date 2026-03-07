@@ -5,12 +5,16 @@ import { type Round } from "@repo/schemas"
 import { Clock, Copy, Play, Star, StarOff } from "lucide-react"
 import Image from "next/image"
 import { useQueryState } from "nuqs"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { DIFFICULTIES_TO_BADGE_VARIANT, FALL_BACK_IMAGE, MODAL_KEYS } from "@/constants/mapping"
-import { useGetSeedByIdQuery, useToggleFeaturedSeedMutation } from "@/redux/api/seed"
+import { useChangeSeedNameMutation, useGetSeedByIdQuery, useToggleFeaturedSeedMutation } from "@/redux/api/seed"
+
+const DEBOUNCE_DELAY = 700
 
 const RoundRow = ({ round, index }: { round: Round, index: number }) => {
   const imageUrl = round.isSpecial ? round.options?.[0]?.thumbnailUrl : round.type === ROUND_TYPE.FLAT ? round.flatImageUrl : round.sphericalImageUrl
@@ -52,8 +56,8 @@ const RoundRow = ({ round, index }: { round: Round, index: number }) => {
       </div>
       {round.isSpecial && round.options && (
         <div className="flex gap-1">
-          {round.options.map((option, i) => (
-            <div key={i} className="relative size-10 overflow-hidden rounded">
+          {round.options.map((option) => (
+            <div key={option.thumbnailUrl} className="relative size-10 overflow-hidden rounded">
               <Image
                 src={option.thumbnailUrl || FALL_BACK_IMAGE}
                 alt={option.gameTitle}
@@ -70,12 +74,30 @@ const RoundRow = ({ round, index }: { round: Round, index: number }) => {
 
 export const SeedDetailModal = () => {
   const [seedId] = useQueryState(MODAL_KEYS.SEED_DETAIL)
-  const [toggleFeatured, { isLoading: isLoadingUpdate }] = useToggleFeaturedSeedMutation()
+  const [toggleFeatured, { isLoading: isLoadingFeatured }] = useToggleFeaturedSeedMutation()
+  const [changeName, { isLoading: isLoadingName }] = useChangeSeedNameMutation()
+
+  const [localName, setLocalName] = useState("")
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const debouncedChangeName = useCallback((name: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    debounceRef.current = setTimeout(() => {
+      if (seedId) changeName({ id: seedId, name })
+    }, DEBOUNCE_DELAY)
+  }, [seedId, changeName])
+
+  const isLoadingUpdate = isLoadingFeatured || isLoadingName
 
   const { data: seed, isLoading } = useGetSeedByIdQuery(
     { id: seedId || "" },
     { skip: !seedId },
   )
+
+  useEffect(() => {
+    setLocalName(seed?.name || "Unnamed seed")
+  }, [seed?.name])
 
   if (!seedId || isLoading) {
     return <LoadingModal modalKey={MODAL_KEYS.SEED_DETAIL} />
@@ -105,12 +127,18 @@ export const SeedDetailModal = () => {
       <div className="space-y-4 pt-4">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold  flex items-center gap-4">
-              {seed.name || "Unnamed seed"}
+            <div className="text-xl font-bold  flex items-center gap-4">
+              <Input
+                value={localName}
+                onChange={(e) => {
+                  setLocalName(e.target.value)
+                  debouncedChangeName(e.target.value)
+                }}
+              />
               <button disabled={isLoadingUpdate} onClick={() => toggleFeatured({ id: seed.id })} className="disabled:bg-neutral-300">
                 {seed.featuredAt ? <Star className="size-4 fill-primary text-primary" /> : <StarOff className="size-4 text-primary" />}
               </button>
-            </h2>
+            </div>
             <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Play className="size-3" />
@@ -144,7 +172,7 @@ export const SeedDetailModal = () => {
 
         <div className="flex flex-col gap-2">
           {seed.rounds.map((round, index) => (
-            <RoundRow key={index} round={round} index={index} />
+            <RoundRow key={round.gameId || index} round={round} index={index} />
           ))}
         </div>
       </div>

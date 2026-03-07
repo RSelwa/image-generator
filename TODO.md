@@ -92,7 +92,7 @@
   - [x] Improve driver to explain specials rounds
   - [x] Ajouter une image pour le share seo
   - [x] Setup Reels Insta et tiktok
-  - [ ] allow users to see their lobby history
+  - [x] allow users to see their lobby history
   - [ ] Implement modals system for pubing/infos
   - [ ] implement seeds that will be featured like flim discover
   - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples

@@ -50,7 +50,7 @@ const shapiroWide = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(APP_BASE_URL),
   title: APP_NAME,
-  description: "The geo-guessr for games",
+  description: "Guess iconic video game locations solo or with friends. 300+ scenes, real-time multiplayer, free to play.",
 }
 
 export default function RootLayout({
