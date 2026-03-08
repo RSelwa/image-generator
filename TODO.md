@@ -96,6 +96,9 @@
   - [x] implement seeds that will be featured like flim discover
   - [x] Implement dashboard to see lobbies
   - [x] Clean abandoned lobbies
+  - [ ] fix the issues on the sphericals/flats rows, when no map selected, should check if already a thumbnail
+  - [ ] make the thumbnail square when in sphericalId/flat Id state
+  - [ ] Try to priorize the sphericals in special rounds instead of flats
   - [ ] Implement modals system for pubing/infos
   - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples
   - [ ] Improve comments on instagram

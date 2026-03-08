@@ -99,7 +99,7 @@ const SphericalForm = ({
       mapId: "",
       mapPosition: { x: 50, y: 50 },
       difficulty: DIFFICULTIES.EASY,
-      status: DOCUMENTS_STATUS.NEED_VERIFICATION,
+      status: DOCUMENTS_STATUS.WAITING,
       thumbnail: "",
       youtubeLink: ""
     },
@@ -341,21 +341,6 @@ const SphericalForm = ({
         )}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-6">
           <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="thumbnail">Thumbnail</FieldLabel>
-              <ImageDropzone
-                imageUrl={thumbnail || null}
-                onFileSelect={handleThumbnailUpload}
-                onRemove={handleRemoveThumbnail}
-                isUploading={isThumbnailUploading}
-                alt="Thumbnail image"
-                className="h-32"
-              />
-              {errors.thumbnail && (
-                <FieldError>{errors.thumbnail.message}</FieldError>
-              )}
-            </Field>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <Field>
                 <FieldLabel htmlFor="mapId">Map</FieldLabel>
@@ -590,6 +575,20 @@ const SphericalForm = ({
               </div>
             )}
             {errors.image && <FieldError>{errors.image.message}</FieldError>}
+            <Field>
+              <FieldLabel htmlFor="thumbnail">Thumbnail</FieldLabel>
+              <ImageDropzone
+                imageUrl={thumbnail || null}
+                onFileSelect={handleThumbnailUpload}
+                onRemove={handleRemoveThumbnail}
+                isUploading={isThumbnailUploading}
+                alt="Thumbnail image"
+                className="aspect-square w-full"
+              />
+              {errors.thumbnail && (
+                <FieldError>{errors.thumbnail.message}</FieldError>
+              )}
+            </Field>
           </div>
         </div>
 
