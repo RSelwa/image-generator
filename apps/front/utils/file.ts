@@ -1,7 +1,7 @@
-import { type AVATARS_KEYS, type ConstantValues, type STORAGE_PATHS } from "@repo/common"
+import { AVATARS_KEYS, type ConstantValues, type STORAGE_PATHS } from "@repo/common"
 import { ENDPOINTS_BASE } from "@/constants/api"
 import { auth } from "@/constants/db"
-import { AVATARS_URLS } from "@/constants/mapping"
+import { AVATARS_URLS } from "@/constants/images"
 
 interface Props {
   file: File
@@ -46,9 +46,9 @@ export const uploadFileToBucket = async ({
 export const getAvatarUrl = (avatarKey: ConstantValues<typeof AVATARS_KEYS>) => AVATARS_URLS[avatarKey]
 
 export const getAvatarKeyFromUrl = (avatarUrl: string) => {
-  const entry = Object.entries(AVATARS_URLS).find(([key, url]) => url === avatarUrl)
+  const entry = Object.values(AVATARS_URLS).find((url) => url === avatarUrl)
 
-  return entry ? (entry[0] as ConstantValues<typeof AVATARS_KEYS>) : null
+  return entry ? (entry[0] as ConstantValues<typeof AVATARS_KEYS>) : AVATARS_KEYS.ASSASSIN
 }
 
 export const getVideoIdFromYoutubeLink = (link: string) => {

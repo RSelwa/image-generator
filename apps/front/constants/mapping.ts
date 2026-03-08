@@ -1,4 +1,4 @@
-import { AVATARS_KEYS, DIFFICULTIES, DOCUMENTS_STATUS, SUGGESTIONS_TYPE } from "@repo/common"
+import { DIFFICULTIES, DOCUMENTS_STATUS, SUGGESTIONS_TYPE } from "@repo/common"
 
 export const IS_PLAYWRIGHT_EMULATOR = process.env.NEXT_PUBLIC_EMULATOR
 
@@ -103,20 +103,6 @@ export const ASSET_URLS = {
   STRIP_ICONS: "/assets/left-icons.png",
   CREATOR_BACKGROUND: "/creator-background.svg",
   BOTTOM_GB: "/gb-br.png",
-} as const
-
-export const AVATARS_URLS = {
-  [AVATARS_KEYS.ASSASSIN]: "/avatar/runner_assassin_icon-CQczza6i.png",
-  [AVATARS_KEYS.DESTROYER]: "/avatar/runner_destroyer_icon-BNsj7jDO.png",
-  [AVATARS_KEYS.RECON]: "/avatar/runner_recon_icon-DcxTFu9p.png",
-  [AVATARS_KEYS.ROOK]: "/avatar/runner_rook_icon-C12uL7F1.png",
-  [AVATARS_KEYS.THIEF]: "/avatar/runner_thief_icon-DwN1CDwF.png",
-  [AVATARS_KEYS.TRIAGE]: "/avatar/runner_triage_icon-BgDnRG_N.png",
-  [AVATARS_KEYS.VANDAL]: "/avatar/runner_vandal_icon-FzjQgJ8c.png",
-} as const
-
-export const AVATARS_BACKGROUND_URLS = {
-  PERIMETER: "/avatar_background/map_perimeter_overflow-Ck2U4HJE.jpg",
 } as const
 
 export const STORAGE_KEYS = {

@@ -1,8 +1,7 @@
+import { getRandomAvatar } from "@repo/common"
 import { type RightDoc, type UserDoc } from "@repo/schemas"
 import { type User } from "firebase/auth"
 import { type SessionUser, sessionUserSchema } from "@/schemas/session"
-import { getRandomAvatar } from "@repo/common"
-import { getAvatarUrl } from "@/utils/file"
 
 export const formatSessionFromFirebaseUser = ({
   user,
@@ -14,10 +13,10 @@ export const formatSessionFromFirebaseUser = ({
   rightsDoc: RightDoc | null
 }): SessionUser => {
   const { uid, displayName, isAnonymous } = authUser
-  const { email, pseudo,  isAnonymousUser } = user
+  const { email, pseudo, isAnonymousUser } = user
 
-  const avatar = getAvatarUrl(user.avatar || getRandomAvatar())
-  
+  const avatar = user.avatar || getRandomAvatar()
+
   const sessionUser = sessionUserSchema.safeParse({
     id: uid,
     email,
@@ -40,5 +39,5 @@ export const formatSessionFromAnonymousUser = ({ authUser, pseudo }: { authUser:
   rights: null,
   pseudo,
   isAnonymous: true,
-  avatar: getAvatarUrl(getRandomAvatar()),
+  avatar: getRandomAvatar(),
 })

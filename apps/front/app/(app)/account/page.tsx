@@ -1,6 +1,8 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { AVATARS_KEYS } from "@repo/common"
+import Image from "next/image"
 import { useEffect } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -12,15 +14,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useUpdateUserDocMutation } from "@/redux/api/user"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { firstLetter } from "@/utils"
-import { AVATARS_KEYS } from "@repo/common"
-import { AVATARS_BACKGROUND_URLS, AVATARS_URLS } from "@/constants/mapping"
 import { getAvatarKeyFromUrl, getAvatarUrl } from "@/utils/file"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import Image from "next/image"
 
 const formSchema = z.object({
   pseudo: z.string().min(3, "Pseudo must be at least 3 characters").max(30, "Pseudo must be at most 30 characters"),
@@ -55,14 +54,11 @@ const AccountForm = () => {
       pseudo: user.pseudo || "",
       avatar: getAvatarKeyFromUrl(user.avatar || ""),
     })
-
   }, [user, reset])
-
 
   const onSubmit: SubmitHandler<FormSchema> = async (formData) => {
     try {
       if (!user?.id) return
-
 
       await updateUserDoc({
         id: user.id,
@@ -82,7 +78,7 @@ const AccountForm = () => {
   if (!user) return null
 
   const watchAvatar = watch("avatar")
-  const avatar = watchAvatar ? getAvatarUrl(watchAvatar) : user.avatar
+  const avatar = getAvatarUrl(watchAvatar || user.avatar)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -95,7 +91,7 @@ const AccountForm = () => {
           <Popover>
             <PopoverTrigger>
               <Avatar className="size-20">
-                <AvatarImage src={avatar || ""} alt={user.pseudo} />
+                <AvatarImage src={avatar} alt={user.pseudo} />
                 <AvatarFallback className="rounded-lg text-2xl">
                   {firstLetter(user.pseudo)}
                 </AvatarFallback>
@@ -103,11 +99,13 @@ const AccountForm = () => {
             </PopoverTrigger>
             <PopoverContent align="end" className="w-auto grid grid-cols-4 gap-4">
               {Object.values(AVATARS_KEYS).map((avatarKey) => (
-                <button key={avatarKey} className="size-16 lg:size-32 hover:bg-primary! cursor-pointer bg-cover"
-                  style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})` }}
+                <button
+                  key={avatarKey}
+                  className="size-16 lg:size-32 hover:bg-primary! cursor-pointer bg-cover bg-white"
+                  // style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})` }}
                   onClick={() =>
-                    setValue("avatar", avatarKey, { shouldDirty: true })
-                  }>
+                    setValue("avatar", avatarKey, { shouldDirty: true })}
+                >
                   <Image src={getAvatarUrl(avatarKey)} alt={`Avatar of ${avatarKey}`} width={370} height={370} />
                 </button>
               ))}

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { AVATARS_BACKGROUND_URLS, MODAL_KEYS } from "@/constants/mapping"
+import { MODAL_KEYS } from "@/constants/mapping"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useModal } from "@/hooks/use-modal"
 import { useUpdateUserDocMutation } from "@/redux/api/user"
@@ -93,8 +93,8 @@ const ChangePseudoModal = () => {
                 {Object.values(AVATARS_KEYS).map((avatarKey) => (
                   <button
                     key={avatarKey}
-                    className="size-16 lg:size-24 hover:bg-primary! cursor-pointer bg-cover"
-                    style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})` }}
+                    className="size-16 lg:size-24 hover:bg-primary! cursor-pointer bg-cover bg-white"
+                    // style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})` }}
                     onClick={() =>
                       setValue("avatar", avatarKey, { shouldDirty: true })}
                   >

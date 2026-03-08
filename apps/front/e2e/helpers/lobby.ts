@@ -10,7 +10,6 @@ import { lobbyFactory, seedFactory, userFactory } from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"
 import { STORAGE_KEYS } from "@/constants/mapping"
 import { SELECTORS } from "@/constants/testing"
-import { getAvatarUrl } from "@/utils/file"
 import { createPlayerFromSessionUser } from "@/utils/player"
 
 export const PASSWORD = "cacayolo"
@@ -76,7 +75,7 @@ export const startLobbyViaUI = async (page: Page) => {
 export const waitForInputToBeVisible = async (page: Page) =>
   await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10000 })
 
-export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", isAnonymous: false, avatar: getAvatarUrl(user.avatar || getRandomAvatar()) })
+export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", isAnonymous: false, avatar: user.avatar || getRandomAvatar() })
 
 export const createFirestoreLobbyDoc = async (
   lobby: LobbyDoc,

@@ -31,6 +31,7 @@ import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { firstLetter } from "@/utils"
+import { getAvatarUrl } from "@/utils/file"
 
 export const NavUser = () => {
   const router = useRouter()
@@ -64,7 +65,7 @@ export const NavUser = () => {
           {user.pseudo}
         </div>
         <Avatar className="size-9">
-          <AvatarImage src={user.avatar} alt={user.email} />
+          <AvatarImage src={getAvatarUrl(user.avatar)} alt={user.email} />
           <AvatarFallback>{firstLetter(user.pseudo)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
