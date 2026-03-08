@@ -50,6 +50,7 @@ const Page = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Code</TableHead>
+              <TableHead>Host</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Players</TableHead>
               <TableHead>Round</TableHead>
@@ -64,6 +65,7 @@ const Page = () => {
             {lobbies.map((lobby) => (
               <TableRow key={lobby.id}>
                 <TableCell className="font-mono font-bold">{lobby.code}</TableCell>
+                <TableCell className="text-neutral-400 text-xs font-mono">{lobby.hostId}</TableCell>
                 <TableCell>
                   <Badge variant={getBadgeVariantLobbyStatus(lobby.status)}>
                     {lobby.status}

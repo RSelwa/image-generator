@@ -4,7 +4,6 @@ import type * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
 import { cn } from "@/utils"
-import { AVATARS_BACKGROUND_URLS } from "@/constants/mapping"
 
 const Avatar = ({
   className,
@@ -31,9 +30,8 @@ const AvatarImage = ({
 }: React.ComponentProps<typeof AvatarPrimitive.Image>) => (
   <AvatarPrimitive.Image
     data-slot="avatar-image"
-    style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})`}}
-    className={cn("aspect-square size-full rounded-full overflow-hidden object-cover",
-      `rounded-none bg-cover`, className)}
+    // style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})` }}
+    className={cn("aspect-square size-full rounded-full overflow-hidden object-cover", `rounded-none bg-cover`, "bg-white", className)}
     {...props}
   />
 )

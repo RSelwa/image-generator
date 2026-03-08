@@ -14,10 +14,12 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
   const router = useRouter()
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
-  const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
-  const [createDemoLobby] = useCreateDemoLobbyMutation()
+  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation()
+  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation()
 
   if (!user) return null
+
+  const isLoading = isLoadingCreateDemoLobby || isLoadingCreateLobby
 
   const handleCreateLobby = async () => {
     try {
@@ -111,10 +113,12 @@ export const CreateLobbyContainer = () => {
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
 
-  const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
-  const [createDemoLobby] = useCreateDemoLobbyMutation()
+  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation()
+  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation()
 
   if (!user) return null
+
+  const isLoading = isLoadingCreateDemoLobby || isLoadingCreateLobby
 
   const handleCreateLobby = async () => {
     try {

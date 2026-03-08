@@ -1,16 +1,15 @@
-import { getRandomAvatar, USER_RIGHT } from "@repo/common"
+import { AVATARS_KEYS, getRandomAvatar, USER_RIGHT } from "@repo/common"
+import { userDocWithIdSchema } from "@repo/schemas"
 import { type User } from "firebase/auth"
 import { z } from "zod"
-import { AVATARS_URLS, SESSION_STATUS } from "@/constants/mapping"
-import { userDocSchema, userDocWithIdSchema } from "@repo/schemas"
-import { getAvatarUrl } from "@/utils/file"
+import { SESSION_STATUS } from "@/constants/mapping"
 
 export const sessionUserSchema = z.object({
-  ...userDocWithIdSchema.pick( {id:true,email:true, avatar:true, }).shape,
+  ...userDocWithIdSchema.pick({ id: true, email: true, avatar: true }).shape,
   pseudo: z.string().nullish().transform((v) => v || ""),
   rights: z.enum(USER_RIGHT).nullish(),
   isAnonymous: z.boolean().default(false),
-  avatar: z.enum(AVATARS_URLS).default(getAvatarUrl(getRandomAvatar())),
+  avatar: z.enum(AVATARS_KEYS).default(getRandomAvatar()),
 })
 
 const authUserSchema = z.custom<User>()
