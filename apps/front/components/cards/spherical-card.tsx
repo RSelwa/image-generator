@@ -6,7 +6,7 @@ import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { MODAL_KEYS, NEW_SEARCH_PARAM, STATUS_TO_BADGE_VARIANT } from "@/constants/mapping"
+import { MODAL_KEYS, NEW_SEARCH_PARAM, RESOURCE_BADGE_VARIANT, STATUS_TO_BADGE_VARIANT } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
 import { useGetGameByIdQuery, useGetMapsByGameIdQuery } from "@/redux/api/games"
@@ -34,6 +34,11 @@ export const SphericalCard = ({
     closeModal()
   }
 
+  const shouldDisplayNoThumbnailOrMapBadge = !spherical.thumbnail && !spherical.mapId
+  const shouldDisplayNoPositionBadge = Boolean(spherical.mapId) && !spherical.mapPosition
+  const hasThumbnail = Boolean(spherical.thumbnail)
+  const hasMap = Boolean(spherical.mapId)
+
   return (
     <section className="group relative w-full cursor-pointer overflow-hidden rounded-lg">
       <Image loading="lazy" src={spherical.image} alt={spherical.id} width={300} height={300} className="object-cover aspect-video size-full group-hover:hidden" />
@@ -43,8 +48,10 @@ export const SphericalCard = ({
       <div className="absolute top-2 left-2 flex items-center gap-2">
         <Badge variant={STATUS_TO_BADGE_VARIANT[spherical.status]}> {spherical.status} </Badge>
         {!hasGameMaps && <Badge variant="destructive" onClick={openMapModal}> No map </Badge>}
-        {!spherical.mapId && <Badge variant="red"> No map Selected </Badge>}
-        {!spherical.mapPosition && <Badge variant="red"> Need map position </Badge>}
+        {shouldDisplayNoThumbnailOrMapBadge && <Badge variant="red"> No thumbnail or map </Badge>}
+        {shouldDisplayNoPositionBadge && <Badge variant="red"> No position </Badge>}
+        {hasThumbnail && <Badge variant={RESOURCE_BADGE_VARIANT.THUMBNAIL}> Thumbnail </Badge>}
+        {hasMap && <Badge variant={RESOURCE_BADGE_VARIANT.MAP}> Map </Badge>}
       </div>
       <article className="absolute bottom-2 left-2 flex items-center gap-2 invisible group-hover:visible transition-all">
         <Button

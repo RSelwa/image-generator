@@ -47,17 +47,27 @@ export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds, rec
           const allExcludedIds = [...new Set([...excludedGameIds, ...excludedOptionIds])]
 
           const allSpecialOptions = [...formattedSphericalsForSpecialRounds, ...formattedFlatsForSpecialRounds]
-          const specialRoundOptions = allSpecialOptions.filter(
+
+          // Prioritize sphericals over flats for special rounds
+          const sphericalOptions = formattedSphericalsForSpecialRounds.filter(
             (option) => option && !allExcludedIds.includes(option.gameId) && !recentlyPlayedGameIds.includes(option.gameId)
           )
+          const allFilteredOptions = allSpecialOptions.filter(
+            (option) => option && !allExcludedIds.includes(option.gameId) && !recentlyPlayedGameIds.includes(option.gameId)
+          )
+          const specialRoundOptions = sphericalOptions.length > 0 ? sphericalOptions : allFilteredOptions
 
           let randomOption
 
           if (specialRoundOptions.length === 0) {
             // Fallback: drop recently played exclusion, but keep current seed exclusion
-            const fallbackOptions = allSpecialOptions.filter(
+            const sphericalFallback = formattedSphericalsForSpecialRounds.filter(
               (option) => option && !allExcludedIds.includes(option.gameId)
             )
+            const allFallback = allSpecialOptions.filter(
+              (option) => option && !allExcludedIds.includes(option.gameId)
+            )
+            const fallbackOptions = sphericalFallback.length > 0 ? sphericalFallback : allFallback
 
             if (fallbackOptions.length === 0) {
               console.warn("No more suitable options found for special round generation.")

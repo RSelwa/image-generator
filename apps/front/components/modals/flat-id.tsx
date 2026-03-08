@@ -309,21 +309,6 @@ const FlatForm = ({
 
         <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-6">
           <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="thumbnail">Thumbnail</FieldLabel>
-              <ImageDropzone
-                imageUrl={thumbnail || null}
-                onFileSelect={handleThumbnailUpload}
-                onRemove={handleRemoveThumbnail}
-                isUploading={isUploadingThumbnail}
-                alt="Thumbnail image"
-                className="h-32"
-              />
-              {errors.thumbnail && (
-                <FieldError>{errors.thumbnail.message}</FieldError>
-              )}
-            </Field>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <Field>
                 <FieldLabel htmlFor="mapId">Map</FieldLabel>
@@ -537,6 +522,20 @@ const FlatForm = ({
                 alt="Flat image"
               />
               {errors.image && <FieldError>{errors.image.message}</FieldError>}
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="thumbnail">Thumbnail</FieldLabel>
+              <ImageDropzone
+                imageUrl={thumbnail || null}
+                onFileSelect={handleThumbnailUpload}
+                onRemove={handleRemoveThumbnail}
+                isUploading={isUploadingThumbnail}
+                alt="Thumbnail image"
+                className="aspect-square w-full"
+              />
+              {errors.thumbnail && (
+                <FieldError>{errors.thumbnail.message}</FieldError>
+              )}
             </Field>
           </div>
         </div>

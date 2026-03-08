@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { getSphericalRef } from "@/constants/db-refs"
-import { QUERY_PARAMS, STATUS_TO_BADGE_VARIANT } from "@/constants/mapping"
+import { QUERY_PARAMS, RESOURCE_BADGE_VARIANT, STATUS_TO_BADGE_VARIANT } from "@/constants/mapping"
 
 export const SphericalRow = ({ spherical, checkedIds, setCheckedIds }: {
     spherical: SphericalEntity
@@ -19,6 +19,12 @@ export const SphericalRow = ({ spherical, checkedIds, setCheckedIds }: {
     const checked = checkedIds.includes(spherical.id)
     const onCheckedChange = (value: boolean) =>
         setCheckedIds((prev) => value ? [...prev, spherical.id] : prev.filter((id) => id !== spherical.id))
+
+    const shouldDisplayNoImageBadge = !spherical.image
+    const shouldDisplayNoThumbnailOrMapBadge = !spherical.thumbnail && !spherical.mapId
+    const shouldDisplayNoPositionBadge = Boolean(spherical.mapId) && !spherical.mapPosition
+    const hasThumbnail = Boolean(spherical.thumbnail)
+    const hasMap = Boolean(spherical.mapId)
 
     return (
         <TableRow onClick={() => setSphericalId(`${spherical.gameId}_${spherical.id}`)} className="cursor-pointer">
@@ -40,9 +46,11 @@ export const SphericalRow = ({ spherical, checkedIds, setCheckedIds }: {
             </TableCell>
             <TableCell>
                 <div className="flex items-center gap-1">
-                    {!spherical.image && <Badge variant="red">No image</Badge>}
-                    {!spherical.mapId && <Badge variant="red">No map</Badge>}
-                    {!spherical.mapPosition && <Badge variant="red">No position</Badge>}
+                    {shouldDisplayNoImageBadge && <Badge variant="red">No image</Badge>}
+                    {shouldDisplayNoThumbnailOrMapBadge && <Badge variant="red">No thumbnail or map</Badge>}
+                    {shouldDisplayNoPositionBadge && <Badge variant="red">No position</Badge>}
+                    {hasThumbnail && <Badge variant={RESOURCE_BADGE_VARIANT.THUMBNAIL}>Thumbnail</Badge>}
+                    {hasMap && <Badge variant={RESOURCE_BADGE_VARIANT.MAP}>Map</Badge>}
                 </div>
             </TableCell>
             <TableCell className="font-medium">{getDateString(spherical.createdAt?.toDate())}</TableCell>

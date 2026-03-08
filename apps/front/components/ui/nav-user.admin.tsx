@@ -1,4 +1,5 @@
 import {
+    Armchair,
     Gamepad2,
     Globe2,
     Image,
@@ -51,7 +52,7 @@ const NavUserAdmin = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                         <Link href={PAGES.ADMIN_LOBBIES} className="cursor-pointer">
-                            <Image />
+                            <Armchair />
                             Lobbies
                         </Link>
                     </DropdownMenuItem>
