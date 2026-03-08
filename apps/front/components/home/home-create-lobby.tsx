@@ -14,14 +14,15 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
   const router = useRouter()
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
-  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation()
-  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation()
+  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation({ fixedCacheKey: "create-lobby" })
+  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation({ fixedCacheKey: "create-demo-lobby" })
 
   if (!user) return null
 
   const isLoading = isLoadingCreateDemoLobby || isLoadingCreateLobby
 
   const handleCreateLobby = async () => {
+    if (isLoading) return
     try {
       const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
 
@@ -40,8 +41,9 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
   )
 }
 
-export const HomePlayButton = ({ containerRef }: {
+export const HomePlayButton = ({ containerRef, isLoading }: {
   containerRef: RefObject<HTMLButtonElement | null>
+  isLoading?: boolean
 }) => {
   const followerRef = useRef<HTMLDivElement>(null)
 
@@ -96,12 +98,14 @@ export const HomePlayButton = ({ containerRef }: {
   }, [])
 
   return (
-    <div ref={followerRef} className="absolute top-0 left-0 font-interference w-fit h-fit hidden lg:block text-4xl font-bold px-4 py-2 text-primary invisible">
+    <div ref={followerRef} className="absolute top-0 left-0 font-interference w-fit h-fit hidden lg:flex justify-center items-center text-4xl font-bold px-4 py-2 text-primary invisible ">
       <span className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-primary" />
       <span className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-primary" />
       <span className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-primary" />
       <span className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-primary" />
       Play
+      {" "}
+      {isLoading && <Loader className="size-6" />}
     </div>
   )
 }
@@ -113,14 +117,15 @@ export const CreateLobbyContainer = () => {
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
 
-  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation()
-  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation()
+  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation({ fixedCacheKey: "create-lobby" })
+  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation({ fixedCacheKey: "create-demo-lobby" })
 
   if (!user) return null
 
   const isLoading = isLoadingCreateDemoLobby || isLoadingCreateLobby
 
   const handleCreateLobby = async () => {
+    if (isLoading) return
     try {
       const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
 
@@ -135,7 +140,7 @@ export const CreateLobbyContainer = () => {
       <video autoPlay loop muted className="w-full cursor-none h-full object-cover">
         <source src="/home-video.mp4" />
       </video>
-      <HomePlayButton containerRef={containerRef} />
+      <HomePlayButton {...{ containerRef, isLoading }} />
     </button>
 
   )
