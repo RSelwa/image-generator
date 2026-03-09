@@ -1,10 +1,11 @@
 import { LOBBY_STATUS, TABLES } from "@repo/common"
-import { refs } from "@repo/providers/db-refs"
+import { refs, subRefs } from "@repo/providers/db-refs"
 import { type Timestamp } from "firebase-admin/firestore"
 import { FieldValue } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 import { onSchedule } from "firebase-functions/scheduler"
 import { isAbandoned } from "~/is-abandoned"
+import { shouldFinishInsteadOfAbandon } from "~/should-finish"
 
 export const schedule_lobby_cleanup = onSchedule("every 30 minutes", async () => {
   logger.info("[lobby-cleanup] Starting lobby cleanup")
@@ -28,8 +29,9 @@ export const schedule_lobby_cleanup = onSchedule("every 30 minutes", async () =>
   logger.info(`[lobby-cleanup] Found ${docs.length} active lobbies to check`)
 
   let abandonedCount = 0
+  let finishedCount = 0
 
-  const updates = docs
+  const abandonedDocs = docs
     .filter((doc) => {
       const data = doc.data()
 
@@ -44,7 +46,31 @@ export const schedule_lobby_cleanup = onSchedule("every 30 minutes", async () =>
         },
       )
     })
-    .map((doc) => {
+
+  await Promise.all(
+    abandonedDocs.map(async (doc) => {
+      const data = doc.data()
+      const currentRound = data.currentRound || 0
+      const numberOfRounds = data.config.numberOfRounds
+      const playersCount = data.players?.length || 0
+
+      const shouldFinish = await shouldFinishInsteadOfAbandon({
+        lobbyId: doc.id,
+        currentRound,
+        numberOfRounds,
+        playersCount,
+        subRefs,
+      })
+
+      if (shouldFinish) {
+        finishedCount++
+
+        return doc.ref.update({
+          status: LOBBY_STATUS.FINISHED,
+          updatedAt: FieldValue.serverTimestamp(),
+        })
+      }
+
       abandonedCount++
 
       return doc.ref.update({
@@ -52,8 +78,7 @@ export const schedule_lobby_cleanup = onSchedule("every 30 minutes", async () =>
         updatedAt: FieldValue.serverTimestamp(),
       })
     })
+  )
 
-  await Promise.all(updates)
-
-  logger.info(`[lobby-cleanup] Marked ${abandonedCount} lobbies as abandoned`)
+  logger.info(`[lobby-cleanup] Marked ${finishedCount} lobbies as finished, ${abandonedCount} lobbies as abandoned`)
 })

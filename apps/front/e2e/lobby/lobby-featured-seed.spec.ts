@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
 import { expect, test } from "@playwright/test"
-import { DEFAULT_MAX_DISTANCE_POINTS, DIFFICULTIES, DOCUMENTS_STATUS, mockedSphericalImageURL, ROUND_TYPE, SPECIAL_ROUND_OPTIONS_COUNT, TABLES } from "@repo/common"
+import { DEFAULT_MAX_DISTANCE_POINTS, DIFFICULTIES, DOCUMENTS_STATUS, LOBBY_STATUS, mockedSphericalImageURL, ROUND_TYPE, SPECIAL_ROUND_OPTIONS_COUNT, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { type Round, roundSchema } from "@repo/schemas"
 import { createFirestoreDoc } from "@repo/testing/emulator"
@@ -240,5 +240,8 @@ test.describe("lobby featured seed", () => {
 
     // Verify lobby finished
     await expect(page.getByTestId(SELECTORS.LOBBY_FINISHED)).toBeVisible()
+
+    const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
+    expect(lobbyDoc.data()?.status).toBe(LOBBY_STATUS.FINISHED)
   })
 })

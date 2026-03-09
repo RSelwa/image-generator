@@ -16,19 +16,22 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
   const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation({ fixedCacheKey: "create-lobby" })
   const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation({ fixedCacheKey: "create-demo-lobby" })
+  const isCreatingRef = useRef(false)
 
   if (!user) return null
 
   const isLoading = isLoadingCreateDemoLobby || isLoadingCreateLobby
 
   const handleCreateLobby = async () => {
-    if (isLoading) return
+    if (isLoading || isCreatingRef.current) return
+    isCreatingRef.current = true
     try {
       const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
 
       router.push(`${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
       console.error("Failed to create lobby:", error)
+      isCreatingRef.current = false
     }
   }
 
@@ -113,6 +116,7 @@ export const HomePlayButton = ({ containerRef, isLoading }: {
 export const CreateLobbyContainer = () => {
   const router = useRouter()
   const containerRef = useRef<HTMLButtonElement>(null)
+  const isCreatingRef = useRef(false)
 
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
@@ -125,13 +129,15 @@ export const CreateLobbyContainer = () => {
   const isLoading = isLoadingCreateDemoLobby || isLoadingCreateLobby
 
   const handleCreateLobby = async () => {
-    if (isLoading) return
+    if (isLoading || isCreatingRef.current) return
+    isCreatingRef.current = true
     try {
       const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
 
       router.push(`${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
       console.error("Failed to create lobby:", error)
+      isCreatingRef.current = false
     }
   }
 

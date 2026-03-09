@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test"
+import { LOBBY_STATUS, TABLES } from "@repo/common"
+import { refs } from "@repo/providers/db-refs"
 import { SELECTORS } from "@/constants/testing"
 import { hideDriverTutorial, retrieveGamesFromLobby, waitForAnonymousAuth, waitForInputToBeVisible } from "@/e2e/helpers/lobby"
 
@@ -112,6 +114,10 @@ test.describe("demo playing", () => {
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
     await expect(page.getByTestId(SELECTORS.LOBBY_FINISHED)).toBeVisible()
+
+    const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
+    expect(lobbyDoc.data()?.status).toBe(LOBBY_STATUS.FINISHED)
+
     await expect(page.getByTestId(SELECTORS.FINISHED_LOBBY_ANONYMOUS_MODAL)).toBeVisible()
   })
 })

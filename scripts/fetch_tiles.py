@@ -10,12 +10,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 ZOOM_LEVEL = 12 # 4 or 14
 FILE_TERM = "jpg"
 
-TILE_URL_TEMPLATE = "https://tiles.mapgenie.io/games/grounded/yard/simple-v1/{z}/{x}/{y}.png"
+TILE_URL_TEMPLATE = "https://tiles.mapgenie.io/games/star-wars-jedi-fallen-order/zeffo/default-v1/{z}/{x}/{y}.png"
 
 # Set custom X/Y ranges for maps that don't start at 0 (e.g. MapGenie at high zoom)
 # Leave as None to auto-detect bounds by probing the tile server
-X_RANGE = (2032, 2048)  # e.g. (8137, 8178) or None
-Y_RANGE = (2032, 2048) # e.g. (8137, 8178) or None
+X_RANGE = (2030, 2051)  # e.g. (8137, 8178) or None
+Y_RANGE = (2030, 2051) # e.g. (8137, 8178) or None
 
 # Some tile servers use {y}/{x} instead of {x}/{y} — set to True to swap them in the URL
 SWAP_XY = False
