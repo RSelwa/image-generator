@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test"
-import { LOBBY_STATUS } from "@repo/common"
+import { LOBBY_STATUS, TABLES } from "@repo/common"
+import { refs } from "@repo/providers/db-refs"
 import { lobbyFactory } from "@repo/testing/factory"
 import { SELECTORS } from "@/constants/testing"
 import { createFirestoreLobbyDoc, createLobbyViaUI, createPlayerFromUserDoc, hideDriverTutorial, loginViaUI, retrieveGamesFromLobby, setupUser, startSoloLobbyViaUI, waitForInputToBeVisible, waitToBeLogged } from "@/e2e/helpers/lobby"
@@ -186,6 +187,9 @@ test.describe("lobby playing", () => {
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
     await expect(page.getByTestId(SELECTORS.LOBBY_FINISHED)).toBeVisible()
+
+    const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
+    expect(lobbyDoc.data()?.status).toBe(LOBBY_STATUS.FINISHED)
 
     await page.waitForTimeout(1000) // Wait for the modal to appear
 

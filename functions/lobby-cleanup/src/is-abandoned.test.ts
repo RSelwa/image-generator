@@ -76,6 +76,3 @@ describe("isAbandoned", () => {
     expect(isAbandoned(minutesAgo(3), 5, defaultConfig)).toBe(false)
   })
 })
-
-describe("modify the doc status to ABANDONED if isAbandoned returns true", () => {
-})

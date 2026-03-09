@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useRef } from "react"
 import { HelperMenuContent } from "@/components/helper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -40,18 +41,22 @@ export const NavUser = () => {
   const isAdmin = useAppSelector(selectIsAdmin)
 
   const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
+  const isCreatingRef = useRef(false)
 
   const [logout] = useLogoutMutation()
 
   if (!user || user.isAnonymous) return null
 
   const handleCreateLobby = async () => {
+    if (isCreatingRef.current) return
+    isCreatingRef.current = true
     try {
       const lobby = await createLobbyDoc({ user }).unwrap()
 
       router.push(`${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
       console.error("Failed to create lobby:", error)
+      isCreatingRef.current = false
     }
   }
 
