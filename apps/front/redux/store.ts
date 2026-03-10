@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit"
 import { useDispatch, useSelector, useStore } from "react-redux"
 import { adminApi } from "@/redux/api/admin"
 import { authApi } from "@/redux/api/auth"
+import { dailyChallengeApi } from "@/redux/api/daily-challenge"
 import { flatApi } from "@/redux/api/flat"
 import { gameApi } from "@/redux/api/games"
 import { lobbyApi } from "@/redux/api/lobby"
@@ -34,6 +35,7 @@ export const makeStore = () =>
       [socialsApi.reducerPath]: socialsApi.reducer,
       [soundsApi.reducerPath]: soundsApi.reducer,
       [sessionSlice.name]: sessionSlice.reducer,
+      [dailyChallengeApi.reducerPath]: dailyChallengeApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ serializableCheck: false })
@@ -50,7 +52,8 @@ export const makeStore = () =>
         .concat(seedMakerApi.middleware)
         .concat(socialsApi.middleware)
         .concat(soundsApi.middleware)
-        .concat(suggestionsApi.middleware),
+        .concat(suggestionsApi.middleware)
+        .concat(dailyChallengeApi.middleware),
   })
 
 // Infer the type of makeStore
