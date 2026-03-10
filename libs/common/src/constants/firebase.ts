@@ -14,6 +14,8 @@ export const TABLES = {
   METADATA: "metadata",
   SOCIALS: "socials",
   SOUNDS: "sounds",
+  DAILY_CHALLENGES: "dailyChallenges",
+  DAILY_CHALLENGE_RESULTS: "dailyChallengeResults",
 } as const
 
 export const METADATA_DOCS = {

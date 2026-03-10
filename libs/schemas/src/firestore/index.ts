@@ -1,3 +1,5 @@
+export * from "./daily-challenge"
+export * from "./daily-challenge-result"
 export * from "./flats"
 export * from "./game"
 export * from "./lobby"
