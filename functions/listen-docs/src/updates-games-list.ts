@@ -57,7 +57,5 @@ export const updateGamesList = async (
     await getMetadataRef().set({ games: updatedGames })
 
     logger.info(`Updated game ${gameId} title in gamesList metadata`)
-
-    return
   }
 }

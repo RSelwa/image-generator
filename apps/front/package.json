@@ -42,6 +42,7 @@
     "@repo/common": "workspace:*",
     "@repo/providers": "workspace:*",
     "@repo/schemas": "workspace:*",
+    "@tanstack/react-virtual": "^3.13.21",
     "@vercel/analytics": "^1.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -68,6 +69,7 @@
     "sharp": "^0.34.5",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
+    "unicode-animations": "^1.0.3",
     "use-sound": "^5.0.0",
     "zod": "^4.3.5"
   },

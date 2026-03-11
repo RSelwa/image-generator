@@ -1,8 +1,9 @@
 import { AUDIO_EXTRACT_ENDPOINT, extractYoutubeId, SOUND_STATUS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type FlatDoc, type GameDoc, type SoundDoc, type SphericalDoc } from "@repo/schemas"
+import { type DailyChallengeDoc, type FlatDoc, type GameDoc, type SoundDoc, type SphericalDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
+import { updateDailyChallengesMetadata } from "~/update-daily-challenges-metadata"
 import { updateGamesList } from "~/updates-games-list"
 import { updateFlatStatus, updateGameStatus, updateSphericalStatus } from "~/updates-status"
 
@@ -152,6 +153,28 @@ export const listen_sounds_written = onDocumentWritten(
           logger.error(`Audio extraction failed for sound ${soundId} with status ${res.status}: ${errorText}`)
         }
       }
+    } catch (error) {
+      console.error(`Error in listen_doc_games_written for document ${event.document}:`, error)
+    }
+  },
+)
+
+export const listen_daily_challenges_written = onDocumentWritten(
+  `${TABLES.DAILY_CHALLENGES}/{date}`,
+  async (event) => {
+    try {
+      const date = event.params.date
+
+      if (!date) {
+        logger.error(`daily challenge is undefined in document path: ${event.document}`)
+
+        return
+      }
+
+      const before = event.data?.before.data() as DailyChallengeDoc | undefined
+      const after = event.data?.after.data() as DailyChallengeDoc | undefined
+
+      await updateDailyChallengesMetadata(date, before, after)
     } catch (error) {
       console.error(`Error in listen_doc_games_written for document ${event.document}:`, error)
     }

@@ -76,7 +76,11 @@ export const dailyChallengeApi = createApi({
         try {
           const docSnap = await getDoc(getDailyChallengeRef(date))
 
-          if (!docSnap.exists()) throw new Error("Daily challenge not found")
+          if (!docSnap.exists()) {
+            console.warn(`Daily challenge not found for date: ${date}`)
+
+            return { data: null }
+          }
 
           const { data, error } = dailyChallengeDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
 

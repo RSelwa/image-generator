@@ -62,6 +62,15 @@
         "pnpm build:lobby-cleanup"
       ],
       "codebase": "lobby-cleanup"
+    },
+    {
+      "source": "functions/daily-challenge",
+      "runtime": "nodejs22",
+      "isolate": true,
+      "predeploy": [
+        "pnpm build:daily-challenge"
+      ],
+      "codebase": "daily-challenge"
     }
   ],
   "emulators": {
