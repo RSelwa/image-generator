@@ -1,8 +1,12 @@
-import { type ComponentProps } from "react"
+"use client"
 
-const Loader = ({
-  ...props
-}: ComponentProps<"svg">) => (
+import { type ComponentProps } from "react"
+import { useEffect, useState } from "react"
+import { type BrailleSpinnerName } from "unicode-animations"
+import spinners from "unicode-animations"
+import { cn } from "@/utils"
+
+const Loader = (props: ComponentProps<"svg">) => (
   <svg
     viewBox="0 0 16 16"
     fill="none"
@@ -47,5 +51,21 @@ const Loader = ({
     </g>
   </svg>
 )
+
+export const Spinner = ({ name = "braille", className, ...props }: { name: BrailleSpinnerName } & ComponentProps<"span">) => {
+  const [frame, setFrame] = useState(0)
+  const s = spinners[name]
+
+  useEffect(() => {
+    const timer = setInterval(
+      () => setFrame((f) => (f + 1) % s.frames.length),
+      s.interval
+    )
+
+    return () => clearInterval(timer)
+  }, [name])
+
+  return <span className={cn("font-mono font-extrabold", className)} {...props}>{s.frames[frame]}</span>
+}
 
 export default Loader

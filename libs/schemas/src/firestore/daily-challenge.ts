@@ -10,6 +10,7 @@ export const dailyChallengeDocSchema = roundSchema
     gameId: true,
     gameTitle: true,
     gameAlternateNames: true,
+    gameThumbnailUrl: true,
 
     // Image
     sphericalId: true,

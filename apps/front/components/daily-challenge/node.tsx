@@ -1,65 +1,106 @@
 "use client"
 
-import { Check, Lock, Star } from "lucide-react"
+import { type ConstantValues, dateToString } from "@repo/common"
+import { cva } from "class-variance-authority"
 import Link from "next/link"
-import { memo } from "react"
-import { NODE_SIZE } from "@/constants/daily-challenges"
+import { memo, useMemo } from "react"
+import { DailyChallengeContent, DailyChallengeLabel } from "@/components/daily-challenge/node-icons"
+import { DAILY_CHALLENGES_VARIANTS, SIDE } from "@/constants/daily-challenges"
 import { PAGES } from "@/constants/pages"
-import { useGetDailyChallengeEntityByDateQuery } from "@/redux/api/daily-challenge"
-import { getPoint } from "@/utils/daily-challenge"
+import { useGetDailyChallengeEntityByDateQuery, useGetMyDailyChallengeResultByDateQuery } from "@/redux/api/daily-challenge"
+import { selectUserId } from "@/redux/session/session.selectors"
+import { useAppSelector } from "@/redux/store"
+import { cn } from "@/utils"
+import { getDailyChallengeVariant, getPoint } from "@/utils/daily-challenge"
 
-export const PathNode = memo(({ date, index, isCompleted, today }: {
+export const nodeVariants = cva(
+  "flex size-16 overflow-hidden items-center font-mono font-bold justify-center transition-transform",
+  {
+    variants: {
+      variant: {
+        [DAILY_CHALLENGES_VARIANTS.FUTURE]: "bg-primary text-primary-foreground",
+        [DAILY_CHALLENGES_VARIANTS.TODAY]: "bg-marathon-pink text-foreground",
+        [DAILY_CHALLENGES_VARIANTS.COMPLETED_TODAY]:
+          "bg-marathon-green text-marathon-green-foreground",
+        [DAILY_CHALLENGES_VARIANTS.COMPLETED]:
+          "bg-blue-accent-foreground text-foreground",
+        [DAILY_CHALLENGES_VARIANTS.AVAILABLE]: "bg-marathon-yellow text-marathon-yellow-foreground",
+        [DAILY_CHALLENGES_VARIANTS.LOADING]: "",
+        [DAILY_CHALLENGES_VARIANTS.EMPTY]: "",
+      },
+
+    },
+    defaultVariants: {
+      variant: DAILY_CHALLENGES_VARIANTS.EMPTY,
+    },
+  }
+)
+
+export type PathNodeVariant = ConstantValues<typeof DAILY_CHALLENGES_VARIANTS>
+
+type PathNodeVisualProps = {
+  variant: PathNodeVariant
+  date: string
+  disabled?: boolean
+  side?: ConstantValues<typeof SIDE>
+}
+
+export const PathNodeVisual = ({ variant, date, disabled, side = SIDE.LEFT }: PathNodeVisualProps) => (
+  <div className="relative">
+    <Link
+      href={disabled ? "#" : PAGES.DAILY_CHALLENGE_DATE(date)}
+      aria-disabled={disabled}
+      data-disabled={disabled}
+      className={cn(nodeVariants({ variant }), "data-[disabled=true]:cursor-not-allowed")}
+    >
+      <DailyChallengeContent {...{ variant }} />
+      <DailyChallengeLabel {...{ variant, side }} />
+
+      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-32 bg-inherit text-center">
+        {date}
+      </div>
+    </Link>
+  </div>
+)
+
+export const PathNode = memo(({ date, index }: {
   date: string
   index: number
-  isCompleted: boolean
-  today: string
 }) => {
+  const userId = useAppSelector(selectUserId)
+  const today = useMemo(() => dateToString(new Date()), [])
+
   const { data: challenge, isLoading } = useGetDailyChallengeEntityByDateQuery({ date })
+  const { data: result } = useGetMyDailyChallengeResultByDateQuery(
+    { uid: userId || "", date },
+    { skip: !userId },
+  )
+  const isCompleted = Boolean(result)
 
   const isToday = date === today
   const isFuture = date > today
-  const hasChallenge = !!challenge
-  const isLocked = isFuture || (!hasChallenge && !isLoading)
-  const isAvailable = hasChallenge && !isCompleted && !isFuture
+  const hasChallenge = Boolean(challenge)
+  const isAvailable = !isToday && hasChallenge && !isCompleted && !isFuture
+
+  const params = { isToday, isCompleted, isLoading, isAvailable, isFuture, hasChallenge }
+  const variant = getDailyChallengeVariant(params)
 
   const pt = getPoint(index)
 
+  const middleWidth = 340 / 2
+  const isLeft = pt.x < middleWidth
+
+  const disabledVariant = [DAILY_CHALLENGES_VARIANTS.FUTURE, DAILY_CHALLENGES_VARIANTS.EMPTY, DAILY_CHALLENGES_VARIANTS.LOADING]
+
+  const disabled = (disabledVariant as string[]).includes(variant)
+
   return (
     <div
-      className="absolute -translate-x-1/2 -translate-y-1/2"
+      data-is-left={isLeft}
+      className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center flex-row data-[is-left=true]:flex-row-reverse gap-8"
       style={{ left: pt.x, top: pt.y }}
     >
-      {isToday && (
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
-          <div className="bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
-            TODAY
-          </div>
-        </div>
-      )}
-
-      <Link
-        href={isLocked ? "#" : PAGES.DAILY_CHALLENGE_DATE(date)}
-        aria-disabled={isLocked}
-        className={isLocked ? "pointer-events-none" : ""}
-      >
-        <div
-          className={[
-            "flex items-center justify-center rounded-full border-b-4 transition-transform",
-            isCompleted && "bg-green-500 border-green-700 active:translate-y-0.5 active:border-b-2",
-            isAvailable && "bg-green-400 border-green-600 ring-4 ring-green-200 active:translate-y-0.5 active:border-b-2",
-            isLocked && "bg-gray-200 border-gray-300",
-            isLoading && "animate-pulse",
-          ].filter(Boolean).join(" ")}
-          style={{ width: NODE_SIZE, height: NODE_SIZE }}
-        >
-          {isCompleted && <Check className="size-7 text-white" strokeWidth={3} />}
-          {isAvailable && <Star className="size-7 text-white" strokeWidth={3} />}
-          {isLocked && <Lock className="size-5 text-gray-400" />}
-        </div>
-      </Link>
-      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-32 rounded text-center bg-green-500 text-foreground">
-        {date}
-      </div>
+      <PathNodeVisual {...{ variant, date, disabled, isToday, side: isLeft ? "left" : "right" }} />
     </div>
   )
 })

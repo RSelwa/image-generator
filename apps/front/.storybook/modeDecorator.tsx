@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
 const fontFaces = `
   @font-face {
@@ -17,17 +17,21 @@ const fontFaces = `
     font-family: 'Shapiro';
     src: url('/fonts/Shapiro.otf') format('opentype');
   }
-`;
+  @font-face {
+    font-family: 'Shapiro-Wide';
+    src: url('/fonts/Shapiro-wide.woff2') format('woff2');
+  }
+`
 
 export const ModeDecorator = (Story: any) => {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(false)
 
     const toggleMode = () => {
-        setIsDarkMode(!isDarkMode);
-        document.documentElement.classList.toggle("dark", !isDarkMode);
-    };
+        setIsDarkMode(!isDarkMode)
+        document.documentElement.classList.toggle("dark", !isDarkMode)
+    }
 
-    useEffect(()=>{
+    useEffect(() => {
         document.documentElement.setAttribute("data-marathon", "")
         const root = document.documentElement
         root.style.setProperty("--font-geist-sans", "'Geist', sans-serif")
@@ -36,8 +40,9 @@ export const ModeDecorator = (Story: any) => {
         root.style.setProperty("--font-mono", "'Fraktion Mono', monospace")
         root.style.setProperty("--font-interference", "'Interference', sans-serif")
         root.style.setProperty("--font-shapiro", "'Shapiro', sans-serif")
+        root.style.setProperty("--font-shapiro-wide", "'Shapiro-Wide', sans-serif")
         toggleMode()
-    },[])
+    }, [])
 
     return (
         <>
@@ -62,5 +67,5 @@ export const ModeDecorator = (Story: any) => {
                 <Story />
             </div>
         </>
-    );
-};
+    )
+}

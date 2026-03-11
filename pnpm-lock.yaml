@@ -218,6 +218,9 @@ importers:
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
+      unicode-animations:
+        specifier: ^1.0.3
+        version: 1.0.3
       use-sound:
         specifier: ^5.0.0
         version: 5.0.0(react@19.2.3)
@@ -400,6 +403,58 @@ importers:
         version: 7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
       vitest:
         specifier: ^3.2.4
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@22.19.7)(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@1.8.0))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
+
+  functions/daily-challenge:
+    dependencies:
+      '@google-cloud/functions-framework':
+        specifier: ^4.0.0
+        version: 4.0.1
+      '@repo/common':
+        specifier: workspace:*
+        version: link:../../libs/common
+      '@repo/providers':
+        specifier: workspace:*
+        version: link:../../libs/providers
+      '@repo/schemas':
+        specifier: workspace:*
+        version: link:../../libs/schemas
+      del-cli:
+        specifier: ^6.0.0
+        version: 6.0.0
+      firebase-admin:
+        specifier: ^13.4.0
+        version: 13.6.0(encoding@0.1.13)
+      firebase-functions:
+        specifier: ^6.3.2
+        version: 6.6.0(firebase-admin@13.6.0(encoding@0.1.13))
+    devDependencies:
+      '@codecompose/typescript-config':
+        specifier: ^2.0.1
+        version: 2.3.0
+      '@faker-js/faker':
+        specifier: ^10.1.0
+        version: 10.2.0
+      '@repo/testing':
+        specifier: workspace:*
+        version: link:../../libs/testing
+      '@types/node':
+        specifier: ^22.10.10
+        version: 22.19.7
+      '@vitest/coverage-v8':
+        specifier: ^3.2.3
+        version: 3.2.4(vitest@3.2.4(@types/debug@4.1.12)(@types/node@22.19.7)(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@1.8.0))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2))
+      firebase-functions-test:
+        specifier: ^3.4.1
+        version: 3.4.1(firebase-admin@13.6.0(encoding@0.1.13))(firebase-functions@6.6.0(firebase-admin@13.6.0(encoding@0.1.13)))(jest@30.2.0(@types/node@22.19.7))
+      tsdown:
+        specifier: ^0.15.6
+        version: 0.15.12(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.3
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.19.7)(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@1.8.0))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
 
   functions/http-base:
@@ -10029,6 +10084,10 @@ packages:
 
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
+
+  unicode-animations@1.0.3:
+    resolution: {integrity: sha512-+klB2oWwcYZjYWhwP4Pr8UZffWDFVx6jKeIahE6z0QYyM2dwDeDPyn5nevCYbyotxvtT9lh21cVURO1RX0+YMg==}
+    hasBin: true
 
   unicode-emoji-modifier-base@1.0.0:
     resolution: {integrity: sha512-yLSH4py7oFH3oG/9K+XWrz1pSi3dfUrWEnInbxMfArOfc1+33BlGPQtLsOYwvdMy11AwUBetYuaRxSPqgkq+8g==}
@@ -21155,6 +21214,8 @@ snapshots:
   undici-types@6.21.0: {}
 
   undici-types@7.16.0: {}
+
+  unicode-animations@1.0.3: {}
 
   unicode-emoji-modifier-base@1.0.0: {}
 

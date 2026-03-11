@@ -1,15 +1,30 @@
 import { dateToString } from "@repo/common"
-import { ITEM_HEIGHT, PADDING_Y, PATH_WIDTH, ZIGZAG_X } from "@/constants/daily-challenges"
+import { DAILY_CHALLENGES_VARIANTS, FIRST_DAY, ITEM_HEIGHT, PADDING_Y, PATH_WIDTH, ZIGZAG_X } from "@/constants/daily-challenges"
 
 export const generateDates = (count: number): string[] => {
   const today = new Date()
+  const dates: string[] = []
 
-  return Array.from({ length: count }, (_, i) => {
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+  const tomorrowDate = dateToString(tomorrow)
+
+  const inTwoDays = new Date(today)
+  inTwoDays.setDate(today.getDate() + 2)
+  const inTwoDaysDate = dateToString(inTwoDays)
+
+  dates.push(inTwoDaysDate)
+  dates.push(tomorrowDate)
+
+  for (let i = 0; i < count; i++) {
     const d = new Date(today)
     d.setDate(today.getDate() - i)
+    const date = dateToString(d)
+    if (date < FIRST_DAY) break
+    dates.push(date)
+  }
 
-    return dateToString(d)
-  })
+  return dates
 }
 
 export const getPoint = (index: number) => ({
@@ -25,3 +40,30 @@ export const buildPath = (count: number): string =>
 
     return `${acc} C ${prev.x} ${prev.y + cy} ${pt.x} ${pt.y - cy} ${pt.x} ${pt.y}`
   }, "")
+
+type ParamsVariant = {
+  isToday: boolean
+  isCompleted: boolean
+  isLoading: boolean
+  isAvailable: boolean
+  isFuture: boolean
+  hasChallenge: boolean
+}
+
+export const getDailyChallengeVariant = (props: ParamsVariant) => {
+  if (props.isLoading) return DAILY_CHALLENGES_VARIANTS.LOADING
+
+  if (props.isCompleted && props.isToday) return DAILY_CHALLENGES_VARIANTS.COMPLETED_TODAY
+
+  if (props.isCompleted) return DAILY_CHALLENGES_VARIANTS.COMPLETED
+
+  if (props.isToday) return DAILY_CHALLENGES_VARIANTS.TODAY
+
+  if (props.isAvailable) return DAILY_CHALLENGES_VARIANTS.AVAILABLE
+
+  if (props.isFuture) return DAILY_CHALLENGES_VARIANTS.FUTURE
+
+  if (!props.hasChallenge) return DAILY_CHALLENGES_VARIANTS.EMPTY
+
+  return DAILY_CHALLENGES_VARIANTS.EMPTY
+}

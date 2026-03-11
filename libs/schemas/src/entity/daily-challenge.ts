@@ -9,6 +9,7 @@ const dailyChallengeBaseSchema = z.object({
   gameId: z.string(),
   gameTitle: z.string(),
   gameAlternateNames: z.array(z.string()),
+  gameThumbnailUrl: z.string(),
   difficulty: z.enum(DIFFICULTIES),
 })
 
