@@ -11,6 +11,7 @@
 - In test wait for url in "" instead of anti slash
 - Use pnpm instead of npm
 - Never do non null assertion
+- in e2e tests, never use text selector
 - in test, use firebase admin sdk instead of custom helpers
 - in tests, use page instead of browser
 - use container in css if possible

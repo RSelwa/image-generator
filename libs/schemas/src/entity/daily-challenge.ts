@@ -1,6 +1,6 @@
 import { DIFFICULTIES } from "@repo/common"
 import z from "zod"
-import { dailyChallengeDateSchema } from "~/firestore/daily-challenge"
+import { dailyChallengeDateSchema, type DailyChallengeDocWithId } from "~/firestore/daily-challenge"
 import { mapPositionSchema } from "~/firestore/spherical"
 
 const dailyChallengeBaseSchema = z.object({
@@ -41,3 +41,17 @@ const flatSchema = z.discriminatedUnion("hasMap", [flatWithMapSchema, flatWithou
 export const dailyChallengeEntitySchema = z.union([sphericalSchema, flatSchema])
 
 export type DailyChallengeEntity = z.infer<typeof dailyChallengeEntitySchema>
+
+export const toDailyChallengeEntity = (doc: DailyChallengeDocWithId): DailyChallengeEntity | null => {
+  const raw = { ...doc, hasMap: !!doc.mapId }
+  const cleaned = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== null))
+  const { data, error } = dailyChallengeEntitySchema.safeParse(cleaned)
+
+  if (error) {
+    console.error(`Daily challenge ${doc.id} is incomplete:`, error)
+
+    return null
+  }
+
+  return data
+}

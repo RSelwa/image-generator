@@ -6,28 +6,14 @@ import {
   type DailyChallengeDocWithId,
   dailyChallengeDocWithIdSchema,
   type DailyChallengeEntity,
-  dailyChallengeEntitySchema,
   type DailyChallengeResultDocWithId,
   dailyChallengeResultDocWithIdSchema,
-  type UpdateDailyChallengeInput,
+  toDailyChallengeEntity,
+  type UpdateDailyChallengeInput
 } from "@repo/schemas"
 import { DEFAULT_SIZE_DAILY_CHALLENGES } from "@/constants/api"
 import { getDailyChallengeRef, getDailyChallengeResultRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
-
-const toDailyChallengeEntity = (doc: DailyChallengeDocWithId): DailyChallengeEntity | null => {
-  const raw = { ...doc, hasMap: !!doc.mapId }
-  const cleaned = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== null))
-  const { data, error } = dailyChallengeEntitySchema.safeParse(cleaned)
-
-  if (error) {
-    console.error(`Daily challenge ${doc.id} is incomplete:`, error)
-
-    return null
-  }
-
-  return data
-}
 
 const parseChallenges = (snapshot: Awaited<ReturnType<typeof getDocs>>): DailyChallengeDocWithId[] => {
   const challenges: DailyChallengeDocWithId[] = []
