@@ -42,6 +42,7 @@
     "@repo/common": "workspace:*",
     "@repo/providers": "workspace:*",
     "@repo/schemas": "workspace:*",
+    "@tanstack/react-virtual": "^3.13.21",
     "@vercel/analytics": "^1.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
