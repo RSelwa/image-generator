@@ -1,5 +1,6 @@
 import {
     Armchair,
+    Calendar,
     Gamepad2,
     Globe2,
     Image,
@@ -60,6 +61,12 @@ const NavUserAdmin = () => {
                         <Link href={PAGES.ADMIN_SUGGESTIONS} className="cursor-pointer">
                             <Lightbulb />
                             Suggestions
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href={PAGES.ADMIN_DAILY_CHALLENGE} className="cursor-pointer">
+                            <Calendar />
+                            Daily Challenges
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>

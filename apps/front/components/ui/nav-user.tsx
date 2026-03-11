@@ -4,6 +4,7 @@ import { UMA_STUDIO_URL } from "@repo/common"
 
 import {
   Brush,
+  Calendar,
   History,
   LogOut,
   User,
@@ -89,6 +90,12 @@ export const NavUser = () => {
           <DropdownMenuItem onClick={handleCreateLobby} disabled={isLoading} className="cursor-pointer">
             <Zap />
             Play
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href={PAGES.DAILY_CHALLENGE}>
+              <Calendar />
+              Daily Challenge
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={PAGES.ACCOUNT} className="cursor-pointer">

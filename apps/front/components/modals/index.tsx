@@ -8,6 +8,7 @@ import { ModalGame } from "@/components/modals/game"
 import { MakeSuggestion } from "@/components/modals/make-suggestion"
 import { ModalMapId } from "@/components/modals/map-id"
 import { MapsGallery } from "@/components/modals/maps-gallery"
+import NewDailyChallenge from "@/components/modals/new-daily-challenge"
 import NewSocial from "@/components/modals/new-social"
 import NewSound from "@/components/modals/new-sound"
 import { ReportBugModal } from "@/components/modals/report-bug"
@@ -26,6 +27,7 @@ export const ModalProvider = () => {
 
   if (type === MODAL_KEYS.NEW_SOUND) return <NewSound />
   if (type === MODAL_KEYS.NEW_SOCIALS) return <NewSocial />
+  if (type === MODAL_KEYS.NEW_DAILY_CHALLENGE) return <NewDailyChallenge />
   if (type === MODAL_KEYS.MAKE_SUGGESTION) return <MakeSuggestion />
   if (type === MODAL_KEYS.REPORT_BUG) return <ReportBugModal />
   if (type === MODAL_KEYS.SUGGEST_GAME) return <SuggestGameModal />

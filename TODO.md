@@ -103,7 +103,11 @@
   - [ ] Daily challenge: Possibility to share daily challenge
   - [ ] Daily challenge: have success based on this
   - [ ] Daily challenge: Add a path to display it
+  - [ ] Daily challenge: If we make a 3d environnement for the path, add 3d models characters when moving on the map
+  - [ ] Daily challenge: Add e2e tests about it
   - [ ] Daily challenge:
+  - [ ] allow the possibility to have only map guess or game guess in rounds/ seeds
+  - [ ] Make a sponsors part on the home page, with fake users to allow users to donate
   - [ ] Add a modal of how to play
   - [ ] Add mods instead of form for lobbies settings
   - [ ] make the thumbnail square when in sphericalId/flat Id state

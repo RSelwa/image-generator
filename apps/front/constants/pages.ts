@@ -20,6 +20,7 @@ export const PAGES = {
   ADMIN_SOUNDS: "/admin/sounds",
   ADMIN_LOBBIES: "/admin/lobbies",
   ADMIN_FULLSCREEN: "/admin/full-screen",
+  ADMIN_DAILY_CHALLENGE: "/admin/daily-challenge",
   ADMIN_SPHERICAL_FULLSCREEN: "/admin/spherical-full-screen",
   SEED_MAKER: "/seed-maker",
   MY_SEEDS: "/my-seeds",
@@ -27,4 +28,6 @@ export const PAGES = {
   HISTORY: "/history",
   PROMO: "/promo",
   BLOG: (slug: string) => `/blog/${slug}`,
+  DAILY_CHALLENGE: "/daily-challenge",
+  DAILY_CHALLENGE_DATE: (date: string) => `/daily-challenge/${date}`,
 } as const

@@ -25,6 +25,11 @@ const Page = () => {
       image: FALL_BACK_IMAGE,
       label: "Lobbies",
     },
+    {
+      url: PAGES.ADMIN_DAILY_CHALLENGE,
+      image: FALL_BACK_IMAGE,
+      label: "Daily Challenges",
+    },
   ]
 
   return (

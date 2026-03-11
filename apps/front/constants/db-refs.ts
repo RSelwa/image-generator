@@ -13,6 +13,9 @@ export const TABLE_REFS = {
   [TABLES.USERS]: collection(db, TABLES.USERS) as CustomCollectionRef<
     typeof TABLES.USERS
   >,
+  [TABLES.DAILY_CHALLENGES]: collection(db, TABLES.DAILY_CHALLENGES) as CustomCollectionRef<
+    typeof TABLES.DAILY_CHALLENGES
+  >,
   [TABLES.RIGHTS]: collection(db, TABLES.RIGHTS) as CustomCollectionRef<
     typeof TABLES.RIGHTS
   >,
@@ -71,6 +74,10 @@ export const TABLES_SUB_REFS = {
     collection(db, TABLES.LOBBIES, lobbyId, TABLES.ROUND_ANSWERS) as CustomCollectionRef<
       typeof TABLES.ROUND_ANSWERS
     >,
+  [TABLES.DAILY_CHALLENGE_RESULTS]: (userId: string) =>
+    collection(db, TABLES.USERS, userId, TABLES.DAILY_CHALLENGE_RESULTS) as CustomCollectionRef<
+      typeof TABLES.DAILY_CHALLENGE_RESULTS
+    >,
 } as const
 
 export const getUserRef = (uid: string | undefined) =>
@@ -114,3 +121,9 @@ export const getGamesListRef = () =>
 
 export const getMetadataGameListRef = (): DocumentReference<GamesListDoc, GamesListDoc> =>
   doc(TABLE_REFS[TABLES.METADATA], METADATA_DOCS.GAMES_LIST)
+
+export const getDailyChallengeRef = (date: string) =>
+  doc(TABLE_REFS[TABLES.DAILY_CHALLENGES], date)
+
+export const getDailyChallengeResultRef = (uid: string, date: string) =>
+  doc(TABLES_SUB_REFS[TABLES.DAILY_CHALLENGE_RESULTS](uid), date)

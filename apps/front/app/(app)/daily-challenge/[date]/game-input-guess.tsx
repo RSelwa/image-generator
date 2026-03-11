@@ -1,7 +1,5 @@
-import { Timestamp } from "@firebase/firestore"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { isSameNormalized, ROUND_POINTS } from "@repo/common"
-import { usePathname } from "next/navigation"
+import { isSameNormalized } from "@repo/common"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import useSound from "use-sound"
@@ -9,12 +7,10 @@ import z from "zod"
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { SOUNDS } from "@/constants/sound"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useGetDailyChallengeEntityByDateQuery, useSubmitDailyChallengeResultMutation } from "@/redux/api/daily-challenge"
 import { useGetAllGamesNamesQuery } from "@/redux/api/games"
-import { useIncrementPlayerLivesUsedMutation, useSubmitRoundAnswerMutation } from "@/redux/api/lobby"
-import { selectCurrentRoundData, selectCurrentRoundIndex, selectLobbyConfig, selectMyLivesRemaining, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
-import { selectUser } from "@/redux/session/session.selectors"
+import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { getLobbyIdFromPathname } from "@/utils"
 
 const schema = z.object({
   input: z.string().min(1, "Answer cannot be empty"),
@@ -22,23 +18,15 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
-const GameInputGuess = () => {
-  const pathname = usePathname()
-  const lobbyId = getLobbyIdFromPathname(pathname)
+const GameInputGuessDaily = ({ date }: { date: string }) => {
+  const userId = useAppSelector(selectUserId)
 
   const isMobile = useIsMobile()
 
-  const [submitRoundAnswer] = useSubmitRoundAnswerMutation()
-  const [incrementLivesUsed] = useIncrementPlayerLivesUsedMutation()
-
   const { data: allGamesNames } = useGetAllGamesNamesQuery()
+  const { data: challenge, isLoading } = useGetDailyChallengeEntityByDateQuery({ date })
 
-  const user = useAppSelector(selectUser)
-  const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
-  const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
-  const selectedOption = useAppSelector(selectSelectedOption(lobbyId, roundIndex))
-  const config = useAppSelector(selectLobbyConfig(lobbyId))
-  const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
+  const [submitResult, { isLoading: isSubmitting }] = useSubmitDailyChallengeResultMutation()
 
   const [comboboxKey, setComboboxKey] = useState(0)
   const [playCorrect] = useSound(SOUNDS.CORRECT_GAME)
@@ -62,32 +50,19 @@ const GameInputGuess = () => {
   const verifyGameName = async (data: Schema) => {
     const input = data.input.trim()
 
-    if (!currentRoundData) return
+    if (!challenge || isSubmitting) return
 
     const playerAnswerValue = input?.toString() || ""
 
-    const correctGameName = selectedOption?.gameTitle || currentRoundData.gameTitle || ""
-    const alternateNames = selectedOption?.gameAlternateNames || currentRoundData.gameAlternateNames || []
+    const { gameTitle, gameAlternateNames } = challenge
 
-    const isCorrect = Boolean(correctGameName && (isSameNormalized(correctGameName, playerAnswerValue) || alternateNames.some((name) => isSameNormalized(name, playerAnswerValue))))
+    const isCorrect = isSameNormalized(gameTitle, playerAnswerValue) || gameAlternateNames.some((name) => isSameNormalized(name, playerAnswerValue))
 
     if (isCorrect) {
       playCorrect()
-      await submitRoundAnswer({
-        lobbyId,
-        roundIndex,
-        uid: user?.id || "",
-        answer: {
-          answer: playerAnswerValue,
-          submittedAt: Timestamp.now(),
-          isCorrect: true,
-          gamePoints: ROUND_POINTS.GAME_GUESS,
-          points: ROUND_POINTS.GAME_GUESS,
-        },
-      })
+      await submitResult({ answer: input, date, isCorrect, uid: userId! })
     } else {
       playWrong()
-      await incrementLivesUsed({ lobbyId, playerId: user?.id || "", roundIndex })
       reset()
       setComboboxKey((k) => k + 1)
     }
@@ -98,21 +73,10 @@ const GameInputGuess = () => {
     handleSubmit(verifyGameName)()
   }
 
+  if (isLoading) return null
+
   return (
     <form onSubmit={handleSubmit(verifyGameName)} autoComplete="off" className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-0 flex flex-col items-center gap-4">
-      {config?.playersLives && (
-        <div data-testid="lives-container" className="w-full flex justify-center items-center gap-8">
-          {
-            Array.from({ length: config.playersLives }, (_, i) => (
-              <div
-                key={i}
-                data-is-filled={i < livesRemaining}
-                className="size-6 transition-colors data-[is-filled=false]:shadow-glow-xs data-[is-filled=false]:shadow-destructive/70 data-[is-filled=true]:bg-primary data-[is-filled=true]:shadow-primary/70 border border-secondary data-[is-filled=false]:bg-destructive/30"
-              />
-            ))
-          }
-        </div>
-      )}
       <Combobox key={comboboxKey}>
         <ComboboxInput
           showTrigger={false}
@@ -140,4 +104,4 @@ const GameInputGuess = () => {
   )
 }
 
-export default GameInputGuess
+export default GameInputGuessDaily
