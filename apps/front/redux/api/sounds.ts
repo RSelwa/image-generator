@@ -1,10 +1,9 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { TABLES } from "@repo/common"
+import { SOUND_STATUS, TABLES } from "@repo/common"
 import { type SoundDoc, soundDocSchema, type SoundDocWithId, soundDocWithIdSchema } from "@repo/schemas"
 import { addDoc, deleteDoc, getDoc, getDocs, orderBy, query, Timestamp, updateDoc } from "firebase/firestore"
 import { getSoundRef, TABLE_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
-import { SOUND_STATUS } from "./../../../../libs/common/src/constants/constants"
 
 export const soundsApi = createApi({
   reducerPath: "soundsApi",

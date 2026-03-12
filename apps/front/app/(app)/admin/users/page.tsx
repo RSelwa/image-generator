@@ -3,7 +3,7 @@
 import { getDateFromString } from "@repo/common"
 import { Search } from "lucide-react"
 import { useQueryState } from "nuqs"
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import OpenFirestoreDoc from "@/components/open-firestore"
 import SheetAdminUser from "@/components/sheet/user-admin"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
@@ -33,10 +33,19 @@ const Page = () => {
     setCheckedIds(value ? flatUsers.map((user) => user.id) : [])
   }
 
+  const hasFetchedAtBottomRef = useRef(false)
+
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget
     const isBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100
-    if (isBottom && hasNextPage && !isFetching) {
+
+    if (!isBottom) {
+      hasFetchedAtBottomRef.current = false
+      return
+    }
+
+    if (hasNextPage && !isFetching && !hasFetchedAtBottomRef.current) {
+      hasFetchedAtBottomRef.current = true
       fetchNextPage()
     }
   }, [hasNextPage, isFetching, fetchNextPage])
@@ -54,7 +63,7 @@ const Page = () => {
           <InputGroupInput value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search by id or email" autoComplete="off" />
         </InputGroup>
       </section>
-      <ScrollArea onScroll={handleScroll} className="h-5/6">
+      <ScrollArea onScroll={handleScroll} className="h-5/6" viewportClassName="[overflow-anchor:none]">
         <Table noWrapper>
           <TableCaption>
             {isFetching && "Loading..."}

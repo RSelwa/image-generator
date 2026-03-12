@@ -22,8 +22,8 @@ const getTargetDate = () => {
   return formatDate(date)
 }
 
-export const createDailyChallenge = async () => {
-  const targetDate = getTargetDate()
+export const createDailyChallenge = async (date?: Date) => {
+  const targetDate = date ? formatDate(date) : getTargetDate()
 
   const existingDoc = await refs[TABLES.DAILY_CHALLENGES].doc(targetDate).get()
 
@@ -123,4 +123,6 @@ export const createDailyChallenge = async () => {
   await refs[TABLES.DAILY_CHALLENGES].doc(targetDate).set(challenge)
 
   logger.info(`[daily-challenge] Created challenge for ${targetDate}: ${gameData.title} (${picked.type}, image: ${picked.doc.id})`)
+
+  return { ...challenge, id: targetDate }
 }

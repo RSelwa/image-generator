@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
+import { useCreateDailyChallengeFunctionMutation } from "@/redux/api/cloud-functions"
 import { useCreateDailyChallengeMutation } from "@/redux/api/daily-challenge"
 import { useGetFlatsByGameIdQuery } from "@/redux/api/flat"
 import { useGetAllGamesQuery, useGetSphericalsByGameIdQuery } from "@/redux/api/games"
@@ -24,7 +25,7 @@ const KEY = MODAL_KEYS.NEW_DAILY_CHALLENGE
 const NewDailyChallenge = () => {
   const { closeModal } = useModal(KEY)
   const [createDailyChallenge, { isLoading }] = useCreateDailyChallengeMutation()
-
+  const [createDailyChallengeFunction, { isLoading: isLoadingCreateDailyChallengeFunction }] = useCreateDailyChallengeFunctionMutation()
   const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(createDailyChallengeInputSchema),
     defaultValues: {
@@ -34,6 +35,7 @@ const NewDailyChallenge = () => {
     },
   })
 
+  const dateString = watch("date")
   const isSpherical = watch("isSpherical")
   const difficulty = watch("difficulty")
   const gameId = watch("gameId")
@@ -102,6 +104,17 @@ const NewDailyChallenge = () => {
     clearImageFields()
   }
 
+  const handleCreateDailyChallengeFunction = async () => {
+    if (isLoadingCreateDailyChallengeFunction) return
+    try {
+      const date = stringToDate(dateString)
+
+      await createDailyChallengeFunction({ date }).unwrap()
+    } catch (error) {
+      console.error("Failed to create daily challenge via cloud function", error)
+    }
+  }
+
   const onSubmit: SubmitHandler<CreateDailyChallengeInput> = async (data) => {
     await createDailyChallenge(data).unwrap()
     reset()
@@ -112,20 +125,28 @@ const NewDailyChallenge = () => {
     <ModalBase modalKey={KEY} title="New Daily Challenge" className="lg:max-w-2xl">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
         <FieldGroup>
-          <Field className="flex flex-row justify-between">
-            <div className="flex flex-col gap-3">
+          <div className="flex flex-row justify-between">
+            <Field>
               <FieldLabel>Date</FieldLabel>
-              {watch("date") && <span className="text-xs text-muted-foreground font-mono">{watch("date")}</span>}
+              {dateString && <span className="text-xs text-muted-foreground font-mono">{watch("date")}</span>}
               <FieldError errors={[errors.date]} />
-            </div>
+              <Button
+                disabled={
+                  isLoadingCreateDailyChallengeFunction || !dateString
+                }
+                onClick={handleCreateDailyChallengeFunction}
+              >
+                Create Challenge for {dateString}
+              </Button>
+            </Field>
             <div className="h-75 w-min!">
               <Calendar
                 mode="single"
-                selected={watch("date") ? stringToDate(watch("date")) : undefined}
+                selected={dateString ? stringToDate(dateString) : undefined}
                 onSelect={(day) => day && setValue("date", dateToString(day))}
               />
             </div>
-          </Field>
+          </div>
 
           <Field>
             <FieldLabel>Game</FieldLabel>
