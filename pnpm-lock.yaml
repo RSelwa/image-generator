@@ -428,6 +428,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@13.6.0(encoding@0.1.13))
+      zod:
+        specifier: ^4.3.5
+        version: 4.3.6
     devDependencies:
       '@codecompose/typescript-config':
         specifier: ^2.0.1
@@ -831,8 +834,8 @@ importers:
         specifier: ^12.8.0
         version: 12.8.0
       zod:
-        specifier: ^4.1.12
-        version: 4.3.5
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@codecompose/typescript-config':
         specifier: ^2.2.0

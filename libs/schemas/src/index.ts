@@ -1,4 +1,5 @@
 export * from "./entity"
 export * from "./firestore"
+export * from "./functions"
 export * from "./mapping"
 export * from "./zod"

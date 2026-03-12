@@ -1,10 +1,16 @@
-import { DOCUMENTS_STATUS, METADATA_DOCS, mockedMapImageURL, TABLES } from "@repo/common"
+import { DOCUMENTS_STATUS, METADATA_DOCS, mockedMapImageURL, TABLES, USER_RIGHT } from "@repo/common"
 import { collectionGroupRefs, refs, subRefs } from "@repo/providers/db-refs"
+import { type DecodedIdToken } from "@repo/providers/firebase"
 import { type DailyChallengeDoc, toDailyChallengeEntity } from "@repo/schemas"
 import { flatFactory, gameFactory, mapFactory, sphericalFactory } from "@repo/testing/factory"
 import { getFirestore } from "firebase-admin/firestore"
+import firebaseFunctionsTest from "firebase-functions-test"
+import { type Request } from "firebase-functions/https"
 import { beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { createDailyChallenge } from "~/create-daily-challenge"
+import { create_daily_challenge } from "~/index"
+
+const test = firebaseFunctionsTest()
 
 beforeAll(() => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
@@ -322,6 +328,75 @@ describe("createDailyChallenge", () => {
     expect(isSphericalPick || isFlatPick).toBe(true)
   })
 
+  describe("when a date is passed", () => {
+    const customDate = new Date("2026-06-15")
+    const customDateStr = "2026-06-15"
+
+    beforeEach(async () => {
+      const challengeRef = refs[TABLES.DAILY_CHALLENGES].doc(customDateStr)
+      const challengeDoc = await challengeRef.get()
+
+      if (challengeDoc.exists) {
+        await challengeRef.delete()
+      }
+    })
+
+    it("should create the challenge for the given date, not the default +7 days date", async () => {
+      const game = gameFactory({})
+      const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+
+      await refs[TABLES.GAMES].doc(game.id).set(game)
+      await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+
+      await createDailyChallenge(customDate)
+
+      const defaultTargetDate = getTargetDate()
+      const challengeAtDefaultDate = await getChallengeData(defaultTargetDate)
+      const challengeAtCustomDate = await getChallengeData(customDateStr)
+
+      expect(challengeAtDefaultDate).toBeUndefined()
+      expect(challengeAtCustomDate).toBeDefined()
+      expect(challengeAtCustomDate?.date).toBe(customDateStr)
+    })
+
+    it("should not create a challenge if one already exists for the given date", async () => {
+      const game = gameFactory({})
+      const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+
+      await refs[TABLES.GAMES].doc(game.id).set(game)
+      await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+
+      const existingChallenge: DailyChallengeDoc = {
+        date: customDateStr,
+        isSpherical: true,
+        gameId: "existing-game",
+        gameTitle: "Existing Game",
+        gameAlternateNames: null,
+        gameThumbnailUrl: null,
+        sphericalId: "existing-spherical",
+        sphericalImageUrl: null,
+        flatId: null,
+        flatImageUrl: null,
+        mapId: null,
+        mapImage: null,
+        mapPosition: null,
+        mapWidth: null,
+        mapHeight: null,
+        maxDistancePoints: null,
+        difficulty: "easy",
+      }
+
+      await refs[TABLES.DAILY_CHALLENGES].doc(customDateStr).set(existingChallenge)
+
+      await createDailyChallenge(customDate)
+
+      const challenge = await getChallengeData(customDateStr)
+
+      expect(challenge?.gameId).toBe("existing-game")
+      expect(challenge?.sphericalId).toBe("existing-spherical")
+    })
+  })
+
   it("should skip all used images and pick the only remaining one", async () => {
     const game = gameFactory({})
     const used1 = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
@@ -347,5 +422,67 @@ describe("createDailyChallenge", () => {
 
     expect(challenge).toBeDefined()
     expect(challenge?.sphericalId).toBe(fresh.id)
+  })
+
+  describe("when calling the cloud function", () => {
+    const cloudFnWrap = test.wrap(create_daily_challenge)
+
+    const callAs = (uid: string | undefined, data: unknown) =>
+      cloudFnWrap({
+        data,
+        auth: { uid: uid || "", token: {} as DecodedIdToken, rawToken: "" },
+        rawRequest: {} as unknown as Request,
+        acceptsStreaming: false,
+      })
+
+    it("should throw error when unauthenticated", async () => {
+      await expect(callAs(undefined, {})).rejects.toMatchObject({ code: "unauthenticated" })
+    })
+
+    it("should throw error when not admin", async () => {
+      await expect(callAs("non-admin-uid", {})).rejects.toMatchObject({ code: "permission-denied" })
+    })
+
+    it("should throw an error if payload is wrong", async () => {
+      await refs[TABLES.RIGHTS].doc("admin-uid").set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
+
+      await expect(callAs("admin-uid", { date: "not-a-date" })).rejects.toMatchObject({ code: "invalid-argument" })
+    })
+
+    it("should create a daily challenge with correct date when a date is passed", async () => {
+      const customDate = new Date("2026-08-20")
+      const customDateStr = "2026-08-20"
+
+      const game = gameFactory({})
+      const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+
+      await refs[TABLES.GAMES].doc(game.id).set(game)
+      await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+      await refs[TABLES.RIGHTS].doc("admin-uid").set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
+
+      await callAs("admin-uid", { date: customDate })
+
+      const challenge = await getChallengeData(customDateStr)
+
+      expect(challenge).toBeDefined()
+      expect(challenge?.date).toBe(customDateStr)
+    })
+
+    it("should create a daily challenge in seven days when a date is not passed", async () => {
+      const game = gameFactory({})
+      const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+
+      await refs[TABLES.GAMES].doc(game.id).set(game)
+      await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+      await refs[TABLES.RIGHTS].doc("admin-uid").set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
+
+      await callAs("admin-uid", {})
+
+      const targetDate = getTargetDate()
+      const challenge = await getChallengeData(targetDate)
+
+      expect(challenge).toBeDefined()
+      expect(challenge?.date).toBe(targetDate)
+    })
   })
 })
