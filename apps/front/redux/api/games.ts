@@ -7,13 +7,13 @@ import {
   gameDocWithIdSchema,
   type GameEntity,
   gameEntitySchema,
-  GamesListDoc,
+  type GamesListDoc,
   type MapDocWithId,
   mapDocWithIdSchema,
   type SphericalDocWithId,
   sphericalDocWithIdSchema,
   type UpdateGameInput,
-  updateGameInputSchema,
+  updateGameInputSchema
 } from "@repo/schemas"
 import {
   addDoc,
@@ -197,6 +197,7 @@ export const gameApi = createApi({
               return data
             })
             .filter((g) => g !== null)
+            .sort((a, b) => a.title.localeCompare(b.title))
 
           const data = gameDocWithIdSchema.array().parse(games)
 
@@ -474,24 +475,25 @@ export const gameApi = createApi({
           const snapshot = await getDoc(getMetadataGameListRef()
           )
 
-         if(!snapshot.exists()) {
-          throw new Error("Games list not found")
-         }
+          if (!snapshot.exists()) {
+            throw new Error("Games list not found")
+          }
 
-         const data = snapshot.data()
+          const data = snapshot.data()
 
-         if(!data || !data.games) {
-          throw new Error("Games list data is invalid")
-         }
-
+          if (!data || !data.games) {
+            throw new Error("Games list data is invalid")
+          }
 
           return { data: data.games }
         } catch (error) {
           console.error("Error fetching games:", error)
 
           return {
-            error: globalErrorHandler(error), 
-      }}}
+            error: globalErrorHandler(error),
+          }
+        }
+      }
     })
   }),
 })

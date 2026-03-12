@@ -96,7 +96,21 @@
   - [x] implement seeds that will be featured like flim discover
   - [x] Implement dashboard to see lobbies
   - [x] Clean abandoned lobbies
-  - [ ] fix the issues on the sphericals/flats rows, when no map selected, should check if already a thumbnail
+  - [ ] Add autofocus on the description of the bug/suggestion
+  - [ ] Add avatar in the users row
+  - [ ] Add the possibility to change avatar in lobbies
+  - [ ] Add a total of 8 avatars
+  - [x] Daily challenge: Add daily challenges
+  - [ ] Daily challenge: Possibility to share daily challenge
+  - [ ] Daily challenge: have success based on this
+  - [ ] Daily challenge: Add a path to display it
+  - [ ] Daily challenge: If we make a 3d environnement for the path, add 3d models characters when moving on the map
+  - [ ] Daily challenge: Add e2e tests about it
+  - [ ] Daily challenge:
+  - [ ] allow the possibility to have only map guess or game guess in rounds/ seeds
+  - [ ] Make a sponsors part on the home page, with fake users to allow users to donate
+  - [ ] Add a modal of how to play
+  - [ ] Add mods instead of form for lobbies settings
   - [ ] make the thumbnail square when in sphericalId/flat Id state
   - [ ] Try to priorize the sphericals in special rounds instead of flats
   - [ ] Implement modals system for pubing/infos
@@ -104,6 +118,7 @@
   - [ ] Improve comments on instagram
   - [ ] Add new avatar, check visual goodies
   - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
+  - [ ] fix the issues on the sphericals/flats rows, when no map selected, should check if already a thumbnail
   - [ ] in Seed maker, when round is special should not allow images without thumbnails
   - [ ] Implémenter le buy me coffee
   - [ ] Scrap lostgamer for the images of the maps

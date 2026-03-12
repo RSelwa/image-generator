@@ -24,3 +24,8 @@ export const AVATARS_URLS = {
 export const AVATARS_BACKGROUND_URLS = {
   PERIMETER: "/avatar_background/map_perimeter_overflow-Ck2U4HJE.jpg",
 } as const
+
+export const SVG_URLS = {
+  STRIPS_MUTED: "/svg/stripe-blocks-muted.svg",
+  DIAGONAL_STRIPS: "/svg/diagonal-stripes-muted.svg",
+} as const

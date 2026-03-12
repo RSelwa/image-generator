@@ -27,6 +27,14 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack 
     return maps.find((m) => m.id === mapId) || null
   }
 
+  const allImages = [
+    ...sphericals.map((s) => ({ ...s, type: ROUND_TYPE.SPHERICAL as typeof ROUND_TYPE.SPHERICAL })),
+    ...flats.map((f) => ({ ...f, type: ROUND_TYPE.FLAT as typeof ROUND_TYPE.FLAT })),
+  ]
+
+  const withMap = allImages.filter((img) => !!img.mapId)
+  const withThumbnail = allImages.filter((img) => !img.mapId)
+
   return (
     <div className="flex flex-col gap-3 h-full">
       <div className="flex items-center gap-2">
@@ -44,29 +52,29 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack 
         </div>
       )}
 
-      {!isLoading && sphericals.length === 0 && flats.length === 0 && (
+      {!isLoading && allImages.length === 0 && (
         <p className="text-sm text-muted-foreground text-center">No ready images for this game</p>
       )}
 
-      {sphericals.length > 0 && (
+      {withMap.length > 0 && (
         <div className="flex flex-col gap-1.5">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Sphericals ({sphericals.length})
+            With Map ({withMap.length})
           </p>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
-            {sphericals.map((spherical) => {
-              const map = getMapById(spherical.mapId)
+            {withMap.map((img) => {
+              const map = getMapById(img.mapId)
               const dragData: DragData = {
-                type: ROUND_TYPE.SPHERICAL,
-                imageId: spherical.id,
-                image: spherical.image || "",
-                thumbnail: spherical.thumbnail || "",
+                type: img.type,
+                imageId: img.id,
+                image: img.image || "",
+                thumbnail: img.thumbnail || "",
                 gameId,
                 gameTitle,
                 gameAlternateNames,
                 gameImage,
-                mapId: spherical.mapId || null,
-                mapPosition: spherical.mapPosition || null,
+                mapId: img.mapId || null,
+                mapPosition: img.mapPosition || null,
                 mapImage: map?.imageUrl || null,
                 mapWidth: map?.width || null,
                 mapHeight: map?.height || null,
@@ -75,8 +83,8 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack 
 
               return (
                 <DraggableImageCard
-                  key={spherical.id}
-                  id={`spherical-${spherical.id}`}
+                  key={img.id}
+                  id={`${img.type}-${img.id}`}
                   data={dragData}
                 />
               )
@@ -85,35 +93,34 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack 
         </div>
       )}
 
-      {flats.length > 0 && (
+      {withThumbnail.length > 0 && (
         <div className="flex flex-col gap-1.5">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Flats ({flats.length})
+            Thumbnail ({withThumbnail.length})
           </p>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
-            {flats.map((flat) => {
-              const map = getMapById(flat.mapId)
+            {withThumbnail.map((img) => {
               const dragData: DragData = {
-                type: ROUND_TYPE.FLAT,
-                imageId: flat.id,
-                image: flat.image || "",
-                thumbnail: flat.thumbnail || "",
+                type: img.type,
+                imageId: img.id,
+                image: img.image || "",
+                thumbnail: img.thumbnail || "",
                 gameId,
                 gameTitle,
                 gameAlternateNames,
                 gameImage,
-                mapId: flat.mapId || null,
-                mapPosition: flat.mapPosition || null,
-                mapImage: map?.imageUrl || null,
-                mapWidth: map?.width || null,
-                mapHeight: map?.height || null,
-                maxDistancePoints: map?.maxDistancePoints || DEFAULT_MAX_DISTANCE_POINTS,
+                mapId: null,
+                mapPosition: null,
+                mapImage: null,
+                mapWidth: null,
+                mapHeight: null,
+                maxDistancePoints: DEFAULT_MAX_DISTANCE_POINTS,
               }
 
               return (
                 <DraggableImageCard
-                  key={flat.id}
-                  id={`flat-${flat.id}`}
+                  key={img.id}
+                  id={`${img.type}-${img.id}`}
                   data={dragData}
                 />
               )

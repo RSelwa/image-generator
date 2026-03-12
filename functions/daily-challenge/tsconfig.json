@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/tsconfig",
+  "extends": "@codecompose/typescript-config/service",
+  "references": [
+    {
+      "path": "../../libs/common"
+    },
+    {
+      "path": "../../libs/providers"
+    },
+    {
+      "path": "../../libs/schemas"
+    }
+  ]
+}

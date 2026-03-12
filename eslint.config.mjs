@@ -62,5 +62,6 @@ export default antfu({
     "ts/consistent-type-definitions": "off",
     "regexp/prefer-w": "off",
     "react-hooks-extra/no-direct-set-state-in-use-effect": "off",
+    "react/no-nested-component-definitions": "off",
   },
 })
