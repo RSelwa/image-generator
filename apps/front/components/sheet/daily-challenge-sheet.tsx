@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { dateToString, DIFFICULTIES, DOCUMENTS_STATUS, stringToDate } from "@repo/common"
 import { type DailyChallengeDocWithId, updateDailyChallengeInputSchema } from "@repo/schemas"
+import Image from "next/image"
 import { useQueryState } from "nuqs"
 import { useEffect } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
@@ -51,6 +52,7 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
       gameId: challenge.gameId,
       gameTitle: challenge.gameTitle,
       gameAlternateNames: challenge.gameAlternateNames,
+      gameThumbnailUrl: challenge.gameThumbnailUrl,
       isSpherical: challenge.isSpherical,
       difficulty: challenge.difficulty,
       sphericalId: challenge.sphericalId || undefined,
@@ -71,6 +73,7 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
       gameId: challenge.gameId,
       gameTitle: challenge.gameTitle,
       gameAlternateNames: challenge.gameAlternateNames,
+      gameThumbnailUrl: challenge.gameThumbnailUrl,
       isSpherical: challenge.isSpherical,
       difficulty: challenge.difficulty,
       sphericalId: challenge.sphericalId || undefined,
@@ -88,6 +91,7 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
   const isSpherical = watch("isSpherical")
   const difficulty = watch("difficulty")
   const gameId = watch("gameId")
+  const gameThumbnailUrl = watch("gameThumbnailUrl")
   const sphericalId = watch("sphericalId")
   const flatId = watch("flatId")
 
@@ -127,6 +131,7 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
     setValue("gameId", game.id)
     setValue("gameTitle", game.title)
     setValue("gameAlternateNames", game.alternateNames || [])
+    setValue("gameThumbnailUrl", game.image)
     clearImageFields()
   }
 
@@ -184,20 +189,25 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
             <FieldError errors={[errors.date]} />
           </Field>
 
-          <Field>
-            <FieldLabel>Game</FieldLabel>
-            <Select value={gameId || ""} onValueChange={handleGameSelect}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a game" />
-              </SelectTrigger>
-              <SelectContent>
-                {allGames?.map((game) => (
-                  <SelectItem key={game.id} value={game.id}>{game.title}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FieldError errors={[errors.gameId, errors.gameTitle]} />
-          </Field>
+          <div className="flex justify-between items-start gap-8">
+
+            <Field>
+              <FieldLabel>Game</FieldLabel>
+
+              <Select value={gameId || ""} onValueChange={handleGameSelect}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a game" />
+                </SelectTrigger>
+                <SelectContent>
+                  {allGames?.map((game) => (
+                    <SelectItem key={game.id} value={game.id}>{game.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[errors.gameId, errors.gameTitle]} />
+            </Field>
+            {gameThumbnailUrl && <Image src={gameThumbnailUrl} alt="Game thumbnail" width={100} height={56} className="mb-2 max-h-24 object-cover rounded" />}
+          </div>
 
           <Field orientation="horizontal">
             <FieldLabel>Spherical</FieldLabel>

@@ -88,6 +88,7 @@ export const createDailyChallenge = async () => {
     gameId,
     gameTitle: gameData.title,
     gameAlternateNames: gameData.alternateNames || null,
+    gameThumbnailUrl: gameData.image || null,
     sphericalId: isSpherical ? picked.doc.id : null,
     sphericalImageUrl: isSpherical ? pickedData.image : null,
     flatId: !isSpherical ? picked.doc.id : null,

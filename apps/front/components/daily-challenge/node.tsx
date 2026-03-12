@@ -51,6 +51,7 @@ export const PathNodeVisual = ({ variant, date, disabled, side = SIDE.LEFT }: Pa
       href={disabled ? "#" : PAGES.DAILY_CHALLENGE_DATE(date)}
       aria-disabled={disabled}
       data-disabled={disabled}
+      data-testid={`daily-challenge-node-${date}-${variant}`}
       className={cn(nodeVariants({ variant }), "data-[disabled=true]:cursor-not-allowed")}
     >
       <DailyChallengeContent {...{ variant }} />

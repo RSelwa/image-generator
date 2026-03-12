@@ -1,7 +1,7 @@
 import { DOCUMENTS_STATUS, METADATA_DOCS, TABLES } from "@repo/common"
 import { collectionGroupRefs, refs, subRefs } from "@repo/providers/db-refs"
-import { type DailyChallengeDoc, type DailyChallengeHistoryDoc } from "@repo/schemas"
-import { gameFactory, sphericalFactory, flatFactory } from "@repo/testing/factory"
+import { type DailyChallengeDoc, toDailyChallengeEntity } from "@repo/schemas"
+import { flatFactory, gameFactory, sphericalFactory } from "@repo/testing/factory"
 import { getFirestore } from "firebase-admin/firestore"
 import { beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { createDailyChallenge } from "~/create-daily-challenge"
@@ -66,12 +66,18 @@ describe("createDailyChallenge", () => {
     const targetDate = getTargetDate()
     const challenge = await getChallengeData(targetDate)
 
-    expect(challenge).toBeDefined()
-    expect(challenge?.date).toBe(targetDate)
-    expect(challenge?.isSpherical).toBe(true)
-    expect(challenge?.sphericalId).toBe(spherical.id)
-    expect(challenge?.gameId).toBe(game.id)
-    expect(challenge?.gameTitle).toBe(game.title)
+    if (!challenge) throw new Error("Challenge should be defined")
+
+    expect(challenge.date).toBe(targetDate)
+    expect(challenge.isSpherical).toBe(true)
+    expect(challenge.sphericalId).toBe(spherical.id)
+    expect(challenge.gameId).toBe(game.id)
+    expect(challenge.gameTitle).toBe(game.title)
+    expect(challenge.gameThumbnailUrl).toBe(game.image)
+
+    const entity = toDailyChallengeEntity({ ...challenge, id: targetDate })
+
+    expect(entity).not.toBeNull()
   })
 
   it("should create a challenge with a ready flat image", async () => {
@@ -86,12 +92,17 @@ describe("createDailyChallenge", () => {
     const targetDate = getTargetDate()
     const challenge = await getChallengeData(targetDate)
 
-    expect(challenge).toBeDefined()
-    expect(challenge?.date).toBe(targetDate)
-    expect(challenge?.isSpherical).toBe(false)
-    expect(challenge?.flatId).toBe(flat.id)
-    expect(challenge?.gameId).toBe(game.id)
-    expect(challenge?.gameTitle).toBe(game.title)
+    if (!challenge) throw new Error("Challenge should be defined")
+
+    expect(challenge.date).toBe(targetDate)
+    expect(challenge.isSpherical).toBe(false)
+    expect(challenge.flatId).toBe(flat.id)
+    expect(challenge.gameId).toBe(game.id)
+    expect(challenge.gameTitle).toBe(game.title)
+    expect(challenge.gameThumbnailUrl).toBe(game.image)
+
+    const entity = toDailyChallengeEntity({ ...challenge, id: targetDate })
+    expect(entity).not.toBeNull()
   })
 
   it("should not pick a spherical image that is already in the history", async () => {
@@ -113,6 +124,7 @@ describe("createDailyChallenge", () => {
     expect(challenge).toBeDefined()
     expect(challenge?.sphericalId).toBe(freshSpherical.id)
     expect(challenge?.sphericalId).not.toBe(usedSpherical.id)
+    expect(challenge?.gameThumbnailUrl).toBe(game.image)
   })
 
   it("should not pick a flat image that is already in the history", async () => {
@@ -134,6 +146,7 @@ describe("createDailyChallenge", () => {
     expect(challenge).toBeDefined()
     expect(challenge?.flatId).toBe(freshFlat.id)
     expect(challenge?.flatId).not.toBe(usedFlat.id)
+    expect(challenge?.gameThumbnailUrl).toBe(game.image)
   })
 
   it("should not pick images that are not ready", async () => {
@@ -169,6 +182,7 @@ describe("createDailyChallenge", () => {
       gameId: "existing-game",
       gameTitle: "Existing Game",
       gameAlternateNames: null,
+      gameThumbnailUrl: "https://example.com/existing-game.jpg",
       sphericalId: "existing-spherical",
       sphericalImageUrl: "https://example.com/existing.jpg",
       flatId: null,
