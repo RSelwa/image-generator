@@ -1,6 +1,6 @@
 import { DOCUMENTS_STATUS, METADATA_DOCS, TABLES } from "@repo/common"
 import { collectionGroupRefs, refs, subRefs } from "@repo/providers/db-refs"
-import { type DailyChallengeDoc, type DailyChallengeHistoryDoc } from "@repo/schemas"
+import { type DailyChallengeDate, type DailyChallengeDoc, type DailyChallengeHistoryDoc } from "@repo/schemas"
 import { getFirestore } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 
@@ -22,8 +22,8 @@ const getTargetDate = () => {
   return formatDate(date)
 }
 
-export const createDailyChallenge = async (date?: Date) => {
-  const targetDate = date ? formatDate(date) : getTargetDate()
+export const createDailyChallenge = async (date?: DailyChallengeDate) => {
+  const targetDate = date || getTargetDate()
 
   const existingDoc = await refs[TABLES.DAILY_CHALLENGES].doc(targetDate).get()
 

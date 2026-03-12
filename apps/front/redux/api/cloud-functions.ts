@@ -1,11 +1,8 @@
-import type z from "zod"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { type payloadCreateDailyChallengeSchema } from "@repo/schemas"
+import { type PayloadCreateDailyChallenge } from "@repo/schemas"
 import { httpsCallable } from "firebase/functions"
 import { functions } from "@/constants/db"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
-
-type PayloadCreateDailyChallenge = z.infer<typeof payloadCreateDailyChallengeSchema>
 
 export const cloudFunctionsApi = createApi({
   reducerPath: "cloudFunctionsApi",
@@ -21,7 +18,7 @@ export const cloudFunctionsApi = createApi({
           >
           (
             functions,
-            "createDailyChallenge"
+            "create_daily_challenge"
           )(payload)
 
           return { data: null }

@@ -107,9 +107,7 @@ const NewDailyChallenge = () => {
   const handleCreateDailyChallengeFunction = async () => {
     if (isLoadingCreateDailyChallengeFunction) return
     try {
-      const date = stringToDate(dateString)
-
-      await createDailyChallengeFunction({ date }).unwrap()
+      await createDailyChallengeFunction({ date: dateString }).unwrap()
     } catch (error) {
       console.error("Failed to create daily challenge via cloud function", error)
     }

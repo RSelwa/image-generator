@@ -329,7 +329,6 @@ describe("createDailyChallenge", () => {
   })
 
   describe("when a date is passed", () => {
-    const customDate = new Date("2026-06-15")
     const customDateStr = "2026-06-15"
 
     beforeEach(async () => {
@@ -348,7 +347,7 @@ describe("createDailyChallenge", () => {
       await refs[TABLES.GAMES].doc(game.id).set(game)
       await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
 
-      await createDailyChallenge(customDate)
+      await createDailyChallenge(customDateStr)
 
       const defaultTargetDate = getTargetDate()
       const challengeAtDefaultDate = await getChallengeData(defaultTargetDate)
@@ -388,7 +387,7 @@ describe("createDailyChallenge", () => {
 
       await refs[TABLES.DAILY_CHALLENGES].doc(customDateStr).set(existingChallenge)
 
-      await createDailyChallenge(customDate)
+      await createDailyChallenge(customDateStr)
 
       const challenge = await getChallengeData(customDateStr)
 
@@ -450,7 +449,6 @@ describe("createDailyChallenge", () => {
     })
 
     it("should create a daily challenge with correct date when a date is passed", async () => {
-      const customDate = new Date("2026-08-20")
       const customDateStr = "2026-08-20"
 
       const game = gameFactory({})
@@ -460,7 +458,7 @@ describe("createDailyChallenge", () => {
       await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
       await refs[TABLES.RIGHTS].doc("admin-uid").set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
 
-      await callAs("admin-uid", { date: customDate })
+      await callAs("admin-uid", { date: customDateStr })
 
       const challenge = await getChallengeData(customDateStr)
 

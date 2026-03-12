@@ -35,6 +35,7 @@ export const dailyChallengeDocSchema = roundSchema
 
 export const dailyChallengeDocWithIdSchema = z.object({ ...dailyChallengeDocSchema.shape, ...WITH_ID.shape })
 
+export type DailyChallengeDate = z.infer<typeof dailyChallengeDateSchema>
 export type DailyChallengeDoc = z.infer<typeof dailyChallengeDocSchema>
 export type DailyChallengeDocWithId = z.infer<typeof dailyChallengeDocWithIdSchema>
 
