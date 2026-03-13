@@ -117,3 +117,13 @@ export const STORAGE_KEYS = {
   DRIVER_WAITING_ROOM: "driver_waiting_room",
   DRIVER_SPECIAL_ROUND: "driver_special_round",
 } as const
+
+export const LIMITED_MODAL_KEYS = {
+  DAILY_CHALLENGE: "daily-challenge-v1",
+  // NEW_FEATURE: "new-feature-v1",
+} as const
+
+export const LIMITED_MODAL_CONFIG: Record<string, { maxCount: number }> = {
+  [LIMITED_MODAL_KEYS.DAILY_CHALLENGE]: { maxCount: 3 },
+  // [LIMITED_MODAL_KEYS.NEW_FEATURE]: { maxCount: 3 },
+}

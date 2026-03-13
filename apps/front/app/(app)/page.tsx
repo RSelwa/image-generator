@@ -7,6 +7,7 @@ import { CreateLobbyContainer } from "@/components/home/home-create-lobby"
 import HomeFooter from "@/components/home/home-footer"
 import { HomeStrips } from "@/components/home/home-strips"
 import { Instagram, LogoWithIcon, MiniStrips, TikTok } from "@/components/icons"
+import DailyChallengePub from "@/components/modals/daily-challenge-pub"
 import { Button } from "@/components/ui/button"
 import { ARTICLES, HOME_ARTICLES } from "@/constants/articles"
 import { PAGES } from "@/constants/pages"
@@ -112,6 +113,7 @@ const Page = () => {
         />
       </section>
       <HomeFooter />
+      <DailyChallengePub />
     </main>
   )
 }

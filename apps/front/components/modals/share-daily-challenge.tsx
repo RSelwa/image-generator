@@ -35,7 +35,7 @@ const ShareDailyChallengeModal = ({ challenge }: Props) => {
         <Dialog defaultOpen={true}>
             <DialogTrigger asChild className="absolute left-1/2 -translate-x-1/2 bottom-6"><Button>Result</Button></DialogTrigger>
             <DialogContent data-testid="share-daily-challenge-modal">
-                <ImageGlow radius={30} opacity={0.5} className="w-full object-cover max-h-96">
+                <ImageGlow radius={30} opacity={0.5} className="w-full object-cover max-h-96 max-w-[80vw]">
                     <Image data-testid="daily-challenge-result-thumbnail" src={challenge.gameThumbnailUrl} alt={`${challenge.gameTitle}`} height={500} width={1000} className="max-h-56 object-contain" />
                 </ImageGlow>
                 <DialogTitle>Share this challenge to your friends</DialogTitle>
