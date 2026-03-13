@@ -22,4 +22,6 @@ export const SELECTORS = {
   DAILY_CHALLENGE_SPHERICAL: "daily-challenge-spherical",
   DAILY_CHALLENGE_FLAT: "daily-challenge-flat",
   DAILY_CHALLENGE_RESULT_THUMBNAIL: "daily-challenge-result-thumbnail",
+  DAILY_CHALLENGE_SHARE_MODAL: "share-daily-challenge-modal",
+  DIALOG_CLOSE: "dialog-close",
 } as const

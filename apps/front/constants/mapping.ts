@@ -99,6 +99,7 @@ export const SUGGESTIONS_TYPE_TO_BADGE_VARIANT = {
 
 export const API_ENDPOINTS = {
   CREATE_SEED: "/api/create-seed",
+  DAILY_CHALLENGE: "/api/daily-challenge",
 } as const
 
 export const FIREBASE_ERRORS = {

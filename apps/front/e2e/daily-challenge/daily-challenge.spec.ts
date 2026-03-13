@@ -22,8 +22,6 @@ const getDateString = (daysOffset: number) => {
 
 test.describe("daily challenge path", () => {
   test("should display challenges and verify completion flow", async ({ page }) => {
-    test.setTimeout(120_000)
-
     const user = await setupUser()
     const challenges = await setupDailyChallengesForPath()
     await loginViaUI(page, user.email)
@@ -56,6 +54,10 @@ test.describe("daily challenge path", () => {
     await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_RESULT_THUMBNAIL)).toBeVisible({ timeout: 10_000 })
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toHaveCount(0)
 
+    await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL)).toBeVisible()
+    await page.getByTestId(SELECTORS.DIALOG_CLOSE).click({ force: true })
+    await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL)).toHaveCount(0)
+
     // Go back to the daily challenge path
     await page.getByTestId(SELECTORS.DAILY_CHALLENGE_BACK).click()
     await expect(page).toHaveURL("/daily-challenge")
@@ -74,7 +76,9 @@ test.describe("daily challenge path", () => {
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(yesterdayChallenge?.gameTitle || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_RESULT_THUMBNAIL)).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL)).toBeVisible()
+    await page.getByTestId(SELECTORS.DIALOG_CLOSE).click({ force: true })
+    await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL)).toHaveCount(0)
 
     // Go back and verify COMPLETED variant for yesterday
     await page.getByTestId(SELECTORS.DAILY_CHALLENGE_BACK).click()
