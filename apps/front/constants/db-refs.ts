@@ -1,5 +1,5 @@
 import { METADATA_DOCS, TABLES } from "@repo/common"
-import { type DocumentMapping, type GamesListDoc, type Table } from "@repo/schemas"
+import { type DailyChallengeHistoryDoc, type DocumentMapping, type GamesListDoc, type Table } from "@repo/schemas"
 import { type CollectionReference, type DocumentReference } from "firebase/firestore"
 import { collection, collectionGroup, doc } from "firebase/firestore"
 import { db } from "@/constants/db"
@@ -12,6 +12,9 @@ export type CustomCollectionRef<T extends Table> = CollectionReference<
 export const TABLE_REFS = {
   [TABLES.USERS]: collection(db, TABLES.USERS) as CustomCollectionRef<
     typeof TABLES.USERS
+  >,
+  [TABLES.DAILY_CHALLENGES]: collection(db, TABLES.DAILY_CHALLENGES) as CustomCollectionRef<
+    typeof TABLES.DAILY_CHALLENGES
   >,
   [TABLES.RIGHTS]: collection(db, TABLES.RIGHTS) as CustomCollectionRef<
     typeof TABLES.RIGHTS
@@ -28,9 +31,7 @@ export const TABLE_REFS = {
   [TABLES.SUGGESTIONS]: collection(db, TABLES.SUGGESTIONS) as CustomCollectionRef<
     typeof TABLES.SUGGESTIONS
   >,
-  [TABLES.METADATA]: collection(db, TABLES.METADATA) as CustomCollectionRef<
-    typeof TABLES.METADATA
-  >,
+  [TABLES.METADATA]: collection(db, TABLES.METADATA),
   [TABLES.SOCIALS]: collection(db, TABLES.SOCIALS) as CustomCollectionRef<
     typeof TABLES.SOCIALS
   >,
@@ -70,6 +71,10 @@ export const TABLES_SUB_REFS = {
   [TABLES.ROUND_ANSWERS]: (lobbyId: string) =>
     collection(db, TABLES.LOBBIES, lobbyId, TABLES.ROUND_ANSWERS) as CustomCollectionRef<
       typeof TABLES.ROUND_ANSWERS
+    >,
+  [TABLES.DAILY_CHALLENGE_RESULTS]: (userId: string) =>
+    collection(db, TABLES.USERS, userId, TABLES.DAILY_CHALLENGE_RESULTS) as CustomCollectionRef<
+      typeof TABLES.DAILY_CHALLENGE_RESULTS
     >,
 } as const
 
@@ -113,4 +118,13 @@ export const getGamesListRef = () =>
   doc(TABLE_REFS[TABLES.METADATA], METADATA_DOCS.GAMES_LIST)
 
 export const getMetadataGameListRef = (): DocumentReference<GamesListDoc, GamesListDoc> =>
-  doc(TABLE_REFS[TABLES.METADATA], METADATA_DOCS.GAMES_LIST)
+  doc(TABLE_REFS[TABLES.METADATA], METADATA_DOCS.GAMES_LIST) as DocumentReference<GamesListDoc, GamesListDoc>
+
+export const getDailyChallengeRef = (date: string) =>
+  doc(TABLE_REFS[TABLES.DAILY_CHALLENGES], date)
+
+export const getDailyChallengeResultRef = (uid: string, date: string) =>
+  doc(TABLES_SUB_REFS[TABLES.DAILY_CHALLENGE_RESULTS](uid), date)
+
+export const getDailyChallengeHistoryRef = (): DocumentReference<DailyChallengeHistoryDoc, DailyChallengeHistoryDoc> =>
+  doc(TABLE_REFS[TABLES.METADATA], METADATA_DOCS.DAILY_CHALLENGE_HISTORY) as DocumentReference<DailyChallengeHistoryDoc, DailyChallengeHistoryDoc>

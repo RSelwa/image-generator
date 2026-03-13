@@ -17,4 +17,11 @@ export const SELECTORS = {
   MAP_MARKER: (color?: MarkerColor) => `marker-${color}`,
   MAP_LINE: "marker-line",
   FINISHED_LOBBY_ANONYMOUS_MODAL: "finished-lobby-anonymous-modal",
+  DAILY_CHALLENGE_NODE: (date: string, variant: string) => `daily-challenge-node-${date}-${variant}`,
+  DAILY_CHALLENGE_BACK: "daily-challenge-back",
+  DAILY_CHALLENGE_SPHERICAL: "daily-challenge-spherical",
+  DAILY_CHALLENGE_FLAT: "daily-challenge-flat",
+  DAILY_CHALLENGE_RESULT_THUMBNAIL: "daily-challenge-result-thumbnail",
+  DAILY_CHALLENGE_SHARE_MODAL: "share-daily-challenge-modal",
+  DIALOG_CLOSE: "dialog-close",
 } as const

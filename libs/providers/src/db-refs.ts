@@ -1,5 +1,5 @@
 import { TABLES } from "@repo/common"
-import { type FlatDoc, type GameDoc, type GamesListDoc, type LobbyDoc, type MapDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
+import { type DailyChallengeDoc, type FlatDoc, type GameDoc, type GamesListDoc, type LobbyDoc, type MapDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
 import {
   type CollectionGroup,
   type CollectionReference,
@@ -55,9 +55,17 @@ export const refs = {
     SocialDoc,
     SocialDoc
   >,
+  [TABLES.RIGHTS]: db.collection(TABLES.RIGHTS) as CollectionReference<
+    RightDoc,
+    RightDoc
+  >,
   [TABLES.SOUNDS]: db.collection(TABLES.SOUNDS) as CollectionReference<
     SoundDoc,
     SoundDoc
+  >,
+  [TABLES.DAILY_CHALLENGES]: db.collection(TABLES.DAILY_CHALLENGES) as CollectionReference<
+    DailyChallengeDoc,
+    DailyChallengeDoc
   >,
 }
 

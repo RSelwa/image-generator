@@ -23,7 +23,8 @@
       "WebFetch(domain:firebase.google.com)",
       "Bash(findstr:*)",
       "WebFetch(domain:storybook.js.org)",
-      "Bash(npx eslint apps/front/app/api/create-seed/route.ts apps/front/libs/seed.ts apps/front/e2e/lobby/seed-generation.spec.ts apps/front/e2e/helpers/lobby.ts libs/common/src/constants/constants.ts)"
+      "Bash(npx eslint apps/front/app/api/create-seed/route.ts apps/front/libs/seed.ts apps/front/e2e/lobby/seed-generation.spec.ts apps/front/e2e/helpers/lobby.ts libs/common/src/constants/constants.ts)",
+      "Bash(ls -la /Users/raphael/image-generator/apps/front/app/\\\\\\(app\\\\\\)/admin/users/)"
     ]
   }
 }

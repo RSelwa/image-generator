@@ -19,6 +19,7 @@ export const QUERY_PARAMS = {
   SOUND_ID: "social-id",
   USER_ID: "user-id",
   SPHERICAL_ID: "spherical-id",
+  DAILY_CHALLENGE_DATE: "daily-challenge-date",
 } as const
 
 export const MODAL_KEYS = {
@@ -37,6 +38,7 @@ export const MODAL_KEYS = {
   MAKE_SUGGESTION: "suggestion",
   NEW_SOCIALS: "new-socials",
   NEW_SOUND: "new-sound",
+  NEW_DAILY_CHALLENGE: "new-daily-challenge",
 } as const
 
 export const SORT_OPTIONS = {
@@ -97,6 +99,7 @@ export const SUGGESTIONS_TYPE_TO_BADGE_VARIANT = {
 
 export const API_ENDPOINTS = {
   CREATE_SEED: "/api/create-seed",
+  DAILY_CHALLENGE: "/api/daily-challenge",
 } as const
 
 export const FIREBASE_ERRORS = {

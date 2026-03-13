@@ -2533,4 +2533,204 @@ describe("firebase Security Rules", () => {
       await assertFails(deleteDoc(doc(outsiderDb, answerPath)))
     })
   })
+
+  describe("dailyChallenges collection", () => {
+    const challengeData = {
+      date: "2026-03-09",
+      isSpherical: true,
+      sphericalId: "spherical1",
+      sphericalImageUrl: "https://example.com/image.jpg",
+      gameId: "game1",
+      gameTitle: "Grand Theft Auto V",
+      gameAlternateNames: ["GTA V", "GTA 5"],
+      difficulty: "EASY",
+      createdBy: "admin1",
+    }
+
+    it("should be able to read a daily challenge when not logged in", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "dailyChallenges/2026-03-09"), challengeData)
+      })
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      const result = await assertSucceeds(getDoc(doc(unauthedDb, "dailyChallenges/2026-03-09")))
+      expect(result).toBeDefined()
+    })
+
+    it("should be able to read a daily challenge when logged in", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "dailyChallenges/2026-03-09"), challengeData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+      const result = await assertSucceeds(getDoc(doc(authedDb, "dailyChallenges/2026-03-09")))
+      expect(result).toBeDefined()
+    })
+
+    it("should not be able to create a daily challenge as a regular user", async () => {
+      const uid = "user1"
+
+      const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(setDoc(doc(authedDb, "dailyChallenges/2026-03-09"), challengeData))
+    })
+
+    it("should not be able to create a daily challenge when not logged in", async () => {
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(setDoc(doc(unauthedDb, "dailyChallenges/2026-03-09"), challengeData))
+    })
+
+    it("should be able to create a daily challenge as admin", async () => {
+      const adminId = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+
+      await assertSucceeds(setDoc(doc(adminDb, "dailyChallenges/2026-03-09"), challengeData))
+    })
+
+    it("should be able to update a daily challenge as admin", async () => {
+      const adminId = "admin1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
+        await setDoc(doc(context.firestore(), "dailyChallenges/2026-03-09"), challengeData)
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+
+      await assertSucceeds(updateDoc(doc(adminDb, "dailyChallenges/2026-03-09"), { difficulty: "HARD" }))
+    })
+
+    it("should not be able to update a daily challenge as a regular user", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), "dailyChallenges/2026-03-09"), challengeData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(updateDoc(doc(authedDb, "dailyChallenges/2026-03-09"), { difficulty: "HARD" }))
+    })
+  })
+
+  describe("dailyChallengeResults subcollection", () => {
+    const resultData = {
+      date: "2026-03-09",
+      answer: "GTA V",
+      isCorrect: true,
+    }
+
+    const resultPath = (uid: string) => `users/${uid}/dailyChallengeResults/2026-03-09`
+
+    it("should be able to create own daily challenge result when logged in", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), { pseudo: "Player1" })
+      })
+
+      const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(setDoc(doc(authedDb, resultPath(uid)), resultData))
+    })
+
+    it("should not be able to create a result for another user", async () => {
+      const uid = "user1"
+      const otherUid = "user2"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${otherUid}`), { pseudo: "Player2" })
+      })
+
+      const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(setDoc(doc(authedDb, resultPath(otherUid)), resultData))
+    })
+
+    it("should not be able to create a result when not logged in", async () => {
+      const uid = "user1"
+
+      const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+      await assertFails(setDoc(doc(unauthedDb, resultPath(uid)), resultData))
+    })
+
+    it("should be able to read own daily challenge result", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), { pseudo: "Player1" })
+        await setDoc(doc(context.firestore(), resultPath(uid)), resultData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+      const result = await assertSucceeds(getDoc(doc(authedDb, resultPath(uid))))
+      expect(result).toBeDefined()
+    })
+
+    it("should not be able to read another user's daily challenge result", async () => {
+      const uid = "user1"
+      const otherUid = "user2"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${otherUid}`), { pseudo: "Player2" })
+        await setDoc(doc(context.firestore(), resultPath(otherUid)), resultData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(getDoc(doc(authedDb, resultPath(otherUid))))
+    })
+
+    it("should not be able to update own result (immutable)", async () => {
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), { pseudo: "Player1" })
+        await setDoc(doc(context.firestore(), resultPath(uid)), resultData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertFails(updateDoc(doc(authedDb, resultPath(uid)), { isCorrect: false }))
+    })
+
+    it("should be able to read and write any result as admin", async () => {
+      const adminId = "admin1"
+      const uid = "user1"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
+        await setDoc(doc(context.firestore(), `users/${uid}`), { pseudo: "Player1" })
+        await setDoc(doc(context.firestore(), resultPath(uid)), resultData)
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+
+      const result = await assertSucceeds(getDoc(doc(adminDb, resultPath(uid))))
+      expect(result).toBeDefined()
+
+      await assertSucceeds(updateDoc(doc(adminDb, resultPath(uid)), { isCorrect: false }))
+    })
+  })
 })

@@ -42,6 +42,8 @@ jobs:
             path: lobby/
           - suite: lobby-playing
             path: lobby-playing
+          - suite: daily-challenge
+            path: daily-challenge
       fail-fast: false
     steps:
       - name: ✨ Checkout

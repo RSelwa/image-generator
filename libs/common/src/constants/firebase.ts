@@ -14,10 +14,13 @@ export const TABLES = {
   METADATA: "metadata",
   SOCIALS: "socials",
   SOUNDS: "sounds",
+  DAILY_CHALLENGES: "dailyChallenges",
+  DAILY_CHALLENGE_RESULTS: "dailyChallengeResults",
 } as const
 
 export const METADATA_DOCS = {
   GAMES_LIST: "gamesList",
+  DAILY_CHALLENGE_HISTORY: "dailyChallengeHistory",
 } as const
 
 export const STORAGE_PATHS = {

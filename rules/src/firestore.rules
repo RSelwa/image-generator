@@ -50,6 +50,12 @@ service cloud.firestore {
       allow delete: if request.auth.uid == user;
      
       allow read: if true;
+
+      // Daily challenge results - owner can create/read, immutable once written
+      match /dailyChallengeResults/{date} {
+        allow create, read: if isSignedIn() && request.auth.uid == user;
+        allow write: if signedInAdmin();
+      }
     } 
 
     match /games/{game} {
@@ -135,6 +141,12 @@ service cloud.firestore {
         // allow read, update: if isParentLobbyPlayer();
         allow delete: if signedInAdmin();
       }
+    }
+
+    // Daily challenges collection - admin writes, anyone reads
+    match /dailyChallenges/{date} {
+      allow write: if signedInAdmin();
+      allow read: if true;
     }
 
     // Socials collection
