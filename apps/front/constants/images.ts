@@ -9,6 +9,9 @@ export const IMAGES_URLS = {
     SCENES: "/articles/scenes.webp",
     SPECIAL_ROUNDS: "/articles/special-rounds.webp",
   },
+  PUBS: {
+    DAILY_CHALLENGE: "/pubs/daily-challenge.jpg"
+  }
 } as const
 
 export const AVATARS_URLS = {

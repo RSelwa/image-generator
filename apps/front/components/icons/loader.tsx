@@ -1,7 +1,6 @@
 "use client"
 
-import { type ComponentProps } from "react"
-import { useEffect, useState } from "react"
+import { type ComponentProps, useEffect, useState } from "react"
 import { type BrailleSpinnerName } from "unicode-animations"
 import spinners from "unicode-animations"
 import { cn } from "@/utils"
@@ -65,7 +64,7 @@ export const Spinner = ({ name = "braille", className, ...props }: { name: Brail
     return () => clearInterval(timer)
   }, [name])
 
-  return <span className={cn("font-mono font-extrabold", className)} {...props}>{s.frames[frame]}</span>
+  return <span className={cn("font-normal", className)} style={{ fontFamily: "monospace" }} {...props}>{s.frames[frame]}</span>
 }
 
 export default Loader

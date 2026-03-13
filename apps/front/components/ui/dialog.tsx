@@ -107,6 +107,7 @@ function DialogFooter({
       className={cn(
         "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
         "bg-muted/50 -mx-4 -mb-4 rounded-b-lg border-t p-4",
+        "rounded-none",
         className
       )}
       {...props}
