@@ -14,7 +14,7 @@ test.describe("demo playing", () => {
 
     await page.getByTestId("video-create-lobby-button-demo").click()
 
-    await page.waitForURL(/\/lobby\//)
+    await page.waitForURL("/en/lobby/**")
 
     const url = page.url()
     const lobbyId = url.split("/lobby/")[1]

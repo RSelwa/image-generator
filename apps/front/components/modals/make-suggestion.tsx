@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { STORAGE_PATHS, SUGGESTIONS_TYPE } from "@repo/common"
 import { suggestionsDocSchema } from "@repo/schemas"
+import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -30,6 +31,8 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export const MakeSuggestion = () => {
+    const t = useTranslations("makeSuggestion")
+    const tCommon = useTranslations("common")
     const { closeModal } = useModal(key)
 
     const userId = useAppSelector(selectUserId)
@@ -83,26 +86,26 @@ export const MakeSuggestion = () => {
 
             await createSuggestionDoc(suggestionDoc).unwrap()
 
-            toast.success("Thanks for your suggestion! You help to improve this project :)")
+            toast.success(t("success"))
             reset()
             closeModal()
         } catch (error) {
             console.error("Failed to submit suggestion", error)
 
-            toast.error("Failed to submit suggestion")
+            toast.error(t("fail"))
         }
     }
 
     const imageUrls = watch("imageUrls") || []
 
     return (
-        <ModalBase title="Make a suggestion" modalKey={key}>
+        <ModalBase title={t("title")} modalKey={key}>
             <form autoComplete="off" onSubmit={handleSubmit(submitSuggestion)} className="space-y-4">
                 <InputGroup>
-                    <InputGroupInput placeholder="What is your suggestions" {...register("title")} />
+                    <InputGroupInput placeholder={t("suggestionTitle")} {...register("title")} />
                 </InputGroup>
                 <InputGroup>
-                    <InputGroupTextarea placeholder="Describe your suggestion" {...register("description")} />
+                    <InputGroupTextarea placeholder={t("describeYourSuggestion")} {...register("description")} />
                 </InputGroup>
                 <div className="flex flex-col lg:flex-row flex-wrap gap-2">
                     <ImageDropzone
@@ -112,7 +115,7 @@ export const MakeSuggestion = () => {
                         onRemove={() => { }}
                         isUploading={isUploading}
                         className="size-32"
-                        alt="Bug screenshot"
+                        alt="screenshot"
                     />
                     {imageUrls.map((url, index) => (
                         <ImageDropzone
@@ -121,7 +124,7 @@ export const MakeSuggestion = () => {
                             onFileSelect={handleFileSelect}
                             onRemove={() => handleRemoveImage(index)}
                             className="size-32"
-                            alt={`Bug screenshot ${index + 1}`}
+                            alt={`screenshot ${index + 1}`}
                         />
                     ))}
 
@@ -129,12 +132,11 @@ export const MakeSuggestion = () => {
                 <DialogFooter>
                     <DialogClose asChild>
                         <Button variant="marathon-outline">
-
-                            Cancel
+                            {tCommon("cancel")}
                         </Button>
                     </DialogClose>
                     <Button type="submit" disabled={isLoading}>
-                        Submit {isLoading && <Loader />}
+                        {tCommon("submit")} {isLoading && <Loader />}
                     </Button>
                 </DialogFooter>
 

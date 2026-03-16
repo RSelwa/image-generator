@@ -2,7 +2,7 @@
 
 import { PlusIcon, RefreshCcw, Search, Trash2 } from "lucide-react"
 import { useRef, useState } from "react"
-import { SocialRow } from "@/app/(app)/admin/socials/row"
+import { SocialRow } from "@/app/[locale]/(app)/admin/socials/row"
 import SocialSheet from "@/components/sheet/social-sheet"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"

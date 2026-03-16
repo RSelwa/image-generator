@@ -1,6 +1,7 @@
 "use client"
 
-import { LobbyHistoryCard } from "@/app/(app)/history/lobby-card"
+import { useTranslations } from "next-intl"
+import { LobbyHistoryCard } from "@/app/[locale]/(app)/history/lobby-card"
 import { AuthGuard } from "@/components/guards/auth-guard"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
@@ -9,6 +10,7 @@ import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
 const HistoryContent = () => {
+  const t = useTranslations("history")
   const userId = useAppSelector(selectUserId)
 
   const {
@@ -33,7 +35,7 @@ const HistoryContent = () => {
   if (lobbies.length === 0 && !isFetching) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">No games played yet.</p>
+        <p className="text-muted-foreground">{t("noGames")}</p>
       </div>
     )
   }
@@ -54,7 +56,7 @@ const HistoryContent = () => {
             data-testid="load-more-button"
           >
             {isFetchingNextPage && <Loader className="size-4" />}
-            Load more
+            {t("loadMore")}
           </Button>
         </div>
       )}
@@ -62,16 +64,20 @@ const HistoryContent = () => {
   )
 }
 
-const HistoryPage = () => (
-  <AuthGuard>
-    <main className="container mx-auto max-w-2xl px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight" data-testid="history-page-title">Game History</h1>
-        <p className="text-muted-foreground mt-1">Your previously played games</p>
-      </div>
-      <HistoryContent />
-    </main>
-  </AuthGuard>
-)
+const HistoryPage = () => {
+  const t = useTranslations("history")
+
+  return (
+    <AuthGuard>
+      <main className="container mx-auto max-w-2xl px-4 py-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight" data-testid="history-page-title">{t("title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("description")}</p>
+        </div>
+        <HistoryContent />
+      </main>
+    </AuthGuard>
+  )
+}
 
 export default HistoryPage

@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { SUGGESTIONS_TYPE } from "@repo/common"
 import { suggestionsDocSchema } from "@repo/schemas"
+import { useTranslations } from "next-intl"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
@@ -24,6 +25,8 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export const SuggestGameModal = () => {
+  const t = useTranslations("suggestGame")
+  const tCommon = useTranslations("common")
   const { closeModal } = useModal(key)
 
   const userId = useAppSelector(selectUserId)
@@ -46,34 +49,33 @@ export const SuggestGameModal = () => {
 
       await createSuggestionDoc(suggestionDoc).unwrap()
 
-      toast.success("Thanks for your suggestion!")
+      toast.success(t("success"))
       reset()
       closeModal()
     } catch (error) {
       console.error("Failed to submit suggestion", error)
 
-      toast.error("Failed to submit suggestion")
+      toast.error(t("fail"))
     }
   }
 
   return (
-    <ModalBase title="Suggest a game" modalKey={key}>
+    <ModalBase title={t("title")} modalKey={key}>
       <form autoComplete="off" onSubmit={handleSubmit(submitSuggestion)} className="space-y-4">
         <InputGroup>
-          <InputGroupInput placeholder="Game title" {...register("title")} />
+          <InputGroupInput placeholder={t("gameTitle")} {...register("title")} />
         </InputGroup>
         <InputGroup>
-          <InputGroupInput placeholder="Description" {...register("description")} />
+          <InputGroupInput placeholder={t("gameDescription")} {...register("description")} />
         </InputGroup>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="marathon-outline">
-
-              Cancel
+              {tCommon("cancel")}
             </Button>
           </DialogClose>
           <Button type="submit" disabled={isLoading}>
-            Submit {isLoading && <Loader />}
+            {tCommon("submit")} {isLoading && <Loader />}
           </Button>
         </DialogFooter>
 

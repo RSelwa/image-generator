@@ -2,8 +2,8 @@
 
 import { LOBBY_STATUS } from "@repo/common"
 import { type PlayerAnswer, type RoundAnswerDocWithId } from "@repo/schemas"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Link } from "@/i18n/routing"
+import { usePathname } from "@/i18n/routing"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,

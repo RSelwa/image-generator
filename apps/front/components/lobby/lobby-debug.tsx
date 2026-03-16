@@ -1,7 +1,7 @@
 "use client"
 
 import { getDateString, LOBBY_STATUS, USER_RIGHT } from "@repo/common"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"

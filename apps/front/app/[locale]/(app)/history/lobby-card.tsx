@@ -3,10 +3,10 @@
 import { LOBBY_STATUS } from "@repo/common"
 import { type LobbyDocWithId } from "@repo/schemas"
 import { Calendar, Hash, Trophy, Users } from "lucide-react"
-import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PAGES } from "@/constants/pages"
+import { Link } from "@/i18n/routing"
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
     [LOBBY_STATUS.FINISHED]: "default",

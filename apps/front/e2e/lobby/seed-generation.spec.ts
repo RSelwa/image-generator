@@ -37,7 +37,7 @@ test.describe("Test seed generation", () => {
 
       await loginViaUI(page, host.email)
       await hideDriverTutorial(page)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
 
@@ -81,7 +81,7 @@ test.describe("Test seed generation", () => {
 
       await loginViaUI(page, host.email)
       await hideDriverTutorial(page)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await startSoloLobbyViaUI(page)
 
@@ -159,7 +159,7 @@ test.describe("Test seed generation", () => {
 
       await loginViaUI(page, host.email)
       await hideDriverTutorial(page)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
 
@@ -225,7 +225,7 @@ test.describe("Test seed generation", () => {
 
       await loginViaUI(page, host.email)
       await hideDriverTutorial(page)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
 

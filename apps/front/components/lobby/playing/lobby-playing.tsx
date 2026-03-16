@@ -1,5 +1,5 @@
 import { DEFAULT_TIME_PER_ROUND } from "@repo/common"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import * as React from "react"
 import { DisplayGame } from "@/components/lobby/playing/game-display"
 import GameInputGuess from "@/components/lobby/playing/game-input-guess"

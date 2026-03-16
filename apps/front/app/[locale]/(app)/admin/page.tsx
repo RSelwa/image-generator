@@ -1,5 +1,5 @@
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { FALL_BACK_IMAGE } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 

@@ -1,6 +1,7 @@
 import { ArrowUpRightFromSquare } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Link } from "@/i18n/routing"
+import { usePathname } from "@/i18n/routing"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { CreateLobbyButton } from "@/components/home/home-create-lobby"
 import { LogoWithIcon } from "@/components/icons"
@@ -18,6 +19,7 @@ import { useAppSelector } from "@/redux/store"
 import { copy, getLobbyIdFromPathname } from "@/utils"
 
 const LobbyFinished = () => {
+  const t = useTranslations("lobby")
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
@@ -44,7 +46,7 @@ const LobbyFinished = () => {
   const copySeedIdToClipboard = () => {
     if (!lobby?.seedId) return
     copy(lobby.seedId)
-    toast.success("Seed ID copied to clipboard")
+    toast.success(t("seedIdCopied"))
   }
 
   return (
@@ -55,7 +57,7 @@ const LobbyFinished = () => {
         {isUserAnonymous && <FinishedLobbyAnonymous />}
         <Field className="w-full max-w-sm">
           <FieldLabel htmlFor="progress-points">
-            <span>Final Score </span>
+            <span>{t("finalScore")} </span>
             <span className="ml-auto text-lg font-semibold">{player?.score}</span>
           </FieldLabel>
           <FieldLabel className="flex items-center gap-3 text-foreground/50">
@@ -66,7 +68,7 @@ const LobbyFinished = () => {
         </Field>
         <Field className="w-full max-w-sm">
           <FieldLabel htmlFor="progress-rounds">
-            <span>Number game found</span>
+            <span>{t("numberGameFound")}</span>
             <span className="ml-auto text-lg font-semibold">{numberGameFound?.numberGameFound.toString()}</span>
           </FieldLabel>
           <FieldLabel className="flex items-center gap-3 text-foreground/50">
@@ -77,12 +79,12 @@ const LobbyFinished = () => {
         </Field>
         <article className="flex items-center justify-center gap-4">
           <Button variant="marathon-white" onClick={copySeedIdToClipboard}>
-            Share this seed <ArrowUpRightFromSquare className="size-4" />
+            {t("shareThisSeed")} <ArrowUpRightFromSquare className="size-4" />
           </Button>
           <Link href={PAGES.HOME} passHref>
-            <Button variant="marathon-outline">Home</Button>
+            <Button variant="marathon-outline">{t("home")}</Button>
           </Link>
-          <CreateLobbyButton>Play again</CreateLobbyButton>
+          <CreateLobbyButton>{t("playAgain")}</CreateLobbyButton>
         </article>
       </section>
 

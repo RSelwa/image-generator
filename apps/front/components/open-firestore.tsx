@@ -1,6 +1,6 @@
 import { type DocumentReference } from "@firebase/firestore"
 import { SquareArrowUpRightIcon } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { getFirestoreDocumentUrl } from "@/utils/firebase"

@@ -4,6 +4,7 @@ import { ROUND_TYPE } from "@repo/common"
 import { type Round } from "@repo/schemas"
 import { Clock, Copy, Play, Star, StarOff } from "lucide-react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 import { useQueryState } from "nuqs"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -73,6 +74,7 @@ const RoundRow = ({ round, index }: { round: Round, index: number }) => {
 }
 
 export const SeedDetailModal = () => {
+  const t = useTranslations("seedDetail")
   const [seedId] = useQueryState(MODAL_KEYS.SEED_DETAIL)
   const [toggleFeatured, { isLoading: isLoadingFeatured }] = useToggleFeaturedSeedMutation()
   const [changeName, { isLoading: isLoadingName }] = useChangeSeedNameMutation()
@@ -106,14 +108,14 @@ export const SeedDetailModal = () => {
   if (!seed) {
     return (
       <ModalBase modalKey={MODAL_KEYS.SEED_DETAIL}>
-        <p className="p-4 text-center text-muted-foreground">Seed not found</p>
+        <p className="p-4 text-center text-muted-foreground">{t("notFound")}</p>
       </ModalBase>
     )
   }
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(seed.id)
-    toast.success("Seed ID copied!")
+    toast.success(t("idCopied"))
   }
 
   const createdAt = seed.createdAt ? new Date(
@@ -142,11 +144,11 @@ export const SeedDetailModal = () => {
             <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Play className="size-3" />
-                Used
+                {t("used")}
                 {" "}
                 {seed.timesUsed}
                 {" "}
-                times
+                {t("times")}
               </span>
               {createdAt && (
                 <span className="flex items-center gap-1">
@@ -159,14 +161,14 @@ export const SeedDetailModal = () => {
 
           <Button variant="marathon-outline" size="sm" onClick={handleCopyId}>
             <Copy className="size-4" />
-            Copy ID
+            {t("copyId")}
           </Button>
         </header>
 
         <div className="flex gap-2">
-          <Badge variant="secondary">{seed.rounds.length} rounds</Badge>
+          <Badge variant="secondary">{seed.rounds.length} {t("rounds")}</Badge>
           {specialCount > 0 && (
-            <Badge variant="orange">{specialCount} special</Badge>
+            <Badge variant="orange">{specialCount} {t("special")}</Badge>
           )}
         </div>
 

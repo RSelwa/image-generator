@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { type ComponentProps } from "react"
 import { CreateLobbyButton } from "@/components/home/home-create-lobby"
 import { NewLogoIcon } from "@/components/icons"

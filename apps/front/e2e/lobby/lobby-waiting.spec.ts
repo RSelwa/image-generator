@@ -68,8 +68,8 @@ test.describe("lobby Waiting", () => {
       await loginViaUI(page, user.email)
       await hideDriverTutorial(page)
 
-      await page.goto(`/lobby/${lobby.id}`)
-      await page.waitForURL(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
+      await page.waitForURL(`/en/lobby/${lobby.id}`)
 
       // Wait for RTDB presence — should NOT be set since lobby is not WAITING
       await page.waitForTimeout(3000)
@@ -136,7 +136,7 @@ test.describe("lobby Waiting", () => {
 
       await loginViaUI(page, host.email)
       await hideDriverTutorial(page)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
 
@@ -160,7 +160,7 @@ test.describe("lobby Waiting", () => {
 
       await loginViaUI(page, host.email)
       await hideDriverTutorial(page)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
 
@@ -223,7 +223,7 @@ test.describe("lobby Waiting", () => {
 
       await loginViaUI(page, player2.email)
       await hideDriverTutorial(page)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await expect(page.getByText("Players in lobby:")).toBeVisible()
 
@@ -256,7 +256,7 @@ test.describe("lobby Waiting", () => {
 
       await loginViaUI(page, player2.email)
       await hideDriverTutorial(page)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await expect(page.getByText("Ready: 0/2")).toBeVisible()
 
@@ -287,13 +287,13 @@ test.describe("lobby Waiting", () => {
       await loginViaUI(hostPage, host.email)
       await hideDriverTutorial(hostPage)
 
-      await hostPage.goto(`/lobby/${lobby.id}`)
+      await hostPage.goto(`/en/lobby/${lobby.id}`)
 
       const playerContext = await browser.newContext()
       const playerPage = await playerContext.newPage()
       await loginViaUI(playerPage, player2.email)
       await hideDriverTutorial(playerPage)
-      await playerPage.goto(`/lobby/${lobby.id}`)
+      await playerPage.goto(`/en/lobby/${lobby.id}`)
 
       await expect(playerPage.getByText("Players in lobby:")).toBeVisible()
 
@@ -326,9 +326,9 @@ test.describe("lobby Waiting", () => {
       const page = await context.newPage()
 
       await loginViaUI(page, joiner.email)
-      await page.goto(`/join-lobby/${lobby.code}`)
+      await page.goto(`/en/join-lobby/${lobby.code}`)
 
-      await expect(page).toHaveURL(`/lobby/${lobby.id}`, { timeout: 10000 })
+      await expect(page).toHaveURL(`/en/lobby/${lobby.id}`, { timeout: 10000 })
 
       const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobby.id).get()
       expect(lobbyDoc.data()?.playersIds).toContain(joiner.id)
@@ -356,9 +356,9 @@ test.describe("lobby Waiting", () => {
 
       await loginViaUI(page, joiner.email)
 
-      await page.goto(`/join-lobby/${lobby.code}`)
+      await page.goto(`/en/join-lobby/${lobby.code}`)
 
-      await expect(page).toHaveURL(`/lobby/${lobby.id}`, { timeout: 10000 })
+      await expect(page).toHaveURL(`/en/lobby/${lobby.id}`, { timeout: 10000 })
       await expect(page.getByText("Players in lobby: 2/8")).toBeVisible()
 
       await context.close()
@@ -376,9 +376,9 @@ test.describe("lobby Waiting", () => {
       })
 
       await createFirestoreLobbyDoc(lobby)
-      await page.goto(`/join-lobby/${lobby.code}`)
+      await page.goto(`/en/join-lobby/${lobby.code}`)
 
-      await expect(page).toHaveURL(new RegExp(`/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
+      await expect(page).toHaveURL(new RegExp(`/en/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
     })
 
     test("after being redirected to login, login and should be redirected and visible in the lobby", async ({ page }) => {
@@ -398,15 +398,15 @@ test.describe("lobby Waiting", () => {
 
       await createFirestoreLobbyDoc(lobby)
 
-      await page.goto(`/join-lobby/${lobby.code}`)
+      await page.goto(`/en/join-lobby/${lobby.code}`)
 
-      await expect(page).toHaveURL(new RegExp(`/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
+      await expect(page).toHaveURL(new RegExp(`/en/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
 
       await page.getByLabel("Email").fill(joiner.email)
       await page.getByLabel("Password").fill(PASSWORD)
       await page.getByRole("button", { name: "Login" }).click()
 
-      await expect(page).toHaveURL(`/lobby/${lobby.id}`, { timeout: 10000 })
+      await expect(page).toHaveURL(`/en/lobby/${lobby.id}`, { timeout: 10000 })
       await expect(page.getByText("Players in lobby: 2/8")).toBeVisible()
     })
 
@@ -423,20 +423,20 @@ test.describe("lobby Waiting", () => {
       await createFirestoreLobbyDoc(lobby)
       await waitForAnonymousAuth(page)
 
-      await page.goto(`/join-lobby/${lobby.code}`)
+      await page.goto(`/en/join-lobby/${lobby.code}`)
 
-      await expect(page).toHaveURL(new RegExp(`/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
+      await expect(page).toHaveURL(new RegExp(`/en/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
 
       await page.getByRole("link", { name: "Sign up" }).click()
 
-      await expect(page).toHaveURL(new RegExp(`/signup.*redirect.*join-lobby.*${lobby.code}`))
+      await expect(page).toHaveURL(new RegExp(`/en/signup.*redirect.*join-lobby.*${lobby.code}`))
 
       const newEmail = faker.internet.email({ provider: "yopmail.com" })
       await page.getByLabel("Email").fill(newEmail)
       await page.getByLabel("Password").fill("cacayolo")
       await page.getByRole("button", { name: "Create Account" }).click()
 
-      await expect(page).toHaveURL(`/lobby/${lobby.id}`, { timeout: 10000 })
+      await expect(page).toHaveURL(`/en/lobby/${lobby.id}`, { timeout: 10000 })
       await expect(page.getByText("Players in lobby: 2/8")).toBeVisible()
     })
   })

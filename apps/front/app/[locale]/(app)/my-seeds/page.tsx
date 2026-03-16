@@ -1,7 +1,7 @@
 "use client"
 
 import { Gamepad2, Sprout } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import SeedCard from "@/components/cards/seed-card"
 import { Button } from "@/components/ui/button"
 import { PAGES } from "@/constants/pages"

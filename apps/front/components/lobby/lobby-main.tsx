@@ -1,7 +1,6 @@
 "use client"
 
 import { LOBBY_STATUS } from "@repo/common"
-import { usePathname, useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { toast } from "sonner"
 import LobbyFinished from "@/components/lobby/lobby-finished"
@@ -10,8 +9,9 @@ import LobbyWaiting from "@/components/lobby/lobby-waiting"
 import LobbyPlaying from "@/components/lobby/playing/lobby-playing"
 import { Button } from "@/components/ui/button"
 import { QUERY_PARAMS } from "@/constants/mapping"
-import { usePresence } from "@/hooks/use-presence"
 import { PAGES } from "@/constants/pages"
+import { usePresence } from "@/hooks/use-presence"
+import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { useJoinLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -25,27 +25,27 @@ const LoadingLobby = () => (
 )
 
 const NoUserInLobby = () => {
-  const router = useRouter()
-
   return (
     <main className="min-h-full-height flex items-center justify-center text-primary bg-background">
       <p className="text-lg">You're not allowed in this lobby</p>
-      <Button variant="marathon-outline" className="ml-4" onClick={() => router.push(PAGES.HOME)}>
-        Go back home
-      </Button>
+      <Link href={PAGES.HOME} className="ml-4">
+        <Button variant="marathon-outline">
+          Go back home
+        </Button>
+      </Link>
     </main>
   )
 }
 
 const NoLobby = () => {
-  const router = useRouter()
-
   return (
     <main className="min-h-full-height flex items-center justify-center text-primary bg-background">
       <p className="text-lg">Lobby not found</p>
-      <Button variant="marathon-outline" className="ml-4" onClick={() => router.push(PAGES.HOME)}>
-        Go back home
-      </Button>
+      <Link href={PAGES.HOME} className="ml-4">
+        <Button variant="marathon-outline">
+          Go back home
+        </Button>
+      </Link>
     </main>
   )
 }
@@ -88,7 +88,7 @@ const LobbyMain = () => {
 
     // Allow existing players to reconnect regardless of lobby status
     const isAlreadyInLobby = lobby.players.some((p) => p.uid === user.id)
-    
+
     if (isAlreadyInLobby) return
 
     // Only allow new players to join during WAITING
@@ -107,7 +107,7 @@ const LobbyMain = () => {
 
   if (isLoading) return <LoadingLobby />
 
-  if ((!lobby )) return <NoLobby />
+  if ((!lobby)) return <NoLobby />
   if ((!isUserInLobby)) return <NoUserInLobby />
 
   if (lobby.status === LOBBY_STATUS.WAITING) return <LobbyWaiting />

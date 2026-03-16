@@ -1,5 +1,5 @@
 import { calculateDistancePoints, getDistance, ROUND_POINTS } from "@repo/common"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import { type FormEvent } from "react"
 import * as React from "react"
 import { useState } from "react"

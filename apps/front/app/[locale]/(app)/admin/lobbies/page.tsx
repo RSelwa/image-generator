@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import AdminHeader from "@/components/admin-header"
 import { Badge } from "@/components/ui/badge"
 import {

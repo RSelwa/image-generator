@@ -1,4 +1,4 @@
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import * as React from "react"
 import { ASSET_URLS } from "@/constants/mapping"
 import Image from "next/image"

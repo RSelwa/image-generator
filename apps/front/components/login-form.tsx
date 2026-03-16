@@ -1,8 +1,8 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
+import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import z from "zod"
@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input"
 import { IMAGES_URLS } from "@/constants/images"
 import { QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { Link, useRouter } from "@/i18n/routing"
 import {
   useLoginMutation,
   useLoginWithGoogleMutation,
@@ -40,6 +41,7 @@ export const LoginForm = ({
   className,
   ...props
 }: React.ComponentProps<"div">) => {
+  const t = useTranslations("auth")
   const searchParams = useSearchParams()
   const redirect = searchParams.get(QUERY_PARAMS.REDIRECT)
   const router = useRouter()
@@ -83,30 +85,30 @@ export const LoginForm = ({
           <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
+                <h1 className="text-2xl font-bold">{t("welcomeBack")}</h1>
                 <p className="text-muted-primary-foreground text-balance">
-                  Login to your Acme Inc account
+                  {t("loginDescription")}
                 </p>
               </div>
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder={t("emailPlaceholder")}
                   required
                   {...register("email", { required: true })}
                 />
               </Field>
               <Field>
                 <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
                   <button
                     onClick={() => sendPasswordResetEmail(getValues("email"))}
                     type="button"
                     className="ml-auto text-sm underline-offset-2 hover:underline"
                   >
-                    Forgot your password?
+                    {t("forgotPassword")}
                   </button>
                 </div>
                 <Input
@@ -117,11 +119,11 @@ export const LoginForm = ({
               </Field>
               <Field>
                 <Button type="submit" disabled={isLoading}>
-                  Login {isLoading && <Loader />}
+                  {t("loginTitle")} {isLoading && <Loader />}
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                Or continue with
+                {t("orContinueWith")}
               </FieldSeparator>
               <Field className="grid grid-cols-1 gap-4">
                 <Button
@@ -130,14 +132,14 @@ export const LoginForm = ({
                   onClick={onLoginWithGoogle}
                 >
                   <ColoredGoogleIcon />
-                  <span className="sr-only">Sign up with Google</span>
+                  <span className="sr-only">{t("signupWithGoogle")}</span>
                   {isLoadingGoogle && <Loader />}
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                Don&apos;t have an account?
+                {t("dontHaveAccount")}
                 {" "}
-                <Link href={redirect ? `${PAGES.SIGNUP}?${QUERY_PARAMS.REDIRECT}=${encodeURIComponent(redirect)}` : PAGES.SIGNUP}>Sign up</Link>
+                <Link href={redirect ? `${PAGES.SIGNUP}?${QUERY_PARAMS.REDIRECT}=${encodeURIComponent(redirect)}` : PAGES.SIGNUP}>{t("signupTitle")}</Link>
               </FieldDescription>
             </FieldGroup>
           </form>
@@ -151,13 +153,13 @@ export const LoginForm = ({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our
+        {t("termsAgreement")}
         {" "}
-        <Link href={PAGES.TERMS}>Terms of Service</Link>
+        <Link href={PAGES.TERMS}>{t("termsOfService")}</Link>
         {" "}
-        and
+        {t("and")}
         {" "}
-        <Link href={PAGES.PRIVACY}>Privacy Policy</Link>
+        <Link href={PAGES.PRIVACY}>{t("privacyPolicy")}</Link>
         .
       </FieldDescription>
     </div>

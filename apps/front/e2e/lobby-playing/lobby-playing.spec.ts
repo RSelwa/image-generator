@@ -37,9 +37,9 @@ test.describe("lobby playing", () => {
       await loginViaUI(page, player2.email)
       await hideDriverTutorial(page)
 
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
-      await expect(page).toHaveURL(`/lobby/${lobby.id}`, { timeout: 10000 })
+      await expect(page).toHaveURL(`/en/lobby/${lobby.id}`, { timeout: 10000 })
     })
 
     test("should not allow me to join and display the current game if not part of the player", async ({ page }) => {
@@ -59,10 +59,10 @@ test.describe("lobby playing", () => {
       await loginViaUI(page, outsider.email)
       await hideDriverTutorial(page)
 
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       // Should be redirected home since outsider is not in players
-      await expect(page).toHaveURL("/", { timeout: 10000 })
+      await expect(page).toHaveURL("/en", { timeout: 10000 })
     })
   })
 
@@ -74,7 +74,7 @@ test.describe("lobby playing", () => {
 
     await hideDriverTutorial(page)
 
-    await page.goto("/")
+    await page.goto("/en")
 
     await waitToBeLogged(page)
 

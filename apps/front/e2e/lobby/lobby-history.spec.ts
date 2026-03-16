@@ -39,7 +39,7 @@ test.describe("Lobby History", () => {
     await createFirestoreLobbyDoc(lobby2)
 
     await loginViaUI(page, user.email)
-    await page.goto("/history")
+    await page.goto("/en/history")
 
     await expect(page.getByTestId("history-page-title")).toBeVisible()
     await expect(page.getByTestId("lobby-history-list")).toBeVisible()
@@ -52,7 +52,7 @@ test.describe("Lobby History", () => {
     const user = await setupUser()
 
     await loginViaUI(page, user.email)
-    await page.goto("/history")
+    await page.goto("/en/history")
 
     await expect(page.getByTestId("history-page-title")).toBeVisible()
     await expect(page.getByText("No games played yet.")).toBeVisible()
@@ -88,7 +88,7 @@ test.describe("Lobby History", () => {
     await createFirestoreLobbyDoc(otherLobby)
 
     await loginViaUI(page, user.email)
-    await page.goto("/history")
+    await page.goto("/en/history")
 
     await expect(page.getByTestId("history-page-title")).toBeVisible()
 
@@ -104,14 +104,14 @@ test.describe("Lobby History", () => {
     await page.getByTestId("nav-user-dropdown-trigger").click()
     await page.getByTestId("nav-history-link").click()
 
-    await expect(page).toHaveURL("/history")
+    await expect(page).toHaveURL("/en/history")
     await expect(page.getByTestId("history-page-title")).toBeVisible()
   })
 
   test("should redirect to login if not authenticated", async ({ page }) => {
-    await page.goto("/history")
+    await page.goto("/en/history")
 
-    await expect(page).toHaveURL("/login")
+    await expect(page).toHaveURL("/en/login")
   })
 
   test("should display lobby status badge", async ({ page }) => {
@@ -132,7 +132,7 @@ test.describe("Lobby History", () => {
     await createFirestoreLobbyDoc(finishedLobby)
 
     await loginViaUI(page, user.email)
-    await page.goto("/history")
+    await page.goto("/en/history")
 
     await expect(page.getByTestId("lobby-status-badge")).toHaveText(LOBBY_STATUS.FINISHED)
   })

@@ -1,7 +1,7 @@
 import { ArrowUpRight } from "lucide-react"
 import { type Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { ArticlesDescription, HomeArticles } from "@/components/home/home-articles"
 import { CreateLobbyContainer } from "@/components/home/home-create-lobby"
 import HomeFooter from "@/components/home/home-footer"

@@ -57,7 +57,7 @@ test.describe("Driver.js tutorial", () => {
       await createFirestoreLobbyDoc(lobby)
 
       await loginViaUI(page, player2.email)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await expect(page.locator(DRIVER_POPOVER)).toBeVisible()
       await expect(page.locator(DRIVER_TITLE)).toHaveText("Players in lobby")
@@ -80,7 +80,7 @@ test.describe("Driver.js tutorial", () => {
       await createFirestoreLobbyDoc(lobby)
 
       await loginViaUI(page, player2.email)
-      await page.goto(`/lobby/${lobby.id}`)
+      await page.goto(`/en/lobby/${lobby.id}`)
 
       await expect(page.locator(DRIVER_POPOVER)).toBeVisible()
       await page.locator(DRIVER_NEXT_BTN).click()

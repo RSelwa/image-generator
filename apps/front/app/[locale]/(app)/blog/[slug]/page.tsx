@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react"
 import { type Metadata } from "next"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { notFound } from "next/navigation"
 import { BLOG_POST_BY_SLUG, BLOG_POSTS } from "@/constants/blog"
 import { PAGES } from "@/constants/pages"
