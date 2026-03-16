@@ -1,5 +1,5 @@
 import { SquareArrowOutUpRight } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { useQueryState } from "nuqs"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import OpenFirestoreDoc from "@/components/open-firestore"

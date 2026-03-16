@@ -36,12 +36,12 @@ export const setupUser = async (item: Partial<UserDoc> = {}, password?: string) 
 }
 
 export const loginViaUI = async (page: Page, email: string) => {
-  await page.goto("/login")
+  await page.goto("/en/login")
   await page.getByLabel("Email").fill(email)
   await page.getByLabel("Password").fill(PASSWORD)
   await page.getByRole("button", { name: "Login" }).click()
 
-  await expect(page).toHaveURL("/")
+  await expect(page).toHaveURL("/en")
   await expect(page.getByTestId("nav-user-dropdown-trigger")).toBeVisible()
 }
 
@@ -52,7 +52,7 @@ export const waitToBeLogged = async (page: Page) => {
 export const createLobbyViaUI = async (page: Page) => {
   await page.getByTestId("video-create-lobby-button").click()
 
-  await page.waitForURL(/\/lobby\//)
+  await page.waitForURL("/en/lobby/**")
   const url = page.url()
   const lobbyId = url.split("/lobby/")[1]
 
@@ -149,7 +149,7 @@ export const createAnonymousUserDoc = async (uid: string) => {
 }
 
 export const waitForAnonymousAuth = async (page: Page) => {
-  await page.goto("/")
+  await page.goto("/en")
 
   await expect(page.getByTestId("video-create-lobby-button-demo")).toBeVisible()
 

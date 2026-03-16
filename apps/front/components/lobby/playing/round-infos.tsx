@@ -1,4 +1,4 @@
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import * as React from "react"
 import { useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectCurrentRoundData, selectLobbyConfig, selectPlayerMyself } from "@/redux/lobby/lobby.selectors"

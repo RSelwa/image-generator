@@ -1,7 +1,7 @@
 import { Timestamp } from "@firebase/firestore"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { isSameNormalized, ROUND_POINTS } from "@repo/common"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import useSound from "use-sound"

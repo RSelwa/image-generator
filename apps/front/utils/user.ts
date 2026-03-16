@@ -13,7 +13,7 @@ export const formatSessionFromFirebaseUser = ({
   rightsDoc: RightDoc | null
 }): SessionUser => {
   const { uid, displayName, isAnonymous } = authUser
-  const { email, pseudo, isAnonymousUser } = user
+  const { email, pseudo, isAnonymousUser, streak, lastStreakDate } = user
 
   const avatar = user.avatar || getRandomAvatar()
 
@@ -23,7 +23,9 @@ export const formatSessionFromFirebaseUser = ({
     rights: rightsDoc?.right,
     pseudo: pseudo || displayName,
     isAnonymous: isAnonymous || isAnonymousUser,
-    avatar
+    avatar,
+    streak,
+    lastStreakDate,
   })
 
   if (!sessionUser.success) {
@@ -40,4 +42,6 @@ export const formatSessionFromAnonymousUser = ({ authUser, pseudo }: { authUser:
   pseudo,
   isAnonymous: true,
   avatar: getRandomAvatar(),
+  streak: 0,
+  lastStreakDate: null,
 })

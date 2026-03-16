@@ -50,6 +50,19 @@ type ParamsVariant = {
   hasChallenge: boolean
 }
 
+export const getVisualStreak = (streak: number, lastStreakDate: string): number => {
+  if (!lastStreakDate || streak <= 0) return 0
+
+  const today = dateToString(new Date())
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  const yesterdayStr = dateToString(yesterday)
+
+  if (lastStreakDate === today || lastStreakDate === yesterdayStr) return streak
+
+  return 0
+}
+
 export const getDailyChallengeVariant = (props: ParamsVariant) => {
   if (props.isLoading) return DAILY_CHALLENGES_VARIANTS.LOADING
 

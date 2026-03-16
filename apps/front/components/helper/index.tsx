@@ -1,42 +1,42 @@
 "use client"
 
-import { usePathname } from "next/navigation"
-import { LobbyDebug } from "@/components/lobby/lobby-debug"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MODAL_KEYS } from "@/constants/mapping"
-import { useModal } from "@/hooks/use-modal"
-import { selectIsAdmin } from "@/redux/session/session.selectors"
-import { useAppSelector } from "@/redux/store"
 import { PAGES } from "@/constants/pages"
+import { useModal } from "@/hooks/use-modal"
+import { usePathname } from "@/i18n/routing"
 
-
-const HIDE_PAGES:string[] = [PAGES.CAPTURE]
+const HIDE_PAGES: string[] = [PAGES.CAPTURE]
 
 export const HelperMenuContent = () => {
-
   const { openModal: openGameSuggestion } = useModal(MODAL_KEYS.SUGGEST_GAME)
   const { openModal: openReportBug } = useModal(MODAL_KEYS.REPORT_BUG)
   const { openModal: openMakeSuggestion } = useModal(MODAL_KEYS.MAKE_SUGGESTION)
 
-  return (<DropdownMenuGroup>
-    <DropdownMenuLabel>Help</DropdownMenuLabel>
-    <DropdownMenuItem onClick={() => openGameSuggestion()}>
-      Suggest a game
-    </DropdownMenuItem>
-    <DropdownMenuItem onClick={() => openReportBug()}>
-      Report a bug
-    </DropdownMenuItem>
-    <DropdownMenuItem onClick={() => openMakeSuggestion()}>
-      Make a suggestion
-    </DropdownMenuItem>
-  </DropdownMenuGroup>)
+  const tBug = useTranslations("reportBug")
+  const tSugs = useTranslations("makeSuggestion")
+  const tGame = useTranslations("suggestGame")
+
+  return (
+    <DropdownMenuGroup>
+      <DropdownMenuLabel>Help</DropdownMenuLabel>
+      <DropdownMenuItem onClick={() => openGameSuggestion()}>
+        {tGame("title")}
+      </DropdownMenuItem>
+      <DropdownMenuItem onClick={() => openReportBug()}>
+        {tBug("title")}
+      </DropdownMenuItem>
+      <DropdownMenuItem onClick={() => openMakeSuggestion()}>
+        {tSugs("title")}
+      </DropdownMenuItem>
+    </DropdownMenuGroup>
+  )
 }
 
 export const HelperMenu = () => {
   const pathname = usePathname()
-
-  const isAdmin = useAppSelector(selectIsAdmin)
 
   // Hide on capture page for clean video recording
   if (HIDE_PAGES.includes(pathname)) {

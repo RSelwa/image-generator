@@ -1,6 +1,6 @@
 import { Separator } from "@radix-ui/react-separator"
 import Image from "next/image"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import { type ComponentProps } from "react"
 import { Fragment, useEffect, useState } from "react"
 import useSound from "use-sound"

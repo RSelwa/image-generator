@@ -1,7 +1,7 @@
 import { type SphericalDocWithId } from "@repo/schemas"
 import { Pencil, SquareArrowUpRight } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { Badge } from "@/components/ui/badge"

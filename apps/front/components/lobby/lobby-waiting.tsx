@@ -5,7 +5,8 @@ import { type DriveStep } from "driver.js"
 import { driver } from "driver.js"
 import { ArrowRight, ArrowUpRightFromSquareIcon, Trash } from "lucide-react"
 import Image from "next/image"
-import { usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
+import { usePathname } from "@/i18n/routing"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -39,6 +40,7 @@ const seedForm = z.object({
 type SeedForm = z.infer<typeof seedForm>
 
 const LobbyWaiting = () => {
+  const t = useTranslations("lobby")
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
@@ -114,7 +116,7 @@ const LobbyWaiting = () => {
 
   const changeConfig = (newConfig: Partial<LobbyDoc["config"]>) => {
     if (!isOwner) {
-      toast.error("Only the host can change the lobby config")
+      toast.error(t("onlyHostCanChange"))
 
       return
     }
@@ -127,7 +129,7 @@ const LobbyWaiting = () => {
 
   const copyUrl = () => {
     navigator.clipboard.writeText(`${window.location.origin}${PAGES.JOIN_LOBBY}/${lobby.code}`)
-    toast.success("Lobby url copied to clipboard")
+    toast.success(t("lobbyUrlCopied"))
   }
 
   const onSubmitSeed = async (data: SeedForm) => {
@@ -139,10 +141,10 @@ const LobbyWaiting = () => {
         seedId: data.seed,
       }).unwrap()
 
-      toast.success("Seed applied successfully")
+      toast.success(t("seedApplied"))
     } catch (error) {
       console.error("Failed to apply seed:", error)
-      toast.error("Failed to apply seed")
+      toast.error(t("seedFailed"))
       reset()
     }
   }
@@ -152,26 +154,22 @@ const LobbyWaiting = () => {
       <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0" />
       <div className="bg-background/80 space-y-8 lg:w-3/4 w-5/6 z-10 lg:my-0 my-4">
         <section id={DRIVER_IDS.LOBBY_PLAYERS} className="w-full flex flex-col border border-dashed items-center gap-4 p-6  text-muted-primary-foreground">
-          <p className="text-lg ">Players in lobby: {lobby.players.length}/{lobby.config.maxPlayers}</p>
+          <p className="text-lg ">{t("playersInLobby", { count: lobby.players.length, max: lobby.config.maxPlayers })}</p>
           <LobbyAvatars />
           {!isOnlyPlayer && (
             <p>
-              Ready:
-              {" "}
-              {lobby.players.filter((p) => p.isReady).length}
-              /
-              {lobby.players.length}
+              {t("readyCount", { count: lobby.players.filter((p) => p.isReady).length, total: lobby.players.length })}
             </p>
           )}
         </section>
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <article id={DRIVER_IDS.LOBBY_CONFIG} className="w-full flex flex-col border border-dashed items-center justify-between p-6">
-            <h2 className="mb-8">Config</h2>
+            <h2 className="mb-8">{t("config")}</h2>
             <div className="flex flex-col items-center gap-4">
               <Separator orientation="horizontal" />
               <Field orientation="horizontal" className="justify-between">
                 <FieldDescription>
-                  Number of rounds:
+                  {t("numberOfRounds")}
                 </FieldDescription>
 
                 <Select
@@ -184,7 +182,7 @@ const LobbyWaiting = () => {
                     className="w-20"
                   >
                     <SelectValue
-                      placeholder={`Number of rounds: ${lobby.config.numberOfRounds}`}
+                      placeholder={`${t("numberOfRounds")} ${lobby.config.numberOfRounds}`}
                     />
                   </SelectTrigger>
                   <SelectContent>
@@ -206,7 +204,7 @@ const LobbyWaiting = () => {
 
               <Field orientation="horizontal" className="justify-between">
                 <FieldDescription>
-                  Players lives:
+                  {t("playersLives")}
                 </FieldDescription>
                 <Select
                   value={lobby.config.playersLives?.toString()}
@@ -218,7 +216,7 @@ const LobbyWaiting = () => {
                     data-testid="select-player-live-trigger"
                     className="w-20"
                   >
-                    <SelectValue placeholder={`Players lives: ${lobby.config.playersLives || "Unlimited"}`} />
+                    <SelectValue placeholder={`${t("playersLives")} ${lobby.config.playersLives || t("unlimited")}`} />
                   </SelectTrigger>
                   <SelectContent>
                     {OPTIONS_PLAYERS_LIVES.map((playerLive) => (
@@ -227,7 +225,7 @@ const LobbyWaiting = () => {
                         key={playerLive}
                         value={playerLive?.toString() || "null"}
                       >
-                        {playerLive || "Unlimited"}
+                        {playerLive || t("unlimited")}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -236,7 +234,7 @@ const LobbyWaiting = () => {
               <Separator orientation="horizontal" />
               <Field orientation="horizontal" className="justify-between">
                 <FieldDescription>
-                  Round duration:
+                  {t("roundDuration")}
                 </FieldDescription>
                 <Select
                   value={lobby.config.roundDuration?.toString()}
@@ -247,7 +245,7 @@ const LobbyWaiting = () => {
                     data-testid="select-round-duration-trigger"
                     className="w-20"
                   >
-                    <SelectValue placeholder={`Rounds duration: ${lobby.config.roundDuration}`} />
+                    <SelectValue placeholder={`${t("roundDuration")} ${lobby.config.roundDuration}`} />
                   </SelectTrigger>
                   <SelectContent>
                     {OPTIONS_ROUND_DURATIONS.map((roundDuration) => (
@@ -265,7 +263,7 @@ const LobbyWaiting = () => {
               <Separator orientation="horizontal" />
               <Field id={DRIVER_IDS.LOBBY_SPECIAL_ROUNDS} orientation="horizontal" className="justify-between">
                 <FieldDescription>
-                  <Label htmlFor="special-rounds">Enable special rounds </Label>
+                  <Label htmlFor="special-rounds">{t("enableSpecialRounds")} </Label>
                 </FieldDescription>
                 <Switch
                   id="special-rounds"
@@ -280,11 +278,11 @@ const LobbyWaiting = () => {
           </article>
           <article className="w-full flex flex-col border border-dashed items-center gap-4 p-6 ">
             <div className="flex items-center gap-8">
-              <h2>Seed</h2>
+              <h2>{t("seed")}</h2>
               <form autoComplete="off" onSubmit={handleSubmit(onSubmitSeed)}>
                 <InputGroup id={DRIVER_IDS.LOBBY_SEED}>
                   <InputGroupInput
-                    placeholder="Paste seed here"
+                    placeholder={t("pasteSeedHere")}
                     data-testid="seed-input"
                     disabled={isLoading || disabled}
                     {...register("seed")}
@@ -330,7 +328,7 @@ const LobbyWaiting = () => {
         </section>
         <section className="w-full flex flex-col lg:flex-row justify-center border border-dashed items-center gap-4 p-6 ">
           <Button id={DRIVER_IDS.JOIN_LOBBY_LINK} variant="marathon-white" onClick={copyUrl}>
-            Join this lobby: {lobby.code} <ArrowUpRightFromSquareIcon className="size-4" />
+            {t("joinThisLobby", { code: lobby.code })} <ArrowUpRightFromSquareIcon className="size-4" />
           </Button>
 
           {isOnlyPlayer && (
@@ -347,7 +345,7 @@ const LobbyWaiting = () => {
               }}
               className="w-full lg:w-auto"
             >
-              Play!
+              {t("playButton")}
             </Button>
           )}
           {!isOnlyPlayer && (
@@ -362,7 +360,7 @@ const LobbyWaiting = () => {
                   isReady: !isMeReady
                 })}
               >
-                {isMeReady ? "Cancel ready" : "I'm ready"}
+                {isMeReady ? t("cancelReady") : t("imReady")}
               </Button>
               <HoverCard>
                 <HoverCardTrigger>
@@ -373,11 +371,11 @@ const LobbyWaiting = () => {
                     disabled={disabled || !areAllPlayersReady}
                     onClick={async () => await startLobby({ lobbyId })}
                   >
-                    Start Lobby
+                    {t("startLobby")}
                   </Button>
                 </HoverCardTrigger>
                 <HoverCardContent className="text-foreground bg-primary/50 text-center">
-                  Only the host can start the lobby
+                  {t("onlyHostCanStart")}
                 </HoverCardContent>
               </HoverCard>
             </>

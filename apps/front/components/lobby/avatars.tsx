@@ -1,6 +1,6 @@
 import { type Player } from "@repo/schemas"
 import { Crown } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import { Fragment } from "react/jsx-runtime"
 import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"

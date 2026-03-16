@@ -1,7 +1,8 @@
 "use client"
 
 import { LOBBY_STATUS } from "@repo/common"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
+import { useTranslations } from "next-intl"
 import { useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { QUERY_PARAMS } from "@/constants/mapping"
@@ -16,6 +17,7 @@ type Props = {
 }
 
 const JoinLobbyHandler = ({ code }: Props) => {
+  const t = useTranslations("lobby")
   const router = useRouter()
 
   const user = useAppSelector(selectUser)
@@ -32,21 +34,21 @@ const JoinLobbyHandler = ({ code }: Props) => {
     hasHandled.current = true
 
     if (isError || !lobby) {
-      toast.error("Lobby not found")
+      toast.error(t("lobbyNotFound"))
       router.replace(PAGES.HOME)
 
       return
     }
 
     if (lobby.status !== LOBBY_STATUS.WAITING) {
-      toast.error("This lobby is no longer accepting players")
+      toast.error(t("lobbyNoLongerAccepting"))
       router.replace(PAGES.HOME)
 
       return
     }
 
     if ((isSessionReady && (!user || user.isAnonymous)) || !user) {
-      toast.error("You need to be logged to join the lobby")
+      toast.error(t("mustBeLogged"))
       const searchParams = new URLSearchParams({ [QUERY_PARAMS.REDIRECT]: `${PAGES.JOIN_LOBBY}/${lobby.code}` })
       const url = new URL(`${PAGES.LOGIN}?${searchParams.toString()}`, window.location.origin)
       router.replace(url.href)
@@ -62,14 +64,14 @@ const JoinLobbyHandler = ({ code }: Props) => {
         router.replace(`${PAGES.LOBBY}/${lobby.id}`)
       })
       .catch(() => {
-        toast.error("Failed to join lobby")
+        toast.error(t("failedToJoin"))
         router.replace(PAGES.HOME)
       })
   }, [isLoading, isError, lobby, user, router, joinLobby, user?.isAnonymous])
 
   return (
     <main className="min-h-full-height flex items-center justify-center">
-      <p className="text-lg text-muted-primary-foreground">Joining lobby...</p>
+      <p className="text-lg text-muted-primary-foreground">{t("joining")}</p>
     </main>
   )
 }

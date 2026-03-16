@@ -9,14 +9,14 @@ test.describe("anonymous auth", () => {
   test("anonymous user can sign up with a new email", async ({ page }) => {
     const uid = await waitForAnonymousAuth(page)
 
-    await page.goto("/signup")
+    await page.goto("/en/signup")
 
     const email = faker.internet.email({ provider: "yopmail.com" })
     await page.getByLabel("Email").fill(email)
     await page.getByLabel("Password").fill(PASSWORD)
     await page.getByRole("button", { name: "Create Account" }).click()
 
-    await expect(page).toHaveURL("?new-pseudo=")
+    await expect(page).toHaveURL("/en?new-pseudo=")
     await expect(page.getByTestId(SELECTORS.CHANGE_PSEUDO_MODAL)).toBeVisible()
     await expect(page.getByTestId("nav-user-dropdown-trigger")).toBeVisible()
 
@@ -34,7 +34,7 @@ test.describe("anonymous auth", () => {
 
     await waitForAnonymousAuth(page)
 
-    await page.goto("/signup")
+    await page.goto("/en/signup")
 
     await page.getByLabel("Email").fill(existingUser.email)
     await page.getByLabel("Password").fill(PASSWORD)
@@ -48,13 +48,13 @@ test.describe("anonymous auth", () => {
 
     await waitForAnonymousAuth(page)
 
-    await page.goto("/login")
+    await page.goto("/en/login")
 
     await page.getByLabel("Email").fill(existingUser.email)
     await page.getByLabel("Password").fill(PASSWORD)
     await page.getByRole("button", { name: "Login" }).click()
 
-    await expect(page).toHaveURL("/", { timeout: 10000 })
+    await expect(page).toHaveURL("/en", { timeout: 10000 })
     await expect(page.getByTestId("nav-user-dropdown-trigger")).toBeVisible()
 
     // Existing user doc should still exist

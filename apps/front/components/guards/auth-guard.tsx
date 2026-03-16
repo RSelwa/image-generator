@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { type ReactNode, useEffect } from "react"
 import { SESSION_STATUS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"

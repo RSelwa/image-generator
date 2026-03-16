@@ -2,7 +2,7 @@
 
 import { type ConstantValues, dateToString } from "@repo/common"
 import { cva } from "class-variance-authority"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { memo, useMemo } from "react"
 import { DailyChallengeContent, DailyChallengeLabel } from "@/components/daily-challenge/node-icons"
 import { DAILY_CHALLENGES_VARIANTS, SIDE } from "@/constants/daily-challenges"

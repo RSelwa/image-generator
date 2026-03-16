@@ -1,4 +1,4 @@
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { firstLetter, getLobbyIdFromPathname } from "@/utils"

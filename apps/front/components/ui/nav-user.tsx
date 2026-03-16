@@ -11,8 +11,7 @@ import {
   Wrench,
   Zap,
 } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useLocale, useTranslations } from "next-intl"
 import { useRef } from "react"
 import { HelperMenuContent } from "@/components/helper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -28,9 +27,10 @@ import {
 import NavUserAdmin from "@/components/ui/nav-user.admin"
 import { PAGES } from "@/constants/pages"
 import { PORTFOLIO_LINK } from "@/constants/social"
+import { Link, useRouter } from "@/i18n/routing"
 import { useLogoutMutation } from "@/redux/api/auth"
 import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
-import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
+import { selectIsAdmin, selectUser, selectUserSteak } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { firstLetter } from "@/utils"
 import { getAvatarUrl } from "@/utils/file"
@@ -38,6 +38,10 @@ import { getAvatarUrl } from "@/utils/file"
 export const NavUser = () => {
   const router = useRouter()
 
+  const locale = useLocale()
+  const t = useTranslations("nav")
+
+  const userStreak = useAppSelector(selectUserSteak)
   const user = useAppSelector(selectUser)
   const isAdmin = useAppSelector(selectIsAdmin)
 
@@ -54,7 +58,7 @@ export const NavUser = () => {
     try {
       const lobby = await createLobbyDoc({ user }).unwrap()
 
-      router.push(`${PAGES.LOBBY}/${lobby.id}`)
+      router.push(`${locale}${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
       console.error("Failed to create lobby:", error)
       isCreatingRef.current = false
@@ -89,24 +93,25 @@ export const NavUser = () => {
           <DropdownMenuLabel>Play</DropdownMenuLabel>
           <DropdownMenuItem onClick={handleCreateLobby} disabled={isLoading} className="cursor-pointer">
             <Zap />
-            Play
+            {t("play")}
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link href={PAGES.DAILY_CHALLENGE}>
               <Calendar />
-              Daily Challenge
+              {t("dailyChallenge")}
+              {Boolean(userStreak) && ` (${userStreak})`}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={PAGES.ACCOUNT} className="cursor-pointer">
               <User />
-              Account
+              {t("account")}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={PAGES.HISTORY} className="cursor-pointer" data-testid="nav-history-link">
               <History />
-              History
+              {t("history")}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -115,7 +120,7 @@ export const NavUser = () => {
         <HelperMenuContent />
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuLabel>About</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("about")}</DropdownMenuLabel>
           <DropdownMenuItem asChild>
             <Link href={PORTFOLIO_LINK} target="_blank" className="cursor-pointer">
               <Wrench />
@@ -132,7 +137,7 @@ export const NavUser = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem data-testid="logout-button" onClick={() => logout()}>
           <LogOut />
-          Log out
+          {t("logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
