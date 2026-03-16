@@ -1,6 +1,6 @@
 import { deleteDoc, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, setDoc, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { TABLES } from "@repo/common"
+import { dateToString, getYesterday, TABLES } from "@repo/common"
 import {
   type CreateDailyChallengeInput,
   type DailyChallengeDocWithId,
@@ -13,6 +13,7 @@ import {
 } from "@repo/schemas"
 import { DEFAULT_SIZE_DAILY_CHALLENGES } from "@/constants/api"
 import { getDailyChallengeRef, getDailyChallengeResultRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
+import { userApi } from "@/redux/api/user"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
 const parseChallenges = (snapshot: Awaited<ReturnType<typeof getDocs>>): DailyChallengeDocWithId[] => {
@@ -316,9 +317,11 @@ export const dailyChallengeApi = createApi({
     }),
 
     submitDailyChallengeResult: builder.mutation<DailyChallengeResultDocWithId, { uid: string, date: string, answer: string, isCorrect: boolean, position?: { x: number, y: number } }>({
-      queryFn: async ({ uid, date, answer, isCorrect, position }) => {
+      queryFn: async ({ uid, date, answer, isCorrect, position }, { dispatch }) => {
         try {
           const ref = getDailyChallengeResultRef(uid, date)
+
+          const user = await dispatch(userApi.endpoints.getUserById.initiate({ id: uid })).unwrap()
 
           await setDoc(ref, {
             date,
@@ -327,6 +330,28 @@ export const dailyChallengeApi = createApi({
             position: position || null,
             completedAt: Timestamp.now(),
           })
+
+          const today = dateToString(new Date())
+
+          if (isCorrect && date === today) {
+            const lastStreakDate = user?.lastStreakDate || ""
+            const currentStreak = user?.streak || 0
+            const yesterday = getYesterday(date)
+
+            const newStreak = {
+              streak: 1,
+              lastStreakDate: date,
+              updatedAt: Timestamp.now(),
+            }
+
+            if (lastStreakDate === yesterday) {
+              newStreak.streak = currentStreak + 1
+            } else if (lastStreakDate === date) {
+              newStreak.streak = currentStreak
+            }
+
+            await dispatch(userApi.endpoints.updateUserDoc.initiate({ id: uid, data: newStreak })).unwrap()
+          }
 
           const docSnap = await getDoc(ref)
 

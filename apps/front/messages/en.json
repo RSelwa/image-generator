@@ -123,7 +123,8 @@
     "createAccount": "Create an account",
     "shareButton": "Share this challenge to friends",
     "linkCopied": "Challenge link copied to clipboard!",
-    "failedCopy": "Failed to copy the challenge link. Please try again."
+    "failedCopy": "Failed to copy the challenge link. Please try again.",
+    "streak": "{count} day streak"
   },
   "account": {
     "title": "Account Settings",

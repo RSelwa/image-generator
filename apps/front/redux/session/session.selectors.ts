@@ -12,6 +12,8 @@ export const selectIsAnonymous = ({ session }: RootState) => session.user?.isAno
 export const selectSessionStatus = ({ session }: RootState) => session.status
 export const selectSessionIsReady = ({ session }: RootState) => session.status === SESSION_STATUS.SUCCESS
 
+export const selectUserSteak = ({ session }: RootState) => session.user?.streak || 0
+
 export const selectUserRights = ({ session }: RootState) =>
   session.user?.rights
 

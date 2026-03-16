@@ -47,6 +47,17 @@ export const setupDailyChallengesForPath = async () => {
   return challenges
 }
 
+export const setUserStreak = async (uid: string, streak: number, lastStreakDate: string) => {
+  await refs[TABLES.USERS].doc(uid).update({ streak, lastStreakDate })
+}
+
+export const getUserStreak = async (uid: string) => {
+  const doc = await refs[TABLES.USERS].doc(uid).get()
+  const data = doc.data()
+
+  return { streak: data?.streak || 0, lastStreakDate: data?.lastStreakDate || "" }
+}
+
 export const setupSphericalWithMapChallenge = async (date?: string) => {
   const d = date || getDateString(0)
   const challenge = dailyChallengeSphericalWithMapFactory({ date: d })

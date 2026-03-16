@@ -10,6 +10,8 @@ export const sessionUserSchema = z.object({
   rights: z.enum(USER_RIGHT).nullish(),
   isAnonymous: z.boolean().default(false),
   avatar: z.enum(AVATARS_KEYS).default(getRandomAvatar()),
+  streak: z.number().nullish().default(0),
+  lastStreakDate: z.string().nullish().default(null),
 })
 
 const authUserSchema = z.custom<User>()

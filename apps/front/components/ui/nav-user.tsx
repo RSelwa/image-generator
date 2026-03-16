@@ -30,7 +30,7 @@ import { PORTFOLIO_LINK } from "@/constants/social"
 import { Link, useRouter } from "@/i18n/routing"
 import { useLogoutMutation } from "@/redux/api/auth"
 import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
-import { selectIsAdmin, selectUser } from "@/redux/session/session.selectors"
+import { selectIsAdmin, selectUser, selectUserSteak } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { firstLetter } from "@/utils"
 import { getAvatarUrl } from "@/utils/file"
@@ -38,9 +38,10 @@ import { getAvatarUrl } from "@/utils/file"
 export const NavUser = () => {
   const router = useRouter()
 
+  const locale = useLocale()
   const t = useTranslations("nav")
 
-  const locale = useLocale()
+  const userStreak = useAppSelector(selectUserSteak)
   const user = useAppSelector(selectUser)
   const isAdmin = useAppSelector(selectIsAdmin)
 
@@ -98,6 +99,7 @@ export const NavUser = () => {
             <Link href={PAGES.DAILY_CHALLENGE}>
               <Calendar />
               {t("dailyChallenge")}
+              {Boolean(userStreak) && ` (${userStreak})`}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

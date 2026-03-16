@@ -122,7 +122,8 @@
     "createAccount": "Créer un compte",
     "shareButton": "Partager ce défi avec des amis",
     "linkCopied": "Lien du défi copié dans le presse-papiers !",
-    "failedCopy": "Échec de la copie du lien du défi. Veuillez réessayer."
+    "failedCopy": "Échec de la copie du lien du défi. Veuillez réessayer.",
+    "streak": "{count} jours consécutifs"
   },
   "account": {
     "title": "Paramètres du compte",
