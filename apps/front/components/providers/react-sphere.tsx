@@ -28,6 +28,7 @@ export const ReactSphere = ({
       src={proxySrc}
       height={height}
       width={width}
+      defaultZoomLvl={0}
     />
   )
 }

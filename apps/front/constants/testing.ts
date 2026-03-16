@@ -24,4 +24,5 @@ export const SELECTORS = {
   DAILY_CHALLENGE_RESULT_THUMBNAIL: "daily-challenge-result-thumbnail",
   DAILY_CHALLENGE_SHARE_MODAL: "share-daily-challenge-modal",
   DIALOG_CLOSE: "dialog-close",
+  STREAK_BADGE: "streak-badge",
 } as const

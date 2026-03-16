@@ -178,6 +178,8 @@ export const authApi = createApi({
                   pseudo,
                   isAnonymousUser: true,
                   avatar: getRandomAvatar(),
+                  streak: 0,
+                  lastStreakDate: null,
                 })
               }
 
