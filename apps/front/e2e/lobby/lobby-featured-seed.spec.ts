@@ -129,7 +129,7 @@ test.describe("lobby featured seed", () => {
     await loginViaUI(page, user.email)
     await hideDriverTutorial(page)
 
-    await page.goto("/")
+    await page.goto("/en")
     await waitToBeLogged(page)
 
     await createLobbyViaUI(page)

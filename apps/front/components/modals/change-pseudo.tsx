@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AVATARS_KEYS } from "@repo/common"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 import * as React from "react"
 import { type SubmitHandler } from "react-hook-form"
 import { useForm } from "react-hook-form"
@@ -30,6 +31,8 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 const ChangePseudoModal = () => {
+  const t = useTranslations("changePseudo")
+  const tCommon = useTranslations("common")
   const { closeModal } = useModal(key)
   const isMobile = useIsMobile()
 
@@ -74,9 +77,9 @@ const ChangePseudoModal = () => {
       <AlertDialogContent data-testid="change-pseudo-modal" className="max-h-[80vh] overflow-y-auto" asChild>
         <form onSubmit={handleSubmit(onSubmit)}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Personalize your account</AlertDialogTitle>
+            <AlertDialogTitle>{t("title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Your pseudo and your avatar is what other users see when they interact with you. Choose something that represents you well!
+              {t("description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="w-full flex items-center gap-2">
@@ -104,7 +107,7 @@ const ChangePseudoModal = () => {
               </PopoverContent>
             </Popover>
             <Field>
-              <FieldLabel htmlFor="pseudo">Pseudo</FieldLabel>
+              <FieldLabel htmlFor="pseudo">{t("pseudo")}</FieldLabel>
               <Input
                 {...register("pseudo", {
                   required: true
@@ -114,8 +117,8 @@ const ChangePseudoModal = () => {
           </div>
 
           <AlertDialogFooter>
-            <Button data-testid="skip-pseudo" variant="ghost" type="button" onClick={closeModal}>Skip for now</Button>
-            <Button type="submit" variant={isDirty ? "marathon" : "marathon-outline"}>Save {isLoading && <Loader />}</Button>
+            <Button data-testid="skip-pseudo" variant="ghost" type="button" onClick={closeModal}>{t("skipForNow")}</Button>
+            <Button type="submit" variant={isDirty ? "marathon" : "marathon-outline"}>{tCommon("save")} {isLoading && <Loader />}</Button>
           </AlertDialogFooter>
         </form>
       </AlertDialogContent>

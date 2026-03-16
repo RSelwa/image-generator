@@ -1,5 +1,5 @@
 import { type Metadata } from "next"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import HomeFooter from "@/components/home/home-footer"
 import { Button } from "@/components/ui/button"
 import { LogoHeader } from "@/components/ui/navbar"

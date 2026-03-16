@@ -96,14 +96,18 @@
   - [x] implement seeds that will be featured like flim discover
   - [x] Implement dashboard to see lobbies
   - [x] Clean abandoned lobbies
+  - [x] Daily challenge: Add daily challenges
+  - [x] Daily challenge: Possibility to share daily challenge
+  - [x] Daily challenge: Add a path to display it
+  - [ ] Passer le site en francais
+  - [ ] Ajouter les streak sur les daily challenges
+  - [ ] refacto entity rounds schemas to have 2x2 matrix like spherical with/without map, flat with/without map
+  - [ ] Make a mode: 5 min, maximum points (do we do distance)
   - [ ] Add autofocus on the description of the bug/suggestion
   - [ ] Add avatar in the users row
   - [ ] Add the possibility to change avatar in lobbies
   - [ ] Add a total of 8 avatars
-  - [x] Daily challenge: Add daily challenges
-  - [ ] Daily challenge: Possibility to share daily challenge
   - [ ] Daily challenge: have success based on this
-  - [ ] Daily challenge: Add a path to display it
   - [ ] Daily challenge: If we make a 3d environnement for the path, add 3d models characters when moving on the map
   - [ ] Daily challenge: Add e2e tests about it
   - [ ] Daily challenge:

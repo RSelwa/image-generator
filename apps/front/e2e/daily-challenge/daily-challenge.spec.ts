@@ -26,7 +26,7 @@ test.describe("daily challenge path", () => {
     const challenges = await setupDailyChallengesForPath()
     await loginViaUI(page, user.email)
 
-    await page.goto("/daily-challenge")
+    await page.goto("/en/daily-challenge")
 
     // Verify today's challenge node is visible with TODAY variant
     const todayChallenge = challenges.find((c) => c.date === today)
@@ -44,7 +44,7 @@ test.describe("daily challenge path", () => {
 
     // Complete today's challenge
     await page.getByTestId(SELECTORS.DAILY_CHALLENGE_NODE(today, DAILY_CHALLENGES_VARIANTS.TODAY)).click()
-    await expect(page).toHaveURL(`/daily-challenge/${today}`)
+    await expect(page).toHaveURL(`/en/daily-challenge/${today}`)
 
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10_000 })
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(todayChallenge?.gameTitle || "")
@@ -60,7 +60,7 @@ test.describe("daily challenge path", () => {
 
     // Go back to the daily challenge path
     await page.getByTestId(SELECTORS.DAILY_CHALLENGE_BACK).click()
-    await expect(page).toHaveURL("/daily-challenge")
+    await expect(page).toHaveURL("/en/daily-challenge")
 
     // Today's node should now have COMPLETED_TODAY variant
     await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_NODE(today, DAILY_CHALLENGES_VARIANTS.COMPLETED_TODAY))).toBeVisible()
@@ -70,7 +70,7 @@ test.describe("daily challenge path", () => {
     const yesterdayChallenge = challenges.find((c) => c.date === yesterdayDate)
 
     await page.getByTestId(SELECTORS.DAILY_CHALLENGE_NODE(yesterdayDate, DAILY_CHALLENGES_VARIANTS.AVAILABLE)).click()
-    await expect(page).toHaveURL(`/daily-challenge/${yesterdayDate}`)
+    await expect(page).toHaveURL(`/en/daily-challenge/${yesterdayDate}`)
 
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10_000 })
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(yesterdayChallenge?.gameTitle || "")
@@ -82,7 +82,7 @@ test.describe("daily challenge path", () => {
 
     // Go back and verify COMPLETED variant for yesterday
     await page.getByTestId(SELECTORS.DAILY_CHALLENGE_BACK).click()
-    await expect(page).toHaveURL("/daily-challenge")
+    await expect(page).toHaveURL("/en/daily-challenge")
     await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_NODE(yesterdayDate, DAILY_CHALLENGES_VARIANTS.COMPLETED))).toBeVisible()
   })
 })
@@ -93,7 +93,7 @@ test.describe("daily challenge 2x2 matrix - playability", () => {
     const challenge = await setupSphericalWithMapChallenge(today)
     await loginViaUI(page, user.email)
 
-    await page.goto(`/daily-challenge/${today}`)
+    await page.goto(`/en/daily-challenge/${today}`)
 
     // Spherical image should render (canvas-based ReactSphere)
     await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_SPHERICAL)).toBeVisible({ timeout: 10_000 })
@@ -117,7 +117,7 @@ test.describe("daily challenge 2x2 matrix - playability", () => {
     const challenge = await setupSphericalWithoutMapChallenge(today)
     await loginViaUI(page, user.email)
 
-    await page.goto(`/daily-challenge/${today}`)
+    await page.goto(`/en/daily-challenge/${today}`)
 
     // Spherical image should render
     await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_SPHERICAL)).toBeVisible({ timeout: 10_000 })
@@ -141,7 +141,7 @@ test.describe("daily challenge 2x2 matrix - playability", () => {
     const challenge = await setupFlatWithMapChallenge(today)
     await loginViaUI(page, user.email)
 
-    await page.goto(`/daily-challenge/${today}`)
+    await page.goto(`/en/daily-challenge/${today}`)
 
     // Flat image should render
     await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_FLAT)).toBeVisible({ timeout: 10_000 })
@@ -165,7 +165,7 @@ test.describe("daily challenge 2x2 matrix - playability", () => {
     const challenge = await setupFlatWithoutMapChallenge(today)
     await loginViaUI(page, user.email)
 
-    await page.goto(`/daily-challenge/${today}`)
+    await page.goto(`/en/daily-challenge/${today}`)
 
     // Flat image should render
     await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_FLAT)).toBeVisible({ timeout: 10_000 })

@@ -51,7 +51,7 @@ const CONFIG: CaptureConfig = {
   duration: 5,
   panRange: Math.PI / 2,
   pitchAmplitude: 0.1,
-  captureUrl: getParam("capture-url", "CAPTURE_URL") || "https://www.geo-gamer.net/capture",
+  captureUrl: getParam("capture-url", "CAPTURE_URL") || "https://www.geo-gamer.net/en/capture",
   imageUrl: getParam("image-url", "IMAGE_URL"),
   outputPath: getParam("output-path", "OUTPUT_PATH") || "output.mp4",
 }

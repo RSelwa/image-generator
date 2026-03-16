@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AVATARS_KEYS } from "@repo/common"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 import { useEffect } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -29,6 +30,8 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 const AccountForm = () => {
+  const t = useTranslations("account")
+  const tAuth = useTranslations("auth")
   const user = useAppSelector(selectUser)
   const [updateUserDoc, { isLoading }] = useUpdateUserDocMutation()
 
@@ -68,10 +71,10 @@ const AccountForm = () => {
         },
       }).unwrap()
 
-      toast.success("Profile updated successfully")
+      toast.success(t("profileUpdated"))
     } catch (error) {
       console.error("Error updating profile:", error)
-      toast.error("Failed to update profile")
+      toast.error(t("profileUpdateFailed"))
     }
   }
 
@@ -85,8 +88,8 @@ const AccountForm = () => {
       <Card>
         <CardHeader className="flex justify-between">
           <div>
-            <CardTitle className="font-interference">Profile Picture</CardTitle>
-            <CardDescription className="font-mono">Your avatar visible to other players</CardDescription>
+            <CardTitle className="font-interference">{t("profilePicture")}</CardTitle>
+            <CardDescription className="font-mono">{t("profilePictureDescription")}</CardDescription>
           </div>
           <Popover>
             <PopoverTrigger>
@@ -114,18 +117,18 @@ const AccountForm = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <Field>
-            <FieldLabel htmlFor="pseudo">Pseudo</FieldLabel>
-            <FieldDescription>This is the name other players will see</FieldDescription>
+            <FieldLabel htmlFor="pseudo">{t("pseudo")}</FieldLabel>
+            <FieldDescription>{t("pseudoDescription")}</FieldDescription>
             <Input
               id="pseudo"
-              placeholder="Your pseudo"
+              placeholder={t("pseudo")}
               {...register("pseudo")}
             />
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <FieldDescription>Your email address cannot be changed here</FieldDescription>
+            <FieldLabel htmlFor="email">{tAuth("email")}</FieldLabel>
+            <FieldDescription>{t("emailDescription")}</FieldDescription>
             <Input
               id="email"
               value={user.email}
@@ -138,23 +141,27 @@ const AccountForm = () => {
       <div className="flex justify-end">
         <Button variant={isDirty ? "marathon" : "marathon-outline"} type="submit" disabled={isLoading}>
           {isLoading && <Loader className="size-4" />}
-          Save changes
+          {t("saveChanges")}
         </Button>
       </div>
     </form>
   )
 }
 
-const AccountPage = () => (
-  <AuthGuard>
-    <main className="container mx-auto max-w-2xl px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
-        <p className="text-muted-foreground mt-1">Manage your profile information</p>
-      </div>
-      <AccountForm />
-    </main>
-  </AuthGuard>
-)
+const AccountPage = () => {
+  const t = useTranslations("account")
+
+  return (
+    <AuthGuard>
+      <main className="container mx-auto max-w-2xl px-4 py-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("description")}</p>
+        </div>
+        <AccountForm />
+      </main>
+    </AuthGuard>
+  )
+}
 
 export default AccountPage

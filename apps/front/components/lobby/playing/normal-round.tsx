@@ -1,6 +1,6 @@
 import { ROUND_TYPE } from "@repo/common"
 import Image from "next/image"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import * as React from "react"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { FALL_BACK_IMAGE } from "@/constants/mapping"

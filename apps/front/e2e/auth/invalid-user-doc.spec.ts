@@ -26,7 +26,7 @@ test.describe("invalid user document", () => {
 
     // Do NOT create a Firestore user doc — auth exists but doc is missing
 
-    await page.goto("/login")
+    await page.goto("/en/login")
 
     await page.waitForTimeout(1000) // Wait a bit to ensure the app has time to check for the user doc and react accordingly
     await refs[TABLES.USERS].doc(uid).delete() // Doc was created when anonymous user signed up, so we need to delete it to simulate the missing doc scenario
@@ -53,7 +53,7 @@ test.describe("invalid user document", () => {
       updatedAt: Timestamp.now(),
     })
 
-    await page.goto("/login")
+    await page.goto("/en/login")
     await page.getByLabel("Email").fill(email)
     await page.getByLabel("Password").fill(PASSWORD)
     await page.getByRole("button", { name: "Login" }).click()
@@ -70,7 +70,7 @@ test.describe("invalid user document", () => {
       updatedAt: Timestamp.now(),
     })
 
-    await page.goto("/login")
+    await page.goto("/en/login")
     await page.getByLabel("Email").fill(email)
     await page.getByLabel("Password").fill(PASSWORD)
     await page.getByRole("button", { name: "Login" }).click()
@@ -82,12 +82,12 @@ test.describe("invalid user document", () => {
   test("user with valid doc can still login normally", async ({ page }) => {
     const user = await setupUser()
 
-    await page.goto("/login")
+    await page.goto("/en/login")
     await page.getByLabel("Email").fill(user.email)
     await page.getByLabel("Password").fill(PASSWORD)
     await page.getByRole("button", { name: "Login" }).click()
 
-    await expect(page).toHaveURL("/")
+    await expect(page).toHaveURL("/en")
     await expect(page.getByTestId("nav-user-dropdown-trigger")).toBeVisible()
   })
 })

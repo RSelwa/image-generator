@@ -1,5 +1,5 @@
 import { DEFAULT_TIME_PER_ROUND } from "@repo/common"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import * as React from "react"
 import { useCountdown } from "@/hooks/use-countdown"
 import { useSubscribeLobbyQuery } from "@/redux/api/lobby"

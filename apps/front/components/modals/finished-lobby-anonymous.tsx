@@ -1,6 +1,7 @@
 import { XIcon } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
+import { useTranslations } from "next-intl"
 import * as React from "react"
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
@@ -8,6 +9,8 @@ import { IMAGES_URLS } from "@/constants/images"
 import { PAGES } from "@/constants/pages"
 
 const FinishedLobbyAnonymous = () => {
+    const t = useTranslations("finishedLobbyAnonymous")
+
     return (
         <AlertDialog open={true}>
             <AlertDialogContent data-testid="finished-lobby-anonymous-modal" className="pt-0 px-0 rounded-none">
@@ -19,15 +22,15 @@ const FinishedLobbyAnonymous = () => {
                 </AlertDialogCancel>
                 <div className="grid px-6 gap-4">
                     <AlertDialogTitle>
-                        Thanks for playing the demo!
+                        {t("title")}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        To access all features and play with your friends, please create an account. It's quick and easy!
+                        {t("description")}
                     </AlertDialogDescription>
                     <AlertDialogFooter className="flex gap-2">
                         <Button asChild className="rounded-none flex-1">
                             <Link href={PAGES.SIGNUP}>
-                                Create an account
+                                {t("createAccount")}
                             </Link>
                         </Button>
                     </AlertDialogFooter>

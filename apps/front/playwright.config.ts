@@ -27,5 +27,6 @@ export default defineConfig({
     command: "dotenv -e .env.test -- next build && dotenv -e .env.test -- next start",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
   },
 })

@@ -10,7 +10,7 @@ import {
     User,
 } from "lucide-react"
 
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { LobbyDebug } from "@/components/lobby/lobby-debug"
 import {
     DropdownMenuItem,

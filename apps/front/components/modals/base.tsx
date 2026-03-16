@@ -2,6 +2,7 @@
 
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { type ConstantValues } from "@repo/common"
+import { useTranslations } from "next-intl"
 import { AlertDialog, AlertDialogContent, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import {
   Dialog,
@@ -76,10 +77,14 @@ export const LoadingModal = ({
   modalKey,
 }: {
   modalKey: ConstantValues<typeof MODAL_KEYS>
-}) => (
-  <ModalBase {...{ modalKey }} alertDialog>
-    <div className="flex flex-col items-center justify-center p-4" />
-    <div className="loader mb-4" />
-    <p className="text-center">Loading...</p>
-  </ModalBase>
-)
+}) => {
+  const t = useTranslations("common")
+
+  return (
+    <ModalBase {...{ modalKey }} alertDialog>
+      <div className="flex flex-col items-center justify-center p-4" />
+      <div className="loader mb-4" />
+      <p className="text-center">{t("loading")}</p>
+    </ModalBase>
+  )
+}

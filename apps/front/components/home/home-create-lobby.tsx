@@ -1,21 +1,27 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useLocale, useTranslations } from "next-intl"
 import { type ComponentProps, type ReactNode, type RefObject, useEffect, useRef } from "react"
 import * as React from "react"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
 import { PAGES } from "@/constants/pages"
+import { useRouter } from "@/i18n/routing"
 import { useCreateAndJoinLobbyMutation, useCreateDemoLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAnonymous, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
 export const CreateLobbyButton = ({ className, children }: { children?: ReactNode } & ComponentProps<"button">) => {
+  const t = useTranslations("home")
   const router = useRouter()
+  const locale = useLocale()
+
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
+
   const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation({ fixedCacheKey: "create-lobby" })
   const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation({ fixedCacheKey: "create-demo-lobby" })
+
   const isCreatingRef = useRef(false)
 
   if (!user) return null
@@ -28,7 +34,7 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
     try {
       const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
 
-      router.push(`${PAGES.LOBBY}/${lobby.id}`)
+      router.push(`${locale}${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
       console.error("Failed to create lobby:", error)
       isCreatingRef.current = false
@@ -37,7 +43,7 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
 
   return (
     <Button data-testid={user.isAnonymous ? "create-lobby-button-demo" : "create-lobby-button"} onClick={handleCreateLobby} disabled={isLoading} className={className}>
-      {children || "Play now!"}
+      {children || t("playNowButton")}
       {" "}
       {isLoading && <Loader className="size-4" />}
     </Button>
@@ -48,6 +54,7 @@ export const HomePlayButton = ({ containerRef, isLoading }: {
   containerRef: RefObject<HTMLButtonElement | null>
   isLoading?: boolean
 }) => {
+  const t = useTranslations("home")
   const followerRef = useRef<HTMLDivElement>(null)
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -106,7 +113,7 @@ export const HomePlayButton = ({ containerRef, isLoading }: {
       <span className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-primary" />
       <span className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-primary" />
       <span className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-primary" />
-      Play
+      {t("play")}
       {" "}
       {isLoading && <Loader className="size-6" />}
     </div>
@@ -115,6 +122,8 @@ export const HomePlayButton = ({ containerRef, isLoading }: {
 
 export const CreateLobbyContainer = () => {
   const router = useRouter()
+  const locale = useLocale()
+
   const containerRef = useRef<HTMLButtonElement>(null)
   const isCreatingRef = useRef(false)
 
@@ -134,7 +143,7 @@ export const CreateLobbyContainer = () => {
     try {
       const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
 
-      router.push(`${PAGES.LOBBY}/${lobby.id}`)
+      router.push(`${locale}${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
       console.error("Failed to create lobby:", error)
       isCreatingRef.current = false

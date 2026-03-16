@@ -2,7 +2,7 @@
 
 import { PlusIcon, RefreshCcw, Search, Trash2 } from "lucide-react"
 import { useState } from "react"
-import { SphericalRow } from "@/app/(app)/admin/sphericals/row"
+import { SphericalRow } from "@/app/[locale]/(app)/admin/sphericals/row"
 import SphericalSheet from "@/components/sheet/spherical-sheet"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"

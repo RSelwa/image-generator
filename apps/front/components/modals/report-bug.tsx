@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { STORAGE_PATHS, SUGGESTIONS_TYPE } from "@repo/common"
 import { suggestionsDocSchema } from "@repo/schemas"
-import { usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
+import { usePathname } from "@/i18n/routing"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -32,6 +33,8 @@ type FormSchema = z.infer<typeof formSchema>
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 export const ReportBugModal = () => {
+  const t = useTranslations("reportBug")
+  const tCommon = useTranslations("common")
   const { closeModal } = useModal(key)
 
   const pathname = usePathname()
@@ -52,7 +55,7 @@ export const ReportBugModal = () => {
 
   const handleFileSelect = async (file: File) => {
     if (file.size > MAX_FILE_SIZE) {
-      toast.error("Image must be less than 5MB")
+      toast.error(t("imageTooLarge"))
       throw new Error("File too large")
     }
 
@@ -66,7 +69,7 @@ export const ReportBugModal = () => {
       setImageUrls((prev) => [...prev, url])
     } catch (error) {
       console.error("Failed to upload image", error)
-      toast.error("Failed to upload image")
+      toast.error(t("uploadFailed"))
       throw error
     } finally {
       setIsUploading(false)
@@ -92,25 +95,25 @@ export const ReportBugModal = () => {
 
       await createSuggestionDoc(suggestionDoc).unwrap()
 
-      toast.success("Thanks for your bug report!")
+      toast.success(t("success"))
       reset()
       setImageUrls([])
       closeModal()
     } catch (error) {
       console.error("Failed to submit suggestion", error)
 
-      toast.error("Failed to submit your bug")
+      toast.error(t("fail"))
     }
   }
 
   return (
-    <ModalBase title="Report a bug" modalKey={key}>
+    <ModalBase title={t("title")} modalKey={key}>
       <form autoComplete="off" onSubmit={handleSubmit(submitBug)} className="space-y-4">
         <InputGroup>
-          <InputGroupInput placeholder="Bug title" {...register("title")} />
+          <InputGroupInput placeholder={t("bugTitle")} {...register("title")} />
         </InputGroup>
         <InputGroup>
-          <InputGroupTextarea placeholder="Describe your problem" {...register("description")} />
+          <InputGroupTextarea placeholder={t("describeProblem")} {...register("description")} />
         </InputGroup>
         <div className="flex flex-col lg:flex-row flex-wrap gap-2">
           <ImageDropzone
@@ -120,7 +123,7 @@ export const ReportBugModal = () => {
             onRemove={() => { }}
             isUploading={isUploading}
             className="size-32"
-            alt="Bug screenshot"
+            alt={t("screenshot")}
           />
           {imageUrls.map((url, index) => (
             <ImageDropzone
@@ -129,7 +132,7 @@ export const ReportBugModal = () => {
               onFileSelect={handleFileSelect}
               onRemove={() => handleRemoveImage(index)}
               className="size-32"
-              alt={`Bug screenshot ${index + 1}`}
+              alt={t("screenshotIndex", { index: index + 1 })}
             />
           ))}
 
@@ -137,12 +140,11 @@ export const ReportBugModal = () => {
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="marathon-outline">
-
-              Cancel
+              {tCommon("cancel")}
             </Button>
           </DialogClose>
           <Button type="submit" disabled={isLoading}>
-            Submit {isLoading && <Loader />}
+            {tCommon("submit")} {isLoading && <Loader />}
           </Button>
         </DialogFooter>
 
