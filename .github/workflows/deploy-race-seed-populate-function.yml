@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [init, test]
     name: 🚀 Deploy race-seed-populate function
-    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    if: github.ref_name == 'main' || github.ref_name == 'develop' || contains(github.event.head_commit.message, '[force_deploy_race_seed_populate]')
     environment: prod
     steps:
       - name: ✨ Checkout

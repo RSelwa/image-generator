@@ -38,6 +38,15 @@ export const TABLE_REFS = {
   [TABLES.SOUNDS]: collection(db, TABLES.SOUNDS) as CustomCollectionRef<
     typeof TABLES.SOUNDS
   >,
+  [TABLES.MARATHON_SEEDS]: collection(db, TABLES.MARATHON_SEEDS) as CustomCollectionRef<
+    typeof TABLES.MARATHON_SEEDS
+  >,
+  [TABLES.RACES]: collection(db, TABLES.RACES) as CustomCollectionRef<
+    typeof TABLES.RACES
+  >,
+  [TABLES.LEADERBOARD]: collection(db, TABLES.LEADERBOARD) as CustomCollectionRef<
+    typeof TABLES.LEADERBOARD
+  >,
 } as const
 
 export const TABLES_GROUP_REFS = {
@@ -71,6 +80,10 @@ export const TABLES_SUB_REFS = {
   [TABLES.ROUND_ANSWERS]: (lobbyId: string) =>
     collection(db, TABLES.LOBBIES, lobbyId, TABLES.ROUND_ANSWERS) as CustomCollectionRef<
       typeof TABLES.ROUND_ANSWERS
+    >,
+  [TABLES.RACE_RUNS]: (raceId: string) =>
+    collection(db, TABLES.RACES, raceId, TABLES.RACE_RUNS) as CustomCollectionRef<
+      typeof TABLES.RACE_RUNS
     >,
   [TABLES.DAILY_CHALLENGE_RESULTS]: (userId: string) =>
     collection(db, TABLES.USERS, userId, TABLES.DAILY_CHALLENGE_RESULTS) as CustomCollectionRef<
@@ -128,3 +141,12 @@ export const getDailyChallengeResultRef = (uid: string, date: string) =>
 
 export const getDailyChallengeHistoryRef = (): DocumentReference<DailyChallengeHistoryDoc, DailyChallengeHistoryDoc> =>
   doc(TABLE_REFS[TABLES.METADATA], METADATA_DOCS.DAILY_CHALLENGE_HISTORY) as DocumentReference<DailyChallengeHistoryDoc, DailyChallengeHistoryDoc>
+
+export const getMarathonSeedRef = (seedId: string) =>
+  doc(TABLE_REFS[TABLES.MARATHON_SEEDS], seedId)
+
+export const getRaceRef = (raceId: string) =>
+  doc(TABLE_REFS[TABLES.RACES], raceId)
+
+export const getRaceRunRef = (raceId: string, uid: string) =>
+  doc(TABLES_SUB_REFS[TABLES.RACE_RUNS](raceId), uid)

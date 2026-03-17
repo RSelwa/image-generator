@@ -13,3 +13,9 @@ export const getLobbyIdFromPathname = (pathname: string) => {
 
   return match ? match[1] : ""
 }
+
+export const getRaceIdFromPathname = (pathname: string) => {
+  const match = pathname.match(/\/race\/([^/]+)/)
+
+  return match ? match[1] : ""
+}

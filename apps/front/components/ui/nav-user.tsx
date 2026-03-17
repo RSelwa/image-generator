@@ -7,6 +7,7 @@ import {
   Calendar,
   History,
   LogOut,
+  Timer,
   User,
   Wrench,
   Zap,
@@ -98,7 +99,13 @@ export const NavUser = () => {
             <Link href={PAGES.DAILY_CHALLENGE}>
               <Calendar />
               {t("dailyChallenge")}
-              {Boolean(userStreak) && ` (${userStreak})`}
+              {Boolean(userStreak) && ` - ${userStreak} 🔥`}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href={PAGES.RACE}>
+              <Timer />
+              {t("race")}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

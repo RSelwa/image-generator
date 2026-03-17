@@ -4,6 +4,8 @@ import { adminApi } from "@/redux/api/admin"
 import { authApi } from "@/redux/api/auth"
 import { cloudFunctionsApi } from "@/redux/api/cloud-functions"
 import { dailyChallengeApi } from "@/redux/api/daily-challenge"
+import { marathonSeedApi } from "@/redux/api/marathon-seed"
+import { raceApi } from "@/redux/api/race"
 import { flatApi } from "@/redux/api/flat"
 import { gameApi } from "@/redux/api/games"
 import { lobbyApi } from "@/redux/api/lobby"
@@ -38,6 +40,8 @@ export const makeStore = () =>
       [sessionSlice.name]: sessionSlice.reducer,
       [dailyChallengeApi.reducerPath]: dailyChallengeApi.reducer,
       [cloudFunctionsApi.reducerPath]: cloudFunctionsApi.reducer,
+      [marathonSeedApi.reducerPath]: marathonSeedApi.reducer,
+      [raceApi.reducerPath]: raceApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ serializableCheck: false })
@@ -56,7 +60,9 @@ export const makeStore = () =>
         .concat(soundsApi.middleware)
         .concat(suggestionsApi.middleware)
         .concat(dailyChallengeApi.middleware)
-        .concat(cloudFunctionsApi.middleware),
+        .concat(cloudFunctionsApi.middleware)
+        .concat(marathonSeedApi.middleware)
+        .concat(raceApi.middleware),
   })
 
 // Infer the type of makeStore

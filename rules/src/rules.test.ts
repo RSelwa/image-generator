@@ -2754,9 +2754,27 @@ describe("firebase Security Rules", () => {
       await assertFails(setDoc(doc(unauthDb, seedPath), seedData))
     })
 
-    it("should not allow regular users to write a marathon seed", async () => {
+    it("should allow regular users to create a marathon seed", async () => {
       const authedDb = testEnv.authenticatedContext("user1").firestore()
-      await assertFails(setDoc(doc(authedDb, seedPath), seedData))
+      await assertSucceeds(setDoc(doc(authedDb, seedPath), seedData))
+    })
+
+    it("should not allow regular users to update a marathon seed", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), seedPath), seedData)
+      })
+
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertFails(updateDoc(doc(authedDb, seedPath), { name: "Updated" }))
+    })
+
+    it("should not allow regular users to delete a marathon seed", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), seedPath), seedData)
+      })
+
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertFails(deleteDoc(doc(authedDb, seedPath)))
     })
 
     it("should allow admin to write a marathon seed", async () => {
@@ -2773,7 +2791,6 @@ describe("firebase Security Rules", () => {
     const raceId = "race1"
     const racePath = `races/${raceId}`
     const raceData = { code: "ABCD", hostId: "user1", seedId: "seed1", status: "waiting", players: [], playersIds: [], duration: 300 }
-    const adminId = "admin1"
 
     it("should allow signed-in user to create a race", async () => {
       const authedDb = testEnv.authenticatedContext("user1").firestore()

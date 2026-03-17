@@ -4,8 +4,6 @@ import { type MarathonSeedDoc, type MarathonSeedRound } from "@repo/schemas"
 import { FieldPath, getFirestore } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 
-const FIRESTORE_NOT_IN_LIMIT = 10
-
 export const populateRaceSeed = async (seedId: string, playerCurrentIndex: number) => {
   const seedRef = refs[TABLES.MARATHON_SEEDS].doc(seedId)
   const seedSnap = await seedRef.get()
@@ -25,24 +23,28 @@ export const populateRaceSeed = async (seedId: string, playerCurrentIndex: numbe
     return seed
   }
 
-  // Build exclude lists — collection group queries need full doc paths for documentId() not-in
+  // Build exclude sets for client-side deduplication
   const sphericalIdsInSeed = seed.rounds.filter((r) => r.sphericalId).map((r) => r.sphericalId) as string[]
   const flatIdsInSeed = seed.rounds.filter((r) => r.flatId).map((r) => r.flatId) as string[]
 
-  const sphericalPathsExclude = seed.rounds
-    .filter((r) => r.sphericalId)
-    .slice(-FIRESTORE_NOT_IN_LIMIT)
-    .map((r) => `${TABLES.GAMES}/${r.gameId}/${TABLES.SPHERICAL}/${r.sphericalId}`)
+  // Determine startAfter cursors from the last rounds that had each type
+  const lastSphericalRound = [...seed.rounds].reverse().find((r) => r.sphericalId)
+  const lastFlatRound = [...seed.rounds].reverse().find((r) => r.flatId)
 
-  const flatPathsExclude = seed.rounds
-    .filter((r) => r.flatId)
-    .slice(-FIRESTORE_NOT_IN_LIMIT)
-    .map((r) => `${TABLES.GAMES}/${r.gameId}/${TABLES.FLAT}/${r.flatId}`)
+  const lastSphericalPath = lastSphericalRound ? `${TABLES.GAMES}/${lastSphericalRound.gameId}/${TABLES.SPHERICAL}/${lastSphericalRound.sphericalId}` : null
+  const lastFlatPath = lastFlatRound ? `${TABLES.GAMES}/${lastFlatRound.gameId}/${TABLES.FLAT}/${lastFlatRound.flatId}` : null
 
-  // Fetch sphericals and flats not already in the seed via collection group queries
-  const sphericalsQuery = sphericalPathsExclude.length > 0 ? collectionGroupRefs[TABLES.SPHERICAL].where(FieldPath.documentId(), "not-in", sphericalPathsExclude).limit(RACE_SEED_IMAGE_FETCH_LIMIT) : collectionGroupRefs[TABLES.SPHERICAL].limit(RACE_SEED_IMAGE_FETCH_LIMIT)
+  // Fetch sphericals and flats starting after the last known document to always get fresh images
+  const baseSphericalQuery = collectionGroupRefs[TABLES.SPHERICAL].orderBy(FieldPath.documentId())
+  const baseFlatQuery = collectionGroupRefs[TABLES.FLAT].orderBy(FieldPath.documentId())
 
-  const flatsQuery = flatPathsExclude.length > 0 ? collectionGroupRefs[TABLES.FLAT].where(FieldPath.documentId(), "not-in", flatPathsExclude).limit(RACE_SEED_IMAGE_FETCH_LIMIT) : collectionGroupRefs[TABLES.FLAT].limit(RACE_SEED_IMAGE_FETCH_LIMIT)
+  const sphericalsQuery = lastSphericalPath
+    ? baseSphericalQuery.startAfter(lastSphericalPath).limit(RACE_SEED_IMAGE_FETCH_LIMIT)
+    : baseSphericalQuery.limit(RACE_SEED_IMAGE_FETCH_LIMIT)
+
+  const flatsQuery = lastFlatPath
+    ? baseFlatQuery.startAfter(lastFlatPath).limit(RACE_SEED_IMAGE_FETCH_LIMIT)
+    : baseFlatQuery.limit(RACE_SEED_IMAGE_FETCH_LIMIT)
 
   const [sphericalsSnap, flatsSnap] = await Promise.all([sphericalsQuery.get(), flatsQuery.get()])
 

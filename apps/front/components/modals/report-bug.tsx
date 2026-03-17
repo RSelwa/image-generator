@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { STORAGE_PATHS, SUGGESTIONS_TYPE } from "@repo/common"
 import { suggestionsDocSchema } from "@repo/schemas"
 import { useTranslations } from "next-intl"
-import { usePathname } from "@/i18n/routing"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -15,6 +14,7 @@ import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { InputGroup, InputGroupInput, InputGroupTextarea } from "@/components/ui/input-group"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
+import { usePathname } from "@/i18n/routing"
 import { useCreateSuggestionMutation } from "@/redux/api/suggestions"
 import { selectCurrentRoundIndex, selectCurrentRoundInfos } from "@/redux/lobby/lobby.selectors"
 import { selectUserId } from "@/redux/session/session.selectors"
@@ -113,7 +113,7 @@ export const ReportBugModal = () => {
           <InputGroupInput placeholder={t("bugTitle")} {...register("title")} />
         </InputGroup>
         <InputGroup>
-          <InputGroupTextarea placeholder={t("describeProblem")} {...register("description")} />
+          <InputGroupTextarea autoFocus placeholder={t("describeProblem")} {...register("description")} />
         </InputGroup>
         <div className="flex flex-col lg:flex-row flex-wrap gap-2">
           <ImageDropzone

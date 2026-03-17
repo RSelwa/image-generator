@@ -105,7 +105,7 @@ export const MakeSuggestion = () => {
                     <InputGroupInput placeholder={t("suggestionTitle")} {...register("title")} />
                 </InputGroup>
                 <InputGroup>
-                    <InputGroupTextarea placeholder={t("describeYourSuggestion")} {...register("description")} />
+                    <InputGroupTextarea autoFocus placeholder={t("describeYourSuggestion")} {...register("description")} />
                 </InputGroup>
                 <div className="flex flex-col lg:flex-row flex-wrap gap-2">
                     <ImageDropzone
