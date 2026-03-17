@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
@@ -42,7 +42,6 @@ export const SignupForm = ({
   ...props
 }: React.ComponentProps<"div">) => {
   const t = useTranslations("auth")
-  const locale = useLocale()
 
   const searchParams = useSearchParams()
   const redirect = searchParams.get(QUERY_PARAMS.REDIRECT)
@@ -63,7 +62,7 @@ export const SignupForm = ({
     if (!authUser || authUser?.isAnonymous) return
 
     const searchParams = new URLSearchParams(MODAL_KEYS.CHANGE_PSEUDO)
-    const redirectUrl = redirect ? new URL(redirect, window.location.origin) : new URL(`${locale}${PAGES.HOME}?${searchParams}`, window.location.origin)
+    const redirectUrl = redirect ? new URL(redirect, window.location.origin) : new URL(`${PAGES.HOME}?${searchParams}`, window.location.origin)
 
     router.push(redirectUrl.href)
   }, [authUser?.isAnonymous, redirect, router])

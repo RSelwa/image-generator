@@ -11,7 +11,7 @@ import {
   Wrench,
   Zap,
 } from "lucide-react"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { useRef } from "react"
 import { HelperMenuContent } from "@/components/helper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -38,7 +38,6 @@ import { getAvatarUrl } from "@/utils/file"
 export const NavUser = () => {
   const router = useRouter()
 
-  const locale = useLocale()
   const t = useTranslations("nav")
 
   const userStreak = useAppSelector(selectUserSteak)
@@ -58,7 +57,7 @@ export const NavUser = () => {
     try {
       const lobby = await createLobbyDoc({ user }).unwrap()
 
-      router.push(`${locale}${PAGES.LOBBY}/${lobby.id}`)
+      router.push(`${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
       console.error("Failed to create lobby:", error)
       isCreatingRef.current = false

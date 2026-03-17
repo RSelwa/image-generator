@@ -1,6 +1,6 @@
 "use client"
 
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { type ComponentProps, type ReactNode, type RefObject, useEffect, useRef } from "react"
 import * as React from "react"
 import Loader from "@/components/icons/loader"
@@ -14,7 +14,6 @@ import { useAppSelector } from "@/redux/store"
 export const CreateLobbyButton = ({ className, children }: { children?: ReactNode } & ComponentProps<"button">) => {
   const t = useTranslations("home")
   const router = useRouter()
-  const locale = useLocale()
 
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
@@ -34,7 +33,7 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
     try {
       const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
 
-      router.push(`${locale}${PAGES.LOBBY}/${lobby.id}`)
+      router.push(`${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
       console.error("Failed to create lobby:", error)
       isCreatingRef.current = false
@@ -122,7 +121,6 @@ export const HomePlayButton = ({ containerRef, isLoading }: {
 
 export const CreateLobbyContainer = () => {
   const router = useRouter()
-  const locale = useLocale()
 
   const containerRef = useRef<HTMLButtonElement>(null)
   const isCreatingRef = useRef(false)
@@ -143,7 +141,7 @@ export const CreateLobbyContainer = () => {
     try {
       const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
 
-      router.push(`${locale}${PAGES.LOBBY}/${lobby.id}`)
+      router.push(`${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
       console.error("Failed to create lobby:", error)
       isCreatingRef.current = false
