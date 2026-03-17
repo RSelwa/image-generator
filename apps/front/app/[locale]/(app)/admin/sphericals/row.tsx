@@ -21,10 +21,9 @@ export const SphericalRow = ({ spherical, checkedIds, setCheckedIds }: {
         setCheckedIds((prev) => value ? [...prev, spherical.id] : prev.filter((id) => id !== spherical.id))
 
     const shouldDisplayNoImageBadge = !spherical.image
-    const shouldDisplayNoThumbnailOrMapBadge = !spherical.thumbnail && !spherical.mapId
-    const shouldDisplayNoPositionBadge = Boolean(spherical.mapId) && !spherical.mapPosition
+    const shouldDisplayNoThumbnailOrMapBadge = !spherical.thumbnail && !spherical.hasMap
     const hasThumbnail = Boolean(spherical.thumbnail)
-    const hasMap = Boolean(spherical.mapId)
+    const { hasMap } = spherical
 
     return (
         <TableRow onClick={() => setSphericalId(`${spherical.gameId}_${spherical.id}`)} className="cursor-pointer">
@@ -48,7 +47,7 @@ export const SphericalRow = ({ spherical, checkedIds, setCheckedIds }: {
                 <div className="flex items-center gap-1">
                     {shouldDisplayNoImageBadge && <Badge variant="red">No image</Badge>}
                     {shouldDisplayNoThumbnailOrMapBadge && <Badge variant="red">No thumbnail or map</Badge>}
-                    {shouldDisplayNoPositionBadge && <Badge variant="red">No position</Badge>}
+
                     {hasThumbnail && <Badge variant={RESOURCE_BADGE_VARIANT.THUMBNAIL}>Thumbnail</Badge>}
                     {hasMap && <Badge variant={RESOURCE_BADGE_VARIANT.MAP}>Map</Badge>}
                 </div>

@@ -152,8 +152,8 @@ const FlatForm = ({
       reset({
         gameId: data.gameId,
         image: data.image || "",
-        mapId: data.mapId || "",
-        mapPosition: data.mapPosition || { x: 50, y: 50 },
+        mapId: data.hasMap ? data.mapId : "",
+        mapPosition: data.hasMap ? data.mapPosition : { x: 50, y: 50 },
         difficulty: data.difficulty || DIFFICULTIES.EASY,
         status: data.status || DOCUMENTS_STATUS.WAITING,
         thumbnail: data.thumbnail || "",

@@ -1,4 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit"
+import { toRoundEntity } from "@repo/schemas"
 import { auth } from "@/constants/db"
 import { lobbyApi } from "@/redux/api/lobby"
 import { type RootState } from "@/redux/store"
@@ -37,9 +38,17 @@ export const selectIsLobbyHost = (lobbyId: string) =>
 export const selectLobbyConfig = (lobbyId: string) =>
   createSelector(selectLobby(lobbyId), (lobby) => lobby?.config)
 
-// Current round data
+// Current round data (raw Firestore shape)
 export const selectCurrentRoundData = (lobbyId: string) =>
   createSelector(selectLobby(lobbyId), (lobby) => lobby?.currentRoundData)
+
+// Current round data as a typed RoundEntity
+export const selectCurrentRoundEntity = (lobbyId: string) =>
+  createSelector(selectCurrentRoundData(lobbyId), (roundData) => {
+    if (!roundData) return null
+
+    return toRoundEntity(roundData)
+  })
 
 // Current round index
 export const selectCurrentRoundIndex = (lobbyId: string) =>

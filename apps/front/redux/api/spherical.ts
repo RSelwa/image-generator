@@ -6,7 +6,7 @@ import {
   type SphericalDocWithId,
   sphericalDocWithIdSchema,
   type SphericalEntity,
-  sphericalEntitySchema,
+  toSphericalEntity,
   type UpdateSphericalInput,
   updateSphericalInputSchema,
 } from "@repo/schemas"
@@ -75,15 +75,11 @@ export const sphericalApi = createApi({
                 }),
               ).unwrap()
 
-              const { data, error } = sphericalEntitySchema.safeParse({
-                id: doc.id,
-                ...doc.data(),
-                gameId,
-                game,
-              })
+                const docWithId = sphericalDocWithIdSchema.parse({ id: doc.id, ...doc.data(), gameId })
+              const data = toSphericalEntity(docWithId, game)
 
-              if (error || !data)
-                throw new Error(error.message || "Data parsing error")
+              if (!data)
+                throw new Error(`Spherical ${doc.id} is incomplete`)
 
               return data
             }),
@@ -146,13 +142,10 @@ export const sphericalApi = createApi({
             }),
           ).unwrap()
 
-          const { data, error } = sphericalEntitySchema.safeParse({
-            id: docSnap.id,
-            ...docSnap.data(),
-            game,
-          })
+          const docWithId = sphericalDocWithIdSchema.parse({ id: docSnap.id, ...docSnap.data() })
+          const data = toSphericalEntity(docWithId, game)
 
-          if (error) throw new Error(error.message || "Data parsing error")
+          if (!data) throw new Error(`Spherical ${docSnap.id} is incomplete`)
 
           return { data }
         } catch (error) {

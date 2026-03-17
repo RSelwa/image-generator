@@ -99,9 +99,9 @@
   - [x] Daily challenge: Add daily challenges
   - [x] Daily challenge: Possibility to share daily challenge
   - [x] Daily challenge: Add a path to display it
-  - [ ] Passer le site en francais
-  - [ ] Ajouter les streak sur les daily challenges
-  - [ ] refacto entity rounds schemas to have 2x2 matrix like spherical with/without map, flat with/without map
+  - [x] Passer le site en francais
+  - [x] Ajouter les streak sur les daily challenges
+  - [x] refacto entity rounds schemas to have 2x2 matrix like spherical with/without map, flat with/without map
   - [ ] Make a mode: 5 min, maximum points (do we do distance)
   - [ ] Add autofocus on the description of the bug/suggestion
   - [ ] Add avatar in the users row

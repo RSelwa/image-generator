@@ -7,7 +7,7 @@ import { type Position } from "@/components/mini-map"
 import MiniMap from "@/components/mini-map"
 import { Button } from "@/components/ui/button"
 import { useSubmitRoundAnswerMutation } from "@/redux/api/lobby"
-import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex } from "@/redux/lobby/lobby.selectors"
+import { selectCurrentPlayerRoundAnswer, selectCurrentRoundEntity, selectCurrentRoundIndex } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -22,20 +22,20 @@ const GameMapGuess = () => {
   const [submitRoundAnswer] = useSubmitRoundAnswerMutation()
 
   const user = useAppSelector(selectUser)
-  const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
+  const roundEntity = useAppSelector(selectCurrentRoundEntity(lobbyId))
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
   const myAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
 
-  if (!currentRoundData || !currentRoundData.mapPosition) return null
+  if (!roundEntity || roundEntity.isSpecial || roundEntity.mode !== "full") return null
 
   const submitDistance = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!currentRoundData || !currentRoundData.mapPosition || !playPosition) return
+    if (!playPosition) return
 
-    const distance = getDistance(currentRoundData.mapPosition, playPosition)
+    const distance = getDistance(roundEntity.mapPosition, playPosition)
 
-    const distancePoints = calculateDistancePoints(distance, currentRoundData.pointsDistance || ROUND_POINTS.DISTANCE, currentRoundData.maxDistancePoints || ROUND_POINTS.DISTANCE)
+    const distancePoints = calculateDistancePoints(distance, roundEntity.maxDistancePoints || ROUND_POINTS.DISTANCE, roundEntity.maxDistancePoints || ROUND_POINTS.DISTANCE)
 
     await submitRoundAnswer({
       lobbyId,
@@ -61,19 +61,19 @@ const GameMapGuess = () => {
       <p className="w-full bg-background font-mono text-foreground py-1 flex text-center items-center justify-around text-shadow font-semibold">
         <span className="text-primary">+</span>
         <span>
-          {currentRoundData.gameTitle}
+          {roundEntity.gameTitle}
           </span>
         <span className="text-primary">+</span>
       </p>
 
       <MiniMap
         mapData={{
-          mapImage: currentRoundData.mapImage || "",
+          mapImage: roundEntity.mapImage,
           size: {
-            width: currentRoundData.mapWidth || 0,
-            height: currentRoundData.mapHeight || 0,
+            width: roundEntity.mapWidth,
+            height: roundEntity.mapHeight,
           },
-          correctPosition: currentRoundData.mapPosition,
+          correctPosition: roundEntity.mapPosition,
         }}
         showCorrectMarker={false}
         guessPosition={playPosition}
