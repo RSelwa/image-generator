@@ -2733,4 +2733,182 @@ describe("firebase Security Rules", () => {
       await assertSucceeds(updateDoc(doc(adminDb, resultPath(uid)), { isCorrect: false }))
     })
   })
+
+  describe("marathonSeeds collection", () => {
+    const seedId = "seed1"
+    const seedPath = `marathonSeeds/${seedId}`
+    const seedData = { name: "Test Seed", rounds: [], gamesUsed: [] }
+    const adminId = "admin1"
+
+    it("should allow anyone to read a marathon seed", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), seedPath), seedData)
+      })
+
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertSucceeds(getDoc(doc(unauthDb, seedPath)))
+    })
+
+    it("should not allow unauthenticated users to write a marathon seed", async () => {
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertFails(setDoc(doc(unauthDb, seedPath), seedData))
+    })
+
+    it("should not allow regular users to write a marathon seed", async () => {
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertFails(setDoc(doc(authedDb, seedPath), seedData))
+    })
+
+    it("should allow admin to write a marathon seed", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+      await assertSucceeds(setDoc(doc(adminDb, seedPath), seedData))
+    })
+  })
+
+  describe("races collection", () => {
+    const raceId = "race1"
+    const racePath = `races/${raceId}`
+    const raceData = { code: "ABCD", hostId: "user1", seedId: "seed1", status: "waiting", players: [], playersIds: [], duration: 300 }
+    const adminId = "admin1"
+
+    it("should allow signed-in user to create a race", async () => {
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertSucceeds(setDoc(doc(authedDb, racePath), raceData))
+    })
+
+    it("should not allow unauthenticated user to create a race", async () => {
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertFails(setDoc(doc(unauthDb, racePath), raceData))
+    })
+
+    it("should allow signed-in user to read a race", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), racePath), raceData)
+      })
+
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertSucceeds(getDoc(doc(authedDb, racePath)))
+    })
+
+    it("should not allow unauthenticated user to read a race", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), racePath), raceData)
+      })
+
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertFails(getDoc(doc(unauthDb, racePath)))
+    })
+
+    it("should allow signed-in user to update a race", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), racePath), raceData)
+      })
+
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertSucceeds(updateDoc(doc(authedDb, racePath), { status: "playing" }))
+    })
+
+    it("should not allow unauthenticated user to delete a race", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), racePath), raceData)
+      })
+
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertFails(deleteDoc(doc(unauthDb, racePath)))
+    })
+
+    describe("raceRuns subcollection", () => {
+      const uid = "user1"
+      const runId = "run1"
+      const runPath = `races/${raceId}/raceRuns/${runId}`
+      const runData = { uid, score: 0, currentRoundIndex: 0, answers: [] }
+
+      it("should allow owner to create their own run", async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), racePath), raceData)
+        })
+
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+        await assertSucceeds(setDoc(doc(authedDb, runPath), runData))
+      })
+
+      it("should not allow user to create a run with a different uid", async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), racePath), raceData)
+        })
+
+        const authedDb = testEnv.authenticatedContext("other-user").firestore()
+        await assertFails(setDoc(doc(authedDb, runPath), runData))
+      })
+
+      it("should not allow unauthenticated user to create a run", async () => {
+        const unauthDb = testEnv.unauthenticatedContext().firestore()
+        await assertFails(setDoc(doc(unauthDb, runPath), runData))
+      })
+
+      it("should allow any signed-in user to read runs", async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), racePath), raceData)
+          await setDoc(doc(context.firestore(), runPath), runData)
+        })
+
+        const authedDb = testEnv.authenticatedContext("other-user").firestore()
+        await assertSucceeds(getDoc(doc(authedDb, runPath)))
+      })
+
+      it("should allow owner to update their own run", async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), racePath), raceData)
+          await setDoc(doc(context.firestore(), runPath), runData)
+        })
+
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+        await assertSucceeds(updateDoc(doc(authedDb, runPath), { score: 100 }))
+      })
+
+      it("should not allow another user to update someone else's run", async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), racePath), raceData)
+          await setDoc(doc(context.firestore(), runPath), runData)
+        })
+
+        const authedDb = testEnv.authenticatedContext("other-user").firestore()
+        await assertFails(updateDoc(doc(authedDb, runPath), { score: 999 }))
+      })
+    })
+  })
+
+  describe("leaderboard collection", () => {
+    const entryId = "entry1"
+    const entryPath = `leaderboard/${entryId}`
+    const entryData = { uid: "user1", pseudo: "Player1", avatar: "default", score: 500, roundsCompleted: 5, seedId: "seed1", seedName: "Test Seed", raceId: "race1" }
+    const adminId = "admin1"
+
+    it("should allow anyone to read leaderboard entries", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), entryPath), entryData)
+      })
+
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertSucceeds(getDoc(doc(unauthDb, entryPath)))
+    })
+
+    it("should not allow regular users to write leaderboard entries", async () => {
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertFails(setDoc(doc(authedDb, entryPath), entryData))
+    })
+
+    it("should allow admin to write leaderboard entries", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+      await assertSucceeds(setDoc(doc(adminDb, entryPath), entryData))
+    })
+  })
 })

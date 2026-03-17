@@ -674,6 +674,61 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
 
+  functions/race-seed-populate:
+    dependencies:
+      '@google-cloud/functions-framework':
+        specifier: ^4.0.0
+        version: 4.0.1
+      '@repo/common':
+        specifier: workspace:*
+        version: link:../../libs/common
+      '@repo/providers':
+        specifier: workspace:*
+        version: link:../../libs/providers
+      '@repo/schemas':
+        specifier: workspace:*
+        version: link:../../libs/schemas
+      del-cli:
+        specifier: ^6.0.0
+        version: 6.0.0
+      firebase-admin:
+        specifier: ^13.4.0
+        version: 13.6.0(encoding@0.1.13)
+      firebase-functions:
+        specifier: ^6.3.2
+        version: 6.6.0(firebase-admin@13.6.0(encoding@0.1.13))
+      zod:
+        specifier: ^4.3.5
+        version: 4.3.6
+    devDependencies:
+      '@codecompose/typescript-config':
+        specifier: ^2.0.1
+        version: 2.3.0
+      '@faker-js/faker':
+        specifier: ^10.1.0
+        version: 10.2.0
+      '@repo/testing':
+        specifier: workspace:*
+        version: link:../../libs/testing
+      '@types/node':
+        specifier: ^22.10.10
+        version: 22.19.7
+      '@vitest/coverage-v8':
+        specifier: ^3.2.3
+        version: 3.2.4(vitest@3.2.4(@types/debug@4.1.12)(@types/node@22.19.7)(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@1.8.0))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2))
+      firebase-functions-test:
+        specifier: ^3.4.1
+        version: 3.4.1(firebase-admin@13.6.0(encoding@0.1.13))(firebase-functions@6.6.0(firebase-admin@13.6.0(encoding@0.1.13)))(jest@30.2.0(@types/node@22.19.7))
+      tsdown:
+        specifier: ^0.15.6
+        version: 0.15.12(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.3
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@22.19.7)(jiti@2.6.1)(jsdom@27.4.0(@noble/hashes@1.8.0))(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.7)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
+
   functions/socials:
     dependencies:
       '@google-cloud/functions-framework':

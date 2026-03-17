@@ -20,7 +20,7 @@
     "storybook:front": "pnpm run -F @repo/front storybook",
     "build": "turbo run build",
     "create:function": "npx tsx cli/create-function.mts",
-    "build:functions": "turbo run build --filter=@repo/http --filter=@repo/create-user-document --filter=@repo/create-party-doc --filter=@repo/listen-docs --filter=@repo/lobby-presence --filter=@repo/socials --filter=@repo/lobby-cleanup --filter=@repo/daily-challenge",
+    "build:functions": "turbo run build --filter=@repo/http --filter=@repo/create-user-document --filter=@repo/create-party-doc --filter=@repo/listen-docs --filter=@repo/lobby-presence --filter=@repo/socials --filter=@repo/lobby-cleanup --filter=@repo/daily-challenge --filter=@repo/race-seed-populate",
     "build:libs": "turbo run build --filter=@repo/providers --filter=@repo/schemas --filter=@repo/testing --filter=@repo/common && pnpm install",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
@@ -35,7 +35,8 @@
     "build:lobby-presence": "turbo run build --filter=@repo/lobby-presence",
     "build:socials": "turbo run build --filter=@repo/socials",
     "build:lobby-cleanup": "turbo run build --filter=@repo/lobby-cleanup",
-    "build:daily-challenge": "turbo run build --filter=@repo/daily-challenge"
+    "build:daily-challenge": "turbo run build --filter=@repo/daily-challenge",
+    "build:race-seed-populate": "turbo run build --filter=@repo/race-seed-populate"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.2.0",

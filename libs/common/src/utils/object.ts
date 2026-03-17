@@ -123,4 +123,6 @@ export const getDateFromString = (date?: Date) => {
   return `${day.toString().padStart(2, "0")}/${month.toString().padStart(2, "0")}/${year}`
 }
 
-export const getRandomAvatar = () => Object.values(AVATARS_KEYS)[Math.floor(Math.random() * Object.values(ROUND_POINTS).length)]|| AVATARS_KEYS.ASSASSIN
+export const getRandomAvatar = () => Object.values(AVATARS_KEYS)[Math.floor(Math.random() * Object.values(ROUND_POINTS).length)] || AVATARS_KEYS.ASSASSIN
+
+export const shuffle = <T>(arr: T[]): T[] => arr.map((v) => ({ v, sort: Math.random() })).sort((a, b) => a.sort - b.sort).map(({ v }) => v)

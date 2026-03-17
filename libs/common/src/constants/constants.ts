@@ -34,6 +34,18 @@ export const OPTIONS_NUMBER_OF_ROUNDS = [1, 2, 3, 4].map((multiplier) => multipl
 export const OPTIONS_PLAYERS_LIVES = [null, 1, 3, 5]
 export const OPTIONS_ROUND_DURATIONS = [30, 60, 90, 120]
 
+export const RACE_STATUS = {
+  WAITING: "waiting",
+  PLAYING: "playing",
+  FINISHED: "finished",
+} as const
+
+export const RACE_DURATION_SECONDS = 300 // 5 minutes
+export const RACE_SEED_EXTENSION_THRESHOLD = 3 // extend seed when this many rounds remain ahead
+export const RACE_SEED_ROUNDS_PER_EXTENSION = 5 // number of rounds to add per extension
+export const RACE_SEED_IMAGE_FETCH_LIMIT = 30 // images fetched per type (spherical/flat) per extension
+export const RACE_POINTS_PER_ANSWER = 100 // flat points per correct answer
+
 export const LOBBY_STATUS = {
   WAITING: "waiting",
   STARTING: "starting",

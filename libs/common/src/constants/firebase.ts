@@ -16,6 +16,10 @@ export const TABLES = {
   SOUNDS: "sounds",
   DAILY_CHALLENGES: "dailyChallenges",
   DAILY_CHALLENGE_RESULTS: "dailyChallengeResults",
+  MARATHON_SEEDS: "marathonSeeds",
+  RACES: "races",
+  RACE_RUNS: "raceRuns",
+  LEADERBOARD: "leaderboard",
 } as const
 
 export const METADATA_DOCS = {

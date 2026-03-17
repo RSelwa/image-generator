@@ -71,6 +71,15 @@
         "pnpm build:daily-challenge"
       ],
       "codebase": "daily-challenge"
+    },
+    {
+      "source": "functions/race-seed-populate",
+      "runtime": "nodejs22",
+      "isolate": true,
+      "predeploy": [
+        "pnpm build:race-seed-populate"
+      ],
+      "codebase": "race-seed-populate"
     }
   ],
   "emulators": {

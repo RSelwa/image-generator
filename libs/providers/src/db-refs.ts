@@ -1,5 +1,5 @@
 import { TABLES } from "@repo/common"
-import { type DailyChallengeDoc, type FlatDoc, type GameDoc, type GamesListDoc, type LobbyDoc, type MapDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
+import { type DailyChallengeDoc, type FlatDoc, type GameDoc, type GamesListDoc, type LeaderboardDoc, type LobbyDoc, type MapDoc, type MarathonSeedDoc, type RaceDoc, type RaceRunDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
 import {
   type CollectionGroup,
   type CollectionReference,
@@ -67,6 +67,18 @@ export const refs = {
     DailyChallengeDoc,
     DailyChallengeDoc
   >,
+  [TABLES.MARATHON_SEEDS]: db.collection(TABLES.MARATHON_SEEDS) as CollectionReference<
+    MarathonSeedDoc,
+    MarathonSeedDoc
+  >,
+  [TABLES.RACES]: db.collection(TABLES.RACES) as CollectionReference<
+    RaceDoc,
+    RaceDoc
+  >,
+  [TABLES.LEADERBOARD]: db.collection(TABLES.LEADERBOARD) as CollectionReference<
+    LeaderboardDoc,
+    LeaderboardDoc
+  >,
 }
 
 export const collectionGroupRefs = {
@@ -101,4 +113,8 @@ export const subRefs = {
     db.collection(
       `${TABLES.LOBBIES}/${id}/${TABLES.ROUND_ANSWERS}`,
     ) as CollectionReference<RoundAnswerDoc, RoundAnswerDoc>,
+  [TABLES.RACE_RUNS]: (raceId: string) =>
+    db.collection(
+      `${TABLES.RACES}/${raceId}/${TABLES.RACE_RUNS}`,
+    ) as CollectionReference<RaceRunDoc, RaceRunDoc>,
 } as const

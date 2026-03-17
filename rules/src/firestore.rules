@@ -149,6 +149,34 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    // Marathon seeds - admin writes, anyone reads
+    match /marathonSeeds/{seedId} {
+      allow write: if signedInAdmin();
+      allow read: if true;
+    }
+
+    // Races - signed-in users can create/read/update, admin can delete
+    match /races/{raceId} {
+      allow create: if isSignedIn();
+      allow read: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if signedInAdmin();
+
+      // Race runs - owner can create/read/update their own run
+      match /raceRuns/{runId} {
+        allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+        allow read: if isSignedIn();
+        allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+        allow delete: if signedInAdmin();
+      }
+    }
+
+    // Leaderboard - anyone reads, only admin/CF writes (via admin SDK bypasses rules)
+    match /leaderboard/{entryId} {
+      allow read: if true;
+      allow write: if signedInAdmin();
+    }
+
     // Socials collection
     match /socials/{socialId} {
       allow read, write: if signedInAdmin();
