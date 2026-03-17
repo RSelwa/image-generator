@@ -11,7 +11,8 @@
     "e2e": "dotenv -e .env.test -- playwright test",
     "e2e:ui": "dotenv -e .env.test -- playwright test --ui --project=chromium",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "typecheck": "tsc --noEmit"
   },
   "browser": {
     "child_process": false

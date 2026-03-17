@@ -28,7 +28,7 @@ const SphericalSheet = () => {
 
   const editParam = buildSubcollectionParam(gameId || "", sphericalId || "")
   const { openModal: openSphericalIdModal } = useModal(MODAL_KEYS.EDIT_SPHERICAL_ID, editParam)
-  const mapParam = buildSubcollectionParam(gameId || "", spherical?.mapId || NEW_SEARCH_PARAM)
+  const mapParam = buildSubcollectionParam(gameId || "", (spherical?.hasMap && spherical.mapId) || NEW_SEARCH_PARAM)
   const { openModal: openMapIdModal } = useModal(MODAL_KEYS.MAP_ID, mapParam)
 
   if (!spherical || !sphericalParam) return <Sheet open={open} onOpenChange={(open) => !open && setSphericalParam(null)}><EmptySheet /></Sheet>
@@ -68,8 +68,7 @@ const SphericalSheet = () => {
               </div>
             )}
             <div className="flex items-center gap-2">
-              {!spherical.mapId && <Badge variant="red">No map selected</Badge>}
-              {!spherical.mapPosition && <Badge variant="red">Need map position</Badge>}
+              {!spherical.hasMap && <Badge variant="red">No map selected</Badge>}
             </div>
             <div className="flex items-center gap-2">
               <Button variant="marathon-outline" onClick={() => openSphericalIdModal()}>Edit</Button>

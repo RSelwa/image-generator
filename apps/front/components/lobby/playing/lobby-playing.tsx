@@ -12,7 +12,7 @@ import Timer from "@/components/lobby/playing/timer"
 import { useIsExpired } from "@/hooks/use-countdown"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useListenRoundAnswerQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectHasSelectedOption, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining } from "@/redux/lobby/lobby.selectors"
+import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundEntity, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectHasSelectedOption, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining } from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 
@@ -34,22 +34,24 @@ const LobbyPlaying = () => {
   const myAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
   const config = useAppSelector(selectLobbyConfig(lobbyId))
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
+  const roundEntity = useAppSelector(selectCurrentRoundEntity(lobbyId))
   const gameTitle = useAppSelector(selectCurrentRoundGameTitle(lobbyId, roundIndex))
 
   const hasSelectedOption = useAppSelector(selectHasSelectedOption(lobbyId, roundIndex))
-  const isMapPhase = myAnswer?.isCorrect && currentRoundData?.mapPosition
-  const isWaitingForSelection = currentRoundData?.isSpecial && !hasSelectedOption
+  const isNormalFullRound = roundEntity && !roundEntity.isSpecial && roundEntity.mode === "full"
+  const isMapPhase = myAnswer?.isCorrect && isNormalFullRound
+  const isWaitingForSelection = roundEntity?.isSpecial && !hasSelectedOption
   const timerStart = isWaitingForSelection ? null : ((isMapPhase && myAnswer?.submittedAt) || myAnswer?.selectedOptionAt || lobby?.roundStartedAt)
 
   const isExpired = useIsExpired(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
   const isMobile = useIsMobile()
 
   const hasSubmittedAnswer = Boolean((gameTitle && myAnswer?.isCorrect))
-  const hasFinishedRound = (hasSubmittedAnswer && !currentRoundData?.mapId) || (hasSubmittedAnswer && (currentRoundData?.mapId && myAnswer?.position))
+  const hasFinishedRound = (hasSubmittedAnswer && !isNormalFullRound) || (hasSubmittedAnswer && isNormalFullRound && myAnswer?.position)
   const isDisplayGame = !isLoadingRoundAnswer && Boolean(hasFinishedRound || isExpired || (!livesRemaining && config?.playersLives))
   const isDisplayTimer = !isDisplayGame && Boolean(timerStart)
   const isDisplayInput = !myAnswer?.isCorrect && !isExpired && !isEliminated && !isWaitingForSelection
-  const isDisplayMap = isMapPhase && !isDisplayGame && !isEliminated && currentRoundData?.mapPosition
+  const isDisplayMap = isMapPhase && !isDisplayGame && !isEliminated
   const isDisplayRoundInfos = !isMobile && !isDisplayGame
 
   if (isLobbyLoading || !lobby) return <div>Loading...</div>

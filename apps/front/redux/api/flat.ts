@@ -6,7 +6,7 @@ import {
   type FlatDocWithId,
   flatDocWithIdSchema,
   type FlatEntity,
-  flatEntitySchema,
+  toFlatEntity,
   type UpdateFlatInput,
   updateFlatInputSchema,
 } from "@repo/schemas"
@@ -72,15 +72,11 @@ export const flatApi = createApi({
                 }),
               ).unwrap()
 
-              const { data, error } = flatEntitySchema.safeParse({
-                id: doc.id,
-                ...doc.data(),
-                gameId,
-                game,
-              })
+              const docWithId = flatDocWithIdSchema.parse({ id: doc.id, ...doc.data(), gameId })
+              const data = toFlatEntity(docWithId, game)
 
-              if (error || !data)
-                throw new Error(error.message || "Data parsing error")
+              if (!data)
+                throw new Error(`Flat ${doc.id} is incomplete`)
 
               return data
             }),
@@ -142,13 +138,10 @@ export const flatApi = createApi({
             }),
           ).unwrap()
 
-          const { data, error } = flatEntitySchema.safeParse({
-            id: docSnap.id,
-            ...docSnap.data(),
-            game,
-          })
+          const docWithId = flatDocWithIdSchema.parse({ id: docSnap.id, ...docSnap.data() })
+          const data = toFlatEntity(docWithId, game)
 
-          if (error) throw new Error(error.message || "Data parsing error")
+          if (!data) throw new Error(`Flat ${docSnap.id} is incomplete`)
 
           return { data }
         } catch (error) {
