@@ -55,8 +55,8 @@ export const raceApi = createApi({
       },
     }),
 
-    prepareAndStartRace: builder.mutation<null, { raceId: string }>({
-      queryFn: async ({ raceId }, { dispatch }) => {
+    prepareAndStartRace: builder.mutation<null, { raceId: string, playersIds: string[] }>({
+      queryFn: async ({ raceId, playersIds }, { dispatch }) => {
         try {
           await updateDoc(getRaceRef(raceId), { status: RACE_STATUS.STARTING, updatedAt: Timestamp.now() })
 
@@ -70,11 +70,23 @@ export const raceApi = createApi({
 
           await dispatch(cloudFunctionsApi.endpoints.populateRaceSeed.initiate({ seedId: seedDocRef.id, playerCurrentIndex: 0 }))
 
+          const runNow = Timestamp.now()
+          await Promise.all(playersIds.map((uid) =>
+            setDoc(getRaceRunRef(raceId, uid), {
+              uid,
+              score: 0,
+              currentRoundIndex: 0,
+              answers: [],
+              startedAt: runNow,
+              finishedAt: null,
+            })
+          ))
+
           await updateDoc(getRaceRef(raceId), {
             seedId: seedDocRef.id,
             status: RACE_STATUS.PLAYING,
-            startedAt: Timestamp.now(),
-            updatedAt: Timestamp.now(),
+            startedAt: runNow,
+            updatedAt: runNow,
           })
 
           return { data: null }

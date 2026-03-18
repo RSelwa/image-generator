@@ -2,12 +2,11 @@
 
 import { RACE_STATUS } from "@repo/common"
 import { usePathname } from "next/navigation"
-import { useEffect } from "react"
 import RaceFinished from "@/components/race/race-finished"
 import RacePlaying from "@/components/race/race-playing"
 import RaceWaiting from "@/components/race/race-waiting"
 import { useSubscribeMarathonSeedQuery } from "@/redux/api/marathon-seed"
-import { useCreateRaceRunMutation, useSubscribeRaceQuery, useSubscribeRaceRunQuery } from "@/redux/api/race"
+import { useSubscribeRaceQuery, useSubscribeRaceRunQuery } from "@/redux/api/race"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getRaceIdFromPathname } from "@/utils"
@@ -26,15 +25,6 @@ const RaceMain = () => {
     { seedId: race?.seedId || "" },
     { skip: !race?.seedId },
   )
-  const [createRaceRun] = useCreateRaceRunMutation()
-
-  // Create raceRun for this player when race starts playing and they don't have one yet
-  useEffect(() => {
-    if (race?.status === RACE_STATUS.PLAYING && user?.id && !run) {
-      createRaceRun({ raceId, uid: user.id })
-    }
-  }, [race?.status, user?.id, run, raceId, createRaceRun])
-
   if (raceLoading) return null
   if (!race) return <p className="p-8 text-center text-muted-foreground">Race not found.</p>
 

@@ -41,7 +41,7 @@ const RaceWaiting = ({ race }: { race: RaceDocWithId }) => {
       </div>
 
       {isHost && (
-        <Button size="lg" onClick={() => prepareAndStartRace({ raceId: race.id })} disabled={isLoading}>
+        <Button size="lg" onClick={() => prepareAndStartRace({ raceId: race.id, playersIds: race.playersIds })} disabled={isLoading}>
           Start Race
         </Button>
       )}
