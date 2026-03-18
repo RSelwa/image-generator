@@ -6,7 +6,7 @@ import { timestampSchema, WITH_ID } from "~/zod"
 export const raceDocSchema = z.object({
   code: z.string().min(4).max(6),
   hostId: z.string().min(1),
-  seedId: z.string().min(1),
+  seedId: z.string().min(1).nullish().default(() => null),
   status: z.enum(RACE_STATUS),
   players: z.array(playerSchema).default([]),
   playersIds: z.array(z.string()).default([]),

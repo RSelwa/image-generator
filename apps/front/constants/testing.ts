@@ -25,4 +25,11 @@ export const SELECTORS = {
   DAILY_CHALLENGE_SHARE_MODAL: "share-daily-challenge-modal",
   DIALOG_CLOSE: "dialog-close",
   STREAK_BADGE: "streak-badge",
+  RACE_GUESS_INPUT: "race-guess-input",
+  RACE_SCORE: "race-score",
+  RACE_TIMER: "race-timer",
+  RACE_ROUND_INDEX: "race-round-index",
+  RACE_FINISHED: "race-finished",
+  RACE_FINISHED_SCORE: (uid: string) => `race-finished-score-${uid}`,
+  RACE_FINISHED_ROUNDS: (uid: string) => `race-finished-rounds-${uid}`,
 } as const

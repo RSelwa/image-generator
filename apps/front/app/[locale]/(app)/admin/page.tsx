@@ -30,6 +30,11 @@ const Page = () => {
       image: FALL_BACK_IMAGE,
       label: "Daily Challenges",
     },
+    {
+      url: PAGES.ADMIN_MARATHON_SEEDS,
+      image: FALL_BACK_IMAGE,
+      label: "Marathon Seeds",
+    },
   ]
 
   return (

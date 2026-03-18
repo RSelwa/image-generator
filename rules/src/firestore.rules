@@ -149,9 +149,10 @@ service cloud.firestore {
       allow read: if true;
     }
 
-    // Marathon seeds - admin writes, anyone reads
+    // Marathon seeds - signed-in users can create, admin can write, anyone reads
     match /marathonSeeds/{seedId} {
-      allow write: if signedInAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if signedInAdmin();
       allow read: if true;
     }
 

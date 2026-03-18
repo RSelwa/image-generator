@@ -5,7 +5,9 @@ export const raceAnswerSchema = z.object({
   roundIndex: z.number().min(0),
   gameId: z.string().min(1),
   timeMs: z.number().min(0),
-  answeredAt: timestampSchema.nullish().default(() => null),
+  answeredAt: timestampSchema.nullish().default(null),
+  answer: z.string().nullish().default(null),
+  isCorrect: z.boolean().default(false),
 })
 
 export const raceRunDocSchema = z.object({
@@ -13,8 +15,8 @@ export const raceRunDocSchema = z.object({
   score: z.number().default(0),
   currentRoundIndex: z.number().min(0).default(0),
   answers: z.array(raceAnswerSchema).default([]),
-  startedAt: timestampSchema.nullish().default(() => null),
-  finishedAt: timestampSchema.nullish().default(() => null),
+  startedAt: timestampSchema.nullish().default(null),
+  finishedAt: timestampSchema.nullish().default(null),
 })
 
 export const raceRunDocWithIdSchema = z.object({ ...raceRunDocSchema.shape, ...WITH_ID.shape })

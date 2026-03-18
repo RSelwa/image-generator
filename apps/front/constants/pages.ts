@@ -30,4 +30,7 @@ export const PAGES = {
   BLOG: (slug: string) => `/blog/${slug}`,
   DAILY_CHALLENGE: "/daily-challenge",
   DAILY_CHALLENGE_DATE: (date: string) => `/daily-challenge/${date}`,
+  RACE: "/race",
+  RACE_PLAY: (raceId: string) => `/race/${raceId}`,
+  ADMIN_MARATHON_SEEDS: "/admin/marathon-seeds",
 } as const

@@ -102,14 +102,18 @@
   - [x] Passer le site en francais
   - [x] Ajouter les streak sur les daily challenges
   - [x] refacto entity rounds schemas to have 2x2 matrix like spherical with/without map, flat with/without map
-  - [ ] Make a mode: 5 min, maximum points (do we do distance)
-  - [ ] Add autofocus on the description of the bug/suggestion
-  - [ ] Add avatar in the users row
+  - [x] Add avatar in the users row
+  - [x] When guessing wrong, we should skip the game and loose 50 pts
+  - [x] Make a mode: 5 min, maximum points
+  - [x] Add autofocus on the description of the bug/suggestion
+  - [x] Daily challenge: Add e2e tests about it
+  - [ ] Add e2e test for lobby playing, should click on the replay button
+  - [ ] Add e2e tests for course workflow
+  - [ ] When reloading, it reset the course instead of saving the state
   - [ ] Add the possibility to change avatar in lobbies
   - [ ] Add a total of 8 avatars
   - [ ] Daily challenge: have success based on this
   - [ ] Daily challenge: If we make a 3d environnement for the path, add 3d models characters when moving on the map
-  - [ ] Daily challenge: Add e2e tests about it
   - [ ] Daily challenge:
   - [ ] allow the possibility to have only map guess or game guess in rounds/ seeds
   - [ ] Make a sponsors part on the home page, with fake users to allow users to donate

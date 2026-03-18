@@ -66,7 +66,7 @@ export const SuggestGameModal = () => {
           <InputGroupInput placeholder={t("gameTitle")} {...register("title")} />
         </InputGroup>
         <InputGroup>
-          <InputGroupInput placeholder={t("gameDescription")} {...register("description")} />
+          <InputGroupInput autoFocus placeholder={t("gameDescription")} {...register("description")} />
         </InputGroup>
         <DialogFooter>
           <DialogClose asChild>
