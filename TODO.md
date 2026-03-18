@@ -107,9 +107,9 @@
   - [x] Make a mode: 5 min, maximum points
   - [x] Add autofocus on the description of the bug/suggestion
   - [x] Daily challenge: Add e2e tests about it
+  - [x] Add e2e tests for course workflow
+  - [x] When reloading, it reset the course instead of saving the state
   - [ ] Add e2e test for lobby playing, should click on the replay button
-  - [ ] Add e2e tests for course workflow
-  - [ ] When reloading, it reset the course instead of saving the state
   - [ ] Add the possibility to change avatar in lobbies
   - [ ] Add a total of 8 avatars
   - [ ] Daily challenge: have success based on this

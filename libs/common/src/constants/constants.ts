@@ -83,6 +83,7 @@ export const AVATARS_KEYS = {
   THIEF: "thief",
   TRIAGE: "triage",
   VANDAL: "vandal",
+  DONKEY: "donkey"
 } as const
 
 export const SOUND_STATUS = {

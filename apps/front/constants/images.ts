@@ -22,6 +22,7 @@ export const AVATARS_URLS = {
   [AVATARS_KEYS.THIEF]: "/avatar/pikachu.png",
   [AVATARS_KEYS.TRIAGE]: "/avatar/ness.png",
   [AVATARS_KEYS.VANDAL]: "/avatar/penguin.png",
+  [AVATARS_KEYS.DONKEY]: "/avatar/donkey.png",
 } as const
 
 export const AVATARS_BACKGROUND_URLS = {
