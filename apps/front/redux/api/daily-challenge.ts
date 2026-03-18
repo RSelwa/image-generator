@@ -1,16 +1,8 @@
 import { deleteDoc, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, setDoc, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { dateToString, getYesterday, TABLES } from "@repo/common"
-import {
-  type CreateDailyChallengeInput,
-  type DailyChallengeDocWithId,
-  dailyChallengeDocWithIdSchema,
-  type DailyChallengeEntity,
-  type DailyChallengeResultDocWithId,
-  dailyChallengeResultDocWithIdSchema,
-  toDailyChallengeEntity,
-  type UpdateDailyChallengeInput
-} from "@repo/schemas"
+import { type CreateDailyChallengeInput, type DailyChallengeDocWithId, type DailyChallengeEntity, type DailyChallengeResultDocWithId, type UpdateDailyChallengeInput, type UserDoc } from "@repo/schemas"
+import { dailyChallengeDocWithIdSchema, dailyChallengeResultDocWithIdSchema, toDailyChallengeEntity } from "@repo/schemas"
 import { DEFAULT_SIZE_DAILY_CHALLENGES } from "@/constants/api"
 import { getDailyChallengeRef, getDailyChallengeResultRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
 import { userApi } from "@/redux/api/user"
@@ -336,21 +328,27 @@ export const dailyChallengeApi = createApi({
           if (isCorrect && date === today) {
             const lastStreakDate = user?.lastStreakDate || ""
             const currentStreak = user?.streak || 0
+            const currentMaxStreak = user?.maxStreak || 0
             const yesterday = getYesterday(date)
 
-            const newStreak = {
+            const updatedData: Partial<UserDoc> = {
               streak: 1,
               lastStreakDate: date,
               updatedAt: Timestamp.now(),
+
             }
 
             if (lastStreakDate === yesterday) {
-              newStreak.streak = currentStreak + 1
+              updatedData.streak = currentStreak + 1
             } else if (lastStreakDate === date) {
-              newStreak.streak = currentStreak
+              updatedData.streak = currentStreak
             }
 
-            await dispatch(userApi.endpoints.updateUserDoc.initiate({ id: uid, data: newStreak })).unwrap()
+            if ((updatedData.streak || 0) > currentMaxStreak) {
+              updatedData.maxStreak = updatedData.streak
+            }
+
+            await dispatch(userApi.endpoints.updateUserDoc.initiate({ id: uid, data: updatedData })).unwrap()
           }
 
           const docSnap = await getDoc(ref)

@@ -41,9 +41,10 @@ test.describe("daily challenge streak", () => {
     await expect(page.getByTestId(SELECTORS.STREAK_BADGE)).toContainText("4")
 
     // Verify Firestore was updated
-    const { streak, lastStreakDate } = await getUserStreak(user.id)
+    const { streak, lastStreakDate, maxStreak } = await getUserStreak(user.id)
     expect(streak).toBe(4)
     expect(lastStreakDate).toBe(today)
+    expect(maxStreak).toBe(4)
   })
 
   test("should reset streak to 1 when user has old streak from the past", async ({ page }) => {
@@ -53,7 +54,7 @@ test.describe("daily challenge streak", () => {
 
     // Set streak as if user had a streak a week ago
     const aWeekAgo = getDateString(-7)
-    await setUserStreak(user.id, 5, aWeekAgo)
+    await setUserStreak(user.id, 5, aWeekAgo, 5)
 
     await loginViaUI(page, user.email)
     await page.goto(`/en/daily-challenge/${today}`)
@@ -69,9 +70,11 @@ test.describe("daily challenge streak", () => {
     await expect(page.getByTestId(SELECTORS.STREAK_BADGE)).toContainText("1")
 
     // Verify Firestore was updated
-    const { streak, lastStreakDate } = await getUserStreak(user.id)
+    const { streak, lastStreakDate, maxStreak } = await getUserStreak(user.id)
     expect(streak).toBe(1)
     expect(lastStreakDate).toBe(today)
+    // maxStreak should remain 5 since new streak (1) is lower
+    expect(maxStreak).toBe(5)
   })
 
   test("should not update streak when answering a past challenge", async ({ page }) => {

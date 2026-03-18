@@ -1,6 +1,6 @@
 import { dateToString, METADATA_DOCS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type DailyChallengeDoc, type DailyChallengeDocWithId } from "@repo/schemas"
+import { type DailyChallengeDoc, type DailyChallengeDocWithId, type UserDoc } from "@repo/schemas"
 import { createFirestoreDoc } from "@repo/testing/emulator"
 import {
   dailyChallengeFactory,
@@ -47,15 +47,19 @@ export const setupDailyChallengesForPath = async () => {
   return challenges
 }
 
-export const setUserStreak = async (uid: string, streak: number, lastStreakDate: string) => {
-  await refs[TABLES.USERS].doc(uid).update({ streak, lastStreakDate })
+export const setUserStreak = async (uid: string, streak: number, lastStreakDate: string, maxStreak?: number) => {
+  const data: Partial<UserDoc> = { streak, lastStreakDate }
+  if (maxStreak)
+    data.maxStreak = maxStreak
+
+  await refs[TABLES.USERS].doc(uid).update(data)
 }
 
 export const getUserStreak = async (uid: string) => {
   const doc = await refs[TABLES.USERS].doc(uid).get()
   const data = doc.data()
 
-  return { streak: data?.streak || 0, lastStreakDate: data?.lastStreakDate || "" }
+  return { streak: data?.streak || 0, lastStreakDate: data?.lastStreakDate || "", maxStreak: data?.maxStreak || 0 }
 }
 
 export const setupSphericalWithMapChallenge = async (date?: string) => {

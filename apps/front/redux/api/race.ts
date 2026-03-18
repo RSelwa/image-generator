@@ -6,6 +6,7 @@ import { RACE_DURATION_SECONDS, RACE_POINTS_PER_ANSWER, RACE_POINTS_PER_WRONG_AN
 import { type RaceDocWithId, raceDocWithIdSchema, type RaceRunDocWithId, raceRunDocWithIdSchema } from "@repo/schemas"
 import { getRaceRef, getRaceRunRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
 import { cloudFunctionsApi } from "@/redux/api/cloud-functions"
+import { userApi } from "@/redux/api/user"
 import { type SessionUser } from "@/schemas/session"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 import { createPlayerFromSessionUser, generateRandomCode } from "@/utils/player"
@@ -281,11 +282,21 @@ export const raceApi = createApi({
     }),
 
     finishRaceRun: builder.mutation<null, { raceId: string, uid: string, isHost: boolean }>({
-      queryFn: async ({ raceId, uid, isHost }) => {
+      queryFn: async ({ raceId, uid, isHost }, { dispatch }) => {
         try {
           await updateDoc(getRaceRunRef(raceId, uid), { finishedAt: Timestamp.now() })
           if (isHost) {
             await updateDoc(getRaceRef(raceId), { status: RACE_STATUS.FINISHED, updatedAt: Timestamp.now() })
+          }
+
+          const runSnap = await getDoc(getRaceRunRef(raceId, uid))
+          const finalScore = runSnap.data()?.score || 0
+
+          const user = await dispatch(userApi.endpoints.getUserById.initiate({ id: uid })).unwrap()
+          const currentBest = user?.bestRaceScore || 0
+
+          if (finalScore > currentBest) {
+            await dispatch(userApi.endpoints.updateUserDoc.initiate({ id: uid, data: { bestRaceScore: finalScore } })).unwrap()
           }
 
           return { data: null }

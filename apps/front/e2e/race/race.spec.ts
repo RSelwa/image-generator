@@ -162,5 +162,9 @@ test.describe("Race playing", () => {
     expect(runData?.score).toBe(200)
     expect(runData?.answers.length).toBe(5)
     expect(runData?.finishedAt).toBeTruthy()
+
+    // -- Verify bestRaceScore is saved on the user doc --
+    const userDoc = await refs[TABLES.USERS].doc(user.id).get()
+    expect(userDoc.data()?.bestRaceScore).toBe(200)
   })
 })

@@ -12,6 +12,8 @@ export const userDocSchema = z.object({
   [USERS_FIELDS.IS_ANONYMOUS_USER]: z.boolean().nullish().default(false),
   streak: z.number().nullish().default(0),
   lastStreakDate: dailyChallengeDateSchema.nullish().default(null),
+  maxStreak: z.number().nullish().default(0),
+  bestRaceScore: z.number().nullish().default(0),
 })
 
 export const userDocWithIdSchema = z.object({
