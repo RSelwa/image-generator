@@ -1,7 +1,7 @@
 import { type Action } from "@reduxjs/toolkit"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { generateUsername, getRandomAvatar, isEqual, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
-import { type UserDoc } from "@repo/schemas"
+import { type UserDoc, userDocSchema } from "@repo/schemas"
 import {
   createUserWithEmailAndPassword,
   EmailAuthProvider,
@@ -171,15 +171,19 @@ export const authApi = createApi({
               const pseudo = generateUsername()
 
               if (!userDoc.exists()) {
-                await setDoc(userRef, {
+                const parsingData: Partial<UserDoc> = {
                   email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
-                  createdAt: serverTimestamp(),
-                  updatedAt: serverTimestamp(),
                   pseudo,
                   isAnonymousUser: true,
                   avatar: getRandomAvatar(),
                   streak: 0,
                   lastStreakDate: null,
+                }
+
+                await setDoc(userRef, {
+                  ...userDocSchema.parse(parsingData),
+                  createdAt: serverTimestamp(),
+                  updatedAt: serverTimestamp(),
                 })
               }
 
