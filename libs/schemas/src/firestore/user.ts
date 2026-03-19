@@ -1,4 +1,4 @@
-import { AVATARS_KEYS, getRandomAvatar, USERS_FIELDS } from "@repo/common"
+import { AVATARS_KEYS, DONOR_TIERS, getRandomAvatar, USERS_FIELDS } from "@repo/common"
 import z from "zod"
 import { dailyChallengeDateSchema } from "~/firestore/daily-challenge"
 import { timestampSchema, WITH_ID } from "~/zod"
@@ -14,6 +14,7 @@ export const userDocSchema = z.object({
   lastStreakDate: dailyChallengeDateSchema.nullish().default(null),
   maxStreak: z.number().nullish().default(0),
   bestRaceScore: z.number().nullish().default(0),
+  donorTier: z.enum(DONOR_TIERS).nullish().default(null),
 })
 
 export const userDocWithIdSchema = z.object({

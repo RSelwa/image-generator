@@ -1,11 +1,11 @@
 import { ArrowUpRight } from "lucide-react"
 import { type Metadata } from "next"
-import Image from "next/image"
 import { getTranslations } from "next-intl/server"
-import { Link } from "@/i18n/routing"
+import Image from "next/image"
 import { ArticlesDescription, HomeArticles } from "@/components/home/home-articles"
 import { CreateLobbyContainer } from "@/components/home/home-create-lobby"
 import HomeFooter from "@/components/home/home-footer"
+import { HomeLeaderboard } from "@/components/home/home-leaderboard"
 import { HomeStrips } from "@/components/home/home-strips"
 import { Instagram, LogoWithIcon, MiniStrips, TikTok } from "@/components/icons"
 import DailyChallengePub from "@/components/modals/daily-challenge-pub"
@@ -13,9 +13,11 @@ import { Button } from "@/components/ui/button"
 import { ARTICLES, HOME_ARTICLES } from "@/constants/articles"
 import { PAGES } from "@/constants/pages"
 import { FOOTER_SOCIALS } from "@/constants/social"
+import { Link } from "@/i18n/routing"
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const t = await getTranslations("home")
+
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
@@ -30,6 +32,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 const Page = async () => {
   const t = await getTranslations("home")
+
   return (
     <main className="h-full-height">
       <section className="relative h-full-height w-full">
@@ -115,6 +118,7 @@ const Page = async () => {
           className="lg:absolute bottom-0 right-0 lg:w-1/3"
         />
       </section>
+      <HomeLeaderboard />
       <HomeFooter />
       <DailyChallengePub />
     </main>

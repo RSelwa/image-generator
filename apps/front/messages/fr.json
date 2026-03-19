@@ -20,7 +20,10 @@
     "specialRoundsDescription": "Ne laisse rien au hasard. Les manches spéciales te permettent de choisir toi-même la scène de chaque round, pour créer des défis thématiques, te concentrer sur certains jeux ou régler la difficulté comme tu le souhaites.",
     "latestNewsDescription": "Reste à jour avec les dernières nouvelles de Geo Gamer — nouvelles scènes, mises à jour multijoueur et événements communautaires.",
     "metaTitle": "Geo Gamer — Devine des lieux iconiques de jeux vidéo avec tes amis",
-    "metaDescription": "Explore plus de 300 scènes de mondes de jeux vidéo iconiques et devine où tu es. Joue en solo ou défie jusqu'à 7 amis en multijoueur. Gratuit, sans téléchargement."
+    "metaDescription": "Explore plus de 300 scènes de mondes de jeux vidéo iconiques et devine où tu es. Joue en solo ou défie jusqu'à 7 amis en multijoueur. Gratuit, sans téléchargement.",
+    "leaderboard": "Classement",
+    "dailyChallengeStreak": "Série Défi du Jour",
+    "raceHighScore": "Meilleur Score Course"
   },
   "nav": {
     "dailyChallenge": "Défi du jour",

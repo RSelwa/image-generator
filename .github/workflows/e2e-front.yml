@@ -19,12 +19,30 @@ jobs:
     runs-on: ubuntu-latest
     name: ⚙️ Initialize Node.js Environment
     if: github.event_name != 'release'
+    outputs:
+      playwright-version: ${{ steps.playwright-version.outputs.version }}
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
 
       - name: ⚙️ Initialize Node.js Environment
         uses: ./.github/actions/initialization
+
+      - name: 🔍 Get Playwright version
+        id: playwright-version
+        shell: bash
+        run: echo "version=$(pnpm --filter @repo/front exec playwright --version | tail -1)" >> "$GITHUB_OUTPUT"
+
+      - name: 📦 Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ steps.playwright-version.outputs.version }}
+
+      - name: 🎭 Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter @repo/front exec playwright install --with-deps chromium
 
   e2e:
     needs: init
@@ -54,24 +72,13 @@ jobs:
       - name: ⚙️ Initialize Node.js Environment
         uses: ./.github/actions/initialization
 
-      - name: 🔍 Get Playwright version
-        id: playwright-version
-        shell: bash
-        run: echo "version=$(pnpm --filter @repo/front exec playwright --version | tail -1)" >> "$GITHUB_OUTPUT"
-
-      - name: 📦 Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
+      - name: 📦 Restore Playwright browsers cache
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ steps.playwright-version.outputs.version }}
-
-      - name: 🎭 Install Playwright Browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm --filter @repo/front exec playwright install --with-deps chromium
+          key: playwright-browsers-${{ needs.init.outputs.playwright-version }}
 
       - name: 🎭 Install Playwright system dependencies
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --filter @repo/front exec playwright install-deps chromium
 
       - name: ⚙️ Install Firebase tools

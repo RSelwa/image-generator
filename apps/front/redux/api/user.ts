@@ -1,7 +1,7 @@
 import { getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES, USERS_FIELDS } from "@repo/common"
-import { type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
+import { type RaceLeaderboardPlayer, raceLeaderboardPlayerSchema, type StreakLeaderboardPlayer, streakLeaderboardPlayerSchema, type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
 import { DEFAULT_SIZE_USERS } from "@/constants/api"
 import { getUserRef, TABLE_REFS } from "@/constants/db-refs"
 import { globalErrorHandler } from "@/utils/error"
@@ -125,6 +125,60 @@ export const userApi = createApi({
       invalidatesTags: (_, error, { id }) =>
         error ? [] : [{ type: "User", id }, "UserList"],
     }),
+    getTopPlayersByMaxStreak: builder.query<StreakLeaderboardPlayer[], void>({
+      queryFn: async () => {
+        try {
+          const q = query(
+            TABLE_REFS[TABLES.USERS],
+            ignoreAnonymousUsersConstraint,
+            where("maxStreak", ">", 0),
+            orderBy("maxStreak", "desc"),
+            limit(10),
+          )
+          const snapshot = await getDocs(q)
+
+          const players: StreakLeaderboardPlayer[] = []
+          for (const docSnap of snapshot.docs) {
+            const { data, error } = streakLeaderboardPlayerSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+            if (error) continue
+            players.push(data)
+          }
+
+          return { data: players }
+        } catch (error) {
+          console.error("Error fetching players by best streak", error)
+
+          return { error: globalErrorHandler(error) }
+        }
+      },
+    }),
+    getTopPlayersByBestRaceScore: builder.query<RaceLeaderboardPlayer[], void>({
+      queryFn: async () => {
+        try {
+          const q = query(
+            TABLE_REFS[TABLES.USERS],
+            ignoreAnonymousUsersConstraint,
+            where("bestRaceScore", ">", 0),
+            orderBy("bestRaceScore", "desc"),
+            limit(10),
+          )
+          const snapshot = await getDocs(q)
+
+          const players: RaceLeaderboardPlayer[] = []
+          for (const docSnap of snapshot.docs) {
+            const { data, error } = raceLeaderboardPlayerSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+            if (error) continue
+            players.push(data)
+          }
+
+          return { data: players }
+        } catch (error) {
+          console.error("Error fetching top players by best race score", error)
+
+          return { error: globalErrorHandler(error) }
+        }
+      },
+    }),
     getUserById: builder.query<userDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
         try {
@@ -158,4 +212,4 @@ export const userApi = createApi({
   }),
 })
 
-export const { useGetUsersInfiniteQuery, useUpdateUserDocMutation, useGetUsersCountQuery, useGetUserByIdQuery } = userApi
+export const { useGetUsersInfiniteQuery, useUpdateUserDocMutation, useGetUsersCountQuery, useGetUserByIdQuery, useGetTopPlayersByMaxStreakQuery, useGetTopPlayersByBestRaceScoreQuery } = userApi

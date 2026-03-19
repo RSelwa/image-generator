@@ -1,4 +1,5 @@
 export * from "./daily-challenge"
+export * from "./leaderboard-player"
 export * from "./flat"
 export * from "./game"
 export * from "./round"

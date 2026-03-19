@@ -11,7 +11,7 @@ import { handlePost } from "~/handle-post"
 import { handleWaitingCapture } from "~/handle-waiting-capture"
 import { createScheduledSocial } from "~/schedule-social"
 
-export const schedule_create_social = onSchedule("0 10,18 * * *", async () => {
+export const schedule_create_social = onSchedule("0 10 */2 * *", async () => {
   await createScheduledSocial()
 })
 
