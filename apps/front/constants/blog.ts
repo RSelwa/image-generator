@@ -146,6 +146,39 @@ export const BLOG_POSTS = {
       },
     ],
   },
+  DAILY_CHALLENGES: {
+    slug: "daily-challenges",
+    title: "Daily Challenges: New Geo Gamer Puzzles Every Day",
+    metaDescription:
+      "Test your skills with Geo Gamer's Daily Challenges. A new set of 5 rounds appears every day, featuring a mix of iconic and obscure scenes. Compete for the top spot on the global leaderboard.",
+    publishedAt: "March 1, 2026",
+    readingTime: 4,
+    sections: [
+      {
+        heading: "What Are Daily Challenges?",
+        paragraphs: [
+          "Every day at midnight UTC, a brand-new Daily Challenge goes live. Each challenge consists of 5 rounds, each featuring a different scene drawn from the full library. The catch? Everyone in the world gets the exact same scenes every day.",
+          "It's the ultimate test of skill and consistency — can you maintain a high score across an ever-changing set of locations? The global leaderboard resets daily, so there's always a fresh opportunity to climb to the top.",
+        ],
+      }
+    ]
+  },
+  RACE: {
+    slug: "race",
+    title: "Race Mode: High-Speed Geo Guessing in Geo Gamer",
+    metaDescription:
+      "Race against the clock in Geo Gamer's Race Mode. Each round gives you a fixed time limit to analyze the scene and make your guess. The faster you guess correctly, the higher your score. Can you beat the clock and claim the top spot on the leaderboard?",
+    publishedAt: "March 1, 2026",
+    readingTime: 4,
+    sections: [
+      {
+        heading: "What is Race Mode?",
+        paragraphs: [
+          "Race Mode is a high-intensity variation of the standard Geo Gamer formula. Instead of a fixed time limit for the entire game, each round has its own countdown. The faster you make a correct guess, the more points you earn — but if you take too long, your score for that round plummets."
+        ]
+      }
+    ]
+  }
 }
 
 export const BLOG_POST_BY_SLUG = (slug: string): BlogPost | undefined => Object.values(BLOG_POSTS).find((post) => post.slug === slug

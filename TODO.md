@@ -109,12 +109,13 @@
   - [x] Daily challenge: Add e2e tests about it
   - [x] Add e2e tests for course workflow
   - [x] When reloading, it reset the course instead of saving the state
-  - [ ] Add leadeboard on main page
+  - [x] Add leadeboard on main page
+  - [x] Add a total of 8 avatars
   - [ ] Add donation rewards
   - [ ] Add e2e test for lobby playing, should click on the replay button
   - [ ] Add the possibility to change avatar in lobbies
-  - [ ] Add a total of 8 avatars
   - [ ] Daily challenge: have success based on this
+  - [ ] Improve image selection of run mode, add more randomization
   - [ ] Daily challenge: If we make a 3d environnement for the path, add 3d models characters when moving on the map
   - [ ] Daily challenge:
   - [ ] allow the possibility to have only map guess or game guess in rounds/ seeds

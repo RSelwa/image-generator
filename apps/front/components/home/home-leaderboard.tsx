@@ -48,7 +48,7 @@ export const HomeLeaderboard = () => {
       <article className="p-5 border-r border-neutral-900">
         <p className="font-interference uppercase mb-2 text-sm opacity-60">{t("leaderboard")}</p>
         <h2 className="font-shapiro-wide text-2xl lg:text-3xl mb-6">{t("dailyChallengeStreak")}</h2>
-        <div>
+        <div className="overflow-y-scroll max-h-40">
           {streakPlayers?.map((player, i) => (
             <StreakRow key={player.id} player={player} rank={i + 1} />
           ))}
@@ -57,7 +57,7 @@ export const HomeLeaderboard = () => {
       <article className="p-5">
         <p className="font-interference uppercase mb-2 text-sm opacity-60">{t("leaderboard")}</p>
         <h2 className="font-shapiro-wide text-2xl lg:text-3xl mb-6">{t("raceHighScore")}</h2>
-        <div>
+        <div className="overflow-y-scroll max-h-40">
           {racePlayers?.map((player, i) => (
             <RaceRow key={player.id} player={player} rank={i + 1} />
           ))}

@@ -42,6 +42,12 @@ const Page = async () => {
           <LogoWithIcon className="lg:h-48 text-primary" />
         </article>
       </section>
+      <HomeLeaderboard />
+      <section className="grid grid-cols-1 lg:grid-cols-4">
+        {HOME_ARTICLES.map((article) => (
+          <HomeArticles key={article.title} {...article} />
+        ))}
+      </section>
       <section className="grid grid-cols-1 lg:grid-cols-2">
         <article className="px-5 py-6 flex flex-col">
           <p className="mb-3 font-interference">{t("latestNews")}</p>
@@ -73,11 +79,6 @@ const Page = async () => {
             </Link>
           </div>
         </article>
-      </section>
-      <section className="grid grid-cols-1 lg:grid-cols-4">
-        {HOME_ARTICLES.map((article, index) => (
-          <HomeArticles key={article.title} {...article} className={index === 2 ? "lg:col-start-4" : ""} />
-        ))}
       </section>
       <section className="px-5 py-16 lg:py-32">
         <p className="font-interference uppercase mb-3">
@@ -118,7 +119,6 @@ const Page = async () => {
           className="lg:absolute bottom-0 right-0 lg:w-1/3"
         />
       </section>
-      <HomeLeaderboard />
       <HomeFooter />
       <DailyChallengePub />
     </main>

@@ -8,6 +8,9 @@ export const IMAGES_URLS = {
     MULTIPLAYER: "/articles/multiplayer.webp",
     SCENES: "/articles/scenes.webp",
     SPECIAL_ROUNDS: "/articles/special-rounds.webp",
+    DAILY_CHALLENGES: "/pubs/daily-challenge.jpg",
+    RACE: "/articles/race-mode.jpg",
+
   },
   PUBS: {
     DAILY_CHALLENGE: "/pubs/daily-challenge.jpg"
