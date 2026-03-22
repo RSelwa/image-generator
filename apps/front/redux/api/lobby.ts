@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, DEMO_SEED_ID, isEqual, LOBBY_STATUS, MAX_PLAYERS, NUMBER_OF_ROUNDS_PER_STAGE, ROUND_POINTS, TABLES } from "@repo/common"
+import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_LOBBY_MODE, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, DEMO_SEED_ID, isEqual, LOBBY_STATUS, MAX_PLAYERS, NUMBER_OF_ROUNDS_PER_STAGE, ROUND_POINTS, TABLES } from "@repo/common"
 import {
   type CreateLobbyInput,
   createLobbyInputSchema,
@@ -296,6 +296,7 @@ export const lobbyApi = createApi({
                 maxPlayers: MAX_PLAYERS,
                 roundDuration: DEFAULT_TIME_PER_ROUND,
                 numberOfRounds: DEFAULT_NUMBERS_ROUNDS,
+                mode: DEFAULT_LOBBY_MODE,
               },
             }),
           ).unwrap()
@@ -1018,6 +1019,7 @@ export const lobbyApi = createApi({
                 maxPlayers: 1,
                 roundDuration: DEFAULT_TIME_PER_ROUND,
                 numberOfRounds: seed.rounds.length,
+                mode: seed.mode || DEFAULT_LOBBY_MODE,
               },
             }),
           ).unwrap()

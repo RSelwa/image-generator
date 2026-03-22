@@ -1,4 +1,4 @@
-import { DEFAULT_TIME_PER_ROUND } from "@repo/common"
+import { DEFAULT_TIME_PER_ROUND, LOBBY_MODES } from "@repo/common"
 import { DisplayGame } from "@/components/lobby/playing/game-display"
 import GameInputGuess from "@/components/lobby/playing/game-input-guess"
 import GameMapGuess from "@/components/lobby/playing/game-map"
@@ -37,19 +37,20 @@ const LobbyPlaying = () => {
   const gameTitle = useAppSelector(selectCurrentRoundGameTitle(lobbyId, roundIndex))
 
   const hasSelectedOption = useAppSelector(selectHasSelectedOption(lobbyId, roundIndex))
+  const isMapOnly = config?.mode === LOBBY_MODES.MAP_ONLY
   const isNormalFullRound = roundEntity && !roundEntity.isSpecial && roundEntity.mode === "full"
-  const isMapPhase = myAnswer?.isCorrect && isNormalFullRound
+  const isMapPhase = (isMapOnly || myAnswer?.isCorrect) && isNormalFullRound
   const isWaitingForSelection = roundEntity?.isSpecial && !hasSelectedOption
-  const timerStart = isWaitingForSelection ? null : ((isMapPhase && myAnswer?.submittedAt) || myAnswer?.selectedOptionAt || lobby?.roundStartedAt)
+  const timerStart = isWaitingForSelection ? null : ((isMapPhase && !isMapOnly && myAnswer?.submittedAt) || myAnswer?.selectedOptionAt || lobby?.roundStartedAt)
 
   const isExpired = useIsExpired(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
   const isMobile = useIsMobile()
 
-  const hasSubmittedAnswer = Boolean((gameTitle && myAnswer?.isCorrect))
+  const hasSubmittedAnswer = isMapOnly || Boolean((gameTitle && myAnswer?.isCorrect))
   const hasFinishedRound = (hasSubmittedAnswer && !isNormalFullRound) || (hasSubmittedAnswer && isNormalFullRound && myAnswer?.position)
   const isDisplayGame = !isLoadingRoundAnswer && Boolean(hasFinishedRound || isExpired || (!livesRemaining && config?.playersLives))
   const isDisplayTimer = !isDisplayGame && Boolean(timerStart)
-  const isDisplayInput = !myAnswer?.isCorrect && !isExpired && !isEliminated && !isWaitingForSelection
+  const isDisplayInput = !isMapOnly && !myAnswer?.isCorrect && !isExpired && !isEliminated && !isWaitingForSelection
   const isDisplayMap = isMapPhase && !isDisplayGame && !isEliminated
   const isDisplayRoundInfos = !isMobile && !isDisplayGame
 
