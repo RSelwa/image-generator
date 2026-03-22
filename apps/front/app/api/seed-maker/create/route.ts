@@ -23,6 +23,7 @@ export const POST = async (request: Request) => {
     const data = {
       name: body.name || "",
       rounds: body.rounds,
+      mode: body.mode,
       createdBy: userId,
       timesUsed: 0,
       createdAt: Timestamp.now(),

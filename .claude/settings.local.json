@@ -20,6 +20,7 @@
       "Bash(set FIRESTORE_EMULATOR_HOST=127.0.0.1:8080:*)",
       "Bash(npx vitest:*)",
       "Bash(ls:*)",
+      "Bash(cat:*)",
       "Bash(xargs:*)",
       "Bash(find:*)",
       "WebFetch(domain:firebase.google.com)",

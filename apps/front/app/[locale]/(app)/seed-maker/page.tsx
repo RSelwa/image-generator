@@ -17,7 +17,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+
 import {
+  DEFAULT_LOBBY_MODE,
   DEFAULT_MAX_DISTANCE_POINTS,
   DEFAULT_NUMBERS_ROUNDS,
   DIFFICULTIES,
@@ -150,6 +152,7 @@ const buildSpecialOption = (data: DragData): SpecialRoundOption => ({
 
 const Page = () => {
   const [name, setName] = useState("")
+  const [mode, setMode] = useState<string>(DEFAULT_LOBBY_MODE)
   const [roundCount, setRoundCount] = useState(DEFAULT_NUMBERS_ROUNDS)
   const [hasSpecialRounds, setHasSpecialRounds] = useState(false)
   const [rounds, setRounds] = useState<(Round | null)[]>(() =>
@@ -347,9 +350,10 @@ const Page = () => {
 
     try {
       const rounds = z.array(roundSchema).parse(validRounds)
-      const result = await createSeed({ name, rounds }).unwrap()
+      const result = await createSeed({ name, rounds, mode }).unwrap()
       toast.success(`Seed created successfully! ID: ${result.seedId}`)
       setName("")
+      setMode(DEFAULT_LOBBY_MODE)
       setRounds(Array.from({ length: roundCount }, () => null))
       setSpecialFlags(Array.from({ length: roundCount }, () => false))
       setHasSpecialRounds(false)
@@ -373,6 +377,8 @@ const Page = () => {
       <SeedMakerHeader
         name={name}
         onNameChange={setName}
+        mode={mode}
+        onModeChange={setMode}
         roundCount={roundCount}
         onRoundCountChange={handleRoundCountChange}
         hasSpecialRounds={hasSpecialRounds}

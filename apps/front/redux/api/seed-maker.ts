@@ -18,6 +18,7 @@ type GameReadyData = {
 type CreateManualSeedInput = {
   name: string
   rounds: Round[]
+  mode: string
 }
 
 export const seedMakerApi = createApi({

@@ -1,6 +1,6 @@
 "use client"
 
-import { OPTIONS_NUMBER_OF_ROUNDS } from "@repo/common"
+import { LOBBY_MODES, OPTIONS_NUMBER_OF_ROUNDS } from "@repo/common"
 import { Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -8,9 +8,17 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+const MODE_LABELS: Record<string, string> = {
+  [LOBBY_MODES.FULL]: "Full Game",
+  [LOBBY_MODES.GAME_ONLY]: "Game Only",
+  [LOBBY_MODES.MAP_ONLY]: "Map Only",
+}
+
 type SeedMakerHeaderProps = {
   name: string
   onNameChange: (name: string) => void
+  mode: string
+  onModeChange: (mode: string) => void
   roundCount: number
   onRoundCountChange: (count: number) => void
   hasSpecialRounds: boolean
@@ -23,6 +31,8 @@ type SeedMakerHeaderProps = {
 const SeedMakerHeader = ({
   name,
   onNameChange,
+  mode,
+  onModeChange,
   roundCount,
   onRoundCountChange,
   hasSpecialRounds,
@@ -40,6 +50,19 @@ const SeedMakerHeader = ({
       onChange={(e) => onNameChange(e.target.value)}
       className="w-48"
     />
+
+    <Select value={mode} onValueChange={onModeChange}>
+      <SelectTrigger className="w-32">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {Object.values(LOBBY_MODES).map((m) => (
+          <SelectItem key={m} value={m}>
+            {MODE_LABELS[m]}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
 
     <Select
       value={String(roundCount)}
