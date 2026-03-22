@@ -18,14 +18,14 @@ export const IMAGES_URLS = {
 } as const
 
 export const AVATARS_URLS = {
-  [AVATARS_KEYS.ASSASSIN]: "/avatar/kirby.png",
-  [AVATARS_KEYS.DESTROYER]: "/avatar/mario.png",
-  [AVATARS_KEYS.RECON]: "/avatar/toad.png",
-  [AVATARS_KEYS.ROOK]: "/avatar/sonic.png",
-  [AVATARS_KEYS.THIEF]: "/avatar/pikachu.png",
-  [AVATARS_KEYS.TRIAGE]: "/avatar/ness.png",
-  [AVATARS_KEYS.VANDAL]: "/avatar/penguin.png",
-  [AVATARS_KEYS.DONKEY]: "/avatar/donkey.png",
+  [AVATARS_KEYS.ASSASSIN]: "/avatar/blue-droid.png",
+  [AVATARS_KEYS.DESTROYER]: "/avatar/blue-skeleton.png",
+  [AVATARS_KEYS.RECON]: "/avatar/blue-smiley.png",
+  [AVATARS_KEYS.ROOK]: "/avatar/golden-cat.png",
+  [AVATARS_KEYS.THIEF]: "/avatar/pink-cat.png",
+  [AVATARS_KEYS.TRIAGE]: "/avatar/pink-cow.png",
+  [AVATARS_KEYS.VANDAL]: "/avatar/red-glyph.png",
+  [AVATARS_KEYS.DONKEY]: "/avatar/glyph.png",
 } as const
 
 export const AVATARS_BACKGROUND_URLS = {
