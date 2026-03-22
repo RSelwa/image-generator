@@ -111,6 +111,7 @@
   - [x] When reloading, it reset the course instead of saving the state
   - [x] Add leadeboard on main page
   - [x] Add a total of 8 avatars
+  - [ ] Add a way to play only on the map
   - [ ] Add donation rewards
   - [ ] Add e2e test for lobby playing, should click on the replay button
   - [ ] Add the possibility to change avatar in lobbies

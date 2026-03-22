@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
-import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, LOBBY_STATUS, MAX_PLAYERS } from "@repo/common"
+import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_LOBBY_MODE, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, LOBBY_STATUS, MAX_PLAYERS } from "@repo/common"
 import { type LobbyDoc } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
 import { type FactoryDoc } from "~/orm"
@@ -27,6 +27,7 @@ export const lobbyFactory: FactoryDoc<LobbyDoc & { id: string }> = (item = {}) =
       maxPlayers: MAX_PLAYERS,
       roundDuration: DEFAULT_TIME_PER_ROUND,
       numberOfRounds: DEFAULT_NUMBERS_ROUNDS,
+      mode: DEFAULT_LOBBY_MODE,
     },
     seedId: null,
     maximumPossiblePoints: 0,

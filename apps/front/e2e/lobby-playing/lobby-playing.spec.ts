@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test"
-import { LOBBY_STATUS, TABLES } from "@repo/common"
+import { LOBBY_MODES, LOBBY_STATUS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { lobbyFactory } from "@repo/testing/factory"
 import { SELECTORS } from "@/constants/testing"
@@ -194,5 +194,63 @@ test.describe("lobby playing", () => {
     await page.waitForTimeout(1000) // Wait for the modal to appear
 
     await expect(page.getByTestId(SELECTORS.FINISHED_LOBBY_ANONYMOUS_MODAL)).toHaveCount(0)
+  })
+
+  test("should play a map-only game without game input", async ({ page }) => {
+    test.setTimeout(120_000)
+    const user = await setupUser()
+
+    await loginViaUI(page, user.email)
+    await hideDriverTutorial(page)
+
+    await page.goto("/en")
+    await waitToBeLogged(page)
+
+    await createLobbyViaUI(page)
+
+    // Set 6 rounds, no special rounds
+    await page.getByTestId("select-number-rounds-trigger").click()
+    await page.getByTestId("select-number-rounds-6-item").click()
+
+    // Set mode to map-only
+    await page.getByTestId("select-game-mode-trigger").click()
+    await page.getByTestId("select-game-mode-map-only-item").click()
+
+    // Special rounds should be disabled in map-only mode
+    const specialRoundsSwitch = page.getByTestId("special-rounds")
+    await expect(specialRoundsSwitch).not.toBeChecked()
+    await expect(specialRoundsSwitch).toBeDisabled()
+
+    await startSoloLobbyViaUI(page)
+
+    const url = page.url()
+    const lobbyId = url.split("/lobby/")[1]
+
+    await expect(async () => {
+      const lobbySnap = await refs[TABLES.LOBBIES].doc(lobbyId).get()
+      expect(lobbySnap.data()?.status).toBe(LOBBY_STATUS.PLAYING)
+    }).toPass({ timeout: 10000 })
+
+    const games = await retrieveGamesFromLobby(lobbyId)
+
+    for (let i = 0; i < games.length; i++) {
+      // Game input should never appear in map-only mode
+      await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toHaveCount(0)
+
+      // Map should be visible directly
+      await page.getByTestId(SELECTORS.MINIMAP).hover()
+      await page.waitForTimeout(400)
+      await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
+      await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+      await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
+
+      await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
+    }
+
+    await expect(page.getByTestId(SELECTORS.LOBBY_FINISHED)).toBeVisible()
+
+    const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
+    expect(lobbyDoc.data()?.status).toBe(LOBBY_STATUS.FINISHED)
+    expect(lobbyDoc.data()?.config.mode).toBe(LOBBY_MODES.MAP_ONLY)
   })
 })

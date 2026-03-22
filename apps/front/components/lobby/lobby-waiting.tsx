@@ -1,12 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { OPTIONS_NUMBER_OF_ROUNDS, OPTIONS_PLAYERS_LIVES, OPTIONS_ROUND_DURATIONS } from "@repo/common"
+import { LOBBY_MODES, OPTIONS_NUMBER_OF_ROUNDS, OPTIONS_PLAYERS_LIVES, OPTIONS_ROUND_DURATIONS } from "@repo/common"
 import { type LobbyDoc } from "@repo/schemas"
 import { type DriveStep } from "driver.js"
 import { driver } from "driver.js"
 import { ArrowRight, ArrowUpRightFromSquareIcon, Trash } from "lucide-react"
-import Image from "next/image"
 import { useTranslations } from "next-intl"
-import { usePathname } from "@/i18n/routing"
+import Image from "next/image"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -25,6 +24,7 @@ import { DRIVER_IDS, STEPS } from "@/constants/driver"
 import { ASSET_URLS, FALL_BACK_IMAGE, STORAGE_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useLocalStorage } from "@/hooks/use-storage"
+import { usePathname } from "@/i18n/routing"
 import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyConfigMutation, useUpdatePlayerReadyMutation } from "@/redux/api/lobby"
 import { useApplySeedToLobbyMutation } from "@/redux/api/local"
 import { useGetFeaturedSeedsQuery } from "@/redux/api/seed"
@@ -111,6 +111,7 @@ const LobbyWaiting = () => {
 
   const disabled = !isOwner || isLoadingUpdate
   const hasLobbySeed = Boolean(lobby.seedId)
+  const isMapOnly = lobby.config.mode === LOBBY_MODES.MAP_ONLY
   const areAllPlayersReady = lobby.players.every((p) => p.isReady)
   const isMeReady = lobby.players.find((p) => p.uid === userId)?.isReady
 
@@ -119,6 +120,10 @@ const LobbyWaiting = () => {
       toast.error(t("onlyHostCanChange"))
 
       return
+    }
+
+    if (newConfig.mode === LOBBY_MODES.MAP_ONLY) {
+      newConfig.hasSpecialRounds = false
     }
 
     updateLobbyConfig({
@@ -261,6 +266,29 @@ const LobbyWaiting = () => {
                 </Select>
               </Field>
               <Separator orientation="horizontal" />
+              <Field orientation="horizontal" className="justify-between">
+                <FieldDescription>
+                  {t("gameMode")}
+                </FieldDescription>
+                <Select
+                  value={lobby.config.mode}
+                  onValueChange={(value) => changeConfig({ mode: value as LobbyDoc["config"]["mode"] })}
+                  disabled={disabled}
+                >
+                  <SelectTrigger
+                    data-testid="select-game-mode-trigger"
+                    className="w-32"
+                  >
+                    <SelectValue placeholder={t("gameMode")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem data-testid="select-game-mode-full-item" value={LOBBY_MODES.FULL}>{t("modeFull")}</SelectItem>
+                    <SelectItem data-testid="select-game-mode-game-only-item" value={LOBBY_MODES.GAME_ONLY}>{t("modeGameOnly")}</SelectItem>
+                    <SelectItem data-testid="select-game-mode-map-only-item" value={LOBBY_MODES.MAP_ONLY}>{t("modeMapOnly")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Separator orientation="horizontal" />
               <Field id={DRIVER_IDS.LOBBY_SPECIAL_ROUNDS} orientation="horizontal" className="justify-between">
                 <FieldDescription>
                   <Label htmlFor="special-rounds">{t("enableSpecialRounds")} </Label>
@@ -268,10 +296,10 @@ const LobbyWaiting = () => {
                 <Switch
                   id="special-rounds"
                   data-testid="special-rounds"
-                  checked={lobby.config.hasSpecialRounds}
+                  checked={isMapOnly ? false : lobby.config.hasSpecialRounds}
                   onCheckedChange={(checked) =>
                     changeConfig({ hasSpecialRounds: checked })}
-                  disabled={disabled || hasLobbySeed}
+                  disabled={disabled || hasLobbySeed || isMapOnly}
                 />
               </Field>
             </div>

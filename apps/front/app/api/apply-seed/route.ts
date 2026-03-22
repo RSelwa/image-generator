@@ -44,12 +44,17 @@ export const POST = async (request: Request) => {
 
     const hasSpecialsRounds = parsedSeedData.data.rounds.some((round) => round.isSpecial)
 
-    await refs[TABLES.LOBBIES].doc(parsed.data.lobbyId).update({
-
+    const seedUpdate: Record<string, unknown> = {
       seedId: parsed.data.seedId,
       "config.numberOfRounds": parsedSeedData.data.rounds.length,
       "config.hasSpecialRounds": hasSpecialsRounds,
-    })
+    }
+
+    if (parsedSeedData.data.mode) {
+      seedUpdate["config.mode"] = parsedSeedData.data.mode
+    }
+
+    await refs[TABLES.LOBBIES].doc(parsed.data.lobbyId).update(seedUpdate)
 
     await refs[TABLES.SEEDS].doc(parsed.data.seedId).update({
       timesUsed: FieldValue.increment(1),

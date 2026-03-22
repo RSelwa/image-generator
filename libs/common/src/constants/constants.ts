@@ -21,6 +21,14 @@ export const SPECIAL_ROUND_OPTIONS_COUNT = 4 // round options count for special 
 export const DEFAULT_LIVES = 3
 export const DEFAULT_MAX_DISTANCE_POINTS = 50 // percentage of max distance - Old value : 30
 export const DEFAULT_HAS_SPECIAL_ROUNDS = true
+
+export const LOBBY_MODES = {
+  FULL: "full",
+  GAME_ONLY: "game-only",
+  MAP_ONLY: "map-only",
+} as const
+
+export const DEFAULT_LOBBY_MODE = LOBBY_MODES.FULL
 export const MAX_RECENT_LOBBIES_TO_EXCLUDE = 3
 
 export const PREFIX_ANONYMOUS_USER = "anon_"

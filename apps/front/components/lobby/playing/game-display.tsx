@@ -1,6 +1,6 @@
 import { Separator } from "@radix-ui/react-separator"
+import { LOBBY_MODES } from "@repo/common"
 import Image from "next/image"
-import { usePathname } from "@/i18n/routing"
 import { type ComponentProps } from "react"
 import { Fragment, useEffect, useState } from "react"
 import useSound from "use-sound"
@@ -13,8 +13,9 @@ import { Progress } from "@/components/ui/progress"
 import { TextRevealTW } from "@/components/ui/text-reveal"
 import { FALL_BACK_IMAGE } from "@/constants/mapping"
 import { SOUNDS } from "@/constants/sound"
+import { usePathname } from "@/i18n/routing"
 import { useSubmitRoundAnswerMutation, useSubscribeLobbyQuery, useUpdateNextRoundMutation, useUpdatePlayerScoreMutation } from "@/redux/api/lobby"
-import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectCurrentRoundInfos, selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
+import { selectAllPlayersReady, selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectCurrentRoundInfos, selectIsLobbyHost, selectLobbyConfig } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -114,13 +115,19 @@ const InfosRoundNormal = () => {
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
   const currentRoundInfos = useAppSelector(selectCurrentRoundInfos(lobbyId, roundIndex))
   const currentAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
+  const config = useAppSelector(selectLobbyConfig(lobbyId))
+
+  const isMapOnly = config?.mode === LOBBY_MODES.MAP_ONLY
 
   const pointAnimationDelay = 3000
   const pointAnimationDuration = 2000
+  console.log(currentAnswer?.distancePoints)
+
   const targetPoints = currentAnswer?.distancePoints || 0
   const hasGuessedGame = Boolean(currentAnswer?.isCorrect)
 
   const percentagePoints = currentRoundData?.pointsDistance ? ((animatedPoints) / (currentRoundData.pointsDistance || 1)) * 100 : 0
+  const displayMap = isMapOnly || hasGuessedGame
 
   useEffect(() => {
     if (!targetPoints) return
@@ -147,13 +154,13 @@ const InfosRoundNormal = () => {
   return (
 
     <div className="flex flex-col items-center justify-center gap-2">
-      {(!hasGuessedGame) && (
+      {(!displayMap) && (
         <ImageGlow className="max-w-5/6 flex items-center justify-center">
           <Image data-testid={`game-thumbnail-${currentRoundInfos?.gameTitle}`} src={currentRoundInfos?.gameThumbnailUrl || FALL_BACK_IMAGE} height={250} width={250} alt={currentRoundInfos?.gameTitle || ""} className="max-h-96" />
         </ImageGlow>
       )}
 
-      {hasGuessedGame && (
+      {displayMap && (
         <MiniMap
           data-testid={`game-map-${currentRoundInfos?.gameTitle}`}
           mapData={{
