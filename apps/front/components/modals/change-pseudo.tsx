@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AVATARS_KEYS } from "@repo/common"
-import Image from "next/image"
 import { useTranslations } from "next-intl"
+import Image from "next/image"
 import * as React from "react"
 import { type SubmitHandler } from "react-hook-form"
 import { useForm } from "react-hook-form"
@@ -46,7 +46,7 @@ const ChangePseudoModal = () => {
     reset,
     watch,
     setValue,
-    formState: { isDirty },
+    formState: { isDirty, errors, isValid },
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -113,12 +113,13 @@ const ChangePseudoModal = () => {
                   required: true
                 })}
               />
+              {errors.pseudo && <p className="text-destructive text-sm">{errors.pseudo.message}</p>}
             </Field>
           </div>
 
           <AlertDialogFooter>
             <Button data-testid="skip-pseudo" variant="ghost" type="button" onClick={closeModal}>{t("skipForNow")}</Button>
-            <Button type="submit" variant={isDirty ? "marathon" : "marathon-outline"}>{tCommon("save")} {isLoading && <Loader />}</Button>
+            <Button type="submit" disabled={!isValid} variant={isDirty ? "marathon" : "marathon-outline"}>{tCommon("save")} {isLoading && <Loader />}</Button>
           </AlertDialogFooter>
         </form>
       </AlertDialogContent>
