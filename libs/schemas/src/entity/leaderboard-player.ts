@@ -1,11 +1,13 @@
 import { AVATARS_KEYS } from "@repo/common"
 import z from "zod"
+import { donorTierSchema } from "~/firestore"
 import { WITH_ID } from "~/zod"
 
 const leaderboardPlayerBaseSchema = z.object({
   ...WITH_ID.shape,
   pseudo: z.string().nullish(),
   avatar: z.enum(AVATARS_KEYS).nullish(),
+  donorTier: z.object(donorTierSchema).shape.nullish().default(null),
 })
 
 export const streakLeaderboardPlayerSchema = leaderboardPlayerBaseSchema.extend({

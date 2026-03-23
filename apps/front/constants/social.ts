@@ -41,3 +41,6 @@ export const FOOTER_LEGALS = [
 ]
 
 export const PORTFOLIO_LINK = "https://raphael-selwa.la-source.work/"
+
+export const BUY_ME_A_COFFEE_LINK = "https://buymeacoffee.com/rselwa"
+export const BUY_ME_A_COFFEE_LINK_MEMBERSHIPS = "https://buymeacoffee.com/rselwa/membership"

@@ -1,5 +1,5 @@
 import { TABLES } from "@repo/common"
-import { type DailyChallengeDoc, type FlatDoc, type GameDoc, type GamesListDoc, type LeaderboardDoc, type LobbyDoc, type MapDoc, type MarathonSeedDoc, type RaceDoc, type RaceRunDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
+import { type CouponDoc, type DailyChallengeDoc, type FlatDoc, type GameDoc, type GamesListDoc, type LeaderboardDoc, type LobbyDoc, type MapDoc, type MarathonSeedDoc, type RaceDoc, type RaceRunDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
 import {
   type CollectionGroup,
   type CollectionReference,
@@ -78,6 +78,10 @@ export const refs = {
   [TABLES.LEADERBOARD]: db.collection(TABLES.LEADERBOARD) as CollectionReference<
     LeaderboardDoc,
     LeaderboardDoc
+  >,
+  [TABLES.COUPONS]: db.collection(TABLES.COUPONS) as CollectionReference<
+    CouponDoc,
+    CouponDoc
   >,
 }
 

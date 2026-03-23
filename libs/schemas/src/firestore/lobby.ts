@@ -1,4 +1,4 @@
-import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, LOBBY_STATUS, MAX_PLAYERS } from "@repo/common"
+import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_LOBBY_MODE, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, LOBBY_STATUS, MAX_PLAYERS } from "@repo/common"
 import z from "zod"
 import { lobbyConfigSchema } from "~/firestore/lobby.config"
 
@@ -19,6 +19,7 @@ export const lobbyDocSchema = z.object({
     maxPlayers: MAX_PLAYERS,
     roundDuration: DEFAULT_TIME_PER_ROUND,
     numberOfRounds: DEFAULT_NUMBERS_ROUNDS,
+    mode: DEFAULT_LOBBY_MODE
   }),
   isDemo: z.boolean().default(false), // Demo lobby: 1 player, forced seed, auto-start
   seedId: z.string().nullish().default(null), // Reference to seed document (backend only)

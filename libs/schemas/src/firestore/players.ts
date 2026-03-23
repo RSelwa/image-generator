@@ -1,4 +1,4 @@
-import { AVATARS_KEYS, getRandomAvatar } from "@repo/common"
+import { AVATARS_KEYS, DONOR_TIERS, getRandomAvatar } from "@repo/common"
 import z from "zod"
 import { timestampSchema } from "~/zod"
 
@@ -11,6 +11,7 @@ export const playerSchema = z.object({
   isHost: z.boolean().default(false),
   isReady: z.boolean().default(false),
   joinedAt: timestampSchema.nullish().default(() => null),
+  donorTier: z.enum(DONOR_TIERS).nullish().default(null),
 })
 
 export type Player = z.infer<typeof playerSchema>

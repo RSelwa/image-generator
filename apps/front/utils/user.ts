@@ -1,4 +1,5 @@
-import { getRandomAvatar } from "@repo/common"
+import { type ConstantValues } from "@repo/common"
+import { DONOR_TIERS, getRandomAvatar } from "@repo/common"
 import { type RightDoc, type UserDoc } from "@repo/schemas"
 import { type User } from "firebase/auth"
 import { type SessionUser, sessionUserSchema } from "@/schemas/session"
@@ -13,7 +14,7 @@ export const formatSessionFromFirebaseUser = ({
   rightsDoc: RightDoc | null
 }): SessionUser => {
   const { uid, displayName, isAnonymous } = authUser
-  const { email, pseudo, isAnonymousUser, streak, lastStreakDate } = user
+  const { email, pseudo, isAnonymousUser, streak, lastStreakDate, donorTier } = user
 
   const avatar = user.avatar || getRandomAvatar()
 
@@ -26,6 +27,7 @@ export const formatSessionFromFirebaseUser = ({
     avatar,
     streak,
     lastStreakDate,
+    donorTier
   })
 
   if (!sessionUser.success) {
@@ -44,4 +46,9 @@ export const formatSessionFromAnonymousUser = ({ authUser, pseudo }: { authUser:
   avatar: getRandomAvatar(),
   streak: 0,
   lastStreakDate: null,
+  donorTier: null,
 })
+
+export const isAvatarGlow = (donorTier: ConstantValues<typeof DONOR_TIERS>) => donorTier === DONOR_TIERS.GOLD || donorTier === DONOR_TIERS.SILVER
+
+export const isTextGlow = (donorTier: ConstantValues<typeof DONOR_TIERS> | null) => donorTier === DONOR_TIERS.GOLD

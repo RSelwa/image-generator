@@ -1,5 +1,5 @@
-import { usePathname } from "@/i18n/routing"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { usePathname } from "@/i18n/routing"
 import { useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { firstLetter, getLobbyIdFromPathname } from "@/utils"
 import { getAvatarUrl } from "@/utils/file"
@@ -28,7 +28,7 @@ const LobbyScoreboard = () => {
                 >
                     <span className="text-muted-foreground font-shapiro-wide font-bold w-6 text-center">#{index + 1}</span>
                     <Avatar size="sm">
-                        <AvatarImage src={getAvatarUrl(player.avatar)} />
+                        <AvatarImage donorTier={player.donorTier} src={getAvatarUrl(player.avatar)} />
                         <AvatarFallback className="font-bold">{firstLetter(player.name)}</AvatarFallback>
                     </Avatar>
                     <span className="font-medium flex-1 truncate font-mono">{player.name}</span>

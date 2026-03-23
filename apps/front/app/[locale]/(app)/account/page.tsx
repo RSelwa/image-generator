@@ -2,8 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AVATARS_KEYS } from "@repo/common"
-import Image from "next/image"
 import { useTranslations } from "next-intl"
+import Image from "next/image"
 import { useEffect } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -94,7 +94,7 @@ const AccountForm = () => {
           <Popover>
             <PopoverTrigger>
               <Avatar className="size-20">
-                <AvatarImage src={avatar} alt={user.pseudo} />
+                <AvatarImage donorTier={user.donorTier} src={avatar} alt={user.pseudo} />
                 <AvatarFallback className="rounded-lg text-2xl">
                   {firstLetter(user.pseudo)}
                 </AvatarFallback>

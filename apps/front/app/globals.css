@@ -143,9 +143,29 @@
   --animate-text-reveal: text-reveal 1.5s cubic-bezier(0.77, 0, 0.175, 1) 0.5s;
   --animate-diagonal-infinite: diagonal-infinite 7s linear infinite;
 
+  @keyframes holo-shimmer {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    100% {
+      background-position: 0% 0%;
+    }
+  }
+
+  --animate-holo-shimmer: holo-shimmer 6s ease infinite;
+
 }
 
 :root {
+  --sunpillar-1: hsl(2, 100%, 73%);
+  --sunpillar-2: hsl(53, 100%, 69%);
+  --sunpillar-3: hsl(93, 100%, 69%);
+  --sunpillar-4: hsl(176, 100%, 76%);
+  --sunpillar-5: hsl(228, 100%, 74%);
+  --sunpillar-6: hsl(283, 100%, 73%);
   --radius: 0.65rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -345,4 +365,54 @@
 .driver-popover-prev-btn, .driver-popover-next-btn {
   @apply bg-background! text-primary! border-none! text-shadow-none!
 }
+}
+
+.glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    transparent 40%,
+    var(--sunpillar-1) 44%,
+    var(--sunpillar-2) 46%,
+    var(--sunpillar-3) 48%,
+    var(--sunpillar-4) 50%,
+    var(--sunpillar-5) 52%,
+    var(--sunpillar-6) 54%,
+    transparent 56%,
+    transparent 100%
+    );
+    background-size: 300% 300%;
+    animation: var(--animate-holo-shimmer);
+    mix-blend-mode: hard-light;
+    
+  pointer-events: none;
+  mask-image: var(--glow-mask);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.glow-text {
+  background: linear-gradient(
+    115deg,
+    currentColor 0%,
+    currentColor 40%,
+    var(--sunpillar-1) 44%,
+    var(--sunpillar-2) 46%,
+    var(--sunpillar-3) 48%,
+    var(--sunpillar-4) 50%,
+    var(--sunpillar-5) 52%,
+    var(--sunpillar-6) 54%,
+    currentColor 56%,
+    currentColor 100%
+  );
+  background-size: 300% 300%;
+  animation: var(--animate-holo-shimmer);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

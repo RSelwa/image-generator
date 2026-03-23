@@ -2928,4 +2928,76 @@ describe("firebase Security Rules", () => {
       await assertSucceeds(setDoc(doc(adminDb, entryPath), entryData))
     })
   })
+
+  describe("coupons collection", () => {
+    const adminId = "admin1"
+    const couponPath = "coupons/coupon1"
+    const couponData = {
+      code: "ABCD1234",
+      tier: "bronze",
+      bmcEmail: "supporter@example.com",
+      claimedBy: null,
+      claimedAt: null,
+      createdAt: null,
+      expiresAt: null,
+    }
+
+    it("should not allow unauthenticated users to read a coupon", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), couponPath), couponData)
+      })
+
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertFails(getDoc(doc(unauthDb, couponPath)))
+    })
+
+    it("should not allow authenticated users to read a coupon", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), couponPath), couponData)
+      })
+
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertFails(getDoc(doc(authedDb, couponPath)))
+    })
+
+    it("should not allow authenticated users to write a coupon", async () => {
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertFails(setDoc(doc(authedDb, couponPath), couponData))
+    })
+
+    it("should not allow unauthenticated users to write a coupon", async () => {
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertFails(setDoc(doc(unauthDb, couponPath), couponData))
+    })
+
+    it("should not allow a user to read another user's coupon by guessing the path", async () => {
+      const otherCouponPath = "coupons/someOtherCoupon"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), otherCouponPath), { ...couponData, claimedBy: "user2" })
+      })
+
+      const authedDb = testEnv.authenticatedContext("user1").firestore()
+      await assertFails(getDoc(doc(authedDb, otherCouponPath)))
+    })
+
+    it("should allow admin to read a coupon", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+        await setDoc(doc(context.firestore(), couponPath), couponData)
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+      await assertSucceeds(getDoc(doc(adminDb, couponPath)))
+    })
+
+    it("should allow admin to write a coupon", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+      await assertSucceeds(setDoc(doc(adminDb, couponPath), couponData))
+    })
+  })
 })

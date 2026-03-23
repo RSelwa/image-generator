@@ -5,6 +5,8 @@ import { UMA_STUDIO_URL } from "@repo/common"
 import {
   Brush,
   Calendar,
+  Coffee,
+  Crown,
   History,
   LogOut,
   Timer,
@@ -27,14 +29,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 import NavUserAdmin from "@/components/ui/nav-user.admin"
 import { PAGES } from "@/constants/pages"
-import { PORTFOLIO_LINK } from "@/constants/social"
+import { BUY_ME_A_COFFEE_LINK, BUY_ME_A_COFFEE_LINK_MEMBERSHIPS, PORTFOLIO_LINK } from "@/constants/social"
 import { Link, useRouter } from "@/i18n/routing"
 import { useLogoutMutation } from "@/redux/api/auth"
 import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAdmin, selectUser, selectUserSteak } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { firstLetter } from "@/utils"
+import { cn, firstLetter } from "@/utils"
 import { getAvatarUrl } from "@/utils/file"
+import { isTextGlow } from "@/utils/user"
 
 export const NavUser = () => {
   const router = useRouter()
@@ -69,13 +72,13 @@ export const NavUser = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         data-testid="nav-user-dropdown-trigger"
-        className="flex w-fit items-center gap-2 outline-none"
+        className="flex w-fit items-center gap-6 outline-none"
       >
-        <div className="grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight">
+        <div className={cn("grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight", isTextGlow(user.donorTier) && "glow-text")}>
           {user.pseudo}
         </div>
         <Avatar className="size-9">
-          <AvatarImage src={getAvatarUrl(user.avatar)} alt={user.email} />
+          <AvatarImage donorTier={user.donorTier} src={getAvatarUrl(user.avatar)} alt={user.email} />
           <AvatarFallback>{firstLetter(user.pseudo)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -127,6 +130,18 @@ export const NavUser = () => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("about")}</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link href={BUY_ME_A_COFFEE_LINK} target="_blank" className="cursor-pointer bg-marathon-yellow text-marathon-yellow-foreground">
+              <Coffee />
+              Buy me a coffee
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={BUY_ME_A_COFFEE_LINK_MEMBERSHIPS} target="_blank" className="cursor-pointer bg-blue-accent-foreground">
+              <Crown />
+              Become a member
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={PORTFOLIO_LINK} target="_blank" className="cursor-pointer">
               <Wrench />

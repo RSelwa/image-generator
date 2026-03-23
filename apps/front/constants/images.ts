@@ -1,4 +1,4 @@
-import { AVATARS_KEYS } from "@repo/common"
+import { AVATARS_KEYS, DONOR_TIERS } from "@repo/common"
 
 export const IMAGES_URLS = {
   SIGNUP: "/signup.jpg",
@@ -35,4 +35,16 @@ export const AVATARS_BACKGROUND_URLS = {
 export const SVG_URLS = {
   STRIPS_MUTED: "/svg/stripe-blocks-muted.svg",
   DIAGONAL_STRIPS: "/svg/diagonal-stripes-muted.svg",
+} as const
+
+export const AVATAR_RANKS_BADGES_URLS = {
+  [DONOR_TIERS.BRONZE]: "/avatar-rank/bronze.png",
+  [DONOR_TIERS.SILVER]: "/avatar-rank/silver.png",
+  [DONOR_TIERS.GOLD]: "/avatar-rank/gold.png",
+} as const
+
+export const AVATAR_RANKS_BADGES_GLOW_URLS = {
+  [DONOR_TIERS.BRONZE]: "/avatar-rank/gold_glow.png",
+  [DONOR_TIERS.SILVER]: "/avatar-rank/gold_glow.png",
+  [DONOR_TIERS.GOLD]: "/avatar-rank/gold_glow.png",
 } as const

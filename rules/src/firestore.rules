@@ -183,6 +183,11 @@ service cloud.firestore {
       allow read, write: if signedInAdmin();
     }
 
+    // Coupons collection - write-only via Admin SDK (Cloud Functions), no client reads
+    match /coupons/{couponId} {
+      allow read, write: if signedInAdmin();
+    }
+
     // CollectionGroup queries
     match /{path=**}/spherical/{spherical} {
       allow write: if signedInAdmin();

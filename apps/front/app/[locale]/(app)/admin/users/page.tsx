@@ -41,6 +41,7 @@ const Page = () => {
 
     if (!isBottom) {
       hasFetchedAtBottomRef.current = false
+
       return
     }
 
@@ -90,7 +91,7 @@ const Page = () => {
                   <TableCell className="font-medium flex items-center gap-2">
                     {user.avatar && (
                       <Avatar className="size-9">
-                        <AvatarImage src={getAvatarUrl(user.avatar)} alt={user.email} />
+                        <AvatarImage donorTier={user.donorTier} src={getAvatarUrl(user.avatar)} alt={user.email} />
                       </Avatar>
                     )}
                     <div className="flex flex-col justify-start">

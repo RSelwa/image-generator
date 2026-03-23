@@ -8,7 +8,8 @@
     "Nuqs",
     "predeploy",
     "sphericals",
-    "Subcollection"
+    "Subcollection",
+    "sunpillar"
   ],
   "json.validate.enable": false,
   "deno.lint": false,

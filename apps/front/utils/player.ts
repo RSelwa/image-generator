@@ -10,6 +10,7 @@ export const createPlayerFromSessionUser = (sessionUser: SessionUser): Player =>
   isHost: false,
   isReady: false,
   joinedAt: null,
+  donorTier: sessionUser.donorTier || null,
 })
 
 export const generateRandomCode = (): string => Math.random().toString(36).substring(2, 8).toUpperCase()

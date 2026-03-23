@@ -110,17 +110,18 @@
   - [x] Add e2e tests for course workflow
   - [x] When reloading, it reset the course instead of saving the state
   - [x] Add leadeboard on main page
+  - [x] Add new avatar, check visual goodies
   - [x] Add a total of 8 avatars
-  - [ ] Add a way to play only on the map
-  - [ ] Add donation rewards
+  - [x] Add a way to play only on the map
+  - [ ] Add donation rewards (new skin, etc...)
+  - [ ] Implémenter le buy me coffee
+  - [ ] Make a sponsors part on the home page, with fake users to allow users to donate
   - [ ] Add e2e test for lobby playing, should click on the replay button
   - [ ] Add the possibility to change avatar in lobbies
   - [ ] Daily challenge: have success based on this
   - [ ] Improve image selection of run mode, add more randomization
   - [ ] Daily challenge: If we make a 3d environnement for the path, add 3d models characters when moving on the map
   - [ ] Daily challenge:
-  - [ ] allow the possibility to have only map guess or game guess in rounds/ seeds
-  - [ ] Make a sponsors part on the home page, with fake users to allow users to donate
   - [ ] Add a modal of how to play
   - [ ] Add mods instead of form for lobbies settings
   - [ ] make the thumbnail square when in sphericalId/flat Id state
@@ -128,11 +129,9 @@
   - [ ] Implement modals system for pubing/infos
   - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples
   - [ ] Improve comments on instagram
-  - [ ] Add new avatar, check visual goodies
   - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
   - [ ] fix the issues on the sphericals/flats rows, when no map selected, should check if already a thumbnail
   - [ ] in Seed maker, when round is special should not allow images without thumbnails
-  - [ ] Implémenter le buy me coffee
   - [ ] Scrap lostgamer for the images of the maps
   - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
   - [ ] When selecting special rounds, could display the mouse of other users to see what they chose

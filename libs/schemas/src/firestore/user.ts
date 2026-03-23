@@ -3,6 +3,8 @@ import z from "zod"
 import { dailyChallengeDateSchema } from "~/firestore/daily-challenge"
 import { timestampSchema, WITH_ID } from "~/zod"
 
+export const donorTierSchema = z.enum(DONOR_TIERS).nullish()
+
 export const userDocSchema = z.object({
   email: z.email(),
   pseudo: z.string().min(3).max(30).nullish().default(""),
@@ -14,7 +16,7 @@ export const userDocSchema = z.object({
   lastStreakDate: dailyChallengeDateSchema.nullish().default(null),
   maxStreak: z.number().nullish().default(0),
   bestRaceScore: z.number().nullish().default(0),
-  donorTier: z.enum(DONOR_TIERS).nullish().default(null),
+  donorTier: z.object(donorTierSchema).shape.default(null),
 })
 
 export const userDocWithIdSchema = z.object({
@@ -24,3 +26,4 @@ export const userDocWithIdSchema = z.object({
 
 export type UserDoc = z.infer<typeof userDocSchema>
 export type userDocWithId = z.infer<typeof userDocWithIdSchema>
+export type DonorTier = z.infer<typeof donorTierSchema>

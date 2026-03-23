@@ -20,6 +20,7 @@ export const TABLES = {
   RACES: "races",
   RACE_RUNS: "raceRuns",
   LEADERBOARD: "leaderboard",
+  COUPONS: "coupons",
 } as const
 
 export const METADATA_DOCS = {

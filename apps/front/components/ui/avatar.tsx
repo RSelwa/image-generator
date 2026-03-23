@@ -3,7 +3,12 @@
 import type * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
+import { type DonorTier } from "@repo/schemas"
+import Image from "next/image"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { AVATAR_RANKS_BADGES_GLOW_URLS, AVATAR_RANKS_BADGES_URLS } from "@/constants/images"
 import { cn } from "@/utils"
+import { isAvatarGlow } from "@/utils/user"
 
 const Avatar = ({
   className,
@@ -26,15 +31,37 @@ const Avatar = ({
 
 const AvatarImage = ({
   className,
+  donorTier,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) => (
-  <AvatarPrimitive.Image
-    data-slot="avatar-image"
-    // style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})` }}
-    className={cn("aspect-square size-full rounded-full overflow-hidden object-cover", `rounded-none bg-cover`, "bg-white", className)}
-    {...props}
-  />
-)
+}: { donorTier?: DonorTier } & React.ComponentProps<typeof AvatarPrimitive.Image>) => {
+  const PrimitiveAvatar = () => (
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      // style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})` }}
+      className={cn("aspect-square size-full rounded-full overflow-hidden object-cover", `rounded-none bg-cover`, "bg-white", className)}
+      {...props}
+    />
+  )
+
+  if (!donorTier) return <PrimitiveAvatar />
+
+  return (
+    <Tooltip>
+      <TooltipTrigger>
+        <PrimitiveAvatar />
+        {donorTier &&
+          (
+            <div className={cn("size-full text-transparent absolute aspect-square scale-200 top-[60%] left-1/2 -translate-1/2 pointer-events-none z-10", (isAvatarGlow(donorTier)) && "glow")} style={{ "--glow-mask": `url(${AVATAR_RANKS_BADGES_GLOW_URLS[donorTier]})` } as React.CSSProperties}>
+              <Image alt="gold avatar rank" height={800} width={800} src={AVATAR_RANKS_BADGES_URLS[donorTier]} className="size-full" />
+            </div>
+          )}
+      </TooltipTrigger>
+      <TooltipContent>
+        {donorTier} donor
+      </TooltipContent>
+    </Tooltip>
+  )
+}
 
 const AvatarFallback = ({
   className,
