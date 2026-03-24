@@ -115,6 +115,7 @@
   - [x] Add a way to play only on the map
   - [ ] Add donation rewards (new skin, etc...)
   - [ ] Implémenter le buy me coffee
+  - [ ] Supprimer le leaderboard collection
   - [ ] Make a sponsors part on the home page, with fake users to allow users to donate
   - [ ] Add e2e test for lobby playing, should click on the replay button
   - [ ] Add the possibility to change avatar in lobbies

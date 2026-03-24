@@ -1,81 +1,76 @@
-import { COUPON_EXPIRY_DAYS, DONOR_TIER_THRESHOLDS, DONOR_TIERS, TABLES } from "@repo/common"
+import { DONOR_TIERS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { FieldValue, Timestamp } from "firebase-admin/firestore"
-
-type DonorTier = (typeof DONOR_TIERS)[keyof typeof DONOR_TIERS]
-
-const TIER_RANK: Record<DonorTier, number> = {
-  [DONOR_TIERS.BRONZE]: 1,
-  [DONOR_TIERS.SILVER]: 2,
-  [DONOR_TIERS.GOLD]: 3,
-}
-
-const getTierFromCoffees = (coffees: number): DonorTier => {
-  if (coffees >= DONOR_TIER_THRESHOLDS[DONOR_TIERS.GOLD]) return DONOR_TIERS.GOLD
-  if (coffees >= DONOR_TIER_THRESHOLDS[DONOR_TIERS.SILVER]) return DONOR_TIERS.SILVER
-  return DONOR_TIERS.BRONZE
-}
-
-const getHigherTier = (a: DonorTier | null | undefined, b: DonorTier): DonorTier =>
-  !a || TIER_RANK[b] > TIER_RANK[a] ? b : a
-
-const generateCode = (): string =>
-  Math.random().toString(36).substring(2, 6).toUpperCase() +
-  Math.random().toString(36).substring(2, 6).toUpperCase()
+import z from "zod"
+import { createCoupon } from "@/app/api/webhooks/buymeacoffee/create-coupon"
+import { payloadSchema } from "@/app/api/webhooks/buymeacoffee/schema"
+import { MEMBERSHIPS_EVENTS, MEMBERSHIPS_ID } from "@/constants/mapping"
 
 export const POST = async (request: Request) => {
   try {
+    console.info(request.headers)
+
     const token = request.headers.get("Authorization")?.replace("Bearer ", "")
+
+    console.info(token)
+
     if (token !== process.env.BMC_WEBHOOK_SECRET) {
+      console.info("Unauthorized")
+
       return new Response("Unauthorized", { status: 401 })
     }
 
-    const { type, response: payload } = (await request.json()) as {
-      type: string
-      response: {
-        support_coffees: number
-        support_email: string
-        support_name: string
-      }
+    const p = (await request.json())
+
+    const parsedPayload = payloadSchema.safeParse(p)
+
+    if (!parsedPayload.success) {
+      console.error("Invalid payload:", parsedPayload.error)
+
+      return new Response("Bad Request", { status: 400 })
     }
 
-    if (type !== "coffee.purchased") {
+    const payload = parsedPayload.data
+    const { type, data: { supporter_email } } = payload
+
+    if (type === MEMBERSHIPS_EVENTS.CANCELLED) {
       return new Response("OK", { status: 200 })
     }
 
-    const { support_coffees, support_email, support_name } = payload
-    const tier = getTierFromCoffees(support_coffees)
+    const userSnapshot = await refs[TABLES.USERS].where("email", "==", supporter_email).limit(1).get()
+    const userDoc = userSnapshot.docs?.[0]
 
-    const usersSnapshot = await refs[TABLES.USERS].where("email", "==", support_email).limit(1).get()
+    const newTier = Object.entries(MEMBERSHIPS_ID).find(([_, id]) => id === payload.data.membership_level_id)?.[0]
 
-    if (!usersSnapshot.empty) {
-      const userDoc = usersSnapshot.docs[0]
-      const currentTier = userDoc.data().donorTier as DonorTier | null
-      const newTier = getHigherTier(currentTier, tier)
+    const parsedTier = z.enum(DONOR_TIERS).safeParse(newTier)
 
-      await userDoc.ref.update({ donorTier: newTier, updatedAt: FieldValue.serverTimestamp() })
-      return Response.json({ matched: true, tier: newTier })
+    if (!parsedTier.success) {
+      console.error("Unknown membership level ID:", payload.data.membership_level_id)
+
+      return new Response("Bad Request", { status: 400 })
     }
 
-    const expiresAt = Timestamp.fromDate(
-      new Date(Date.now() + COUPON_EXPIRY_DAYS * 24 * 60 * 60 * 1000),
-    )
+    if (userSnapshot.empty || !userDoc) {
+      await createCoupon(supporter_email, parsedTier.data)
 
-    const code = generateCode()
-    await refs[TABLES.COUPONS].add({
-      code,
-      tier,
-      bmcEmail: support_email,
-      claimedBy: null,
-      claimedAt: null,
-      createdAt: Timestamp.now(),
-      expiresAt,
-    })
+      console.info(`No user found with email ${supporter_email}, coupon created`)
 
-    console.info(`Coupon created for ${support_name} (${support_email}): ${code} [${tier}]`)
-    return Response.json({ matched: false, code, tier })
+      return new Response("OK", { status: 200 })
+    }
+
+    if (!newTier) {
+      console.error("Unknown membership level ID:", payload.data.membership_level_id)
+
+      return new Response("Bad Request", { status: 400 })
+    }
+
+    await refs[TABLES.USERS].doc(userDoc.id).update({ donorTier: parsedTier.data })
+
+    console.info(`User ${userDoc.id} updated with new donor tier: ${parsedTier.data}`)
+
+    return new Response("OK", { status: 200 })
   } catch (error) {
     console.error("Error in bmc-webhook:", error)
+
     return new Response("Internal Server Error", { status: 500 })
   }
 }

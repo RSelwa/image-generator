@@ -1,4 +1,4 @@
-import { DIFFICULTIES, DOCUMENTS_STATUS, SUGGESTIONS_TYPE } from "@repo/common"
+import { DIFFICULTIES, DOCUMENTS_STATUS, DONOR_TIERS, SUGGESTIONS_TYPE } from "@repo/common"
 
 export const IS_PLAYWRIGHT_EMULATOR = process.env.NEXT_PUBLIC_EMULATOR
 
@@ -127,3 +127,16 @@ export const LIMITED_MODAL_CONFIG: Record<string, { maxCount: number }> = {
   [LIMITED_MODAL_KEYS.DAILY_CHALLENGE]: { maxCount: 3 },
   // [LIMITED_MODAL_KEYS.NEW_FEATURE]: { maxCount: 3 },
 }
+
+export const MEMBERSHIPS_EVENTS = {
+  STARTED: "membership.started",
+  UPDATED: "membership.updated",
+  CANCELLED: "membership.cancelled",
+} as const
+
+export const MEMBERSHIPS_ID = {
+  [DONOR_TIERS.BRONZE]: 312700, // replace with actual ID
+  [DONOR_TIERS.SILVER]: 312701, // replace with actual ID
+  [DONOR_TIERS.GOLD]: 312702, // replace with actual ID
+  // [DONOR_TIERS.GOLD]: 5, // For testing
+} as const
