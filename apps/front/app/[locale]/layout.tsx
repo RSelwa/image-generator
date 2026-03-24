@@ -6,6 +6,7 @@ import { getMessages } from "next-intl/server"
 import { Geist } from "next/font/google"
 import localFont from "next/font/local"
 import { notFound } from "next/navigation"
+import Script from "next/script"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { Suspense } from "react"
 import { ModalProvider } from "@/components/modals"
@@ -86,6 +87,7 @@ export default async function LocaleLayout({
               </StoreProvider>
             </NuqsAdapter>
           </Suspense>
+          <Script src="https://cloud.umami.is/script.js" data-website-id="c5427705-3677-4189-8fbb-73c4e7510760" />
         </NextIntlClientProvider>
       </body>
     </html>
