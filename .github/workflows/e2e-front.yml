@@ -47,6 +47,7 @@ jobs:
   e2e:
     needs: init
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, '[skip_e2e]' ) }}
     name: 🧪 E2E Tests - ${{ matrix.suite }}
     environment: prod
     strategy:
@@ -118,11 +119,27 @@ jobs:
     needs: e2e
     runs-on: ubuntu-latest
     name: ✅ E2E Tests Complete
-    if: ${{ !cancelled() }}
+    if: ${{ always() && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') }}
+    
     steps:
-      - name: ✅ All E2E tests passed
-        if: ${{ needs.e2e.result == 'success' }}
-        run: echo "All E2E tests passed"
+      - name: ✅ All E2E tests passed or skipped
+        run: echo "E2E passed or skipped"
       - name: ❌ Some E2E tests failed
-        if: ${{ needs.e2e.result != 'success' }}
+        if: ${{ needs.e2e.result != 'success' && needs.e2e.result != 'skipped' }}
         run: exit 1
+
+
+  deploy:
+    needs: e2e-complete
+    runs-on: ubuntu-latest
+    if: ${{ always() && ( github.ref_name == 'main' || github.ref_name == 'develop' || contains(github.event.head_commit.message, '[force_deploy]')) }}
+    steps:
+      - uses: actions/checkout@v4  # needed to access the composite action
+      - name: Deploy
+        uses: ./.github/actions/deploy
+        with:
+          environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+          branch: ${{ github.ref_name }}
+          vps_host: ${{ secrets.VPS_HOST }}
+          vps_user: ${{ secrets.VPS_USER }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}

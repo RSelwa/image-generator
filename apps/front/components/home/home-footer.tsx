@@ -78,7 +78,7 @@ const HomeFooter = () => {
                     {new Date().getFullYear()}
                     . {t("allRightsReserved")}
                     {" "}
-                    <Link href={PORTFOLIO_LINK} target="_blank" className="underline">me</Link>
+                    <Link href={PORTFOLIO_LINK} target="_blank" className="underline">ME</Link>
                     . {t("interfacesBy")}
                     {" "}
                     <Link href={UMA_STUDIO_URL} target="_blank" className="underline">UMA Studio</Link>

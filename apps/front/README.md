@@ -346,3 +346,7 @@ Check for .env.example for environnement variables to setup
 Put the service account at the root of the repo
 export GOOGLE_APPLICATION_CREDENTIALS="./service-account.json"
 echo $GOOGLE_APPLICATION_CREDENTIALS
+
+## PM 2 Commands
+pm2 start pnpm --name "dev" -- -F @repo/front start -p 3001 <!-- OR 3000 -->
+Two pm2 environment "dev" and "prod"
