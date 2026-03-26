@@ -5,15 +5,17 @@ export const IMAGES_URLS = {
   LOGIN: "/login.jpg",
   ANONYMOUS: "/anonymous-lobby-finished.jpg",
   ARTICLES: {
-    MULTIPLAYER: "/articles/multiplayer.webp",
+    MULTIPLAYER: "/articles/multiplayer.jpg",
     SCENES: "/articles/scenes.webp",
-    SPECIAL_ROUNDS: "/articles/special-rounds.webp",
+    SPECIAL_ROUNDS: "/articles/special-rounds.jpg",
+    SPECIAL_ROUNDS_LARGE: "/articles/special-rounds-large.jpg",
     DAILY_CHALLENGES: "/pubs/daily-challenge.jpg",
     RACE: "/articles/race-mode.jpg",
 
   },
   PUBS: {
-    DAILY_CHALLENGE: "/pubs/daily-challenge.jpg"
+    DAILY_CHALLENGE: "/pubs/daily-challenge.jpg",
+    RACE_MODE: "/pubs/race-mode.jpg"
   }
 } as const
 

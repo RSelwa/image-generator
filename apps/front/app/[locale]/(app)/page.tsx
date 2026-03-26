@@ -8,7 +8,7 @@ import HomeFooter from "@/components/home/home-footer"
 import { HomeLeaderboard } from "@/components/home/home-leaderboard"
 import { HomeStrips } from "@/components/home/home-strips"
 import { Instagram, LogoWithIcon, MiniStrips, TikTok } from "@/components/icons"
-import DailyChallengePub from "@/components/modals/daily-challenge-pub"
+import { RaceModePub } from "@/components/modals/race-mode-pub"
 import { Button } from "@/components/ui/button"
 import { ARTICLES, HOME_ARTICLES } from "@/constants/articles"
 import { PAGES } from "@/constants/pages"
@@ -109,7 +109,7 @@ const Page = async () => {
         <Image src={ARTICLES.MULTIPLAYER.imageLink} alt="Geo Gamer multiplayer session" height={650} width={650} className="size-full" />
       </section>
       <section className="relative flex flex-col">
-        <Image src={ARTICLES.SPECIAL_ROUNDS.imageLink} alt="Special Rounds feature" height={650} width={650} className="w-full lg:h-full-height object-cover" />
+        <Image src={ARTICLES.SPECIAL_ROUNDS.imageLinkLarge} alt="Special Rounds feature" height={650} width={650} className="w-full lg:h-full-height object-cover" />
         <ArticlesDescription
           subTitle={t("customizeGame")}
           title={t("specialRounds")}
@@ -120,7 +120,7 @@ const Page = async () => {
         />
       </section>
       <HomeFooter />
-      <DailyChallengePub />
+      <RaceModePub />
     </main>
   )
 }

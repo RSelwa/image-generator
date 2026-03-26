@@ -222,5 +222,15 @@
     "seeMore": "Voir plus",
     "learnMore": "En savoir plus",
     "submit": "Envoyer"
+  },
+  "racePage": {
+    "createRace": "Créer une course",
+    "joinRace": "Rejoindre une course",
+    "description": "A fresh seed will be generated automatically when you start."
+  },
+  "raceMode": {
+    "title": "Mode Course",
+    "description": "Affrontez le temps dans ce mode de jeu rapide et intense. Chaque seconde compte. Parfait pour les joueurs qui aiment la pression et veulent tester leurs connaissances.",
+    "playNow": "Jouer au mode Course"
   }
 }

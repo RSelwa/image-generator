@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -10,6 +11,8 @@ import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
 const Page = () => {
+  const t = useTranslations("racePage")
+
   const router = useRouter()
   const user = useAppSelector(selectUser)
 
@@ -50,8 +53,8 @@ const Page = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl">
         {/* Create */}
         <section className="space-y-4 p-6 rounded-xl border">
-          <h2 className="text-xl font-semibold">Create a race</h2>
-          <p className="text-sm text-muted-foreground">A fresh seed will be generated automatically when you start.</p>
+          <h2 className="text-xl font-semibold">{t("createRace")}</h2>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
           <Button
             className="w-full"
             disabled={isCreating}
@@ -63,7 +66,7 @@ const Page = () => {
 
         {/* Join */}
         <section className="space-y-4 p-6 rounded-xl border">
-          <h2 className="text-xl font-semibold">Join a race</h2>
+          <h2 className="text-xl font-semibold">{t("joinRace")}</h2>
           <Input
             value={joinCode}
             onChange={(e) => {

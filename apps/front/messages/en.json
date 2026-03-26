@@ -37,8 +37,7 @@
     "mySeeds": "My Seeds",
     "seedMaker": "Seed Maker",
     "play": "Play",
-    "about": "About",
-    "logout": "Logout"
+    "about": "About"
   },
   "auth": {
     "loginTitle": "Login",
@@ -223,5 +222,15 @@
     "seeMore": "See more",
     "learnMore": "Learn more",
     "submit": "Submit"
+  },
+  "racePage": {
+    "createRace": "Create a race",
+    "joinRace": "Join a race",
+    "description": "A fresh seed will be generated automatically when you start."
+  },
+  "raceMode": {
+    "title": "Race Mode",
+    "description": "Race against the clock in this fast-paced, high-intensity game mode. Every second counts. Perfect for players who thrive under pressure and want to test their knowledge.",
+    "playNow": "Play Race Mode"
   }
 }

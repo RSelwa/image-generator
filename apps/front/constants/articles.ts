@@ -19,6 +19,7 @@ export const ARTICLES = {
     title: "Special Rounds",
     description: "Hand-pick scenes for each round and craft your own custom challenges",
     imageLink: IMAGES_URLS.ARTICLES.SPECIAL_ROUNDS,
+    imageLinkLarge: IMAGES_URLS.ARTICLES.SPECIAL_ROUNDS_LARGE,
     href: PAGES.BLOG(BLOG_POSTS.SPECIAL_ROUNDS.slug),
   },
   DAILY_CHALLENGES: {

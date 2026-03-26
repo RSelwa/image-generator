@@ -120,11 +120,13 @@ export const STORAGE_KEYS = {
 
 export const LIMITED_MODAL_KEYS = {
   DAILY_CHALLENGE: "daily-challenge-v1",
+  RACE_MODE: "race-mode-v1",
   // NEW_FEATURE: "new-feature-v1",
 } as const
 
 export const LIMITED_MODAL_CONFIG: Record<string, { maxCount: number }> = {
   [LIMITED_MODAL_KEYS.DAILY_CHALLENGE]: { maxCount: 3 },
+  [LIMITED_MODAL_KEYS.RACE_MODE]: { maxCount: 3 },
   // [LIMITED_MODAL_KEYS.NEW_FEATURE]: { maxCount: 3 },
 }
 
