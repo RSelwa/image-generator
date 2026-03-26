@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { getIdFromFirestoreRef, TABLES } from "@repo/common"
+import { DOCUMENTS_STATUS, getIdFromFirestoreRef, TABLES } from "@repo/common"
 import {
   type CreateSphericalInput,
   createSphericalInputSchema,
@@ -24,6 +24,7 @@ import {
   startAfter,
   Timestamp,
   updateDoc,
+  where,
 } from "firebase/firestore"
 import { toast } from "sonner"
 // Need to use the React-specific entry point to import createApi
@@ -44,16 +45,18 @@ export const sphericalApi = createApi({
   endpoints: (builder) => ({
     getSphericals: builder.infiniteQuery<
       SphericalEntity[],
-      void,
+      { hideReady?: boolean },
       { limit?: number, startAfter?: Timestamp | null }
     >({
-      queryFn: async ({ pageParam }, { dispatch }) => {
+      queryFn: async ({ queryArg, pageParam }, { dispatch }) => {
         try {
           const constraints: QueryConstraint[] = [orderBy("createdAt", "desc")]
 
-          if (pageParam.startAfter) {
+          if (queryArg.hideReady)
+            constraints.push(where("status", "!=", DOCUMENTS_STATUS.READY))
+
+          if (pageParam.startAfter)
             constraints.push(startAfter(pageParam.startAfter))
-          }
 
           if (pageParam.limit)
             constraints.push(limit(pageParam.limit))
@@ -75,7 +78,7 @@ export const sphericalApi = createApi({
                 }),
               ).unwrap()
 
-                const docWithId = sphericalDocWithIdSchema.parse({ id: doc.id, ...doc.data(), gameId })
+              const docWithId = sphericalDocWithIdSchema.parse({ id: doc.id, ...doc.data(), gameId })
               const data = toSphericalEntity(docWithId, game)
 
               if (!data)

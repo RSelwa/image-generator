@@ -42,7 +42,7 @@ const NewSocial = () => {
 
     const [createSocial] = useCreateSocialMutation()
 
-    const { data } = useGetSphericalsInfiniteQuery()
+    const { data } = useGetSphericalsInfiniteQuery({})
     const allSphericals = data?.pages.flat() || []
 
     const {

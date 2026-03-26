@@ -17,17 +17,24 @@ import { useDeleteSphericalMutation, useGetSphericalsInfiniteQuery } from "@/red
 const Page = () => {
   const { openModal } = useModal(MODAL_KEYS.EDIT_SPHERICAL_ID, NEW_SEARCH_PARAM)
 
-  const [deleteSpherical] = useDeleteSphericalMutation()
-  const { data, isLoading, isFetching, hasNextPage, fetchNextPage, refetch } = useGetSphericalsInfiniteQuery()
-
+  const [hideReady, setHideReady] = useState<boolean>(false)
   const [input, setInput] = useState("")
   const [checkedIds, setCheckedIds] = useState<string[]>([])
+
+  const [deleteSpherical] = useDeleteSphericalMutation()
+  const { data, isLoading, isFetching, hasNextPage, fetchNextPage, refetch } = useGetSphericalsInfiniteQuery({
+    hideReady
+  })
 
   const sphericals = data?.pages.flat() || []
   const filteredSphericals = sphericals.filter((spherical) => spherical.id.includes(input) || spherical.game?.title?.toLowerCase().includes(input.toLowerCase()))
 
   const hasChecked = checkedIds.length > 0
   const isAllChecked = filteredSphericals.length > 0 && filteredSphericals.every((s) => checkedIds.includes(s.id))
+
+  const onCheckedReadyChange = (checked: boolean) => {
+    setHideReady(checked)
+  }
 
   const toggleAllChecked = (value: boolean) => {
     setCheckedIds(value ? filteredSphericals.map((s) => s.id) : [])
@@ -72,6 +79,10 @@ const Page = () => {
           </InputGroupAddon>
           <InputGroupInput value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search by id or game" autoComplete="off" />
         </InputGroup>
+        <div className="space-x-2">
+          <Checkbox id="hide-ready" className="size-" checked={hideReady} onCheckedChange={onCheckedReadyChange} />
+          <label htmlFor="hide-ready" className="text-sm cursor-pointer select-none">Hide ready sphericals</label>
+        </div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="marathon-destructive" className="lg:ml-auto" disabled={!hasChecked}>
