@@ -132,7 +132,7 @@ jobs:
   deploy:
     needs: e2e-complete
     runs-on: ubuntu-latest
-    if: ${{ always() && ( github.ref_name == 'main' || github.ref_name == 'develop' || contains(github.event.head_commit.message, '[force_deploy]')) }}
+    if: ${{ needs.e2e-complete.result == 'success' && ( github.ref_name == 'main' || github.ref_name == 'develop' || contains(github.event.head_commit.message, '[force_deploy]')) }}
     steps:
       - uses: actions/checkout@v4  # needed to access the composite action
       - name: Deploy
