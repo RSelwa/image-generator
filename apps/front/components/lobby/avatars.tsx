@@ -2,21 +2,25 @@ import { type Player } from "@repo/schemas"
 import { Crown } from "lucide-react"
 import { Fragment } from "react/jsx-runtime"
 import { toast } from "sonner"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
 import { usePathname } from "@/i18n/routing"
 import { useExcludePlayerMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { firstLetter, getLobbyIdFromPathname } from "@/utils"
-import { getAvatarUrl } from "@/utils/file"
+import { getLobbyIdFromPathname } from "@/utils"
 
 const AvatarPlayer = ({ p, isOwner, isOnlyPlayer }: { p: Player, isOwner?: boolean, isOnlyPlayer?: boolean }) => (
-  <Avatar>
-    <AvatarImage donorTier={p.donorTier} data-ready={p.isReady || isOnlyPlayer} className="data-[ready=true]:bg-ready  data-[ready=false]:bg-destructive" src={getAvatarUrl(p.avatar)} />
-    <AvatarFallback className="font-bold">{firstLetter(p.name)}</AvatarFallback>
-    {isOwner && <Crown className="absolute fill-primary -top-4 left-1/2 -translate-x-1/2 stroke-0 size-4 z-50" />}
-  </Avatar>
+  <UserAvatar
+    avatar={p.avatar}
+    name={p.name}
+    donorTier={p.donorTier}
+    fallbackClassName="font-bold"
+    imageClassName={`data-[ready=true]:bg-ready data-[ready=false]:bg-destructive`}
+    imageData={{ "data-ready": p.isReady || isOnlyPlayer }}
+    action={isOwner && <Crown className="absolute fill-primary -top-4 left-1/2 -translate-x-1/2 stroke-0 size-4 z-50" />}
+  />
 )
 
 export const LobbyAvatars = () => {

@@ -10,7 +10,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { AuthGuard } from "@/components/guards/auth-guard"
 import Loader from "@/components/icons/loader"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
@@ -19,7 +19,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useUpdateUserDocMutation } from "@/redux/api/user"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { firstLetter } from "@/utils"
 import { getAvatarKeyFromUrl, getAvatarUrl } from "@/utils/file"
 
 const formSchema = z.object({
@@ -81,7 +80,6 @@ const AccountForm = () => {
   if (!user) return null
 
   const watchAvatar = watch("avatar")
-  const avatar = getAvatarUrl(watchAvatar || user.avatar)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -93,12 +91,7 @@ const AccountForm = () => {
           </div>
           <Popover>
             <PopoverTrigger>
-              <Avatar className="size-20">
-                <AvatarImage donorTier={user.donorTier} src={avatar} alt={user.pseudo} />
-                <AvatarFallback className="rounded-lg text-2xl">
-                  {firstLetter(user.pseudo)}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar avatar={watchAvatar || user.avatar} name={user.pseudo} donorTier={user.donorTier} className="size-20" fallbackClassName="rounded-lg text-2xl" />
             </PopoverTrigger>
             <PopoverContent align="end" className="w-auto grid grid-cols-4 gap-4">
               {Object.values(AVATARS_KEYS).map((avatarKey) => (

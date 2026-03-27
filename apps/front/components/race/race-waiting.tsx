@@ -2,7 +2,7 @@
 
 import { type RaceDocWithId } from "@repo/schemas"
 import { Users } from "lucide-react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { Button } from "@/components/ui/button"
 import { usePrepareAndStartRaceMutation } from "@/redux/api/race"
 import { selectUserId } from "@/redux/session/session.selectors"
@@ -29,9 +29,7 @@ const RaceWaiting = ({ race }: { race: RaceDocWithId }) => {
         </div>
         {race.players.map((player) => (
           <div key={player.uid} className="flex items-center gap-3 p-3 rounded-lg border">
-            <Avatar className="size-8">
-              <AvatarFallback>{player.name?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
-            </Avatar>
+            <UserAvatar name={player.name || "?"} className="size-8" />
             <span className="font-medium">{player.name}</span>
             {player.uid === race.hostId && (
               <span className="ml-auto text-xs text-muted-foreground">host</span>

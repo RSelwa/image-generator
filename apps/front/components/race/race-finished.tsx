@@ -2,7 +2,7 @@
 
 import { type RaceDocWithId } from "@repo/schemas"
 import { Trophy } from "lucide-react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { Button } from "@/components/ui/button"
 import { PAGES } from "@/constants/pages"
 import { Link } from "@/i18n/routing"
@@ -34,9 +34,7 @@ const RaceFinished = ({ race }: { race: RaceDocWithId }) => {
               className={`flex items-center gap-3 p-3 rounded-lg border ${isMe ? "border-primary bg-primary/5" : ""}`}
             >
               <span className="font-mono font-bold w-6 text-muted-foreground">{i + 1}.</span>
-              <Avatar className="size-8">
-                <AvatarFallback>{player?.name?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
-              </Avatar>
+              <UserAvatar name={player?.name || "?"} className="size-8" />
               <span className="font-medium flex-1">{player?.name || run.uid}</span>
               <span data-testid={`race-finished-score-${run.uid}`} className="font-mono font-bold text-primary">{run.score} pts</span>
               <span data-testid={`race-finished-rounds-${run.uid}`} className="text-xs text-muted-foreground">{run.answers.length} rounds</span>

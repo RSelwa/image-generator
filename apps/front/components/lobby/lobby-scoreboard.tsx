@@ -1,8 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { usePathname } from "@/i18n/routing"
 import { useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { firstLetter, getLobbyIdFromPathname } from "@/utils"
-import { getAvatarUrl } from "@/utils/file"
+import { getLobbyIdFromPathname } from "@/utils"
 
 const LobbyScoreboard = () => {
     const pathname = usePathname()
@@ -27,10 +26,7 @@ const LobbyScoreboard = () => {
                     style={{ animationDelay: `${(allPlayersLength - index) * 1000}ms`, animationFillMode: "both", animationDuration: "400ms" }}
                 >
                     <span className="text-muted-foreground font-shapiro-wide font-bold w-6 text-center">#{index + 1}</span>
-                    <Avatar size="sm">
-                        <AvatarImage donorTier={player.donorTier} src={getAvatarUrl(player.avatar)} />
-                        <AvatarFallback className="font-bold">{firstLetter(player.name)}</AvatarFallback>
-                    </Avatar>
+                    <UserAvatar size="sm" avatar={player.avatar} name={player.name} donorTier={player.donorTier} fallbackClassName="font-bold" />
                     <span className="font-medium flex-1 truncate font-mono">{player.name}</span>
                     <span className="font-bold text-primary">{player.score}</span>
                 </div>

@@ -17,7 +17,7 @@ import {
 import { useTranslations } from "next-intl"
 import { useRef } from "react"
 import { HelperMenuContent } from "@/components/helper"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,8 +35,7 @@ import { useLogoutMutation } from "@/redux/api/auth"
 import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAdmin, selectUser, selectUserSteak } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { cn, firstLetter } from "@/utils"
-import { getAvatarUrl } from "@/utils/file"
+import { cn } from "@/utils"
 import { isTextGlow } from "@/utils/user"
 
 export const NavUser = () => {
@@ -77,10 +76,7 @@ export const NavUser = () => {
         <div className={cn("grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight", isTextGlow(user.donorTier) && "glow-text")}>
           {user.pseudo}
         </div>
-        <Avatar className="size-9">
-          <AvatarImage donorTier={user.donorTier} src={getAvatarUrl(user.avatar)} alt={user.email} />
-          <AvatarFallback>{firstLetter(user.pseudo)}</AvatarFallback>
-        </Avatar>
+        <UserAvatar avatar={user.avatar} name={user.pseudo} donorTier={user.donorTier} className="size-9" />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-(--radix-dropdown-menu-trigger-width) min-w-56"

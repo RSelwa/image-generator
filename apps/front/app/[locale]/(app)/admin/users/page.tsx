@@ -6,7 +6,7 @@ import { useQueryState } from "nuqs"
 import { useCallback, useRef, useState } from "react"
 import OpenFirestoreDoc from "@/components/open-firestore"
 import SheetAdminUser from "@/components/sheet/user-admin"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
@@ -16,7 +16,6 @@ import { getUserRef } from "@/constants/db-refs"
 import { QUERY_PARAMS } from "@/constants/mapping"
 import { useGetUsersCountQuery, useGetUsersInfiniteQuery } from "@/redux/api/user"
 import { getBadgeVariantByDate } from "@/utils/badge"
-import { getAvatarUrl } from "@/utils/file"
 
 const Page = () => {
   const [_, setUserId] = useQueryState(QUERY_PARAMS.USER_ID)
@@ -90,9 +89,7 @@ const Page = () => {
                   <TableCell className="max-w-20 truncate"><OpenFirestoreDoc docRef={getUserRef(user.id)} />{user.id} </TableCell>
                   <TableCell className="font-medium flex items-center gap-2">
                     {user.avatar && (
-                      <Avatar className="size-9">
-                        <AvatarImage donorTier={user.donorTier} src={getAvatarUrl(user.avatar)} alt={user.email} />
-                      </Avatar>
+                      <UserAvatar avatar={user.avatar} name={user.pseudo || user.email || ""} donorTier={user.donorTier} className="size-9" />
                     )}
                     <div className="flex flex-col justify-start">
                       <span>

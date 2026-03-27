@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import Loader from "@/components/icons/loader"
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -19,7 +19,6 @@ import { useModal } from "@/hooks/use-modal"
 import { useUpdateUserDocMutation } from "@/redux/api/user"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { firstLetter } from "@/utils"
 import { getAvatarKeyFromUrl, getAvatarUrl } from "@/utils/file"
 
 const key = MODAL_KEYS.CHANGE_PSEUDO
@@ -70,7 +69,6 @@ const ChangePseudoModal = () => {
   if (!user) return null
 
   const watchAvatar = watch("avatar")
-  const avatar = watchAvatar ? getAvatarUrl(watchAvatar) : user.avatar
 
   return (
     <AlertDialog open>
@@ -85,12 +83,7 @@ const ChangePseudoModal = () => {
           <div className="w-full flex items-center gap-2">
             <Popover>
               <PopoverTrigger>
-                <Avatar className="size-20">
-                  <AvatarImage src={avatar || ""} alt={user.pseudo} />
-                  <AvatarFallback className="rounded-lg text-2xl">
-                    {firstLetter(user.pseudo)}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar avatar={watchAvatar || undefined} name={user.pseudo} donorTier={user.donorTier} className="size-20" fallbackClassName="rounded-lg text-2xl" />
               </PopoverTrigger>
               <PopoverContent align={isMobile ? "start" : "center"} className="w-auto grid grid-cols-4 gap-4">
                 {Object.values(AVATARS_KEYS).map((avatarKey) => (
