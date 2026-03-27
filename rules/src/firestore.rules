@@ -188,6 +188,17 @@ service cloud.firestore {
       allow read, write: if signedInAdmin();
     }
 
+    // Messages collection - admin writes, target user/lobby members can read and update seenBy
+    match /messages/{messageId} {
+      allow create, delete: if signedInAdmin();
+      allow read: if isSignedIn() && (
+        resource.data.targetId == request.auth.uid
+        || resource.data.targetType == "lobby"
+      );
+      allow update: if isSignedIn()
+        && onlyUpdatesFields(["seenBy"]);
+    }
+
     // CollectionGroup queries
     match /{path=**}/spherical/{spherical} {
       allow write: if signedInAdmin();
