@@ -26,6 +26,7 @@ export const TABLES = {
 export const METADATA_DOCS = {
   GAMES_LIST: "gamesList",
   DAILY_CHALLENGE_HISTORY: "dailyChallengeHistory",
+  READY_IMAGES: "readyImages",
 } as const
 
 export const STORAGE_PATHS = {

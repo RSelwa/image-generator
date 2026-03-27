@@ -1,6 +1,6 @@
-import { DIFFICULTIES, DOCUMENTS_STATUS, METADATA_DOCS, mockedImageURL, TABLES } from "@repo/common"
+import { DIFFICULTIES, DOCUMENTS_STATUS, METADATA_DOCS, mockedImageURL, mockedSphericalImageURL, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
-import { type GamesListDoc } from "@repo/schemas"
+import { type ReadyImagesDoc } from "@repo/schemas"
 import { flatFactory, gameFactory, sphericalFactory } from "@repo/testing/factory"
 import firebaseFunctionsTest from "firebase-functions-test"
 import { makeDocumentSnapshot } from "firebase-functions-test/lib/providers/firestore"
@@ -420,5 +420,168 @@ describe("listen games docs changes for gamesList metadata", () => {
     const data = await getGamesListData()
 
     expect(data?.games).toEqual([{ id: game2.id, title: game2.title }])
+  })
+})
+
+const getReadyImagesData = async (): Promise<ReadyImagesDoc> => {
+  const doc = await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).get()
+  const data = doc.data() as ReadyImagesDoc | undefined
+
+  return data || { sphericals: [], flats: [] }
+}
+
+describe("listen sphericals docs changes for readyImages metadata", () => {
+  it("should add a spherical to readyImages when status becomes ready", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_spherical_written)
+
+    const game = gameFactory({})
+    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.WAITING })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+
+    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
+    const after = makeDocumentSnapshot({ ...spherical, status: DOCUMENTS_STATUS.READY }, getSphericalPath(game.id, spherical.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { sphericalId: spherical.id, gameId: game.id },
+    })
+
+    const data = await getReadyImagesData()
+
+    expect(data.sphericals).toEqual([{ id: spherical.id, gameId: game.id, image: mockedSphericalImageURL }])
+  })
+
+  it("should remove a spherical from readyImages when status changes from ready to another status", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_spherical_written)
+
+    const game = gameFactory({})
+    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({
+      sphericals: [{ id: spherical.id, gameId: game.id, image: mockedSphericalImageURL }],
+      flats: [],
+    })
+
+    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
+    const after = makeDocumentSnapshot({ ...spherical, status: DOCUMENTS_STATUS.WAITING }, getSphericalPath(game.id, spherical.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { sphericalId: spherical.id, gameId: game.id },
+    })
+
+    const data = await getReadyImagesData()
+
+    expect(data.sphericals).toEqual([])
+  })
+
+  it("should update the image in readyImages when a ready spherical image changes", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_spherical_written)
+
+    const game = gameFactory({})
+    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({
+      sphericals: [{ id: spherical.id, gameId: game.id, image: mockedSphericalImageURL }],
+      flats: [],
+    })
+
+    const newImage = "https://example.com/new-image.jpg"
+    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
+    const after = makeDocumentSnapshot({ ...spherical, image: newImage }, getSphericalPath(game.id, spherical.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { sphericalId: spherical.id, gameId: game.id },
+    })
+
+    const data = await getReadyImagesData()
+
+    expect(data.sphericals).toEqual([{ id: spherical.id, gameId: game.id, image: newImage }])
+  })
+
+  it("should not modify readyImages when a non-ready spherical is updated without status change", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_spherical_written)
+
+    const game = gameFactory({})
+    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.WAITING })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({ sphericals: [], flats: [] })
+
+    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
+    const after = makeDocumentSnapshot({ ...spherical, difficulty: DIFFICULTIES.MEDIUM }, getSphericalPath(game.id, spherical.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { sphericalId: spherical.id, gameId: game.id },
+    })
+
+    const data = await getReadyImagesData()
+
+    expect(data.sphericals).toEqual([])
+  })
+
+  it("should keep other sphericals when removing one from readyImages", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_spherical_written)
+
+    const game = gameFactory({})
+    const spherical1 = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
+    const spherical2 = sphericalFactory({ gameId: game.id, image: "https://example.com/2.jpg", status: DOCUMENTS_STATUS.READY })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical1.id).set(spherical1)
+    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical2.id).set(spherical2)
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({
+      sphericals: [
+        { id: spherical1.id, gameId: game.id, image: mockedSphericalImageURL },
+        { id: spherical2.id, gameId: game.id, image: "https://example.com/2.jpg" },
+      ],
+      flats: [],
+    })
+
+    const before = makeDocumentSnapshot(spherical1, getSphericalPath(game.id, spherical1.id))
+    const after = makeDocumentSnapshot({ ...spherical1, status: DOCUMENTS_STATUS.WAITING }, getSphericalPath(game.id, spherical1.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { sphericalId: spherical1.id, gameId: game.id },
+    })
+
+    const data = await getReadyImagesData()
+
+    expect(data.sphericals).toEqual([{ id: spherical2.id, gameId: game.id, image: "https://example.com/2.jpg" }])
+  })
+
+  it("should remove a spherical from readyImages when it is deleted", async () => {
+    const cloudFnWrap = test.wrap(listen_doc_spherical_written)
+
+    const game = gameFactory({})
+    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
+
+    await refs[TABLES.GAMES].doc(game.id).set(game)
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({
+      sphericals: [{ id: spherical.id, gameId: game.id, image: mockedSphericalImageURL }],
+      flats: [],
+    })
+
+    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
+    const after = makeDocumentSnapshot({}, getSphericalPath(game.id, spherical.id))
+
+    await cloudFnWrap({
+      data: { before, after },
+      params: { sphericalId: spherical.id, gameId: game.id },
+    })
+
+    const data = await getReadyImagesData()
+
+    expect(data.sphericals).toEqual([])
   })
 })

@@ -1,7 +1,7 @@
-import { RACE_SEED_EXTENSION_THRESHOLD, RACE_SEED_IMAGE_FETCH_LIMIT, RACE_SEED_ROUNDS_PER_EXTENSION, shuffle, TABLES } from "@repo/common"
-import { collectionGroupRefs, refs } from "@repo/providers/db-refs"
-import { type MarathonSeedDoc, type MarathonSeedRound } from "@repo/schemas"
-import { FieldPath, getFirestore } from "firebase-admin/firestore"
+import { METADATA_DOCS, RACE_SEED_EXTENSION_THRESHOLD, RACE_SEED_ROUNDS_PER_EXTENSION, shuffle, TABLES } from "@repo/common"
+import { refs } from "@repo/providers/db-refs"
+import { type MarathonSeedDoc, type MarathonSeedRound, type ReadyImagesDoc } from "@repo/schemas"
+import { getFirestore } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 
 export const populateRaceSeed = async (seedId: string, playerCurrentIndex: number) => {
@@ -23,48 +23,26 @@ export const populateRaceSeed = async (seedId: string, playerCurrentIndex: numbe
     return seed
   }
 
-  // Build exclude sets for client-side deduplication
-  const sphericalIdsInSeed = seed.rounds.filter((r) => r.sphericalId).map((r) => r.sphericalId) as string[]
-  const flatIdsInSeed = seed.rounds.filter((r) => r.flatId).map((r) => r.flatId) as string[]
+  // Build exclude sets for deduplication
+  const sphericalIdsInSeed = new Set(seed.rounds.filter((r) => r.sphericalId).map((r) => r.sphericalId))
+  const flatIdsInSeed = new Set(seed.rounds.filter((r) => r.flatId).map((r) => r.flatId))
 
-  // Determine startAfter cursors from the last rounds that had each type
-  const lastSphericalRound = [...seed.rounds].reverse().find((r) => r.sphericalId)
-  const lastFlatRound = [...seed.rounds].reverse().find((r) => r.flatId)
+  // Read ready images from the single metadata doc instead of querying all sphericals/flats
+  const readyImagesSnap = await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).get()
+  const readyImages = (readyImagesSnap.data() as ReadyImagesDoc | undefined) || { sphericals: [], flats: [] }
 
-  const lastSphericalPath = lastSphericalRound ? `${TABLES.GAMES}/${lastSphericalRound.gameId}/${TABLES.SPHERICAL}/${lastSphericalRound.sphericalId}` : null
-  const lastFlatPath = lastFlatRound ? `${TABLES.GAMES}/${lastFlatRound.gameId}/${TABLES.FLAT}/${lastFlatRound.flatId}` : null
-
-  // Fetch sphericals and flats starting after the last known document to always get fresh images
-  const baseSphericalQuery = collectionGroupRefs[TABLES.SPHERICAL].orderBy(FieldPath.documentId())
-  const baseFlatQuery = collectionGroupRefs[TABLES.FLAT].orderBy(FieldPath.documentId())
-
-  const sphericalsQuery = lastSphericalPath
-    ? baseSphericalQuery.startAfter(lastSphericalPath).limit(RACE_SEED_IMAGE_FETCH_LIMIT)
-    : baseSphericalQuery.limit(RACE_SEED_IMAGE_FETCH_LIMIT)
-
-  const flatsQuery = lastFlatPath
-    ? baseFlatQuery.startAfter(lastFlatPath).limit(RACE_SEED_IMAGE_FETCH_LIMIT)
-    : baseFlatQuery.limit(RACE_SEED_IMAGE_FETCH_LIMIT)
-
-  const [sphericalsSnap, flatsSnap] = await Promise.all([sphericalsQuery.get(), flatsQuery.get()])
-
-  // Build candidate rounds, client-side filter duplicates missed by the capped not-in
   const candidates: MarathonSeedRound[] = []
 
-  for (const doc of sphericalsSnap.docs) {
-    const data = doc.data()
+  for (const s of readyImages.sphericals) {
+    if (!s.image || sphericalIdsInSeed.has(s.id)) continue
 
-    if (!data.image || sphericalIdsInSeed.includes(doc.id)) continue
-
-    candidates.push({ gameId: data.gameId, sphericalId: doc.id, sphericalImageUrl: data.image, flatId: null, flatImageUrl: null })
+    candidates.push({ gameId: s.gameId, sphericalId: s.id, sphericalImageUrl: s.image, flatId: null, flatImageUrl: null })
   }
 
-  for (const doc of flatsSnap.docs) {
-    const data = doc.data()
+  for (const f of readyImages.flats) {
+    if (!f.image || flatIdsInSeed.has(f.id)) continue
 
-    if (!data.image || flatIdsInSeed.includes(doc.id)) continue
-
-    candidates.push({ gameId: data.gameId, sphericalId: null, sphericalImageUrl: null, flatId: doc.id, flatImageUrl: data.image })
+    candidates.push({ gameId: f.gameId, sphericalId: null, sphericalImageUrl: null, flatId: f.id, flatImageUrl: f.image })
   }
 
   if (candidates.length === 0) {

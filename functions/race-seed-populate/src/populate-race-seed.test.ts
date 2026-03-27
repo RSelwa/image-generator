@@ -1,7 +1,7 @@
-import { mockedSphericalImageURL, RACE_SEED_EXTENSION_THRESHOLD, TABLES } from "@repo/common"
-import { collectionGroupRefs, refs, subRefs } from "@repo/providers/db-refs"
+import { METADATA_DOCS, mockedSphericalImageURL, RACE_SEED_EXTENSION_THRESHOLD, TABLES } from "@repo/common"
+import { refs } from "@repo/providers/db-refs"
 import { type DecodedIdToken } from "@repo/providers/firebase"
-import { type MarathonSeedDoc, type MarathonSeedDocWithId } from "@repo/schemas"
+import { type MarathonSeedDoc, type MarathonSeedDocWithId, type ReadyImagesDoc } from "@repo/schemas"
 import { gameFactory, marathonSeedFactory, sphericalFactory } from "@repo/testing/factory"
 import { getFirestore } from "firebase-admin/firestore"
 import firebaseFunctionsTest from "firebase-functions-test"
@@ -31,6 +31,10 @@ const createSeed = async (overrides: Partial<MarathonSeedDocWithId> = {}): Promi
   return seedData
 }
 
+const setReadyImages = async (readyImages: ReadyImagesDoc) => {
+  await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set(readyImages)
+}
+
 const seedRound = (gameId: string, sphericalId: string) => ({
   gameId,
   sphericalId,
@@ -41,9 +45,7 @@ const seedRound = (gameId: string, sphericalId: string) => ({
 
 beforeEach(async () => {
   await cleanupCollection(refs[TABLES.MARATHON_SEEDS])
-  await cleanupCollection(refs[TABLES.GAMES])
-  await cleanupCollection(collectionGroupRefs[TABLES.SPHERICAL])
-  await cleanupCollection(collectionGroupRefs[TABLES.FLAT])
+  await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).delete()
 })
 
 describe("populateRaceSeed", () => {
@@ -57,8 +59,7 @@ describe("populateRaceSeed", () => {
     const game = gameFactory({})
     const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
 
-    await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+    await setReadyImages({ sphericals: [{ id: spherical.id, gameId: game.id, image: spherical.image }], flats: [] })
 
     const existingRounds = Array.from({ length: RACE_SEED_EXTENSION_THRESHOLD + 1 }, (_, i) =>
       seedRound(game.id, `sph-${i}`)
@@ -76,9 +77,13 @@ describe("populateRaceSeed", () => {
     const spherical1 = sphericalFactory({ gameId: game.id, image: "https://example.com/1.jpg" })
     const spherical2 = sphericalFactory({ gameId: game.id, image: "https://example.com/2.jpg" })
 
-    await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical1.id).set(spherical1)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical2.id).set(spherical2)
+    await setReadyImages({
+      sphericals: [
+        { id: spherical1.id, gameId: game.id, image: spherical1.image },
+        { id: spherical2.id, gameId: game.id, image: spherical2.image },
+      ],
+      flats: [],
+    })
 
     const seed = await createSeed()
 
@@ -95,9 +100,13 @@ describe("populateRaceSeed", () => {
     const usedSpherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
     const freshSpherical = sphericalFactory({ gameId: game.id, image: "https://example.com/fresh.jpg" })
 
-    await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(usedSpherical.id).set(usedSpherical)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(freshSpherical.id).set(freshSpherical)
+    await setReadyImages({
+      sphericals: [
+        { id: usedSpherical.id, gameId: game.id, image: usedSpherical.image },
+        { id: freshSpherical.id, gameId: game.id, image: freshSpherical.image },
+      ],
+      flats: [],
+    })
 
     const seed = await createSeed({ rounds: [seedRound(game.id, usedSpherical.id)] })
 
@@ -109,30 +118,35 @@ describe("populateRaceSeed", () => {
     expect(allSphericalIds.filter((id) => id === freshSpherical.id)).toHaveLength(1) // not duplicated
   })
 
-  it("should include sphericals regardless of status", async () => {
+  it("should only include images from the metadata doc", async () => {
     const game = gameFactory({})
-    const waitingSpherical = sphericalFactory({ gameId: game.id, image: "https://example.com/waiting.jpg", status: "waiting" })
-    const readySpherical = sphericalFactory({ gameId: game.id, image: "https://example.com/ready.jpg", status: "ready" })
+    const readySpherical = sphericalFactory({ gameId: game.id, image: "https://example.com/ready.jpg" })
 
-    await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(waitingSpherical.id).set(waitingSpherical)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(readySpherical.id).set(readySpherical)
+    // Only the ready one is in the metadata doc
+    await setReadyImages({
+      sphericals: [{ id: readySpherical.id, gameId: game.id, image: readySpherical.image }],
+      flats: [],
+    })
 
     const seed = await createSeed()
 
     const result = await populateRaceSeed(seed.id, 0)
 
-    expect(result?.rounds.length).toBe(2)
+    expect(result?.rounds.length).toBe(1)
+    expect(result?.rounds[0]?.sphericalId).toBe(readySpherical.id)
   })
 
   it("should skip sphericals with no image", async () => {
     const game = gameFactory({})
     const withImage = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
-    const withoutImage = sphericalFactory({ gameId: game.id, image: "" })
 
-    await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(withImage.id).set(withImage)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(withoutImage.id).set(withoutImage)
+    await setReadyImages({
+      sphericals: [
+        { id: withImage.id, gameId: game.id, image: withImage.image },
+        { id: "no-image-id", gameId: game.id, image: "" },
+      ],
+      flats: [],
+    })
 
     const seed = await createSeed()
 
@@ -146,8 +160,10 @@ describe("populateRaceSeed", () => {
     const game = gameFactory({})
     const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
 
-    await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+    await setReadyImages({
+      sphericals: [{ id: spherical.id, gameId: game.id, image: spherical.image }],
+      flats: [],
+    })
 
     // Seed already contains the only available spherical
     const seed = await createSeed({ rounds: [seedRound(game.id, spherical.id)] })
@@ -161,8 +177,10 @@ describe("populateRaceSeed", () => {
     const game = gameFactory({})
     const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
 
-    await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+    await setReadyImages({
+      sphericals: [{ id: spherical.id, gameId: game.id, image: spherical.image }],
+      flats: [],
+    })
 
     const seed = await createSeed()
 
@@ -207,8 +225,10 @@ describe("populate_race_seed cloud function", () => {
     const game = gameFactory({})
     const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
 
-    await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+    await setReadyImages({
+      sphericals: [{ id: spherical.id, gameId: game.id, image: spherical.image }],
+      flats: [],
+    })
 
     const seed = await createSeed()
 

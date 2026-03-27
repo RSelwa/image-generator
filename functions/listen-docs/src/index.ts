@@ -5,6 +5,7 @@ import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
 import { updateDailyChallengesMetadata } from "~/update-daily-challenges-metadata"
 import { updateGamesList } from "~/updates-games-list"
+import { updateReadyFlats, updateReadySphericals } from "~/updates-ready-images"
 import { updateFlatStatus, updateGameStatus, updateSphericalStatus } from "~/updates-status"
 
 export const listen_doc_spherical_written = onDocumentWritten(
@@ -22,11 +23,13 @@ export const listen_doc_spherical_written = onDocumentWritten(
       return
     }
 
-    const data = event.data?.after.data() as SphericalDoc | undefined
+    const before = event.data?.before.data() as SphericalDoc | undefined
+    const after = event.data?.after.data() as SphericalDoc | undefined
 
     await Promise.all([
       updateGameStatus(gameId),
-      updateSphericalStatus(gameId, sphericalId, data),
+      updateSphericalStatus(gameId, sphericalId, after),
+      updateReadySphericals(gameId, sphericalId, before, after),
     ])
   },
 )
@@ -46,9 +49,13 @@ export const listen_doc_flat_written = onDocumentWritten(
       return
     }
 
-    const data = event.data?.after.data() as FlatDoc | undefined
+    const before = event.data?.before.data() as FlatDoc | undefined
+    const after = event.data?.after.data() as FlatDoc | undefined
 
-    await updateFlatStatus(gameId, flatId, data)
+    await Promise.all([
+      updateFlatStatus(gameId, flatId, after),
+      updateReadyFlats(gameId, flatId, before, after),
+    ])
   },
 )
 
