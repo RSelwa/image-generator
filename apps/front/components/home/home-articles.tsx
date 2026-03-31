@@ -8,6 +8,7 @@ import { cn } from "@/utils"
 
 type Props = {
     imageLink: string
+    imageLinkLarge?: string
     title: string
     description: string
 }

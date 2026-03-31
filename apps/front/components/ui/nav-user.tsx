@@ -9,6 +9,7 @@ import {
   Crown,
   History,
   LogOut,
+  MenuIcon,
   Timer,
   User,
   Wrench,
@@ -17,7 +18,6 @@ import {
 import { useTranslations } from "next-intl"
 import { useRef } from "react"
 import { HelperMenuContent } from "@/components/helper"
-import { UserAvatar } from "@/components/ui/user-avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +28,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import NavUserAdmin from "@/components/ui/nav-user.admin"
+import { Separator } from "@/components/ui/separator"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { PAGES } from "@/constants/pages"
 import { BUY_ME_A_COFFEE_LINK, BUY_ME_A_COFFEE_LINK_MEMBERSHIPS, PORTFOLIO_LINK } from "@/constants/social"
 import { Link, useRouter } from "@/i18n/routing"
@@ -71,12 +73,11 @@ export const NavUser = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         data-testid="nav-user-dropdown-trigger"
-        className="flex w-fit items-center gap-6 outline-none"
+        className="flex w-fit font-shapiro-wide font-medium items-center gap-4 outline-none"
       >
-        <div className={cn("grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight", isTextGlow(user.donorTier) && "glow-text")}>
-          {user.pseudo}
-        </div>
-        <UserAvatar avatar={user.avatar} name={user.pseudo} donorTier={user.donorTier} className="size-9" />
+        Menu
+        <MenuIcon className="size-5" />
+
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
@@ -85,6 +86,13 @@ export const NavUser = () => {
         sideOffset={8}
         alignOffset={-8}
       >
+        <hgroup className="flex items-center gap-4 px-4 py-2">
+          <UserAvatar avatar={user.avatar} name={user.pseudo} donorTier={user.donorTier} className="size-9" />
+          <h3 className={cn("grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight", isTextGlow(user.donorTier) && "glow-text")}>
+            {user.pseudo}
+          </h3>
+        </hgroup>
+        <Separator />
         {isAdmin && (
           <NavUserAdmin />
         )}
