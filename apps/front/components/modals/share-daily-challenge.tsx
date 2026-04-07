@@ -1,6 +1,6 @@
 import { type DailyChallengeEntity } from "@repo/schemas"
 import { ArrowUpRightFromSquare, Flame } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -17,13 +17,14 @@ type Props = {
 
 const ShareDailyChallengeModal = ({ challenge }: Props) => {
     const t = useTranslations("dailyChallenge")
+    const locale = useLocale()
     const user = useAppSelector(selectUser)
 
     const shouldCreateAccount = user?.isAnonymous || !user
 
     const copyChallengeToClipboard = async () => {
         try {
-            const url = `${window.location.origin}${PAGES.DAILY_CHALLENGE_DATE(challenge.date)}`
+            const url = `${window.location.origin}/${locale}${PAGES.DAILY_CHALLENGE_DATE(challenge.date)}`
             navigator.clipboard.writeText(url)
 
             toast.success(t("linkCopied"))

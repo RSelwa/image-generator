@@ -4,7 +4,7 @@ import { type LobbyDoc } from "@repo/schemas"
 import { type DriveStep } from "driver.js"
 import { driver } from "driver.js"
 import { ArrowRight, ArrowUpRightFromSquareIcon, Trash } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -41,6 +41,7 @@ type SeedForm = z.infer<typeof seedForm>
 
 const LobbyWaiting = () => {
   const t = useTranslations("lobby")
+  const locale = useLocale()
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
@@ -133,7 +134,7 @@ const LobbyWaiting = () => {
   }
 
   const copyUrl = () => {
-    navigator.clipboard.writeText(`${window.location.origin}${PAGES.JOIN_LOBBY}/${lobby.code}`)
+    navigator.clipboard.writeText(`${window.location.origin}/${locale}${PAGES.JOIN_LOBBY}/${lobby.code}`)
     toast.success(t("lobbyUrlCopied"))
   }
 

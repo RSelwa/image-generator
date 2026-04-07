@@ -108,7 +108,7 @@ export const authApi = createApi({
               const result = await linkWithPopup(auth.currentUser, googleProvider)
               const email = result.user.email
               if (email) {
-                await updateDoc(getUserRef(auth.currentUser.uid), { email, pseudo: auth.currentUser.displayName, isAnonymousUser: false, avatar: getRandomAvatar() }).catch((error) => {
+                await updateDoc(getUserRef(auth.currentUser.uid), { email, pseudo: result.user.displayName, isAnonymousUser: false, avatar: getRandomAvatar() }).catch((error) => {
                   console.error("Error updating user", auth.currentUser?.uid, error)
                 })
               }
