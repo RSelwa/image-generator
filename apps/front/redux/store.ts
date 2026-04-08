@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { useDispatch, useSelector, useStore } from "react-redux"
 import { adminApi } from "@/redux/api/admin"
+import { messagesApi } from "@/redux/api/messages"
 import { authApi } from "@/redux/api/auth"
 import { cloudFunctionsApi } from "@/redux/api/cloud-functions"
 import { dailyChallengeApi } from "@/redux/api/daily-challenge"
@@ -24,6 +25,7 @@ export const makeStore = () =>
   configureStore({
     reducer: {
       [adminApi.reducerPath]: adminApi.reducer,
+      [messagesApi.reducerPath]: messagesApi.reducer,
       [gameApi.reducerPath]: gameApi.reducer,
       [suggestionsApi.reducerPath]: suggestionsApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
@@ -46,6 +48,7 @@ export const makeStore = () =>
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ serializableCheck: false })
         .concat(adminApi.middleware)
+        .concat(messagesApi.middleware)
         .concat(userApi.middleware)
         .concat(seedApi.middleware)
         .concat(lobbyApi.middleware)

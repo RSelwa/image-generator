@@ -21,6 +21,7 @@ export const TABLES = {
   RACE_RUNS: "raceRuns",
   LEADERBOARD: "leaderboard",
   COUPONS: "coupons",
+  MESSAGES: "messages",
 } as const
 
 export const METADATA_DOCS = {

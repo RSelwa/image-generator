@@ -1,5 +1,5 @@
 import { type TABLES } from "@repo/common"
-import { type DailyChallengeDoc, type DailyChallengeResultDoc, type FlatDoc, type GameDoc, type GamesListDoc, type LeaderboardDoc, type LobbyDoc, type MapDoc, type MarathonSeedDoc, type RaceDoc, type RaceRunDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type SuggestionDoc, type UserDoc } from "~/firestore"
+import { type DailyChallengeDoc, type DailyChallengeResultDoc, type FlatDoc, type GameDoc, type GamesListDoc, type LeaderboardDoc, type LobbyDoc, type MapDoc, type MarathonSeedDoc, type MessageDoc, type RaceDoc, type RaceRunDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type SuggestionDoc, type UserDoc } from "~/firestore"
 
 export type DocumentMapping = {
   [TABLES.USERS]: UserDoc
@@ -21,6 +21,7 @@ export type DocumentMapping = {
   [TABLES.RACES]: RaceDoc
   [TABLES.RACE_RUNS]: RaceRunDoc
   [TABLES.LEADERBOARD]: LeaderboardDoc
+  [TABLES.MESSAGES]: MessageDoc
 }
 
 export type Table = keyof DocumentMapping

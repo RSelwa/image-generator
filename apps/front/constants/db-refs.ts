@@ -47,6 +47,9 @@ export const TABLE_REFS = {
   [TABLES.LEADERBOARD]: collection(db, TABLES.LEADERBOARD) as CustomCollectionRef<
     typeof TABLES.LEADERBOARD
   >,
+  [TABLES.MESSAGES]: collection(db, TABLES.MESSAGES) as CustomCollectionRef<
+    typeof TABLES.MESSAGES
+  >,
 } as const
 
 export const TABLES_GROUP_REFS = {
@@ -150,3 +153,6 @@ export const getRaceRef = (raceId: string) =>
 
 export const getRaceRunRef = (raceId: string, uid: string) =>
   doc(TABLES_SUB_REFS[TABLES.RACE_RUNS](raceId), uid)
+
+export const getMessageRef = (messageId: string | undefined) =>
+  messageId ? doc(TABLE_REFS[TABLES.MESSAGES], messageId) : doc(TABLE_REFS[TABLES.MESSAGES])

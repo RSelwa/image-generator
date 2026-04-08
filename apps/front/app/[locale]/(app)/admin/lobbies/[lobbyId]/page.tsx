@@ -2,9 +2,16 @@
 
 import { LOBBY_STATUS } from "@repo/common"
 import { type PlayerAnswer, type RoundAnswerDocWithId } from "@repo/schemas"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod"
 import { Link } from "@/i18n/routing"
 import { usePathname } from "@/i18n/routing"
+import Loader from "@/components/icons/loader"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group"
 import {
   Table,
   TableBody,
@@ -15,8 +22,46 @@ import {
 } from "@/components/ui/table"
 import { BADGE_VARIANTS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { useCreateMessageMutation } from "@/redux/api/messages"
 import { useSubscribeAllRoundAnswersQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { getBadgeVariantLobbyStatus } from "@/utils/badge"
+
+const messageFormSchema = z.object({
+  content: z.string().min(1),
+})
+type MessageFormSchema = z.infer<typeof messageFormSchema>
+
+const LobbyMessageForm = ({ lobbyId }: { lobbyId: string }) => {
+  const [createMessage, { isLoading }] = useCreateMessageMutation()
+  const { handleSubmit, register, reset } = useForm<MessageFormSchema>({
+    defaultValues: { content: "" },
+    resolver: zodResolver(messageFormSchema),
+  })
+
+  const onSubmit = async (data: MessageFormSchema) => {
+    try {
+      await createMessage({ content: data.content, targetType: "lobby", targetId: lobbyId }).unwrap()
+      toast.success("Message envoyé au lobby")
+      reset()
+    } catch {
+      toast.error("Erreur lors de l'envoi du message")
+    }
+  }
+
+  return (
+    <section className="mb-8">
+      <h2 className="text-xl font-semibold mb-3">Message au lobby</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2 items-end max-w-lg">
+        <InputGroup className="flex-1">
+          <InputGroupTextarea placeholder="Message pour tous les joueurs..." {...register("content")} />
+        </InputGroup>
+        <Button type="submit" disabled={isLoading}>
+          Envoyer {isLoading && <Loader />}
+        </Button>
+      </form>
+    </section>
+  )
+}
 
 const getLobbyIdFromPathname = (pathname: string) => {
   const match = pathname.match(/\/admin\/lobbies\/([^/]+)/)
@@ -198,6 +243,8 @@ const Page = () => {
           </TableBody>
         </Table>
       </section>
+
+      <LobbyMessageForm lobbyId={lobbyId} />
 
       {/* Rounds */}
       <section>

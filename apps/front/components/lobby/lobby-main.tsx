@@ -10,6 +10,7 @@ import LobbyPlaying from "@/components/lobby/playing/lobby-playing"
 import { Button } from "@/components/ui/button"
 import { QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { useLobbyMessagesListener } from "@/hooks/use-lobby-messages-listener"
 import { usePresence } from "@/hooks/use-presence"
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { useJoinLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
@@ -65,6 +66,7 @@ const LobbyMain = () => {
   })
 
   usePresence(lobbyId, user?.id, lobby?.status)
+  useLobbyMessagesListener(lobbyId)
 
   useEffect(() => {
     if (isLoading || !lobby || lobby?.isDemo) return
