@@ -26,6 +26,7 @@ export const populateRaceSeed = async (seedId: string, playerCurrentIndex: numbe
   // Build exclude sets for deduplication
   const sphericalIdsInSeed = new Set(seed.rounds.filter((r) => r.sphericalId).map((r) => r.sphericalId))
   const flatIdsInSeed = new Set(seed.rounds.filter((r) => r.flatId).map((r) => r.flatId))
+  const gameIdsInSeed = new Set(seed.rounds.map((r) => r.gameId))
 
   // Read ready images from the single metadata doc instead of querying all sphericals/flats
   const readyImagesSnap = await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).get()
@@ -34,15 +35,17 @@ export const populateRaceSeed = async (seedId: string, playerCurrentIndex: numbe
   const candidates: MarathonSeedRound[] = []
 
   for (const s of readyImages.sphericals) {
-    if (!s.image || sphericalIdsInSeed.has(s.id)) continue
+    if (!s.image || sphericalIdsInSeed.has(s.id) || gameIdsInSeed.has(s.gameId)) continue
 
     candidates.push({ gameId: s.gameId, sphericalId: s.id, sphericalImageUrl: s.image, flatId: null, flatImageUrl: null })
+    gameIdsInSeed.add(s.gameId)
   }
 
   for (const f of readyImages.flats) {
-    if (!f.image || flatIdsInSeed.has(f.id)) continue
+    if (!f.image || flatIdsInSeed.has(f.id) || gameIdsInSeed.has(f.gameId)) continue
 
     candidates.push({ gameId: f.gameId, sphericalId: null, sphericalImageUrl: null, flatId: f.id, flatImageUrl: f.image })
+    gameIdsInSeed.add(f.gameId)
   }
 
   if (candidates.length === 0) {
@@ -66,10 +69,12 @@ export const populateRaceSeed = async (seedId: string, playerCurrentIndex: numbe
 
     const freshSphericalIds = new Set(freshSeed.rounds.map((r) => r.sphericalId).filter(Boolean))
     const freshFlatIds = new Set(freshSeed.rounds.map((r) => r.flatId).filter(Boolean))
+    const freshGameIds = new Set(freshSeed.rounds.map((r) => r.gameId))
 
     const deduplicatedRounds = newRounds.filter((r) =>
-      (r.sphericalId && !freshSphericalIds.has(r.sphericalId)) ||
-      (r.flatId && !freshFlatIds.has(r.flatId))
+      !freshGameIds.has(r.gameId) &&
+      ((r.sphericalId && !freshSphericalIds.has(r.sphericalId)) ||
+      (r.flatId && !freshFlatIds.has(r.flatId)))
     )
 
     if (deduplicatedRounds.length === 0) return
