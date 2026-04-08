@@ -73,14 +73,15 @@ describe("populateRaceSeed", () => {
   })
 
   it("should extend the seed with new sphericals when player is close to the end", async () => {
-    const game = gameFactory({})
-    const spherical1 = sphericalFactory({ gameId: game.id, image: "https://example.com/1.jpg" })
-    const spherical2 = sphericalFactory({ gameId: game.id, image: "https://example.com/2.jpg" })
+    const game1 = gameFactory({})
+    const game2 = gameFactory({})
+    const spherical1 = sphericalFactory({ gameId: game1.id, image: "https://example.com/1.jpg" })
+    const spherical2 = sphericalFactory({ gameId: game2.id, image: "https://example.com/2.jpg" })
 
     await setReadyImages({
       sphericals: [
-        { id: spherical1.id, gameId: game.id, image: spherical1.image },
-        { id: spherical2.id, gameId: game.id, image: spherical2.image },
+        { id: spherical1.id, gameId: game1.id, image: spherical1.image },
+        { id: spherical2.id, gameId: game2.id, image: spherical2.image },
       ],
       flats: [],
     })
@@ -96,19 +97,20 @@ describe("populateRaceSeed", () => {
   })
 
   it("should skip sphericals already present in the seed", async () => {
-    const game = gameFactory({})
-    const usedSpherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
-    const freshSpherical = sphericalFactory({ gameId: game.id, image: "https://example.com/fresh.jpg" })
+    const game1 = gameFactory({})
+    const game2 = gameFactory({})
+    const usedSpherical = sphericalFactory({ gameId: game1.id, image: mockedSphericalImageURL })
+    const freshSpherical = sphericalFactory({ gameId: game2.id, image: "https://example.com/fresh.jpg" })
 
     await setReadyImages({
       sphericals: [
-        { id: usedSpherical.id, gameId: game.id, image: usedSpherical.image },
-        { id: freshSpherical.id, gameId: game.id, image: freshSpherical.image },
+        { id: usedSpherical.id, gameId: game1.id, image: usedSpherical.image },
+        { id: freshSpherical.id, gameId: game2.id, image: freshSpherical.image },
       ],
       flats: [],
     })
 
-    const seed = await createSeed({ rounds: [seedRound(game.id, usedSpherical.id)] })
+    const seed = await createSeed({ rounds: [seedRound(game1.id, usedSpherical.id)] })
 
     const result = await populateRaceSeed(seed.id, 0)
 
