@@ -231,6 +231,7 @@
   "raceMode": {
     "title": "Race Mode",
     "description": "Race against the clock in this fast-paced, high-intensity game mode. Every second counts. Perfect for players who thrive under pressure and want to test their knowledge.",
-    "playNow": "Play Race Mode"
+    "playNow": "Play Race Mode",
+    "recap": "Games list"
   }
 }

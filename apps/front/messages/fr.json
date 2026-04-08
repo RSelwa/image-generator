@@ -231,6 +231,7 @@
   "raceMode": {
     "title": "Mode Course",
     "description": "Affrontez le temps dans ce mode de jeu rapide et intense. Chaque seconde compte. Parfait pour les joueurs qui aiment la pression et veulent tester leurs connaissances.",
-    "playNow": "Jouer au mode Course"
+    "playNow": "Jouer au mode Course",
+    "recap": "Jeux dans cette course"
   }
 }
