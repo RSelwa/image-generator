@@ -41,8 +41,8 @@ const GameInputGuess = () => {
   const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
 
   const [comboboxKey, setComboboxKey] = useState(0)
-  const [playCorrect] = useSound(SOUNDS.CORRECT_GAME)
-  const [playWrong] = useSound(SOUNDS.WRONG)
+  const [playCorrect] = useSound(SOUNDS.CORRECT_GAME, { volume: 0.5 })
+  const [playWrong] = useSound(SOUNDS.WRONG, { volume: 0.5 })
 
   const {
     handleSubmit,

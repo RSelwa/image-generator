@@ -109,7 +109,7 @@ const InfosRoundNormal = () => {
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const [animatedPoints, setAnimatedPoints] = useState(0)
-  const [playPointsCount] = useSound(SOUNDS.POINTS_COUNT)
+  const [playPointsCount] = useSound(SOUNDS.POINTS_COUNT, { volume: 0.5 })
 
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))

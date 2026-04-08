@@ -48,8 +48,8 @@ const RacePlaying = ({
   const [finishRun] = useFinishRaceRunMutation()
 
   const [comboboxKey, setComboboxKey] = useState(0)
-  const [playCorrect] = useSound(SOUNDS.CORRECT_GAME)
-  const [playWrong] = useSound(SOUNDS.WRONG)
+  const [playCorrect] = useSound(SOUNDS.CORRECT_GAME, { volume: 0.5 })
+  const [playWrong] = useSound(SOUNDS.WRONG, { volume: 0.5 })
 
   const isHost = race.hostId === uid
   const startMs = race.startedAt ? race.startedAt.seconds * 1000 : Date.now()
