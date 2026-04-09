@@ -26,13 +26,13 @@ export const ARTICLES = {
     title: "Daily Challenges",
     description: "New geo-guessing puzzles every day to test your skills and climb the leaderboard",
     imageLink: IMAGES_URLS.ARTICLES.DAILY_CHALLENGES,
-    href: PAGES.BLOG(BLOG_POSTS.DAILY_CHALLENGES.slug),
+    href: PAGES.DAILY_CHALLENGE,
   },
   RACE: {
     title: "Race Mode",
     description: "Compete against the clock in a high-speed geo-guessing race, where every second counts",
     imageLink: IMAGES_URLS.ARTICLES.RACE,
-    href: PAGES.BLOG(BLOG_POSTS.RACE.slug),
+    href: PAGES.RACE,
   }
 } as const
 

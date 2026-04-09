@@ -63,5 +63,6 @@ export default antfu({
     "regexp/prefer-w": "off",
     "react-hooks-extra/no-direct-set-state-in-use-effect": "off",
     "react/no-nested-component-definitions": "off",
+    "no-unmodified-loop-condition": "off",
   },
 })

@@ -7,13 +7,13 @@ import {
   Calendar,
   Coffee,
   Crown,
+  Gamepad2Icon,
   History,
   LogOut,
   MenuIcon,
   Timer,
   User,
   Wrench,
-  Zap,
 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useRef } from "react"
@@ -99,7 +99,7 @@ export const NavUser = () => {
         <DropdownMenuGroup>
           <DropdownMenuLabel>Play</DropdownMenuLabel>
           <DropdownMenuItem onClick={handleCreateLobby} disabled={isLoading} className="cursor-pointer">
-            <Zap />
+            <Gamepad2Icon />
             {t("play")}
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="cursor-pointer">

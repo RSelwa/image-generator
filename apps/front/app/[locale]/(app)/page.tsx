@@ -1,18 +1,17 @@
-import { ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, Calendar, Gamepad2, Timer } from "lucide-react"
 import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import Image from "next/image"
 import { ArticlesDescription, HomeArticles } from "@/components/home/home-articles"
-import { CreateLobbyContainer } from "@/components/home/home-create-lobby"
+import { CreateLobbyButton, CreateLobbyContainer } from "@/components/home/home-create-lobby"
 import HomeFooter from "@/components/home/home-footer"
 import { HomeLeaderboard } from "@/components/home/home-leaderboard"
 import { HomeStrips } from "@/components/home/home-strips"
-import { Instagram, LogoWithIcon, MiniStrips, TikTok } from "@/components/icons"
+import { LogoWithIcon, MiniStrips } from "@/components/icons"
 import { RaceModePub } from "@/components/modals/race-mode-pub"
 import { Button } from "@/components/ui/button"
 import { ARTICLES, HOME_ARTICLES } from "@/constants/articles"
 import { PAGES } from "@/constants/pages"
-import { FOOTER_SOCIALS } from "@/constants/social"
 import { Link } from "@/i18n/routing"
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -32,6 +31,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 const Page = async () => {
   const t = await getTranslations("home")
+  const tNav = await getTranslations("nav")
 
   return (
     <main className="h-full-height">
@@ -67,15 +67,18 @@ const Page = async () => {
               {t("playNowDescription")}
             </p>
           </div>
-          <div className="border-t border-background grid grid-cols-2">
-            <Link href={FOOTER_SOCIALS[0].href} target="_blank" className="p-5 hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
-              <TikTok className="size-6" />
-              {FOOTER_SOCIALS[0].label}
+          <div className="border-t border-background grid grid-cols-3">
+            <CreateLobbyButton className="p-5 h-full hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
+              <Gamepad2 className="size-6" />
+              Normal Mode
+            </CreateLobbyButton>
+            <Link href={PAGES.RACE} target="_blank" className="p-5  hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
+              <Timer />
+              {tNav("race")}
             </Link>
-            <Link href={FOOTER_SOCIALS[1].href} target="_blank" className="p-5  hover:text-primary hover:bg-primary-foreground flex items-center justify-center gap-2">
-              <Instagram className="size-6" />
-
-              {FOOTER_SOCIALS[1].label}
+            <Link href={PAGES.DAILY_CHALLENGE} target="_blank" className="p-5  hover:text-primary hover:bg-primary-foreground flex items-center justify-center gap-2">
+              <Calendar className="size-6" />
+              {tNav("dailyChallenge")}
             </Link>
           </div>
         </article>
