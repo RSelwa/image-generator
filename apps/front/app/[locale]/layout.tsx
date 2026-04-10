@@ -49,6 +49,9 @@ const shapiroWide = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_BASE_URL),
+  verification: {
+    google: "zJZ1-ScEmmCJFO6rZ5SVawDF1gnNNePjN7uoB9YgFSg"
+  },
   title: APP_NAME,
   description: "Guess iconic video game locations solo or with friends. 300+ scenes, real-time multiplayer, free to play.",
 }
