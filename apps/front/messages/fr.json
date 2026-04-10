@@ -117,6 +117,8 @@
     "readyCount": "Prêts : {count}/{total}"
   },
   "dailyChallenge": {
+    "metaTitle": "Défi du Jour — Geo Gamer | Nouvelles Scènes de Jeux Vidéo Chaque Jour",
+    "metaDescription": "Joue gratuitement au défi du jour. 5 nouvelles scènes de jeux vidéo chaque jour — devine les lieux, bats le chrono et monte dans le classement mondial. Illimité, sans compte requis.",
     "title": "Défi du jour",
     "playToday": "Jouer au défi du jour",
     "share": "Partager",
@@ -224,6 +226,8 @@
     "submit": "Envoyer"
   },
   "racePage": {
+    "metaTitle": "Mode Course — Geo Gamer | Quiz de Géographie Vidéoludique Gratuit et Illimité",
+    "metaDescription": "Affronte le chrono dans le Mode Course de Geo Gamer, gratuit et sans limite. Devine des lieux iconiques de jeux vidéo le plus vite possible. Aucune énergie, aucun abonnement.",
     "createRace": "Créer une course",
     "joinRace": "Rejoindre une course",
     "description": "A fresh seed will be generated automatically when you start."

@@ -1,3 +1,4 @@
+import { APP_BASE_URL } from "@repo/common"
 import { ArrowLeft } from "lucide-react"
 import { type Metadata } from "next"
 import { Link } from "@/i18n/routing"
@@ -11,19 +12,32 @@ export const generateStaticParams = () =>
 export const generateMetadata = async ({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; locale: string }>
 }): Promise<Metadata> => {
-  const { slug } = await params
+  const { slug, locale } = await params
   const post = BLOG_POST_BY_SLUG(slug)
   if (!post) return {}
 
   return {
     title: `${post.title} — Geo Gamer`,
     description: post.metaDescription,
+    alternates: {
+      canonical: `${APP_BASE_URL}/${locale}/blog/${slug}`,
+      languages: {
+        en: `${APP_BASE_URL}/en/blog/${slug}`,
+        fr: `${APP_BASE_URL}/fr/blog/${slug}`,
+        "x-default": `${APP_BASE_URL}/en/blog/${slug}`,
+      },
+    },
     openGraph: {
       title: post.title,
       description: post.metaDescription,
       type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.metaDescription,
     },
   }
 }

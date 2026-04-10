@@ -1,7 +1,6 @@
 import { APP_BASE_URL } from "@repo/common"
 import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
-import DailyChallengePage from "./daily-challenge-content"
 
 export const generateMetadata = async ({
   params,
@@ -9,17 +8,17 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> => {
   const { locale } = await params
-  const t = await getTranslations("dailyChallenge")
+  const t = await getTranslations("racePage")
 
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
     alternates: {
-      canonical: `${APP_BASE_URL}/${locale}/daily-challenge`,
+      canonical: `${APP_BASE_URL}/${locale}/race`,
       languages: {
-        en: `${APP_BASE_URL}/en/daily-challenge`,
-        fr: `${APP_BASE_URL}/fr/daily-challenge`,
-        "x-default": `${APP_BASE_URL}/en/daily-challenge`,
+        en: `${APP_BASE_URL}/en/race`,
+        fr: `${APP_BASE_URL}/fr/race`,
+        "x-default": `${APP_BASE_URL}/en/race`,
       },
     },
     openGraph: {
@@ -37,4 +36,6 @@ export const generateMetadata = async ({
   }
 }
 
-export default DailyChallengePage
+const RaceLayout = ({ children }: { children: React.ReactNode }) => children
+
+export default RaceLayout

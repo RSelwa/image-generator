@@ -1,3 +1,4 @@
+import { APP_BASE_URL } from "@repo/common"
 import { ArrowUpRight, Calendar, Gamepad2, Timer } from "lucide-react"
 import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
@@ -14,16 +15,35 @@ import { ARTICLES, HOME_ARTICLES } from "@/constants/articles"
 import { PAGES } from "@/constants/pages"
 import { Link } from "@/i18n/routing"
 
-export const generateMetadata = async (): Promise<Metadata> => {
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> => {
+  const { locale } = await params
   const t = await getTranslations("home")
 
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
+    alternates: {
+      canonical: `${APP_BASE_URL}/${locale}`,
+      languages: {
+        en: `${APP_BASE_URL}/en`,
+        fr: `${APP_BASE_URL}/fr`,
+        "x-default": `${APP_BASE_URL}/en`,
+      },
+    },
     openGraph: {
       title: t("metaTitle"),
       description: t("metaDescription"),
       type: "website",
+      images: [{ url: "/opengraph-image.jpg" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("metaTitle"),
+      description: t("metaDescription"),
       images: [{ url: "/opengraph-image.jpg" }],
     },
   }

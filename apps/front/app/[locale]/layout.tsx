@@ -47,13 +47,34 @@ const shapiroWide = localFont({
   variable: "--font-shapiro-wide",
 })
 
-export const metadata: Metadata = {
-  metadataBase: new URL(APP_BASE_URL),
-  verification: {
-    google: "zJZ1-ScEmmCJFO6rZ5SVawDF1gnNNePjN7uoB9YgFSg"
-  },
-  title: APP_NAME,
-  description: "Guess iconic video game locations solo or with friends. 300+ scenes, real-time multiplayer, free to play.",
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> => {
+  const { locale } = await params
+  return {
+    metadataBase: new URL(APP_BASE_URL),
+    verification: {
+      google: "zJZ1-ScEmmCJFO6rZ5SVawDF1gnNNePjN7uoB9YgFSg",
+    },
+    title: APP_NAME,
+    description: "Guess iconic video game locations solo or with friends. 300+ scenes, real-time multiplayer, free to play.",
+    alternates: {
+      canonical: `${APP_BASE_URL}/${locale}`,
+      languages: {
+        en: `${APP_BASE_URL}/en`,
+        fr: `${APP_BASE_URL}/fr`,
+        "x-default": `${APP_BASE_URL}/en`,
+      },
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: APP_NAME,
+      description: "Guess iconic video game locations solo or with friends. 300+ scenes, real-time multiplayer, free to play.",
+      images: [{ url: "/opengraph-image.jpg" }],
+    },
+  }
 }
 
 export default async function LocaleLayout({

@@ -117,6 +117,8 @@
     "readyCount": "Ready: {count}/{total}"
   },
   "dailyChallenge": {
+    "metaTitle": "Daily Challenge — Geo Gamer | New Video Game Scenes Every Day",
+    "metaDescription": "Play today's free daily challenge. 5 new video game scenes drop every day — guess the locations, beat the clock, and climb the global leaderboard. Unlimited, no account required.",
     "title": "Daily Challenge",
     "playToday": "Play today's challenge",
     "share": "Share",
@@ -224,6 +226,8 @@
     "submit": "Submit"
   },
   "racePage": {
+    "metaTitle": "Race Mode — Geo Gamer | Free Unlimited Video Game Geography Quiz",
+    "metaDescription": "Race against the clock in Geo Gamer's free Race Mode. Guess iconic video game locations as fast as possible. No energy limits, no paywalls — unlimited play.",
     "createRace": "Create a race",
     "joinRace": "Join a race",
     "description": "A fresh seed will be generated automatically when you start."

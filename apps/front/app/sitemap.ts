@@ -41,6 +41,11 @@ export default (): MetadataRoute.Sitemap => {
         url: `${APP_BASE_URL}/${locale}${path}`,
         changeFrequency,
         priority,
+        alternates: {
+          languages: Object.fromEntries(
+            LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}${path}`]),
+          ),
+        },
       })
     }
 
@@ -49,6 +54,11 @@ export default (): MetadataRoute.Sitemap => {
         url: `${APP_BASE_URL}/${locale}/blog/${slug}`,
         changeFrequency: "monthly",
         priority: 0.7,
+        alternates: {
+          languages: Object.fromEntries(
+            LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}/blog/${slug}`]),
+          ),
+        },
       })
     }
 
@@ -57,6 +67,11 @@ export default (): MetadataRoute.Sitemap => {
         url: `${APP_BASE_URL}/${locale}/daily-challenge/${date}`,
         changeFrequency: "never",
         priority: 0.6,
+        alternates: {
+          languages: Object.fromEntries(
+            LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}/daily-challenge/${date}`]),
+          ),
+        },
       })
     }
   }
