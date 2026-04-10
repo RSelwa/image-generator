@@ -1,6 +1,5 @@
+import { LOBBY_MODES } from "@repo/common"
 import { ArrowUpRightFromSquare } from "lucide-react"
-import { Link } from "@/i18n/routing"
-import { usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { CreateLobbyButton } from "@/components/home/home-create-lobby"
@@ -12,6 +11,7 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import { Progress } from "@/components/ui/progress"
 import { ASSET_URLS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { Link, usePathname } from "@/i18n/routing"
 import { useGetNumberGameFoundByPlayerQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectLobbyConfig, selectPlayerMyself } from "@/redux/lobby/lobby.selectors"
 import { selectUser, selectUserId } from "@/redux/session/session.selectors"
@@ -42,6 +42,7 @@ const LobbyFinished = () => {
 
   const percentageValuePoints = player && lobby ? (player.score / (lobby?.maximumPossiblePoints || 1)) * 100 : 0
   const percentageValueGamesFound = numberGameFound && config ? (numberGameFound.numberGameFound / config.numberOfRounds) * 100 : 0
+  const displayGamesFound = config?.mode === LOBBY_MODES.FULL || config?.mode === LOBBY_MODES.GAME_ONLY
 
   const copySeedIdToClipboard = () => {
     if (!lobby?.seedId) return
@@ -60,23 +61,28 @@ const LobbyFinished = () => {
             <span>{t("finalScore")} </span>
             <span className="ml-auto text-lg font-semibold">{player?.score}</span>
           </FieldLabel>
-          <FieldLabel className="flex items-center gap-3 text-foreground/50">
+          <FieldLabel className="relative flex items-center gap-3 text-foreground/50">
             <span>0</span>
             <Progress value={percentageValuePoints} id="progress-points" />
             <span>{lobby?.maximumPossiblePoints}</span>
+            <span className="py-1 absolute bg-primary top-1/2 -right-12 -translate-y-1/2 px-2 translate-x-1/2 text-xs text-primary-foreground">
+              Score Max.
+            </span>
           </FieldLabel>
         </Field>
-        <Field className="w-full max-w-sm">
-          <FieldLabel htmlFor="progress-rounds">
-            <span>{t("numberGameFound")}</span>
-            <span className="ml-auto text-lg font-semibold">{numberGameFound?.numberGameFound.toString()}</span>
-          </FieldLabel>
-          <FieldLabel className="flex items-center gap-3 text-foreground/50">
-            <span>0</span>
-            <Progress value={percentageValueGamesFound} id="progress-rounds" />
-            <span>{config?.numberOfRounds}</span>
-          </FieldLabel>
-        </Field>
+        {displayGamesFound && (
+          <Field className="w-full max-w-sm">
+            <FieldLabel htmlFor="progress-rounds">
+              <span>{t("numberGameFound")}</span>
+              <span className="ml-auto text-lg font-semibold">{numberGameFound?.numberGameFound.toString()}</span>
+            </FieldLabel>
+            <FieldLabel className="flex items-center gap-3 text-foreground/50">
+              <span>0</span>
+              <Progress value={percentageValueGamesFound} id="progress-rounds" />
+              <span>{config?.numberOfRounds}</span>
+            </FieldLabel>
+          </Field>
+        )}
         <article className="flex items-center justify-center gap-4">
           <Button variant="marathon-white" onClick={copySeedIdToClipboard}>
             {t("shareThisSeed")} <ArrowUpRightFromSquare className="size-4" />
