@@ -56,6 +56,9 @@ export const generateMetadata = async ({
 
   return {
     metadataBase: new URL(APP_BASE_URL),
+    other: {
+      "google-adsense-account": "ca-pub-6845308230917889"
+    },
     verification: {
       google: "zJZ1-ScEmmCJFO6rZ5SVawDF1gnNNePjN7uoB9YgFSg",
     },
@@ -96,6 +99,14 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        <Script
+          async
+          strategy="beforeInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6845308230917889"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body
         data-marathon
         className={`${geistSans.variable} ${fraktion.variable} ${shapiroWide.variable} ${fraktionMono.variable} ${interference.variable} ${shapiro.variable} antialiased dark pt-header-height!`}
@@ -114,12 +125,6 @@ export default async function LocaleLayout({
             </NuqsAdapter>
           </Suspense>
           <Script src="https://cloud.umami.is/script.js" data-website-id="c5427705-3677-4189-8fbb-73c4e7510760" />
-          <Script
-            id="adsense-h5"
-            strategy="afterInteractive"
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6845308230917889"
-            crossOrigin="anonymous"
-          />
         </NextIntlClientProvider>
       </body>
     </html>
