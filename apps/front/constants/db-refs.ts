@@ -44,6 +44,9 @@ export const TABLE_REFS = {
   [TABLES.RACES]: collection(db, TABLES.RACES) as CustomCollectionRef<
     typeof TABLES.RACES
   >,
+  [TABLES.DEATH_RUNS]: collection(db, TABLES.DEATH_RUNS) as CustomCollectionRef<
+    typeof TABLES.DEATH_RUNS
+  >,
   [TABLES.LEADERBOARD]: collection(db, TABLES.LEADERBOARD) as CustomCollectionRef<
     typeof TABLES.LEADERBOARD
   >,
@@ -83,6 +86,10 @@ export const TABLES_SUB_REFS = {
   [TABLES.ROUND_ANSWERS]: (lobbyId: string) =>
     collection(db, TABLES.LOBBIES, lobbyId, TABLES.ROUND_ANSWERS) as CustomCollectionRef<
       typeof TABLES.ROUND_ANSWERS
+    >,
+  [TABLES.DEATH_RUN_RUNS]: (deathRunId: string) =>
+    collection(db, TABLES.DEATH_RUNS, deathRunId, TABLES.DEATH_RUN_RUNS) as CustomCollectionRef<
+      typeof TABLES.DEATH_RUN_RUNS
     >,
   [TABLES.RACE_RUNS]: (raceId: string) =>
     collection(db, TABLES.RACES, raceId, TABLES.RACE_RUNS) as CustomCollectionRef<
@@ -153,6 +160,12 @@ export const getRaceRef = (raceId: string) =>
 
 export const getRaceRunRef = (raceId: string, uid: string) =>
   doc(TABLES_SUB_REFS[TABLES.RACE_RUNS](raceId), uid)
+
+export const getDeathRunRef = (deathRunId: string) =>
+  doc(TABLE_REFS[TABLES.DEATH_RUNS], deathRunId)
+
+export const getDeathRunRunRef = (deathRunId: string, uid: string) =>
+  doc(TABLES_SUB_REFS[TABLES.DEATH_RUN_RUNS](deathRunId), uid)
 
 export const getMessageRef = (messageId: string | undefined) =>
   messageId ? doc(TABLE_REFS[TABLES.MESSAGES], messageId) : doc(TABLE_REFS[TABLES.MESSAGES])

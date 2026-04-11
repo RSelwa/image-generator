@@ -16,8 +16,9 @@ import { useSubscribeMarathonSeedQuery } from "@/redux/api/marathon-seed"
 import { useGetRaceRunsQuery } from "@/redux/api/race"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import { isTextGlow } from "@/utils/user"
 
-const GameRow = ({ round }: { round: MarathonSeedRound }) => {
+export const GameRow = ({ round }: { round: MarathonSeedRound }) => {
   const { data: allGames = [] } = useGetAllGamesNamesQuery()
   const { data: gameData, isLoading } = useGetGameByIdQuery({ id: round.gameId }, { skip: !round.gameId })
 
@@ -91,8 +92,8 @@ const RaceFinished = ({ race }: { race: RaceDocWithId }) => {
               className={`flex items-center gap-3 p-3 rounded-lg border ${isMe ? "border-primary bg-primary/5" : ""}`}
             >
               <span className="font-mono font-bold w-6 text-muted-foreground">{i + 1}.</span>
-              <UserAvatar name={player?.name || "?"} className="size-8" />
-              <span className="font-medium flex-1">{player?.name || run.uid}</span>
+              <UserAvatar {...player} name={player?.name || "?"} className="size-8" />
+              <span data-text-glow={isTextGlow(player.donorTier)} className="font-medium flex-1">{player?.name || run.uid}</span>
               <span data-testid={`race-finished-score-${run.uid}`} className="font-mono font-bold text-primary">{run.score} pts</span>
               <span data-testid={`race-finished-rounds-${run.uid}`} className="text-xs text-muted-foreground">{run.answers.length} rounds</span>
             </div>

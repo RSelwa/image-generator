@@ -398,7 +398,7 @@
   mask-position: center;
 }
 
-.glow-text {
+@utility glow-text {
   background: linear-gradient(
     115deg,
     currentColor 0%,
@@ -417,4 +417,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+[data-text-glow="true"] {
+  @apply glow-text;
 }

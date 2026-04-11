@@ -1,5 +1,5 @@
 import { TABLES } from "@repo/common"
-import { type CouponDoc, type DailyChallengeDoc, type FlatDoc, type GameDoc, type LeaderboardDoc, type LobbyDoc, type MapDoc, type MarathonSeedDoc, type RaceDoc, type RaceRunDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
+import { type CouponDoc, type DailyChallengeDoc, type DeathRunDoc, type DeathRunRunDoc, type FlatDoc, type GameDoc, type LeaderboardDoc, type LobbyDoc, type MapDoc, type MarathonSeedDoc, type RaceDoc, type RaceRunDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
 import {
   type CollectionGroup,
   type CollectionReference,
@@ -72,6 +72,10 @@ export const refs = {
     RaceDoc,
     RaceDoc
   >,
+  [TABLES.DEATH_RUNS]: db.collection(TABLES.DEATH_RUNS) as CollectionReference<
+    DeathRunDoc,
+    DeathRunDoc
+  >,
   [TABLES.LEADERBOARD]: db.collection(TABLES.LEADERBOARD) as CollectionReference<
     LeaderboardDoc,
     LeaderboardDoc
@@ -118,4 +122,8 @@ export const subRefs = {
     db.collection(
       `${TABLES.RACES}/${raceId}/${TABLES.RACE_RUNS}`,
     ) as CollectionReference<RaceRunDoc, RaceRunDoc>,
+  [TABLES.DEATH_RUN_RUNS]: (deathRunId: string) =>
+    db.collection(
+      `${TABLES.DEATH_RUNS}/${deathRunId}/${TABLES.DEATH_RUN_RUNS}`,
+    ) as CollectionReference<DeathRunRunDoc, DeathRunRunDoc>,
 } as const

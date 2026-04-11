@@ -37,7 +37,9 @@
     "mySeeds": "My Seeds",
     "seedMaker": "Seed Maker",
     "play": "Play",
-    "about": "About"
+    "joinLobby": "Join a lobby",
+    "about": "About",
+    "deathRun": "Death Run"
   },
   "auth": {
     "loginTitle": "Login",
@@ -231,6 +233,22 @@
     "createRace": "Create a race",
     "joinRace": "Join a race",
     "description": "A fresh seed will be generated automatically when you start."
+  },
+  "deathRunPage": {
+    "metaTitle": "Death Run — Geo Gamer | Lives-Based Video Game Geography Quiz",
+    "metaDescription": "Race through rounds of video game geography with limited lives. One wrong answer costs a life — how far can you go? Free to play, no download required.",
+    "createDeathRun": "Create a death run",
+    "joinDeathRun": "Join a death run",
+    "description": "Guess correctly to survive. Every wrong answer costs a life.",
+    "lobbyTitle": "Death Run Lobby",
+    "shareCode": "Share this code:",
+    "livesInfo": "{lives} lives",
+    "startGame": "Start",
+    "waitingForHost": "Waiting for the host to start…",
+    "finished": "Game Over",
+    "correct": "correct",
+    "recap": "Rounds recap",
+    "backToDeathRuns": "Back to Death Run"
   },
   "raceMode": {
     "title": "Race Mode",

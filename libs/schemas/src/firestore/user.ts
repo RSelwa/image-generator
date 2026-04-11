@@ -16,6 +16,7 @@ export const userDocSchema = z.object({
   lastStreakDate: dailyChallengeDateSchema.nullish().default(null),
   maxStreak: z.number().nullish().default(0),
   bestRaceScore: z.number().nullish().default(0),
+  bestDeathRunScore: z.number().nullish().default(0),
   donorTier: z.object(donorTierSchema).shape.default(null),
 })
 

@@ -1,4 +1,5 @@
 export * from "./daily-challenge"
+export * from "./death-run"
 export * from "./flat"
 export * from "./game"
 export * from "./lobby"

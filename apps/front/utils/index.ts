@@ -19,3 +19,9 @@ export const getRaceIdFromPathname = (pathname: string) => {
 
   return match ? match[1] : ""
 }
+
+export const getDeathRunIdFromPathname = (pathname: string) => {
+  const match = pathname.match(/\/death-run\/([^/]+)/)
+
+  return match ? match[1] : ""
+}

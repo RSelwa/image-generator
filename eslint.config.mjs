@@ -64,5 +64,6 @@ export default antfu({
     "react-hooks-extra/no-direct-set-state-in-use-effect": "off",
     "react/no-nested-component-definitions": "off",
     "no-unmodified-loop-condition": "off",
+    "react-hooks/rules-of-hooks": "warn",
   },
 })

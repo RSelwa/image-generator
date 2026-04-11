@@ -1,12 +1,12 @@
 "use client"
 
 import { LOBBY_STATUS } from "@repo/common"
-import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { useRouter } from "@/i18n/routing"
 import { useGetLobbyByCodeQuery, useJoinLobbyMutation } from "@/redux/api/lobby"
 import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"

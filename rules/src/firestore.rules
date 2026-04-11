@@ -172,6 +172,22 @@ service cloud.firestore {
       }
     }
 
+    // Death Runs - signed-in users can create/read/update
+    match /deathRuns/{deathRunId} {
+      allow create: if isSignedIn();
+      allow read: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if signedInAdmin();
+
+      // Death run runs - owner can create/read/update their own run
+      match /deathRunRuns/{runId} {
+        allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+        allow read: if isSignedIn();
+        allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+        allow delete: if signedInAdmin();
+      }
+    }
+
     // Leaderboard - anyone reads, only admin/CF writes (via admin SDK bypasses rules)
     match /leaderboard/{entryId} {
       allow read: if true;

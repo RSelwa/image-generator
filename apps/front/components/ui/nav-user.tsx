@@ -11,6 +11,7 @@ import {
   History,
   LogOut,
   MenuIcon,
+  Skull,
   Timer,
   User,
   Wrench,
@@ -30,17 +31,19 @@ import {
 import NavUserAdmin from "@/components/ui/nav-user.admin"
 import { Separator } from "@/components/ui/separator"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { MODAL_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { BUY_ME_A_COFFEE_LINK, BUY_ME_A_COFFEE_LINK_MEMBERSHIPS, PORTFOLIO_LINK } from "@/constants/social"
+import { useModal } from "@/hooks/use-modal"
 import { Link, useRouter } from "@/i18n/routing"
 import { useLogoutMutation } from "@/redux/api/auth"
 import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAdmin, selectUser, selectUserSteak } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
-import { cn } from "@/utils"
 import { isTextGlow } from "@/utils/user"
 
 export const NavUser = () => {
+  const { openModal } = useModal(MODAL_KEYS.JOIN_LOBBY)
   const router = useRouter()
 
   const t = useTranslations("nav")
@@ -87,8 +90,8 @@ export const NavUser = () => {
         alignOffset={-8}
       >
         <hgroup className="flex items-center gap-4 px-4 py-2">
-          <UserAvatar avatar={user.avatar} name={user.pseudo} donorTier={user.donorTier} className="size-9" />
-          <h3 className={cn("grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight", isTextGlow(user.donorTier) && "glow-text")}>
+          <UserAvatar {...user} name={user.pseudo} className="size-9" />
+          <h3 data-text-glow={isTextGlow(user.donorTier)} className="grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight">
             {user.pseudo}
           </h3>
         </hgroup>
@@ -102,6 +105,10 @@ export const NavUser = () => {
             <Gamepad2Icon />
             {t("play")}
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => openModal()} disabled={isLoading} className="cursor-pointer">
+            <Gamepad2Icon />
+            {t("joinLobby")}
+          </DropdownMenuItem>
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link href={PAGES.DAILY_CHALLENGE}>
               <Calendar />
@@ -113,6 +120,12 @@ export const NavUser = () => {
             <Link href={PAGES.RACE}>
               <Timer />
               {t("race")}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href={PAGES.DEATH_RUN}>
+              <Skull />
+              {t("deathRun")}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

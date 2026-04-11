@@ -39,6 +39,7 @@ export const MODAL_KEYS = {
   NEW_SOCIALS: "new-socials",
   NEW_SOUND: "new-sound",
   NEW_DAILY_CHALLENGE: "new-daily-challenge",
+  JOIN_LOBBY: "join-lobby",
 } as const
 
 export const SORT_OPTIONS = {

@@ -37,7 +37,9 @@
     "mySeeds": "Mes Seeds",
     "seedMaker": "Créateur de Seeds",
     "play": "Jouer",
-    "about": "À propos"
+    "joinLobby": "Rejoindre un lobby",
+    "about": "À propos",
+    "deathRun": "Death Run"
   },
   "auth": {
     "loginTitle": "Connexion",
@@ -231,6 +233,22 @@
     "createRace": "Créer une course",
     "joinRace": "Rejoindre une course",
     "description": "A fresh seed will be generated automatically when you start."
+  },
+  "deathRunPage": {
+    "metaTitle": "Death Run — Geo Gamer | Quiz de Géographie Vidéoludique avec des Vies",
+    "metaDescription": "Enchaîne les manches de géographie vidéoludique avec des vies limitées. Une mauvaise réponse coûte une vie — jusqu'où iras-tu ? Gratuit, sans téléchargement.",
+    "createDeathRun": "Créer un death run",
+    "joinDeathRun": "Rejoindre un death run",
+    "description": "Réponds correctement pour survivre. Chaque mauvaise réponse coûte une vie.",
+    "lobbyTitle": "Lobby Death Run",
+    "shareCode": "Partagez ce code :",
+    "livesInfo": "{lives} vies",
+    "startGame": "Démarrer",
+    "waitingForHost": "En attente de l'hôte…",
+    "finished": "Game Over",
+    "correct": "correctes",
+    "recap": "Récapitulatif des manches",
+    "backToDeathRuns": "Retour au Death Run"
   },
   "raceMode": {
     "title": "Mode Course",

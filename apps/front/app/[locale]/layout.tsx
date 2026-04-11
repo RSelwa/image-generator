@@ -53,6 +53,7 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> => {
   const { locale } = await params
+
   return {
     metadataBase: new URL(APP_BASE_URL),
     verification: {
@@ -113,6 +114,12 @@ export default async function LocaleLayout({
             </NuqsAdapter>
           </Suspense>
           <Script src="https://cloud.umami.is/script.js" data-website-id="c5427705-3677-4189-8fbb-73c4e7510760" />
+          <Script
+            id="adsense-h5"
+            strategy="afterInteractive"
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6845308230917889"
+            crossOrigin="anonymous"
+          />
         </NextIntlClientProvider>
       </body>
     </html>

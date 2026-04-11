@@ -32,4 +32,11 @@ export const SELECTORS = {
   RACE_FINISHED: "race-finished",
   RACE_FINISHED_SCORE: (uid: string) => `race-finished-score-${uid}`,
   RACE_FINISHED_ROUNDS: (uid: string) => `race-finished-rounds-${uid}`,
+  DEATH_RUN_GUESS_INPUT: "death-run-guess-input",
+  DEATH_RUN_SCORE: "death-run-score",
+  DEATH_RUN_LIVES: "death-run-lives",
+  DEATH_RUN_ROUND_INDEX: "death-run-round-index",
+  DEATH_RUN_FINISHED: "death-run-finished",
+  DEATH_RUN_FINISHED_SCORE: (uid: string) => `death-run-finished-score-${uid}`,
+  DEATH_RUN_FINISHED_ROUNDS: (uid: string) => `death-run-finished-rounds-${uid}`,
 } as const

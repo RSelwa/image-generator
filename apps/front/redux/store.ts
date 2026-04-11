@@ -6,6 +6,7 @@ import { authApi } from "@/redux/api/auth"
 import { cloudFunctionsApi } from "@/redux/api/cloud-functions"
 import { dailyChallengeApi } from "@/redux/api/daily-challenge"
 import { marathonSeedApi } from "@/redux/api/marathon-seed"
+import { deathRunApi } from "@/redux/api/death-run"
 import { raceApi } from "@/redux/api/race"
 import { flatApi } from "@/redux/api/flat"
 import { gameApi } from "@/redux/api/games"
@@ -44,6 +45,7 @@ export const makeStore = () =>
       [cloudFunctionsApi.reducerPath]: cloudFunctionsApi.reducer,
       [marathonSeedApi.reducerPath]: marathonSeedApi.reducer,
       [raceApi.reducerPath]: raceApi.reducer,
+      [deathRunApi.reducerPath]: deathRunApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ serializableCheck: false })
@@ -65,7 +67,8 @@ export const makeStore = () =>
         .concat(dailyChallengeApi.middleware)
         .concat(cloudFunctionsApi.middleware)
         .concat(marathonSeedApi.middleware)
-        .concat(raceApi.middleware),
+        .concat(raceApi.middleware)
+        .concat(deathRunApi.middleware),
   })
 
 // Infer the type of makeStore

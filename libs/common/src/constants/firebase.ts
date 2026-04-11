@@ -19,6 +19,8 @@ export const TABLES = {
   MARATHON_SEEDS: "marathonSeeds",
   RACES: "races",
   RACE_RUNS: "raceRuns",
+  DEATH_RUNS: "deathRuns",
+  DEATH_RUN_RUNS: "deathRunRuns",
   LEADERBOARD: "leaderboard",
   COUPONS: "coupons",
   MESSAGES: "messages",

@@ -5,14 +5,13 @@ import { Flame, Trophy } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { useGetTopPlayersByBestRaceScoreQuery, useGetTopPlayersByMaxStreakQuery } from "@/redux/api/user"
-import { cn } from "@/utils"
 import { isTextGlow } from "@/utils/user"
 
 const StreakRow = ({ player, rank }: { player: StreakLeaderboardPlayer, rank: number }) => (
   <div className="flex items-center gap-3 py-2 border-b border-neutral-800 last:border-0">
     <span className="font-shapiro-wide text-sm w-5 text-center text-muted-foreground">#{rank}</span>
     <UserAvatar size="sm" avatar={player.avatar || undefined} name={player.pseudo || "?"} donorTier={player.donorTier} fallbackClassName="font-bold" />
-    <span className={cn("flex-1 truncate font-shapiro-wide text-sm", isTextGlow(player.donorTier) && "glow-text")}>{player.pseudo || "—"}</span>
+    <span data-text-glow={isTextGlow(player.donorTier)} className="flex-1 truncate font-shapiro-wide text-sm">{player.pseudo || "—"}</span>
     <span className="font-shapiro-wide text-sm flex items-center gap-1">
       <Flame className="size-3.5 text-primary" />
       {player.maxStreak || 0}
@@ -24,7 +23,7 @@ const RaceRow = ({ player, rank }: { player: RaceLeaderboardPlayer, rank: number
   <div className="flex items-center gap-3 py-2 border-b border-neutral-800 last:border-0">
     <span className="font-shapiro-wide text-sm w-5 text-center text-muted-foreground">#{rank}</span>
     <UserAvatar size="sm" avatar={player.avatar || undefined} name={player.pseudo || "?"} donorTier={player.donorTier} fallbackClassName="font-bold" />
-    <span className={cn("flex-1 truncate font-shapiro-wide text-sm ml-3", isTextGlow(player.donorTier))}>{player.pseudo || "—"}</span>
+    <span data-text-glow={isTextGlow(player.donorTier)} className="flex-1 truncate font-shapiro-wide text-sm ml-3">{player.pseudo || "—"}</span>
     <span className="font-shapiro-wide text-sm flex items-center gap-1">
       <Trophy className="size-3.5 text-primary" />
       {player.bestRaceScore || 0}

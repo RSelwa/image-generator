@@ -32,5 +32,7 @@ export const PAGES = {
   DAILY_CHALLENGE_DATE: (date: string) => `/daily-challenge/${date}`,
   RACE: "/race",
   RACE_PLAY: (raceId: string) => `/race/${raceId}`,
+  DEATH_RUN: "/death-run",
+  DEATH_RUN_PLAY: (deathRunId: string) => `/death-run/${deathRunId}`,
   ADMIN_MARATHON_SEEDS: "/admin/marathon-seeds",
 } as const

@@ -5,6 +5,7 @@ import ChangePseudoModal from "@/components/modals/change-pseudo"
 import { ModalFlatId } from "@/components/modals/flat-id"
 import { FlatsGallery } from "@/components/modals/flats-gallery"
 import { ModalGame } from "@/components/modals/game"
+import { JoinLobbyModal } from "@/components/modals/join-lobby"
 import { MakeSuggestion } from "@/components/modals/make-suggestion"
 import { ModalMapId } from "@/components/modals/map-id"
 import { MapsGallery } from "@/components/modals/maps-gallery"
@@ -24,6 +25,7 @@ export const ModalProvider = () => {
   const type = Object.values(MODAL_KEYS).find((key) => searchParams.has(key))
 
   if (type === MODAL_KEYS.CHANGE_PSEUDO) return <ChangePseudoModal />
+  if (type === MODAL_KEYS.JOIN_LOBBY) return <JoinLobbyModal />
 
   if (type === MODAL_KEYS.NEW_SOUND) return <NewSound />
   if (type === MODAL_KEYS.NEW_SOCIALS) return <NewSocial />
