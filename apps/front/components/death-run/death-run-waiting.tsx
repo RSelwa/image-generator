@@ -3,8 +3,10 @@
 import { type DeathRunDocWithId } from "@repo/schemas"
 import { Heart, Users } from "lucide-react"
 import { useTranslations } from "next-intl"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { ASSET_URLS } from "@/constants/mapping"
 import { usePrepareAndStartDeathRunMutation } from "@/redux/api/death-run"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -17,7 +19,8 @@ const DeathRunWaiting = ({ deathRun }: { deathRun: DeathRunDocWithId }) => {
   const isHost = deathRun.hostId === uid
 
   return (
-    <div className="h-full-height flex flex-col items-center justify-center gap-8 p-6">
+    <div className="relative h-full-height flex flex-col items-center justify-center gap-8 p-6 bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
+      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0" />
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">{t("lobbyTitle")}</h1>
         <p className="text-muted-foreground">

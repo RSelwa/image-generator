@@ -2,11 +2,11 @@
 
 import { type ConstantValues, dateToString } from "@repo/common"
 import { cva } from "class-variance-authority"
-import { Link } from "@/i18n/routing"
 import { memo, useMemo } from "react"
 import { DailyChallengeContent, DailyChallengeLabel } from "@/components/daily-challenge/node-icons"
 import { DAILY_CHALLENGES_VARIANTS, SIDE } from "@/constants/daily-challenges"
 import { PAGES } from "@/constants/pages"
+import { Link } from "@/i18n/routing"
 import { useGetDailyChallengeEntityByDateQuery, useGetMyDailyChallengeResultByDateQuery } from "@/redux/api/daily-challenge"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -18,7 +18,7 @@ export const nodeVariants = cva(
   {
     variants: {
       variant: {
-        [DAILY_CHALLENGES_VARIANTS.FUTURE]: "bg-primary text-primary-foreground",
+        [DAILY_CHALLENGES_VARIANTS.FUTURE]: "bg-marathon-orange text-marathon-orange-foreground",
         [DAILY_CHALLENGES_VARIANTS.TODAY]: "bg-marathon-pink text-foreground",
         [DAILY_CHALLENGES_VARIANTS.COMPLETED_TODAY]:
           "bg-marathon-green text-marathon-green-foreground",

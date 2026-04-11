@@ -2,8 +2,10 @@
 
 import { type RaceDocWithId } from "@repo/schemas"
 import { Users } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { ASSET_URLS } from "@/constants/mapping"
 import { usePrepareAndStartRaceMutation } from "@/redux/api/race"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -14,7 +16,8 @@ const RaceWaiting = ({ race }: { race: RaceDocWithId }) => {
   const isHost = race.hostId === uid
 
   return (
-    <div className="h-full-height flex flex-col items-center justify-center gap-8 p-6">
+    <div className="relative h-full-height flex flex-col items-center justify-center gap-8 p-6 bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
+      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0" />
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Race Lobby</h1>
         <p className="text-muted-foreground">

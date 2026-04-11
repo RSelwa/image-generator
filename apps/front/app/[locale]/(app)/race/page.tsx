@@ -1,10 +1,12 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { ASSET_URLS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useCreateRaceMutation, useGetRaceByCodeQuery, useJoinRaceMutation } from "@/redux/api/race"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -47,10 +49,11 @@ const Page = () => {
   }
 
   return (
-    <main className="h-full-height flex flex-col items-center justify-center gap-12 p-6">
-      <h1 className="text-4xl font-bold">Race Mode</h1>
+    <main className="h-full-height flex flex-col items-center justify-center gap-12 p-6 bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
+      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0" />
+      <h1 className="text-4xl font-bold bg-background px-4 py-2">Race Mode</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl bg-background px-4 py-2">
         {/* Create */}
         <section className="space-y-4 p-6 rounded-xl border">
           <h2 className="text-xl font-semibold">{t("createRace")}</h2>

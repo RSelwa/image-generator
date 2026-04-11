@@ -42,6 +42,8 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --color-marathon-pink: var(--marathon-pink);
+  --color-marathon-orange: var(--marathon-orange);
+  --color-marathon-orange-foreground: var(--marathon-orange-foreground);
   --color-marathon-green: var(--marathon-green);
   --color-marathon-green-foreground: var(--marathon-green-foreground);
   --color-marathon-yellow: var(--marathon-yellow);
@@ -245,6 +247,8 @@
   --primary: oklch(0.6723 0.239166 18.94);
   --primary-foreground: oklch(0 0 0);
   --marathon-pink:oklch(0.6723 0.239166 18.94);
+  --marathon-orange:oklch(0.6416 0.2133 32.82);
+  --marathon-orange-foreground:oklch(47.388% 0.15893 32.816);
   --marathon-yellow: oklch(0.9262 0.1979 115.19);
   --marathon-yellow-foreground: oklch(43.102% 0.08189 114.777);
   --marathon-green: oklch(0.8537 0.217249 153.4818);
