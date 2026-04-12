@@ -350,3 +350,37 @@ echo $GOOGLE_APPLICATION_CREDENTIALS
 ## PM 2 Commands
 pm2 start pnpm --name "dev" -- -F @repo/front start -p 3001 <!-- OR 3000 -->
 Two pm2 environment "dev" and "prod"
+
+## Auto deploy with ssh and PM2
+
+Steps to follow:
+
+- Create a folder in the web server `/var/www/<folder>`
+- create the .env file
+- Build the app
+- Command to start pm2 server : ` pm2 start pnpm --name PM2_NAME_APP -- start --port PORT_NUMBER`
+
+- Add these variables in the Secrets repository :
+  - VPS_HOST: The ip address: XXX.XXX.XXX.XXX
+  - VPS_USER: The ssh user (often `debian`)
+  - SSH_PRIVATE_KEY: A key of your local computer who has his PUBLIC key in the `authorized_keys` (like `-----BEGIN OPENSSH PRIVATE KEY-----`)
+
+- Check that environnement in the CI file is the same as the `PM2_NAME_APP` previously setup
+
+- Create a nginx file reverse proxy in the vps:
+  - Create a file in `/etc/nginx`
+  - default nginx reverse proxy:
+- ```server {
+    server_name me.geo-gamer.net;
+
+    location / {
+        proxy_pass http://localhost:3003;
+        proxy_http_version 1.1;
+        }
+    }
+  ```
+
+- Create a link between site-available and site-enabled : `sudo ln -s /etc/nginx/sites-available/<FILE> /etc/nginx/sites-enabled/`
+- Check that nginx config is good : `sudo nginx -t`
+- Reload nginx: `sudo systemctl reload nginx`
+- run certbot : `sudo certbot --nginx -d me.geo-gamer.net`
