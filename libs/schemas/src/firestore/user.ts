@@ -7,7 +7,7 @@ export const donorTierSchema = z.enum(DONOR_TIERS).nullish()
 
 export const userDocSchema = z.object({
   email: z.email(),
-  pseudo: z.string().min(3).max(30).nullish().default(""),
+  pseudo: z.string().nullish().default(""),
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
   avatar: z.enum(AVATARS_KEYS).nullish().default(getRandomAvatar()),

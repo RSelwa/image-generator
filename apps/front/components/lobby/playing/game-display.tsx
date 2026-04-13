@@ -239,8 +239,8 @@ export const DisplayGame = () => {
   if (!currentRoundData) return <LoadingGameData />
 
   return (
-    <section className="h-full-height absolute z-10 bg-background/90 w-full font-mono">
-      <div className="flex flex-col lg:gap-8 gap-8 justify-center items-center size-full py-9 overflow-y-scroll">
+    <section className="h-full-height absolute z-10 bg-background/90 w-full font-mono py-6">
+      <div className="flex flex-col lg:gap-8 gap-8 items-center size-full">
         <Rounds currentRound={lobby?.currentRound || 0} numberOfRounds={lobby?.config?.numberOfRounds || 0} />
         <TextRevealTW text={currentRoundInfos?.gameTitle || "Game title"} className="text-foreground font-bold font-shapiro-wide text-2xl" />
         {isRoundSpecial && <InfoRoundSpecial />}

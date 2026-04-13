@@ -5,7 +5,7 @@ import { timestampSchema } from "~/zod"
 // Player's answer (written directly by client via arrayUnion)
 export const playerAnswerSchema = z.object({
   uid: z.string().min(1),
-  playerName: z.string().min(1),
+  playerName: z.string(),
 
   // Game guess
   answer: z.string().default(""), // The game title they guessed
