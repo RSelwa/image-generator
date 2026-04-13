@@ -2,6 +2,7 @@ import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
 import z from "zod"
 // import { WITH_ID } from "./../zod.ts"
 import { timestampSchema, WITH_ID } from "~/zod"
+import { gratitudeSchema } from "~/firestore/gratitude"
 
 // Position on the map (percentage 0-100)
 export const mapPositionSchema = z.object({
@@ -24,6 +25,7 @@ export const sphericalDocSchema = z.object({
   thumbnail: z.string().optional(), // ? Sphericals with thumbnails
 
   youtubeLink: z.string().optional(),
+  ...gratitudeSchema.shape,
 })
 
 export const sphericalDocWithIdSchema = z.object({ ...sphericalDocSchema.shape, ...WITH_ID.shape })

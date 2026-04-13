@@ -4,6 +4,7 @@ import Image from "next/image"
 import { type ComponentProps } from "react"
 import { Fragment, useEffect, useState } from "react"
 import useSound from "use-sound"
+import GratitudeSection from "@/components/lobby/playing/gratitude-section"
 import LoadingGameData from "@/components/lobby/playing/loading-game-data"
 import MiniMap from "@/components/mini-map"
 import { Button } from "@/components/ui/button"
@@ -121,7 +122,6 @@ const InfosRoundNormal = () => {
 
   const pointAnimationDelay = 3000
   const pointAnimationDuration = 2000
-  console.log(currentAnswer?.distancePoints)
 
   const targetPoints = currentAnswer?.distancePoints || 0
   const hasGuessedGame = Boolean(currentAnswer?.isCorrect)
@@ -240,12 +240,19 @@ export const DisplayGame = () => {
 
   return (
     <section className="h-full-height absolute z-10 bg-background/90 w-full font-mono">
-      <div className="flex flex-col lg:gap-8 gap-8 justify-center items-center size-full">
+      <div className="flex flex-col lg:gap-8 gap-8 justify-center items-center size-full py-9 overflow-y-scroll">
         <Rounds currentRound={lobby?.currentRound || 0} numberOfRounds={lobby?.config?.numberOfRounds || 0} />
         <TextRevealTW text={currentRoundInfos?.gameTitle || "Game title"} className="text-foreground font-bold font-shapiro-wide text-2xl" />
         {isRoundSpecial && <InfoRoundSpecial />}
 
         {!isRoundSpecial && <InfosRoundNormal />}
+
+        <GratitudeSection
+          gameId={currentRoundData.gameId || ""}
+          sphericalId={currentRoundData.sphericalId}
+          flatId={currentRoundData.flatId}
+          mapId={currentRoundData.mapId}
+        />
 
         {isOwner && <NextRoundButton className="mt-2" />}
       </div>

@@ -1,4 +1,5 @@
 import z from "zod"
+import { gratitudeSchema } from "~/firestore/gratitude"
 import { timestampSchema, WITH_ID } from "~/zod"
 
 export const mapDocSchema = z.object({
@@ -10,6 +11,7 @@ export const mapDocSchema = z.object({
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
   maxDistancePoints: z.number().min(0).max(100).nullish().default(null),
+  ...gratitudeSchema.shape,
 })
 
 export const mapDocWithIdSchema = z.object({

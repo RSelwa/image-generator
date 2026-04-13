@@ -1,18 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { useDispatch, useSelector, useStore } from "react-redux"
 import { adminApi } from "@/redux/api/admin"
-import { messagesApi } from "@/redux/api/messages"
 import { authApi } from "@/redux/api/auth"
 import { cloudFunctionsApi } from "@/redux/api/cloud-functions"
 import { dailyChallengeApi } from "@/redux/api/daily-challenge"
-import { marathonSeedApi } from "@/redux/api/marathon-seed"
 import { deathRunApi } from "@/redux/api/death-run"
-import { raceApi } from "@/redux/api/race"
 import { flatApi } from "@/redux/api/flat"
 import { gameApi } from "@/redux/api/games"
+import { gratitudeApi } from "@/redux/api/gratitude"
 import { lobbyApi } from "@/redux/api/lobby"
 import { localApi } from "@/redux/api/local"
 import { mapApi } from "@/redux/api/maps"
+import { marathonSeedApi } from "@/redux/api/marathon-seed"
+import { messagesApi } from "@/redux/api/messages"
+import { raceApi } from "@/redux/api/race"
 import { seedApi } from "@/redux/api/seed"
 import { seedMakerApi } from "@/redux/api/seed-maker"
 import { socialsApi } from "@/redux/api/socials"
@@ -34,6 +35,7 @@ export const makeStore = () =>
       [mapApi.reducerPath]: mapApi.reducer,
       [sphericalApi.reducerPath]: sphericalApi.reducer,
       [flatApi.reducerPath]: flatApi.reducer,
+      [gratitudeApi.reducerPath]: gratitudeApi.reducer,
       [authApi.reducerPath]: authApi.reducer,
       [seedApi.reducerPath]: seedApi.reducer,
       [lobbyApi.reducerPath]: lobbyApi.reducer,
@@ -59,6 +61,7 @@ export const makeStore = () =>
         .concat(mapApi.middleware)
         .concat(sphericalApi.middleware)
         .concat(flatApi.middleware)
+        .concat(gratitudeApi.middleware)
         .concat(authApi.middleware)
         .concat(seedMakerApi.middleware)
         .concat(socialsApi.middleware)

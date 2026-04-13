@@ -1,3 +1,7 @@
+# Project context
+
+This project is a game made in Next.js, it's the same style as the geo guessr but in video games. We're working with firebase, NextJs, Shadcn and tailwind. We have multiples entities: users, games, sphericals (uni rectangular images), flats images, maps, etc...
+
 # Bash commands
 
 - pnpm --filter @repo/front build: Build the front
