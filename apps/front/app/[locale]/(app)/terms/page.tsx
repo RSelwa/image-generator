@@ -1,4 +1,26 @@
+import { APP_BASE_URL } from "@repo/common"
+import { type Metadata } from "next"
 import { APP_NAME, CONTACT_EMAIL } from "@/constants/mapping"
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> => {
+  const { locale } = await params
+  return {
+    title: "Terms of Service — Geo Gamer",
+    description: "Read the Geo Gamer terms of service to understand the rules and conditions for using our platform.",
+    alternates: {
+      canonical: `${APP_BASE_URL}/${locale}/terms`,
+      languages: {
+        en: `${APP_BASE_URL}/en/terms`,
+        fr: `${APP_BASE_URL}/fr/terms`,
+        "x-default": `${APP_BASE_URL}/en/terms`,
+      },
+    },
+  }
+}
 
 export default function TermsOfService() {
   return (

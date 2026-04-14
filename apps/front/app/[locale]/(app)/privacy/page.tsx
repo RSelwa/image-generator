@@ -1,4 +1,26 @@
+import { APP_BASE_URL } from "@repo/common"
+import { type Metadata } from "next"
 import { APP_NAME, CONTACT_EMAIL } from "@/constants/mapping"
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> => {
+  const { locale } = await params
+  return {
+    title: "Privacy Policy — Geo Gamer",
+    description: "Read the Geo Gamer privacy policy to understand how we collect, use, and protect your personal information.",
+    alternates: {
+      canonical: `${APP_BASE_URL}/${locale}/privacy`,
+      languages: {
+        en: `${APP_BASE_URL}/en/privacy`,
+        fr: `${APP_BASE_URL}/fr/privacy`,
+        "x-default": `${APP_BASE_URL}/en/privacy`,
+      },
+    },
+  }
+}
 
 export default function PrivacyPolicy() {
   return (

@@ -1,9 +1,25 @@
+import { APP_BASE_URL } from "@repo/common"
 import { type Metadata } from "next"
 import { LoginForm } from "@/components/login-form"
 
-export const metadata: Metadata = {
-  title: "Login — Geo Gamer",
-  description: "Sign in to your Geo Gamer account to track your daily challenge streak, save your scores, and challenge friends.",
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> => {
+  const { locale } = await params
+  return {
+    title: "Login — Geo Gamer",
+    description: "Sign in to your Geo Gamer account to track your daily challenge streak, save your scores, and challenge friends.",
+    alternates: {
+      canonical: `${APP_BASE_URL}/${locale}/login`,
+      languages: {
+        en: `${APP_BASE_URL}/en/login`,
+        fr: `${APP_BASE_URL}/fr/login`,
+        "x-default": `${APP_BASE_URL}/en/login`,
+      },
+    },
+  }
 }
 
 export default function LoginPage() {

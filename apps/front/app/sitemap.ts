@@ -42,9 +42,10 @@ export default (): MetadataRoute.Sitemap => {
         changeFrequency,
         priority,
         alternates: {
-          languages: Object.fromEntries(
-            LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}${path}`]),
-          ),
+          languages: {
+            ...Object.fromEntries(LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}${path}`])),
+            "x-default": `${APP_BASE_URL}/en${path}`,
+          },
         },
       })
     }
@@ -55,9 +56,10 @@ export default (): MetadataRoute.Sitemap => {
         changeFrequency: "monthly",
         priority: 0.7,
         alternates: {
-          languages: Object.fromEntries(
-            LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}/blog/${slug}`]),
-          ),
+          languages: {
+            ...Object.fromEntries(LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}/blog/${slug}`])),
+            "x-default": `${APP_BASE_URL}/en/blog/${slug}`,
+          },
         },
       })
     }
@@ -68,9 +70,10 @@ export default (): MetadataRoute.Sitemap => {
         changeFrequency: "never",
         priority: 0.6,
         alternates: {
-          languages: Object.fromEntries(
-            LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}/daily-challenge/${date}`]),
-          ),
+          languages: {
+            ...Object.fromEntries(LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}/daily-challenge/${date}`])),
+            "x-default": `${APP_BASE_URL}/en/daily-challenge/${date}`,
+          },
         },
       })
     }
