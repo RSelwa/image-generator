@@ -62,7 +62,8 @@
     "passwordNote": "Must be at least 8 characters long.",
     "createAccountButton": "Create Account",
     "signIn": "Sign in",
-    "termsAgreement": "By clicking continue, you agree to our",
+    "loginTermsAgreement": "By signing in, you agree to our",
+    "signupTermsAgreement": "By creating an account, you agree to our",
     "termsOfService": "Terms of Service",
     "and": "and",
     "privacyPolicy": "Privacy Policy"

@@ -161,7 +161,7 @@ export const SignupForm = ({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        {t("termsAgreement")}
+        {t("signupTermsAgreement")}
         {" "}
         <Link href={PAGES.TERMS}>{t("termsOfService")}</Link>
         {" "}

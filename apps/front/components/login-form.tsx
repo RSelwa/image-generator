@@ -153,7 +153,7 @@ export const LoginForm = ({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        {t("termsAgreement")}
+        {t("loginTermsAgreement")}
         {" "}
         <Link href={PAGES.TERMS}>{t("termsOfService")}</Link>
         {" "}
