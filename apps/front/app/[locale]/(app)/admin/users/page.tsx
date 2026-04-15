@@ -52,18 +52,18 @@ const Page = () => {
 
   return (
     <main className="h-full-height-admin max-h-full-height-admin p-4 space-y-4">
-      <section className="flex items-center gap-8">
+      <section className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-8">
         <h1 className="text-2xl font-bold">
           Users - <span className="text-primary">{usersCount}</span>
         </h1>
-        <InputGroup className="w-fit min-w-72">
+        <InputGroup className="sm:w-fit w-full min-w-72">
           <InputGroupAddon>
             <Search />
           </InputGroupAddon>
           <InputGroupInput value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search by id or email" autoComplete="off" />
         </InputGroup>
       </section>
-      <ScrollArea onScroll={handleScroll} className="h-5/6" viewportClassName="[overflow-anchor:none]">
+      <ScrollArea onScroll={handleScroll} className="h-5/6" viewportClassName="[overflow-anchor:none]" horizontal>
         <Table noWrapper>
           <TableCaption>
             {isFetching && "Loading..."}

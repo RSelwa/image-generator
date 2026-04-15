@@ -117,7 +117,7 @@ const Page = () => {
           New Spherical
         </Button>
       </section>
-      <ScrollArea className="h-5/6 w-full m-0">
+      <ScrollArea className="h-5/6 w-full m-0" horizontal>
         <Table noWrapper>
           <TableCaption>
             {isLoading && "Loading..."}

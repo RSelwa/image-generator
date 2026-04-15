@@ -104,7 +104,7 @@ const Page = () => {
                     New Social
                 </Button>
             </section>
-            <ScrollArea className="h-5/6 w-full m-0">
+            <ScrollArea className="h-5/6 w-full m-0" horizontal>
                 <Table noWrapper>
                     <TableCaption ref={captionRef}>
                         {isLoading && "Loading..."}
