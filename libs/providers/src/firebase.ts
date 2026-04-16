@@ -15,8 +15,9 @@ const getCredential = () => {
   const serviceAccountKey = process.env.SERVICE_ACCOUNT_KEY
 
   if (credentialsPath) {
+    const base = process.env.INIT_CWD || process.cwd()
     return admin.credential.cert(
-      JSON.parse(readFileSync(resolve(credentialsPath), "utf-8")),
+      JSON.parse(readFileSync(resolve(base, credentialsPath), "utf-8")),
     )
   }
 

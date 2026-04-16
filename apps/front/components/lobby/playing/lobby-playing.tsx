@@ -1,4 +1,5 @@
 import { DEFAULT_TIME_PER_ROUND, LOBBY_MODES } from "@repo/common"
+import { useEffect } from "react"
 import { DisplayGame } from "@/components/lobby/playing/game-display"
 import GameInputGuess from "@/components/lobby/playing/game-input-guess"
 import GameMapGuess from "@/components/lobby/playing/game-map"
@@ -14,6 +15,7 @@ import { useListenRoundAnswerQuery, useSubscribeLobbyQuery } from "@/redux/api/l
 import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundEntity, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectHasSelectedOption, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining } from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
+import { clearPanoCache, preloadImage } from "@/utils/pano-cache"
 
 const LobbyPlaying = () => {
   const pathname = usePathname()
@@ -24,15 +26,45 @@ const LobbyPlaying = () => {
   })
   const { isLoading: isLoadingRoundAnswer } = useListenRoundAnswerQuery({ lobbyId, roundIndex: lobby?.currentRound || 0 }, {
     skip: !lobbyId || !lobby || !lobby.currentRound || lobby.currentRound === 0,
-
   })
+
+  const nextRoundIndex = (lobby?.currentRound || 0) + 1
+  const skipNextRoundPrefetch = !lobbyId || !lobby || !lobby.currentRound || nextRoundIndex > (lobby?.config.numberOfRounds || 0)
+  const { data: nextRoundAnswer } = useListenRoundAnswerQuery({ lobbyId, roundIndex: nextRoundIndex }, {
+    skip: skipNextRoundPrefetch,
+  })
+
+  const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
+
+  useEffect(() => {
+    const { sphericalId, sphericalImageUrl, flatId, flatImageUrl } = nextRoundAnswer || {}
+
+    if (sphericalId && sphericalImageUrl)
+      preloadImage(sphericalId, sphericalImageUrl).catch(console.error)
+
+    if (flatId && flatImageUrl)
+      preloadImage(flatId, flatImageUrl).catch(console.error)
+  }, [nextRoundAnswer?.sphericalId, nextRoundAnswer?.flatId])
+
+  useEffect(() => {
+    if (!currentRoundData?.isSpecial || !currentRoundData.options) return
+
+    currentRoundData.options.forEach((option) => {
+      if (option.sphericalId && option.sphericalImage)
+        preloadImage(option.sphericalId, option.sphericalImage).catch(console.error)
+
+      if (option.flatId && option.flatImage)
+        preloadImage(option.flatId, option.flatImage).catch(console.error)
+    })
+  }, [currentRoundData?.isSpecial])
+
+  useEffect(() => () => clearPanoCache(), [])
 
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
   const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
   const isEliminated = useAppSelector(selectIsPlayerEliminated(lobbyId, roundIndex))
   const myAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
   const config = useAppSelector(selectLobbyConfig(lobbyId))
-  const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
   const roundEntity = useAppSelector(selectCurrentRoundEntity(lobbyId))
   const gameTitle = useAppSelector(selectCurrentRoundGameTitle(lobbyId, roundIndex))
 

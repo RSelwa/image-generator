@@ -1,13 +1,14 @@
 import { ROUND_TYPE } from "@repo/common"
 import { driver } from "driver.js"
 import Image from "next/image"
-import { usePathname } from "@/i18n/routing"
 import { useEffect, useRef } from "react"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { ImageGlow } from "@/components/ui/image-glow"
 import { DRIVER_IDS, STEPS } from "@/constants/driver"
 import { ASSET_URLS, FALL_BACK_IMAGE, STORAGE_KEYS } from "@/constants/mapping"
+import { usePanoUrl } from "@/hooks/use-pano-url"
 import { useLocalStorage } from "@/hooks/use-storage"
+import { usePathname } from "@/i18n/routing"
 import { useSelectOptionIndexMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectCurrentRoundData, selectCurrentRoundIndex, selectHasSelectedOption, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -78,6 +79,12 @@ const PlayingSpecialRound = () => {
     driverRef.current?.destroy()
   }, [roundIndex])
 
+  const cachedSphereUrl = usePanoUrl(selectedOption?.sphericalId, selectedOption?.sphericalImage)
+  const sphereSrc = cachedSphereUrl || selectedOption?.sphericalImage || ""
+
+  const cachedFlatUrl = usePanoUrl(selectedOption?.flatId, selectedOption?.flatImage)
+  const flatSrc = cachedFlatUrl || selectedOption?.flatImage || FALL_BACK_IMAGE
+
   if (!currentRoundData) return null
 
   return (
@@ -121,11 +128,11 @@ const PlayingSpecialRound = () => {
         <>
           {selectedOption?.type === ROUND_TYPE.SPHERICAL && (
             <div className="size-full">
-              <ReactSphere src={selectedOption.sphericalImage || ""} />
+              <ReactSphere src={sphereSrc} />
             </div>
           )}
           {selectedOption?.type === ROUND_TYPE.FLAT && (
-            <Image src={selectedOption.flatImage || FALL_BACK_IMAGE} alt="Selected option" width={1920} height={1080} className="aspect-video size-full object-contain" />
+            <img src={flatSrc} alt="Selected option" className="aspect-video size-full object-contain" />
           )}
         </>
       )}
