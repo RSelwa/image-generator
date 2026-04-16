@@ -116,22 +116,22 @@
   - [x] Add donation rewards (new skin, etc...)
   - [x] Implémenter le buy me coffee
   - [x] Supprimer le leaderboard collection
-  - [ ] Make a sponsors part on the home page, with fake users to allow users to donate
-  - [ ] Add e2e test for lobby playing, should click on the replay button
+  - [x] Make a sponsors part on the home page, with fake users to allow users to donate
+  - [x] Improve image selection of run mode, add more randomization
+  - [x] fix the issues on the sphericals/flats rows, when no map selected, should check if already a thumbnail
+  - [X] Implement modals system for pubing/infos
+  <!-- - [ ] Add e2e test for lobby playing, should click on the replay button -->
   - [ ] Add the possibility to change avatar in lobbies
   - [ ] Daily challenge: have success based on this
-  - [ ] Improve image selection of run mode, add more randomization
   - [ ] Daily challenge: If we make a 3d environnement for the path, add 3d models characters when moving on the map
   - [ ] Daily challenge:
-  - [ ] Add a modal of how to play
+  <!-- - [ ] Add a modal of how to play -->
   - [ ] Add mods instead of form for lobbies settings
   - [ ] make the thumbnail square when in sphericalId/flat Id state
   - [ ] Try to priorize the sphericals in special rounds instead of flats
-  - [ ] Implement modals system for pubing/infos
   - [ ] Add a button How to play which gonna open a modal which gonna be carousel with examples
-  - [ ] Improve comments on instagram
-  - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map
-  - [ ] fix the issues on the sphericals/flats rows, when no map selected, should check if already a thumbnail
+  <!-- - [ ] Improve comments on instagram -->
+  <!-- - [ ] En mobile, devoir appuyer sur un button pour faire apparaitre la map -->
   - [ ] in Seed maker, when round is special should not allow images without thumbnails
   - [ ] Scrap lostgamer for the images of the maps
   - [ ] Improve Auth by setup ssr firebase auth and cleaning the way auth is called and setup auth persistence
