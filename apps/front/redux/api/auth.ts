@@ -71,8 +71,7 @@ export const authApi = createApi({
             try {
               const credential = EmailAuthProvider.credential(email, data.password)
               await linkWithCredential(auth.currentUser, credential)
-              await updateDoc(getUserRef(auth.currentUser.uid), { email, isAnonymousUser: false,
-              }).catch((error) => {
+              await updateDoc(getUserRef(auth.currentUser.uid), { email, isAnonymousUser: false, newsletter: true }).catch((error) => {
                 console.error("Error updating user", auth.currentUser?.uid, error)
               })
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
@@ -179,6 +178,7 @@ export const authApi = createApi({
                   avatar: getRandomAvatar(),
                   streak: 0,
                   lastStreakDate: null,
+                  newsletter: true,
                 }
 
                 await setDoc(userRef, {
