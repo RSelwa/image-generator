@@ -147,6 +147,8 @@
     "pseudo": "Pseudo",
     "pseudoDescription": "This is the name other players will see",
     "emailDescription": "Your email address cannot be changed here",
+    "newsletter": "Newsletter",
+    "newsletterDescription": "Receive updates about new scenes, features, and events",
     "saveChanges": "Save changes",
     "profileUpdated": "Profile updated successfully",
     "profileUpdateFailed": "Failed to update profile"

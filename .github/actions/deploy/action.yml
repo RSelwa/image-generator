@@ -31,7 +31,7 @@ runs:
           export PATH="/home/debian/.nvm/versions/node/v24.14.1/bin:$PATH"
           cd /var/www/${{ inputs.environment }}
           git config pull.rebase false
-          git pull origin ${{ inputs.branch }}
+          git reset --hard origin/${{ inputs.branch }}
           /home/debian/.nvm/versions/node/v24.14.1/bin/pnpm install
           /home/debian/.nvm/versions/node/v24.14.1/bin/pnpm run build:front
           /home/debian/.nvm/versions/node/v24.14.1/bin/pm2 reload ${{ inputs.environment }}

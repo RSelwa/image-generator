@@ -30,7 +30,7 @@ export const RaceModePub = () => {
                 </DialogDescription>
                 <DialogFooter className="m-0 justify-center!">
                     <Link href={PAGES.RACE} className="w-fit mx-auto">
-                        <Button variant="marathon-black">
+                        <Button variant="marathon-black" data-umami-event="click-pub-race-mode">
                             {t("playNow")}
                             <ArrowUpRightFromSquareIcon />
                         </Button>

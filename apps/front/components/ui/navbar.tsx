@@ -33,10 +33,10 @@ const Navbar = () => {
       {(!user || user.isAnonymous) && (
         <article className="flex items-center gap-3">
           <Button variant="marathon-outline" asChild>
-            <Link data-testid="login-button" href={PAGES.LOGIN}>Login</Link>
+            <Link data-testid="login-button" data-umami-event="click-login" href={PAGES.LOGIN}>Login</Link>
           </Button>
           <Button variant="marathon" asChild>
-            <Link data-testid="signup-button" href={PAGES.SIGNUP}>Join</Link>
+            <Link data-testid="signup-button" data-umami-event="click-signup" href={PAGES.SIGNUP}>Join</Link>
           </Button>
         </article>
       )}

@@ -9,7 +9,8 @@
     "predeploy",
     "sphericals",
     "Subcollection",
-    "sunpillar"
+    "sunpillar",
+    "umami"
   ],
   "json.validate.enable": false,
   "deno.lint": false,

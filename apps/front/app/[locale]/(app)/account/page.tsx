@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Switch } from "@/components/ui/switch"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { useUpdateUserDocMutation } from "@/redux/api/user"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -24,6 +25,7 @@ import { getAvatarKeyFromUrl, getAvatarUrl } from "@/utils/file"
 const formSchema = z.object({
   pseudo: z.string().min(3, "Pseudo must be at least 3 characters").max(30, "Pseudo must be at most 30 characters"),
   avatar: z.enum(AVATARS_KEYS).nullish(),
+  newsletter: z.boolean(),
 })
 
 type FormSchema = z.infer<typeof formSchema>
@@ -46,6 +48,7 @@ const AccountForm = () => {
     defaultValues: {
       pseudo: user?.pseudo || "",
       avatar: getAvatarKeyFromUrl(user?.avatar || ""),
+      newsletter: user?.newsletter || false,
     },
   })
 
@@ -55,6 +58,7 @@ const AccountForm = () => {
     reset({
       pseudo: user.pseudo || "",
       avatar: getAvatarKeyFromUrl(user.avatar || ""),
+      newsletter: user.newsletter || false,
     })
   }, [user, reset])
 
@@ -67,6 +71,7 @@ const AccountForm = () => {
         data: {
           pseudo: formData.pseudo,
           avatar: formData.avatar,
+          newsletter: formData.newsletter,
         },
       }).unwrap()
 
@@ -80,6 +85,7 @@ const AccountForm = () => {
   if (!user) return null
 
   const watchAvatar = watch("avatar")
+  const watchNewsletter = watch("newsletter")
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -128,11 +134,16 @@ const AccountForm = () => {
               disabled
             />
           </Field>
+          <Field>
+            <FieldLabel htmlFor="newsletter">{t("newsletter")}</FieldLabel>
+            <FieldDescription>{t("newsletterDescription")}</FieldDescription>
+            <Switch checked={watchNewsletter} onCheckedChange={(checked) => setValue("newsletter", checked, { shouldDirty: true })} />
+          </Field>
         </CardContent>
       </Card>
 
       <div className="flex justify-end">
-        <Button variant={isDirty ? "marathon" : "marathon-outline"} type="submit" disabled={isLoading}>
+        <Button variant={isDirty ? "marathon" : "marathon-outline"} type="submit" disabled={isLoading || !isDirty}>
           {isLoading && <Loader className="size-4" />}
           {t("saveChanges")}
         </Button>

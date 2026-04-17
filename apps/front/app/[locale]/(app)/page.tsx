@@ -9,7 +9,7 @@ import HomeFooter from "@/components/home/home-footer"
 import { HomeLeaderboard } from "@/components/home/home-leaderboard"
 import { HomeStrips } from "@/components/home/home-strips"
 import { LogoWithIcon, MiniStrips } from "@/components/icons"
-import { RaceModePub } from "@/components/modals/race-mode-pub"
+import PubModal from "@/components/modals/pub-modal"
 import { Button } from "@/components/ui/button"
 import { ARTICLES, HOME_ARTICLES } from "@/constants/articles"
 import { PAGES } from "@/constants/pages"
@@ -143,7 +143,7 @@ const Page = async () => {
         />
       </section>
       <HomeFooter />
-      <RaceModePub />
+      <PubModal />
     </main>
   )
 }

@@ -28,6 +28,7 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
         pseudo,
         isAnonymousUser: Boolean(!user.email),
         avatar: getRandomAvatar(),
+        newsletter: true,
       })
 
       await refs.users.doc(user.uid).set(userDoc)
