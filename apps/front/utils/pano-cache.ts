@@ -1,10 +1,12 @@
+import { IS_PROD } from "@/constants/env"
+
 const panoCache = new Map<string, string>() // id -> blobUrl
 const pendingRequests = new Map<string, Promise<string>>() // id -> promise
 
 const MOBILE_MAX_TEXTURE_WIDTH = 2048
 
 const buildProxyUrl = (imageUrl: string) =>
-  `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
+  IS_PROD ? imageUrl : `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
 
 const isMobileDevice = () =>
   typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches

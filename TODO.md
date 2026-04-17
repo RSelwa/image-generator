@@ -120,6 +120,8 @@
   - [x] Improve image selection of run mode, add more randomization
   - [x] fix the issues on the sphericals/flats rows, when no map selected, should check if already a thumbnail
   - [X] Implement modals system for pubing/infos
+  - [ ] Implement Umamini tracking data attribute
+  - [ ] Flags users emails for newsletter
   <!-- - [ ] Add e2e test for lobby playing, should click on the replay button -->
   - [ ] Add the possibility to change avatar in lobbies
   - [ ] Daily challenge: have success based on this
