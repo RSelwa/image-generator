@@ -108,7 +108,7 @@ export const authApi = createApi({
               const email = result.user.email
               const pseudo = result.user.displayName || generateUsername()
               if (email) {
-                await updateDoc(getUserRef(auth.currentUser.uid), { email, pseudo, isAnonymousUser: false, avatar: getRandomAvatar() }).catch((error) => {
+                await updateDoc(getUserRef(auth.currentUser.uid), { email, pseudo, isAnonymousUser: false, avatar: getRandomAvatar(), newsletter: true }).catch((error) => {
                   console.error("Error updating user", auth.currentUser?.uid, error)
                 })
               }

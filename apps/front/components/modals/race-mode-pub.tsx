@@ -15,11 +15,11 @@ const modalKey = LIMITED_MODAL_KEYS.RACE_MODE
 const maxCount = LIMITED_MODAL_CONFIG[modalKey].maxCount
 
 export const RaceModePub = () => {
-    const { shouldShow, incrementCounter } = useLimitedModal(modalKey, maxCount)
+    const { isOpen, close } = useLimitedModal(modalKey, maxCount)
     const t = useTranslations("raceMode")
 
     return (
-        <Dialog open={shouldShow} onOpenChange={incrementCounter}>
+        <Dialog open={isOpen} onOpenChange={(open) => !open && close()}>
             <DialogContent className="p-0 lg:max-w-1/2">
                 <Image src={IMAGES_URLS.PUBS.RACE_MODE} alt="Daily Challenge" width={2329} height={1262} className="object-cover max-h-96 w-full" />
                 <DialogTitle className="px-6">

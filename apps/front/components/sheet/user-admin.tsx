@@ -10,6 +10,7 @@ import { EmptySheet } from "@/components/sheet/empty"
 import { Button } from "@/components/ui/button"
 import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Switch } from "@/components/ui/switch"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { QUERY_PARAMS } from "@/constants/mapping"
 import { useCreateMessageMutation } from "@/redux/api/messages"
@@ -57,10 +58,17 @@ const SheetAdminUser = () => {
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>{user.email}</SheetTitle>
-                    <SheetDescription>Id of the suggestion {user.id}</SheetDescription>
+                    <SheetDescription>Id of the user {user.id}</SheetDescription>
                 </SheetHeader>
-                <section className="grid flex-1 md:grid-cols-2 grid-cols-1 auto-rows-min gap-6 px-4">
+                <section className="flex flex-col flex-1 auto-rows-min gap-6 px-4">
+                    <article />
                     <UserAvatar avatar={user.avatar || undefined} name={user.email || user.id} donorTier={user.donorTier} className="size-20" />
+                    <article className="flex items-center gap-4">
+                        <span>
+                            Has newsletter: {user.newsletter ? "Yes" : "No"}
+                        </span>
+                        <Switch checked={user.newsletter || false} disabled />
+                    </article>
                 </section>
                 <section className="px-4 space-y-2">
                     <h3 className="font-semibold text-sm">Envoyer un message</h3>
