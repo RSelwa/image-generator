@@ -384,3 +384,11 @@ Steps to follow:
 - Check that nginx config is good : `sudo nginx -t`
 - Reload nginx: `sudo systemctl reload nginx`
 - run certbot : `sudo certbot --nginx -d me.geo-gamer.net`
+
+## Send build to vps
+# First method (slow)
+ scp -r apps/front/.next/ debian@141.94.220.102:/var/www/prod/
+
+# second method (slow)
+tar -czf next.tar.gz apps/front/.next/
+scp -r next.tar.gz debian@141.94.220.102:/var/www/prod/

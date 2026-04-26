@@ -23,7 +23,9 @@
     "metaDescription": "Explore plus de 300 scènes de mondes de jeux vidéo iconiques et devine où tu es. Joue en solo ou défie jusqu'à 7 amis en multijoueur. Gratuit, sans téléchargement.",
     "leaderboard": "Classement",
     "dailyChallengeStreak": "Série Défi du Jour",
-    "raceHighScore": "Meilleur Score Course"
+    "raceHighScore": "Meilleur Score Course",
+    "deathRaceHighScore": "Meilleur Score Death run",
+    "weeklyRaceHighScore": "Meilleur Joueur cette semaine"
   },
   "nav": {
     "dailyChallenge": "Défi du jour",

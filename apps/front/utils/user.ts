@@ -54,3 +54,11 @@ export const formatSessionFromAnonymousUser = ({ authUser, pseudo }: { authUser:
 export const isAvatarGlow = (donorTier: ConstantValues<typeof DONOR_TIERS>) => donorTier === DONOR_TIERS.GOLD || donorTier === DONOR_TIERS.SILVER
 
 export const isTextGlow = (donorTier: ConstantValues<typeof DONOR_TIERS> | null) => donorTier === DONOR_TIERS.GOLD
+
+export const getDonorTierByRank = (rank: number) => {
+  if (rank === 1) return DONOR_TIERS.GOLD
+  if (rank === 2) return DONOR_TIERS.SILVER
+  if (rank === 3) return DONOR_TIERS.BRONZE
+
+  return null
+}

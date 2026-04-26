@@ -1,8 +1,9 @@
-import { getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
+import { collectionGroup, getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES, USERS_FIELDS } from "@repo/common"
-import { type RaceLeaderboardPlayer, raceLeaderboardPlayerSchema, type StreakLeaderboardPlayer, streakLeaderboardPlayerSchema, type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
+import { type DeathRunLeaderboardPlayer, deathRunLeaderboardPlayerSchema, type RaceLeaderboardPlayer, raceLeaderboardPlayerSchema, raceRunDocSchema, type StreakLeaderboardPlayer, streakLeaderboardPlayerSchema, type UserDoc, type userDocWithId, userDocWithIdSchema, type WeeklyRaceLeaderboardPlayer, weeklyRaceLeaderboardPlayerSchema } from "@repo/schemas"
 import { DEFAULT_SIZE_USERS } from "@/constants/api"
+import { db } from "@/constants/db"
 import { getUserRef, TABLE_REFS } from "@/constants/db-refs"
 import { globalErrorHandler } from "@/utils/error"
 
@@ -179,6 +180,78 @@ export const userApi = createApi({
         }
       },
     }),
+    getTopPlayersByBestDeathRunScore: builder.query<DeathRunLeaderboardPlayer[], void>({
+      queryFn: async () => {
+        try {
+          const q = query(
+            TABLE_REFS[TABLES.USERS],
+            ignoreAnonymousUsersConstraint,
+            where("bestDeathRunScore", ">", 0),
+            orderBy("bestDeathRunScore", "desc"),
+            limit(10),
+          )
+          const snapshot = await getDocs(q)
+
+          const players: DeathRunLeaderboardPlayer[] = []
+          for (const docSnap of snapshot.docs) {
+            const { data, error } = deathRunLeaderboardPlayerSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+            if (error) continue
+            players.push(data)
+          }
+
+          return { data: players }
+        } catch (error) {
+          console.error("Error fetching top players by best death run score", error)
+
+          return { error: globalErrorHandler(error) }
+        }
+      },
+    }),
+    getTopRaceRunsByWeek: builder.query<WeeklyRaceLeaderboardPlayer[], void>({
+      queryFn: async () => {
+        try {
+          const now = new Date()
+          const startOfWeek = new Date(now)
+          startOfWeek.setDate(now.getDate() - ((now.getDay() + 6) % 7))
+          startOfWeek.setHours(0, 0, 0, 0)
+
+          const q = query(
+            collectionGroup(db, TABLES.RACE_RUNS),
+            where("finishedAt", ">=", Timestamp.fromDate(startOfWeek)),
+            orderBy("finishedAt", "desc"),
+            limit(50),
+          )
+          const snapshot = await getDocs(q)
+
+          const runs: Array<{ uid: string, score: number }> = []
+          for (const docSnap of snapshot.docs) {
+            const { data, error } = raceRunDocSchema.safeParse(docSnap.data())
+            if (error) continue
+            runs.push({ uid: data.uid, score: data.score })
+          }
+
+          runs.sort((a, b) => b.score - a.score)
+          const topRuns = runs.slice(0, 10)
+
+          const players = (await Promise.all(
+            topRuns.map(async (run) => {
+              const userDoc = await getDoc(getUserRef(run.uid))
+              if (!userDoc.exists()) return null
+              const { data, error } = weeklyRaceLeaderboardPlayerSchema.safeParse({ id: userDoc.id, ...userDoc.data(), score: run.score })
+              if (error) return null
+
+              return data
+            })
+          )).filter((p): p is WeeklyRaceLeaderboardPlayer => p !== null)
+
+          return { data: players }
+        } catch (error) {
+          console.error("Error fetching top race runs by week", error)
+
+          return { error: globalErrorHandler(error) }
+        }
+      },
+    }),
     getUserById: builder.query<userDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
         try {
@@ -212,4 +285,4 @@ export const userApi = createApi({
   }),
 })
 
-export const { useGetUsersInfiniteQuery, useUpdateUserDocMutation, useGetUsersCountQuery, useGetUserByIdQuery, useGetTopPlayersByMaxStreakQuery, useGetTopPlayersByBestRaceScoreQuery } = userApi
+export const { useGetUsersInfiniteQuery, useUpdateUserDocMutation, useGetUsersCountQuery, useGetUserByIdQuery, useGetTopPlayersByMaxStreakQuery, useGetTopPlayersByBestRaceScoreQuery, useGetTopPlayersByBestDeathRunScoreQuery, useGetTopRaceRunsByWeekQuery } = userApi

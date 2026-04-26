@@ -18,6 +18,16 @@ export const raceLeaderboardPlayerSchema = publicPlayerSchema.extend({
   bestRaceScore: z.number().nullish(),
 })
 
+export const deathRunLeaderboardPlayerSchema = publicPlayerSchema.extend({
+  bestDeathRunScore: z.number().nullish(),
+})
+
+export const weeklyRaceLeaderboardPlayerSchema = publicPlayerSchema.extend({
+  score: z.number().nullish(),
+})
+
 export type PublicPlayer = z.infer<typeof publicPlayerSchema>
 export type StreakLeaderboardPlayer = z.infer<typeof streakLeaderboardPlayerSchema>
 export type RaceLeaderboardPlayer = z.infer<typeof raceLeaderboardPlayerSchema>
+export type DeathRunLeaderboardPlayer = z.infer<typeof deathRunLeaderboardPlayerSchema>
+export type WeeklyRaceLeaderboardPlayer = z.infer<typeof weeklyRaceLeaderboardPlayerSchema>

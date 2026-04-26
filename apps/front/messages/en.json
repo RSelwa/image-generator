@@ -23,7 +23,9 @@
     "metaDescription": "Explore 300+ scenes from iconic video game worlds and guess where you are. Play solo or challenge up to 7 friends in real-time multiplayer. Free, no download required.",
     "leaderboard": "Leaderboard",
     "dailyChallengeStreak": "Daily Challenge Streak",
-    "raceHighScore": "Race High Score"
+    "raceHighScore": "Race High Score",
+    "deathRaceHighScore": "Death run High Score",
+    "weeklyRaceHighScore": "Best player this week"
   },
   "nav": {
     "dailyChallenge": "Daily Challenge",
