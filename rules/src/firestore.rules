@@ -215,6 +215,42 @@ service cloud.firestore {
         && onlyUpdatesFields(["seenBy"]);
     }
 
+    // Conversations collection - participants can read/write their own conversations
+    // Lobby conversations (lobbyId set) are readable/writable by any signed-in user
+    match /conversations/{conversationId} {
+      function isParticipant() {
+        return isSignedIn() && request.auth.uid in resource.data.participants;
+      }
+      function isParticipantIncoming() {
+        return isSignedIn() && request.auth.uid in request.resource.data.participants;
+      }
+      function isLobbyConversation() {
+        return resource.data.lobbyId != null;
+      }
+      function isLobbyConversationIncoming() {
+        return request.resource.data.lobbyId != null;
+      }
+
+      allow read: if isParticipant() || (isSignedIn() && isLobbyConversation());
+      allow create: if isParticipantIncoming() || (isSignedIn() && isLobbyConversationIncoming());
+      allow update: if (isParticipant() || (isSignedIn() && isLobbyConversation())) && onlyUpdatesFields(["lastMessage", "lastMessageAt"]);
+      allow delete: if signedInAdmin();
+
+      match /conversationMessages/{messageId} {
+        function isConversationParticipant() {
+          return isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants;
+        }
+        function isLobbyConversationMsg() {
+          return get(/databases/$(database)/documents/conversations/$(conversationId)).data.lobbyId != null;
+        }
+
+        allow read: if isConversationParticipant() || (isSignedIn() && isLobbyConversationMsg());
+        allow create: if (isConversationParticipant() || (isSignedIn() && isLobbyConversationMsg())) && request.resource.data.senderId == request.auth.uid;
+        allow update: if (isConversationParticipant() || (isSignedIn() && isLobbyConversationMsg())) && onlyUpdatesFields(["seenBy"]);
+        allow delete: if signedInAdmin();
+      }
+    }
+
     // CollectionGroup queries
     match /{path=**}/spherical/{spherical} {
       allow write: if signedInAdmin();

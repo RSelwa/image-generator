@@ -53,6 +53,9 @@ export const TABLE_REFS = {
   [TABLES.MESSAGES]: collection(db, TABLES.MESSAGES) as CustomCollectionRef<
     typeof TABLES.MESSAGES
   >,
+  [TABLES.CONVERSATIONS]: collection(db, TABLES.CONVERSATIONS) as CustomCollectionRef<
+    typeof TABLES.CONVERSATIONS
+  >,
 } as const
 
 export const TABLES_GROUP_REFS = {
@@ -98,6 +101,10 @@ export const TABLES_SUB_REFS = {
   [TABLES.DAILY_CHALLENGE_RESULTS]: (userId: string) =>
     collection(db, TABLES.USERS, userId, TABLES.DAILY_CHALLENGE_RESULTS) as CustomCollectionRef<
       typeof TABLES.DAILY_CHALLENGE_RESULTS
+    >,
+  [TABLES.CONVERSATION_MESSAGES]: (conversationId: string) =>
+    collection(db, TABLES.CONVERSATIONS, conversationId, TABLES.CONVERSATION_MESSAGES) as CustomCollectionRef<
+      typeof TABLES.CONVERSATION_MESSAGES
     >,
 } as const
 
@@ -169,3 +176,9 @@ export const getDeathRunRunRef = (deathRunId: string, uid: string) =>
 
 export const getMessageRef = (messageId: string | undefined) =>
   messageId ? doc(TABLE_REFS[TABLES.MESSAGES], messageId) : doc(TABLE_REFS[TABLES.MESSAGES])
+
+export const getConversationRef = (conversationId: string | undefined) =>
+  conversationId ? doc(TABLE_REFS[TABLES.CONVERSATIONS], conversationId) : doc(TABLE_REFS[TABLES.CONVERSATIONS])
+
+export const getConversationMessageRef = (conversationId: string, messageId: string) =>
+  doc(TABLES_SUB_REFS[TABLES.CONVERSATION_MESSAGES](conversationId), messageId)
