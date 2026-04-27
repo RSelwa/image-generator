@@ -218,20 +218,21 @@ export const userApi = createApi({
           const q = query(
             collectionGroup(db, TABLES.RACE_RUNS),
             where("finishedAt", ">=", Timestamp.fromDate(startOfWeek)),
-            orderBy("finishedAt", "desc"),
+            orderBy("score", "desc"),
             limit(50),
           )
           const snapshot = await getDocs(q)
 
-          const runs: Array<{ uid: string, score: number }> = []
+          const seenUids = new Set<string>()
+          const topRuns: Array<{ uid: string, score: number }> = []
+
           for (const docSnap of snapshot.docs) {
             const { data, error } = raceRunDocSchema.safeParse(docSnap.data())
-            if (error) continue
-            runs.push({ uid: data.uid, score: data.score })
+            if (error || seenUids.has(data.uid)) continue
+            seenUids.add(data.uid)
+            topRuns.push({ uid: data.uid, score: data.score })
+            if (topRuns.length === 10) break
           }
-
-          runs.sort((a, b) => b.score - a.score)
-          const topRuns = runs.slice(0, 10)
 
           const players = (await Promise.all(
             topRuns.map(async (run) => {
