@@ -3112,4 +3112,279 @@ describe("firebase Security Rules", () => {
       await assertFails(deleteDoc(doc(authedDb, userMessagePath)))
     })
   })
+
+  describe("conversations collection", () => {
+    const adminId = "admin1"
+    const user1Id = "user1"
+    const user2Id = "user2"
+    const outsiderId = "user3"
+    const conversationPath = "conversations/conv1"
+    const messagePath = "conversations/conv1/conversationMessages/msg1"
+
+    const conversationData = {
+      participants: [user1Id, user2Id],
+      lastMessage: "",
+      lastMessageAt: null,
+      createdAt: new Date(),
+    }
+
+    const messageData = {
+      content: "Hello!",
+      senderId: user1Id,
+      seenBy: [],
+      createdAt: new Date(),
+    }
+
+    it("should allow participant to read their conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(user1Id).firestore()
+      await assertSucceeds(getDoc(doc(authedDb, conversationPath)))
+    })
+
+    it("should not allow outsider to read a conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(outsiderId).firestore()
+      await assertFails(getDoc(doc(authedDb, conversationPath)))
+    })
+
+    it("should allow participant to create a conversation they are part of", async () => {
+      const authedDb = testEnv.authenticatedContext(user1Id).firestore()
+      await assertSucceeds(setDoc(doc(authedDb, conversationPath), conversationData))
+    })
+
+    it("should not allow user to create a conversation they are not part of", async () => {
+      const authedDb = testEnv.authenticatedContext(outsiderId).firestore()
+      await assertFails(setDoc(doc(authedDb, conversationPath), conversationData))
+    })
+
+    it("should allow participant to update lastMessage and lastMessageAt", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(user1Id).firestore()
+      await assertSucceeds(updateDoc(doc(authedDb, conversationPath), { lastMessage: "updated", lastMessageAt: new Date() }))
+    })
+
+    it("should not allow participant to update participants field", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(user1Id).firestore()
+      await assertFails(updateDoc(doc(authedDb, conversationPath), { participants: [user1Id, outsiderId] }))
+    })
+
+    it("should allow admin to delete a conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+      await assertSucceeds(deleteDoc(doc(adminDb, conversationPath)))
+    })
+
+    it("should not allow participant to delete a conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(user1Id).firestore()
+      await assertFails(deleteDoc(doc(authedDb, conversationPath)))
+    })
+
+    it("should allow participant to read messages in their conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(doc(context.firestore(), messagePath), messageData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(user2Id).firestore()
+      await assertSucceeds(getDoc(doc(authedDb, messagePath)))
+    })
+
+    it("should not allow outsider to read messages in a conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(doc(context.firestore(), messagePath), messageData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(outsiderId).firestore()
+      await assertFails(getDoc(doc(authedDb, messagePath)))
+    })
+
+    it("should allow participant to create a message as themselves", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(user1Id).firestore()
+      await assertSucceeds(setDoc(doc(authedDb, messagePath), messageData))
+    })
+
+    it("should not allow participant to create a message as someone else", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+      })
+
+      const spoofedMessage = { ...messageData, senderId: user2Id }
+      const authedDb = testEnv.authenticatedContext(user1Id).firestore()
+      await assertFails(setDoc(doc(authedDb, messagePath), spoofedMessage))
+    })
+
+    it("should not allow outsider to send a message", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+      })
+
+      const outsiderMessage = { ...messageData, senderId: outsiderId }
+      const authedDb = testEnv.authenticatedContext(outsiderId).firestore()
+      await assertFails(setDoc(doc(authedDb, messagePath), outsiderMessage))
+    })
+
+    it("should allow participant to update seenBy on a message", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(doc(context.firestore(), messagePath), messageData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(user2Id).firestore()
+      await assertSucceeds(updateDoc(doc(authedDb, messagePath), { seenBy: [user2Id] }))
+    })
+
+    it("should not allow participant to update content of a message", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(doc(context.firestore(), messagePath), messageData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(user2Id).firestore()
+      await assertFails(updateDoc(doc(authedDb, messagePath), { content: "tampered" }))
+    })
+
+    it("should allow admin to delete a conversation message", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(doc(context.firestore(), messagePath), messageData)
+      })
+
+      const adminDb = testEnv.authenticatedContext(adminId).firestore()
+      await assertSucceeds(deleteDoc(doc(adminDb, messagePath)))
+    })
+
+    it("should not allow participant to delete a conversation message", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(doc(context.firestore(), messagePath), messageData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(user1Id).firestore()
+      await assertFails(deleteDoc(doc(authedDb, messagePath)))
+    })
+  })
+
+  describe("lobby conversations", () => {
+    const adminId = "admin1"
+    const lobbyId = "lobby123"
+    const regularUserId = "user1"
+    const conversationId = `lobby_${lobbyId}`
+    const lobbyConversationPath = `conversations/${conversationId}`
+    const lobbyMessagePath = `conversations/${conversationId}/conversationMessages/msg1`
+
+    const lobbyConversationData = {
+      participants: [adminId],
+      lastMessage: "",
+      lastMessageAt: null,
+      createdAt: new Date(),
+      lobbyId,
+    }
+
+    const lobbyMessageData = {
+      content: "Message to the lobby",
+      senderId: adminId,
+      seenBy: [],
+      createdAt: new Date(),
+    }
+
+    it("should allow any signed-in user to read a lobby conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
+      await assertSucceeds(getDoc(doc(authedDb, lobbyConversationPath)))
+    })
+
+    it("should not allow unauthenticated user to read a lobby conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+      })
+
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertFails(getDoc(doc(unauthDb, lobbyConversationPath)))
+    })
+
+    it("should allow any signed-in user to create a lobby conversation", async () => {
+      const authedDb = testEnv.authenticatedContext(adminId).firestore()
+      await assertSucceeds(setDoc(doc(authedDb, lobbyConversationPath), lobbyConversationData))
+    })
+
+    it("should allow any signed-in user to read messages in a lobby conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+        await setDoc(doc(context.firestore(), lobbyMessagePath), lobbyMessageData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
+      await assertSucceeds(getDoc(doc(authedDb, lobbyMessagePath)))
+    })
+
+    it("should not allow unauthenticated user to read messages in a lobby conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+        await setDoc(doc(context.firestore(), lobbyMessagePath), lobbyMessageData)
+      })
+
+      const unauthDb = testEnv.unauthenticatedContext().firestore()
+      await assertFails(getDoc(doc(unauthDb, lobbyMessagePath)))
+    })
+
+    it("should allow any signed-in user to send a message as themselves in a lobby conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+      })
+
+      const playerMessage = { ...lobbyMessageData, senderId: regularUserId }
+      const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
+      await assertSucceeds(setDoc(doc(authedDb, lobbyMessagePath), playerMessage))
+    })
+
+    it("should not allow signed-in user to send a message as someone else in a lobby conversation", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+      })
+
+      const spoofedMessage = { ...lobbyMessageData, senderId: adminId }
+      const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
+      await assertFails(setDoc(doc(authedDb, lobbyMessagePath), spoofedMessage))
+    })
+
+    it("should allow any signed-in user to update seenBy in a lobby conversation message", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+        await setDoc(doc(context.firestore(), lobbyMessagePath), lobbyMessageData)
+      })
+
+      const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
+      await assertSucceeds(updateDoc(doc(authedDb, lobbyMessagePath), { seenBy: [regularUserId] }))
+    })
+  })
 })

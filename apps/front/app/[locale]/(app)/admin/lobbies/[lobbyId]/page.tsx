@@ -21,8 +21,11 @@ import {
 import { BADGE_VARIANTS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { Link, usePathname } from "@/i18n/routing"
+import { useFindOrCreateLobbyConversationMutation, useSendConversationMessageMutation } from "@/redux/api/conversations"
 import { useSubscribeAllRoundAnswersQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { useCreateMessageMutation } from "@/redux/api/messages"
+import { selectUserId } from "@/redux/session/session.selectors"
+import { useAppSelector } from "@/redux/store"
 import { getBadgeVariantLobbyStatus } from "@/utils/badge"
 
 const messageFormSchema = z.object({
@@ -48,17 +51,47 @@ const LobbyMessageForm = ({ lobbyId }: { lobbyId: string }) => {
   }
 
   return (
-    <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-3">Message au lobby</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2 items-end max-w-lg">
-        <InputGroup className="flex-1">
-          <InputGroupTextarea placeholder="Message pour tous les joueurs..." {...register("content")} />
-        </InputGroup>
-        <Button type="submit" disabled={isLoading}>
-          Envoyer {isLoading && <Loader />}
-        </Button>
-      </form>
-    </section>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2 items-end flex-1">
+      <InputGroup className="flex-1">
+        <InputGroupTextarea placeholder="Toast pour tous les joueurs..." {...register("content")} />
+      </InputGroup>
+      <Button type="submit" disabled={isLoading} variant="outline">
+        Envoyer (v1) {isLoading && <Loader />}
+      </Button>
+    </form>
+  )
+}
+
+const LobbyMessageFormV2 = ({ lobbyId }: { lobbyId: string }) => {
+  const adminUid = useAppSelector(selectUserId)
+  const [findOrCreateLobbyConversation] = useFindOrCreateLobbyConversationMutation()
+  const [sendMessage, { isLoading }] = useSendConversationMessageMutation()
+  const { handleSubmit, register, reset } = useForm<MessageFormSchema>({
+    defaultValues: { content: "" },
+    resolver: zodResolver(messageFormSchema),
+  })
+
+  const onSubmit = async (data: MessageFormSchema) => {
+    if (!adminUid) return
+    try {
+      const conversation = await findOrCreateLobbyConversation({ lobbyId, adminUid }).unwrap()
+      await sendMessage({ conversationId: conversation.id, content: data.content, senderId: adminUid }).unwrap()
+      toast.success("Message envoyé dans le salon")
+      reset()
+    } catch {
+      toast.error("Erreur lors de l'envoi du message")
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2 items-end flex-1">
+      <InputGroup className="flex-1">
+        <InputGroupTextarea placeholder="Message dans le panneau salon..." {...register("content")} />
+      </InputGroup>
+      <Button type="submit" disabled={isLoading}>
+        Envoyer (v2) {isLoading && <Loader />}
+      </Button>
+    </form>
   )
 }
 
@@ -243,7 +276,13 @@ const Page = () => {
         </Table>
       </section>
 
-      <LobbyMessageForm lobbyId={lobbyId} />
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-3">Message au lobby</h2>
+        <div className="flex gap-4 flex-col md:flex-row max-w-3xl">
+          <LobbyMessageForm lobbyId={lobbyId} />
+          <LobbyMessageFormV2 lobbyId={lobbyId} />
+        </div>
+      </section>
 
       {/* Rounds */}
       <section>

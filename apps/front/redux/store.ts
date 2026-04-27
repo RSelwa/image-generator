@@ -12,6 +12,7 @@ import { lobbyApi } from "@/redux/api/lobby"
 import { localApi } from "@/redux/api/local"
 import { mapApi } from "@/redux/api/maps"
 import { marathonSeedApi } from "@/redux/api/marathon-seed"
+import { conversationsApi } from "@/redux/api/conversations"
 import { messagesApi } from "@/redux/api/messages"
 import { raceApi } from "@/redux/api/race"
 import { seedApi } from "@/redux/api/seed"
@@ -27,6 +28,7 @@ export const makeStore = () =>
   configureStore({
     reducer: {
       [adminApi.reducerPath]: adminApi.reducer,
+      [conversationsApi.reducerPath]: conversationsApi.reducer,
       [messagesApi.reducerPath]: messagesApi.reducer,
       [gameApi.reducerPath]: gameApi.reducer,
       [suggestionsApi.reducerPath]: suggestionsApi.reducer,
@@ -52,6 +54,7 @@ export const makeStore = () =>
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ serializableCheck: false })
         .concat(adminApi.middleware)
+        .concat(conversationsApi.middleware)
         .concat(messagesApi.middleware)
         .concat(userApi.middleware)
         .concat(seedApi.middleware)
