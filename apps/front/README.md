@@ -355,6 +355,8 @@ Two pm2 environment "dev" and "prod"
 
 Steps to follow:
 
+- To allow the folder to be used by github, create a deploy key
+
 - Create a folder in the web server `/var/www/<folder>`
 - create the .env file
 - Build the app
@@ -384,6 +386,8 @@ Steps to follow:
 - Check that nginx config is good : `sudo nginx -t`
 - Reload nginx: `sudo systemctl reload nginx`
 - run certbot : `sudo certbot --nginx -d me.geo-gamer.net`
+
+- Use `ecosystem.config.js` to setup pm2 deploy, just run `pm2 start ecosystem.config.js`
 
 ## Send build to vps
 # First method (slow)
