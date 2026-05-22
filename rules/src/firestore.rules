@@ -243,7 +243,11 @@ service cloud.firestore {
 
       allow read: if true;
     }
-    
+
+    match /{path=**}/raceRuns/{runId} {
+      allow read: if isSignedIn();
+    }
+
 
   }
 }

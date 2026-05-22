@@ -14,8 +14,7 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore"
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
-import { generateCoverageReport } from "./utils"
+import { beforeAll, beforeEach, describe, expect, it } from "vitest"
 
 const projectId = "tiktok-generator-fa261"
 const host = "localhost"
@@ -38,11 +37,10 @@ describe("firebase Security Rules", () => {
     await testEnv.clearFirestore()
   })
 
-  afterAll(async () => {
-    const urlCoverageJson = `http://${host}:${port}/emulator/v1/projects/${projectId}:ruleCoverage`
-
-    await generateCoverageReport(urlCoverageJson)
-  })
+  // afterAll(async () => {
+  //   const urlCoverageJson = `http://${host}:${port}/emulator/v1/projects/${projectId}:ruleCoverage`
+  //   await generateCoverageReport(urlCoverageJson)
+  // })
 
   describe("rights collection", () => {
     it("should be able to read own rights doc", async () => {
