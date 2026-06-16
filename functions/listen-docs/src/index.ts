@@ -1,11 +1,11 @@
 import { AUDIO_EXTRACT_ENDPOINT, extractYoutubeId, SOUND_STATUS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type DailyChallengeDoc, type FlatDoc, type GameDoc, type SoundDoc, type SphericalDoc } from "@repo/schemas"
+import { type DailyChallengeDoc, type FlatDoc, type GameDoc, type MapDoc, type SoundDoc, type SphericalDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
 import { updateDailyChallengesMetadata } from "~/update-daily-challenges-metadata"
 import { updateGamesList } from "~/updates-games-list"
-import { updateReadyFlats, updateReadySphericals } from "~/updates-ready-images"
+import { refreshReadyImagesForGame, refreshReadyImagesForMap, updateReadyFlats, updateReadySphericals } from "~/updates-ready-images"
 import { updateFlatStatus, updateGameStatus, updateSphericalStatus } from "~/updates-status"
 
 export const listen_doc_spherical_written = onDocumentWritten(
@@ -74,9 +74,34 @@ export const listen_doc_games_written = onDocumentWritten(
       const before = event.data?.before.data() as GameDoc | undefined
       const after = event.data?.after.data() as GameDoc | undefined
 
-      await updateGamesList(gameId, before, after)
+      await Promise.all([
+        updateGamesList(gameId, before, after),
+        refreshReadyImagesForGame(gameId, before, after),
+      ])
     } catch (error) {
       console.error(`Error in listen_doc_games_written for document ${event.document}:`, error)
+    }
+  },
+)
+
+export const listen_doc_maps_written = onDocumentWritten(
+  `${TABLES.GAMES}/{gameId}/${TABLES.MAPS}/{mapId}`,
+  async (event) => {
+    try {
+      const mapId = event.params.mapId
+
+      if (!mapId) {
+        logger.error(`Map ID is undefined in document path: ${event.document}`)
+
+        return
+      }
+
+      const before = event.data?.before.data() as MapDoc | undefined
+      const after = event.data?.after.data() as MapDoc | undefined
+
+      await refreshReadyImagesForMap(mapId, before, after)
+    } catch (error) {
+      console.error(`Error in listen_doc_maps_written for document ${event.document}:`, error)
     }
   },
 )
