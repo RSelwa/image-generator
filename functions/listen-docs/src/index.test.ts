@@ -1,6 +1,6 @@
-import { DIFFICULTIES, DOCUMENTS_STATUS, METADATA_DOCS, mockedImageURL, mockedSphericalImageURL, TABLES } from "@repo/common"
+import { DIFFICULTIES, DOCUMENTS_STATUS, METADATA_DOCS, mockedImageURL, mockedSphericalImageURL, ROUND_TYPE, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
-import { type ReadyImagesDoc } from "@repo/schemas"
+import { buildReadyImageItem, type GameDoc, type ReadyImagesDoc, type SphericalDoc } from "@repo/schemas"
 import { flatFactory, gameFactory, sphericalFactory } from "@repo/testing/factory"
 import firebaseFunctionsTest from "firebase-functions-test"
 import { makeDocumentSnapshot } from "firebase-functions-test/lib/providers/firestore"
@@ -430,6 +430,28 @@ const getReadyImagesData = async (): Promise<ReadyImagesDoc> => {
   return data || { sphericals: [], flats: [] }
 }
 
+// Mirrors updates-ready-images buildEntry: the enriched (pre-joined) pool entry
+// that the listener now stores. The sphericalFactory has no map/thumbnail, so the
+// map-derived fields resolve to null.
+const buildReadyEntry = (spherical: SphericalDoc & { id: string }, game: GameDoc & { id: string }) => {
+  const entry = buildReadyImageItem({
+    type: ROUND_TYPE.SPHERICAL,
+    id: spherical.id,
+    gameId: game.id,
+    image: spherical.image,
+    thumbnail: spherical.thumbnail,
+    mapId: spherical.mapId,
+    mapPosition: spherical.mapPosition,
+    difficulty: spherical.difficulty,
+    game,
+    map: null,
+  })
+
+  if (!entry) throw new Error("Failed to build ready image entry for test")
+
+  return entry
+}
+
 describe("listen sphericals docs changes for readyImages metadata", () => {
   it("should add a spherical to readyImages when status becomes ready", async () => {
     const cloudFnWrap = test.wrap(listen_doc_spherical_written)
@@ -439,6 +461,7 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
+    await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({ sphericals: [], flats: [] })
 
     const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
     const after = makeDocumentSnapshot({ ...spherical, status: DOCUMENTS_STATUS.READY }, getSphericalPath(game.id, spherical.id))
@@ -450,7 +473,7 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
 
     const data = await getReadyImagesData()
 
-    expect(data.sphericals).toEqual([{ id: spherical.id, gameId: game.id, image: mockedSphericalImageURL }])
+    expect(data.sphericals).toEqual([buildReadyEntry(spherical, game)])
   })
 
   it("should remove a spherical from readyImages when status changes from ready to another status", async () => {
@@ -462,7 +485,7 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
     await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({
-      sphericals: [{ id: spherical.id, gameId: game.id, image: mockedSphericalImageURL }],
+      sphericals: [buildReadyEntry(spherical, game)],
       flats: [],
     })
 
@@ -488,7 +511,7 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
     await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({
-      sphericals: [{ id: spherical.id, gameId: game.id, image: mockedSphericalImageURL }],
+      sphericals: [buildReadyEntry(spherical, game)],
       flats: [],
     })
 
@@ -503,7 +526,7 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
 
     const data = await getReadyImagesData()
 
-    expect(data.sphericals).toEqual([{ id: spherical.id, gameId: game.id, image: newImage }])
+    expect(data.sphericals).toEqual([buildReadyEntry({ ...spherical, image: newImage }, game)])
   })
 
   it("should not modify readyImages when a non-ready spherical is updated without status change", async () => {
@@ -540,10 +563,7 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical1.id).set(spherical1)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical2.id).set(spherical2)
     await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({
-      sphericals: [
-        { id: spherical1.id, gameId: game.id, image: mockedSphericalImageURL },
-        { id: spherical2.id, gameId: game.id, image: "https://example.com/2.jpg" },
-      ],
+      sphericals: [buildReadyEntry(spherical1, game), buildReadyEntry(spherical2, game)],
       flats: [],
     })
 
@@ -557,7 +577,7 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
 
     const data = await getReadyImagesData()
 
-    expect(data.sphericals).toEqual([{ id: spherical2.id, gameId: game.id, image: "https://example.com/2.jpg" }])
+    expect(data.sphericals).toEqual([buildReadyEntry(spherical2, game)])
   })
 
   it("should remove a spherical from readyImages when it is deleted", async () => {
@@ -568,7 +588,7 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({
-      sphericals: [{ id: spherical.id, gameId: game.id, image: mockedSphericalImageURL }],
+      sphericals: [buildReadyEntry(spherical, game)],
       flats: [],
     })
 
