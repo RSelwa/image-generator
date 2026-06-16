@@ -27,7 +27,24 @@
       "Bash(findstr:*)",
       "WebFetch(domain:storybook.js.org)",
       "Bash(npx eslint apps/front/app/api/create-seed/route.ts apps/front/libs/seed.ts apps/front/e2e/lobby/seed-generation.spec.ts apps/front/e2e/helpers/lobby.ts libs/common/src/constants/constants.ts)",
-      "Bash(ls -la /Users/raphael/image-generator/apps/front/app/\\\\\\(app\\\\\\)/admin/users/)"
+      "Bash(ls -la /Users/raphael/image-generator/apps/front/app/\\\\\\(app\\\\\\)/admin/users/)",
+      "Bash(sed -n '75,95p' libs/common/src/constants/constants.ts)",
+      "Bash(sed -n '27,40p' libs/common/src/constants/firebase.ts)",
+      "Bash(sed -n '1,40p' libs/schemas/src/firestore/spherical.ts)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(cp /tmp/count-pool.mjs /Users/raphael/image-generator/count-pool.mjs)",
+      "Bash(node count-pool.mjs)",
+      "Bash(cp /tmp/count-pool.mjs /Users/raphael/image-generator/scripts/count-pool.mjs)",
+      "Bash(sed -i '' 's#\"./service-account.json\"#\"../service-account.json\"#' /Users/raphael/image-generator/scripts/count-pool.mjs)",
+      "Bash(node peek2.mjs)",
+      "Bash(FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 pnpm --filter listen-docs exec vitest run src/index.test.ts -t \"status becomes ready\")",
+      "Bash(node *)",
+      "Bash(FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 pnpm --filter listen-docs exec vitest run src/index.test.ts)",
+      "Bash(FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 pnpm --filter listen-docs exec vitest run src/index.test.ts --no-cache)",
+      "Bash(git fsck *)",
+      "Bash(curl -s -X DELETE \"http://127.0.0.1:8080/emulator/v1/projects/tiktok-generator-fa261/databases/\\(default\\)/documents\" -o /dev/null -w \"clear status: %{http_code}\\\\n\")",
+      "Bash(curl -s -X DELETE \"http://127.0.0.1:8080/emulator/v1/projects/tiktok-generator-fa261/databases/\\(default\\)/documents\" -o /dev/null -w \"clear: %{http_code}\\\\n\")",
+      "Bash(FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 pnpm --filter listen-docs exec vitest run)"
     ]
   }
 }

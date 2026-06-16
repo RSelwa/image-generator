@@ -1,37 +1,26 @@
-import { DOCUMENTS_STATUS, NUMBER_OF_ROUNDS_PER_STAGE, SPECIAL_ROUND_OPTIONS_COUNT, TABLES } from "@repo/common"
-import { collectionGroupRefs } from "@repo/providers/db-refs"
-import { type Round, roundSchema } from "@repo/schemas"
-import { formatFlatsForNormalRounds, formatSphericalsForNormalRounds } from "@/libs/round-normal"
-import { formatFlatsForSpecialRounds, formatSphericalsForSpecialRounds } from "@/libs/round-special"
+import { METADATA_DOCS, NUMBER_OF_ROUNDS_PER_STAGE, SPECIAL_ROUND_OPTIONS_COUNT, TABLES } from "@repo/common"
+import { refs } from "@repo/providers/db-refs"
+import { type ReadyImageItem, readyImageItemSchema, readyImageItemToRound, readyImageItemToSpecialOption, type Round, roundSchema } from "@repo/schemas"
+
+// Resiliently parse pool entries (tolerates legacy entries written before enrichment).
+const parsePoolItems = (raw: unknown): ReadyImageItem[] =>
+  (Array.isArray(raw) ? raw : [])
+    .map((item) => readyImageItemSchema.safeParse(item))
+    .filter((parsed) => parsed.success)
+    .map((parsed) => parsed.data)
 
 export const generateSeedRounds = async ({ numberOfRounds, hasSpecialRounds, recentlyPlayedGameIds = [] }: { numberOfRounds: number, hasSpecialRounds: boolean, recentlyPlayedGameIds?: string[] }) => {
   try {
-    const [sphericalsWithMap, flatsWithMap, sphericalsWithThumbnails, flatWithThumbnails] = await Promise.all([
-      collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
-        .where("mapId", ">", "")
-        .get(),
-      collectionGroupRefs[TABLES.FLAT].where("status", "==", DOCUMENTS_STATUS.READY)
-        .where("mapId", ">", "")
-        .get(),
-      hasSpecialRounds ? collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY)
-        .where("thumbnail", ">", "")
-        .get() : { docs: [] },
-      hasSpecialRounds ? collectionGroupRefs[TABLES.FLAT].where("status", "==", DOCUMENTS_STATUS.READY)
-        .where("thumbnail", ">", "")
-        .get() : { docs: [] },
-    ])
+    // Read the pre-joined candidate pool once — no library scan, no per-image reads.
+    const metaSnap = await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).get()
+    const data = metaSnap.data() || {}
+    const sphericals = parsePoolItems(data.sphericals)
+    const flats = parsePoolItems(data.flats)
 
-    const sphericalsWithMapData = sphericalsWithMap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-    const flatsWithMapData = flatsWithMap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-    const sphericalsWithThumbnailsData = sphericalsWithThumbnails.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-    const flatsWithThumbnailsData = flatWithThumbnails.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-
-    const [formattedSphericalsForNormalRounds, formattedFlatsForNormalRounds, formattedSphericalsForSpecialRounds, formattedFlatsForSpecialRounds] = await Promise.all([
-      formatSphericalsForNormalRounds(sphericalsWithMapData),
-      formatFlatsForNormalRounds(flatsWithMapData),
-      formatSphericalsForSpecialRounds(sphericalsWithThumbnailsData),
-      formatFlatsForSpecialRounds(flatsWithThumbnailsData),
-    ])
+    const formattedSphericalsForNormalRounds = sphericals.map(readyImageItemToRound).filter((round) => round !== null)
+    const formattedFlatsForNormalRounds = flats.map(readyImageItemToRound).filter((round) => round !== null)
+    const formattedSphericalsForSpecialRounds = hasSpecialRounds ? sphericals.map(readyImageItemToSpecialOption).filter((option) => option !== null) : []
+    const formattedFlatsForSpecialRounds = hasSpecialRounds ? flats.map(readyImageItemToSpecialOption).filter((option) => option !== null) : []
 
     const rounds: Round[] = []
 
