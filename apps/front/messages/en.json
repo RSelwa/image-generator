@@ -139,7 +139,12 @@
     "shareButton": "Share this challenge to friends",
     "linkCopied": "Challenge link copied to clipboard!",
     "failedCopy": "Failed to copy the challenge link. Please try again.",
-    "streak": "{count} day streak"
+    "streak": "{count} day streak",
+    "giveUp": "Give up",
+    "giveUpTitle": "Give up this challenge?",
+    "giveUpDescription": "The answer will be revealed and this challenge will be counted as failed. This cannot be undone.",
+    "giveUpCancel": "Keep playing",
+    "giveUpConfirm": "Reveal the answer"
   },
   "account": {
     "title": "Account Settings",

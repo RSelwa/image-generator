@@ -1,9 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { isSameNormalized } from "@repo/common"
+import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import useSound from "use-sound"
 import z from "zod"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { SOUNDS } from "@/constants/sound"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -21,6 +24,7 @@ type Schema = z.infer<typeof schema>
 const GameInputGuessDaily = ({ date }: { date: string }) => {
   const userId = useAppSelector(selectUserId)
 
+  const t = useTranslations("dailyChallenge")
   const isMobile = useIsMobile()
 
   const { data: allGamesNames } = useGetAllGamesNamesQuery()
@@ -73,6 +77,12 @@ const GameInputGuessDaily = ({ date }: { date: string }) => {
     handleSubmit(verifyGameName)()
   }
 
+  const giveUp = async () => {
+    if (!challenge || isSubmitting) return
+
+    await submitResult({ answer: "", date, isCorrect: false, uid: userId! })
+  }
+
   if (isLoading) return null
 
   return (
@@ -100,6 +110,25 @@ const GameInputGuessDaily = ({ date }: { date: string }) => {
           </ComboboxContent>
         )}
       </Combobox>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button type="button" variant="marathon-black" data-testid="daily-challenge-give-up" disabled={isSubmitting}>
+            {t("giveUp")}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("giveUpTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("giveUpDescription")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel variant="marathon-black">{t("giveUpCancel")}</AlertDialogCancel>
+            <AlertDialogAction data-testid="daily-challenge-give-up-confirm" onClick={giveUp} variant="marathon">
+              {t("giveUpConfirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </form>
   )
 }

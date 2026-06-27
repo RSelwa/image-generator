@@ -139,7 +139,12 @@
     "shareButton": "Partager ce défi avec des amis",
     "linkCopied": "Lien du défi copié dans le presse-papiers !",
     "failedCopy": "Échec de la copie du lien du défi. Veuillez réessayer.",
-    "streak": "{count} jours consécutifs"
+    "streak": "{count} jours consécutifs",
+    "giveUp": "Abandonner",
+    "giveUpTitle": "Abandonner ce défi ?",
+    "giveUpDescription": "La réponse sera dévoilée et ce défi sera compté comme échoué. Cette action est irréversible.",
+    "giveUpCancel": "Continuer à jouer",
+    "giveUpConfirm": "Dévoiler la réponse"
   },
   "account": {
     "title": "Paramètres du compte",
