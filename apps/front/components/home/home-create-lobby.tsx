@@ -5,7 +5,9 @@ import { type ComponentProps, type ReactNode, type RefObject, useEffect, useRef 
 import * as React from "react"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
+import { MODAL_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { useModal } from "@/hooks/use-modal"
 import { useRouter } from "@/i18n/routing"
 import { useCreateAndJoinLobbyMutation, useCreateDemoLobbyMutation } from "@/redux/api/lobby"
 import { selectIsAnonymous, selectUser } from "@/redux/session/session.selectors"
@@ -46,6 +48,19 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
       {" "}
       {isLoading && <Loader className="size-4" />}
     </Button>
+  )
+}
+
+export const JoinLobbyButton = ({ className, children }: { children?: ReactNode } & ComponentProps<"button">) => {
+  const user = useAppSelector(selectUser)
+  const { openModal } = useModal(MODAL_KEYS.JOIN_LOBBY)
+
+  if (!user) return null
+
+  return (
+    <button type="button" onClick={() => openModal()} className={className}>
+      {children}
+    </button>
   )
 }
 

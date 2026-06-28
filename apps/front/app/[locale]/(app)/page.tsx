@@ -1,10 +1,10 @@
 import { APP_BASE_URL } from "@repo/common"
-import { ArrowUpRight, Calendar, Gamepad2, Timer } from "lucide-react"
+import { ArrowUpRight, Calendar, Gamepad2, KeyRound, Timer } from "lucide-react"
 import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import Image from "next/image"
 import { ArticlesDescription, HomeArticles } from "@/components/home/home-articles"
-import { CreateLobbyButton, CreateLobbyContainer } from "@/components/home/home-create-lobby"
+import { CreateLobbyButton, CreateLobbyContainer, JoinLobbyButton } from "@/components/home/home-create-lobby"
 import HomeFooter from "@/components/home/home-footer"
 import { HomeLeaderboard } from "@/components/home/home-leaderboard"
 import { HomeStrips } from "@/components/home/home-strips"
@@ -87,11 +87,15 @@ const Page = async () => {
               {t("playNowDescription")}
             </p>
           </div>
-          <div className="border-t border-background grid grid-cols-3">
+          <div className="border-t border-background grid grid-cols-2 lg:grid-cols-4">
             <CreateLobbyButton className="p-5 h-full hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
               <Gamepad2 className="size-6" />
               Normal Mode
             </CreateLobbyButton>
+            <JoinLobbyButton className="p-5 h-full hover:text-primary hover:bg-primary-foreground lg:border-r border-background flex items-center justify-center gap-2">
+              <KeyRound className="size-6" />
+              {tNav("joinLobby")}
+            </JoinLobbyButton>
             <Link href={PAGES.RACE} target="_blank" className="p-5  hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
               <Timer />
               {tNav("race")}
