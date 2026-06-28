@@ -265,5 +265,10 @@
     "description": "Affrontez le temps dans ce mode de jeu rapide et intense. Chaque seconde compte. Parfait pour les joueurs qui aiment la pression et veulent tester leurs connaissances.",
     "playNow": "Jouer au mode Course",
     "recap": "Jeux dans cette course"
+  },
+  "donation": {
+    "title": "Soutenir le projet",
+    "description": "Ce jeu est développé et maintenu par une petite équipe sur son temps libre. Si vous l'appréciez, vous pouvez nous offrir un café pour aider à payer les serveurs et continuer à ajouter des fonctionnalités.",
+    "support": "Offrir un café"
   }
 }

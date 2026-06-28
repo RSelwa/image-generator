@@ -265,5 +265,10 @@
     "description": "Race against the clock in this fast-paced, high-intensity game mode. Every second counts. Perfect for players who thrive under pressure and want to test their knowledge.",
     "playNow": "Play Race Mode",
     "recap": "Games list"
+  },
+  "donation": {
+    "title": "Support the project",
+    "description": "This game is built and run by a tiny team on free time. If you enjoy it, you can buy us a coffee to help keep the servers running and new features coming.",
+    "support": "Buy me a coffee"
   }
 }

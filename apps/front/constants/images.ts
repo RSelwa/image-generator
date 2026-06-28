@@ -15,7 +15,8 @@ export const IMAGES_URLS = {
   },
   PUBS: {
     DAILY_CHALLENGE: "/pubs/daily-challenge.jpg",
-    RACE_MODE: "/pubs/race-mode.jpg"
+    RACE_MODE: "/pubs/race-mode.jpg",
+    DONATION: "/pubs/donation.jpg"
   }
 } as const
 
