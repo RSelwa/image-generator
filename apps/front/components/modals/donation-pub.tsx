@@ -8,13 +8,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } f
 import { IMAGES_URLS } from "@/constants/images"
 import { LIMITED_MODAL_CONFIG, LIMITED_MODAL_KEYS } from "@/constants/mapping"
 import { BUY_ME_A_COFFEE_LINK } from "@/constants/social"
-import { useLimitedModal } from "@/hooks/use-limited-modal"
+import { useSessionLimitedModal } from "@/hooks/use-limited-modal"
 
 const modalKey = LIMITED_MODAL_KEYS.DONATION
 const maxCount = LIMITED_MODAL_CONFIG[modalKey].maxCount
 
 export const DonationPub = () => {
-  const { isOpen, close } = useLimitedModal(modalKey, maxCount)
+  const { isOpen, close } = useSessionLimitedModal(modalKey, maxCount)
   const t = useTranslations("donation")
 
   return (
