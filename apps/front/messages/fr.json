@@ -119,7 +119,8 @@
     "failedToJoin": "Échec de la connexion au lobby",
     "joining": "Connexion au lobby...",
     "playersInLobby": "Joueurs dans le lobby : {count}/{max}",
-    "readyCount": "Prêts : {count}/{total}"
+    "readyCount": "Prêts : {count}/{total}",
+    "startingStalled": "Cela prend plus de temps que prévu. La partie n'a pas pu démarrer."
   },
   "dailyChallenge": {
     "metaTitle": "Défi du Jour — Geo Gamer | Nouvelles Scènes de Jeux Vidéo Chaque Jour",
@@ -270,5 +271,13 @@
     "title": "Soutenir le projet",
     "description": "Ce jeu est développé et maintenu par une petite équipe sur son temps libre. Si vous l'appréciez, vous pouvez nous offrir un café pour aider à payer les serveurs et continuer à ajouter des fonctionnalités.",
     "support": "Offrir un café"
+  },
+  "joinLobbyModal": {
+    "title": "Rejoindre un lobby",
+    "placeholder": "Entrez le code du lobby",
+    "searching": "Recherche…",
+    "found": "{count, plural, one {Lobby trouvé avec # joueur} other {Lobby trouvé avec # joueurs}}",
+    "notFound": "Aucun lobby trouvé avec ce code.",
+    "join": "Rejoindre"
   }
 }

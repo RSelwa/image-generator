@@ -253,4 +253,31 @@ test.describe("lobby playing", () => {
     expect(lobbyDoc.data()?.status).toBe(LOBBY_STATUS.FINISHED)
     expect(lobbyDoc.data()?.config.mode).toBe(LOBBY_MODES.MAP_ONLY)
   })
+
+  test.describe("when a solo game starts", () => {
+    test("should render the first round without a react render-loop error", async ({ page }) => {
+      test.setTimeout(90000)
+
+      const consoleErrors: string[] = []
+
+      page.on("console", (message) => {
+        if (message.type() === "error") consoleErrors.push(message.text())
+      })
+
+      const user = await setupUser()
+
+      await loginViaUI(page, user.email)
+      await hideDriverTutorial(page)
+
+      await createLobbyViaUI(page)
+      await startSoloLobbyViaUI(page)
+
+      await waitForInputToBeVisible(page)
+
+      const loopErrors = consoleErrors.filter((text) =>
+        text.includes("Maximum update depth") || text.includes("getSnapshot should be cached"))
+
+      expect(loopErrors).toEqual([])
+    })
+  })
 })

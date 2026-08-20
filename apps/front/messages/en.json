@@ -119,7 +119,8 @@
     "failedToJoin": "Failed to join lobby",
     "joining": "Joining lobby...",
     "playersInLobby": "Players in lobby: {count}/{max}",
-    "readyCount": "Ready: {count}/{total}"
+    "readyCount": "Ready: {count}/{total}",
+    "startingStalled": "This is taking longer than expected. The game could not be started."
   },
   "dailyChallenge": {
     "metaTitle": "Daily Challenge — Geo Gamer | New Video Game Scenes Every Day",
@@ -270,5 +271,13 @@
     "title": "Support the project",
     "description": "This game is built and run by a tiny team on free time. If you enjoy it, you can buy us a coffee to help keep the servers running and new features coming.",
     "support": "Buy me a coffee"
+  },
+  "joinLobbyModal": {
+    "title": "Join a lobby",
+    "placeholder": "Enter the lobby code",
+    "searching": "Searching…",
+    "found": "{count, plural, one {Lobby found with # player} other {Lobby found with # players}}",
+    "notFound": "No lobby found with this code.",
+    "join": "Join"
   }
 }

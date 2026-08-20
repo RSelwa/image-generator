@@ -7,6 +7,7 @@ import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { SELECTORS } from "@/constants/testing"
 import { useModal } from "@/hooks/use-modal"
 import { useRouter } from "@/i18n/routing"
 import { useCreateAndJoinLobbyMutation, useCreateDemoLobbyMutation } from "@/redux/api/lobby"
@@ -58,7 +59,7 @@ export const JoinLobbyButton = ({ className, children }: { children?: ReactNode 
   if (!user) return null
 
   return (
-    <button type="button" onClick={() => openModal()} className={className}>
+    <button type="button" data-testid={SELECTORS.HOME_JOIN_LOBBY} onClick={() => openModal()} className={className}>
       {children}
     </button>
   )

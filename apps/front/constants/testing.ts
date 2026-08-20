@@ -39,4 +39,11 @@ export const SELECTORS = {
   DEATH_RUN_FINISHED: "death-run-finished",
   DEATH_RUN_FINISHED_SCORE: (uid: string) => `death-run-finished-score-${uid}`,
   DEATH_RUN_FINISHED_ROUNDS: (uid: string) => `death-run-finished-rounds-${uid}`,
+  NAV_JOIN_LOBBY: "nav-join-lobby",
+  HOME_JOIN_LOBBY: "home-join-lobby",
+  JOIN_LOBBY_CODE_INPUT: "join-lobby-code-input",
+  JOIN_LOBBY_FOUND: "join-lobby-found",
+  JOIN_LOBBY_NOT_FOUND: "join-lobby-not-found",
+  JOIN_LOBBY_SUBMIT: "join-lobby-submit",
+  LOBBY_STARTING_STALLED: "lobby-starting-stalled",
 } as const

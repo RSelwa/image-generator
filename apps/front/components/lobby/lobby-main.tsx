@@ -1,7 +1,7 @@
 "use client"
 
 import { LOBBY_STATUS } from "@repo/common"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { toast } from "sonner"
 import LobbyFinished from "@/components/lobby/lobby-finished"
 import LobbyStarting from "@/components/lobby/lobby-starting"
@@ -60,6 +60,7 @@ const LobbyMain = () => {
   const isSessionReady = useAppSelector(selectSessionIsReady)
 
   const [joinLobby] = useJoinLobbyMutation()
+  const hasJoinedRef = useRef(false)
 
   const { data: lobby, isLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {
     skip: !lobbyId,
@@ -101,9 +102,13 @@ const LobbyMain = () => {
       return
     }
 
+    if (hasJoinedRef.current) return
+
+    hasJoinedRef.current = true
+
     const player = createPlayerFromSessionUser(user)
     joinLobby({ lobbyId: lobby.id, player }).unwrap()
-  }, [isSessionReady, user, user?.isAnonymous])
+  }, [isLoading, lobby, isSessionReady, user, user?.isAnonymous, router, joinLobby])
 
   const isUserInLobby = lobby?.players.some((p) => p.uid === user?.id)
 

@@ -6,7 +6,7 @@ import { driver } from "driver.js"
 import { ArrowRight, ArrowUpRightFromSquareIcon, Trash } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
@@ -32,6 +32,7 @@ import { selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
+import { getItemFromLocalStorage } from "@/utils/storage"
 import "driver.js/dist/driver.css"
 
 const seedForm = z.object({
@@ -45,7 +46,8 @@ const LobbyWaiting = () => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
-  const [isSkipDriver, setIsSkipDriver] = useLocalStorage(STORAGE_KEYS.DRIVER_WAITING_ROOM, false)
+  const [, setIsSkipDriver] = useLocalStorage(STORAGE_KEYS.DRIVER_WAITING_ROOM, false)
+  const hasDrivenRef = useRef(false)
 
   const { data: featuredSeeds } = useGetFeaturedSeedsQuery()
   const { data: lobby } = useSubscribeLobbyQuery({ id: lobbyId }, {
@@ -77,8 +79,6 @@ const LobbyWaiting = () => {
   }, [lobby?.seedId])
 
   const initDriver = () => {
-    if (isSkipDriver) return
-
     const steps: DriveStep[] = [
       STEPS.LOBBY_PLAYERS,
     ]
@@ -104,9 +104,12 @@ const LobbyWaiting = () => {
   }
 
   useEffect(() => {
-    if (!lobby) return
+    if (!lobby || hasDrivenRef.current) return
+    if (getItemFromLocalStorage<boolean>(STORAGE_KEYS.DRIVER_WAITING_ROOM)) return
+
+    hasDrivenRef.current = true
     initDriver()
-  }, [])
+  }, [lobby])
 
   if (!lobby) return null
 
