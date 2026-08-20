@@ -44,7 +44,13 @@
       "Bash(git fsck *)",
       "Bash(curl -s -X DELETE \"http://127.0.0.1:8080/emulator/v1/projects/tiktok-generator-fa261/databases/\\(default\\)/documents\" -o /dev/null -w \"clear status: %{http_code}\\\\n\")",
       "Bash(curl -s -X DELETE \"http://127.0.0.1:8080/emulator/v1/projects/tiktok-generator-fa261/databases/\\(default\\)/documents\" -o /dev/null -w \"clear: %{http_code}\\\\n\")",
-      "Bash(FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 pnpm --filter listen-docs exec vitest run)"
+      "Bash(FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 pnpm --filter listen-docs exec vitest run)",
+      "Bash(kill %1)",
+      "Bash(curl -s -o /tmp/page.html -w \"%{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(curl -s -o /tmp/page.html -w \"%{http_code}\\\\n\" http://localhost:5174/)",
+      "Bash(curl -s \"http://localhost:5174/src/styles/app.css\")",
+      "Bash(curl -s \"http://localhost:5174/src/styles/app.css?url\" -o /dev/null -w \"%{http_code} %{size_download}b\\\\n\")",
+      "Bash(pkill -f \"vite dev\")"
     ]
   }
 }

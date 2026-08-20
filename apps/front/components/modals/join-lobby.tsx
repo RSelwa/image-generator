@@ -1,12 +1,14 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { useState } from "react"
+import Loader from "@/components/icons/loader"
 import { ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
-import { useModal } from "@/hooks/use-modal"
+import { SELECTORS } from "@/constants/testing"
 import { useRouter } from "@/i18n/routing"
 import { useGetLobbyByCodeQuery } from "@/redux/api/lobby"
 
@@ -15,53 +17,57 @@ const MIN_CODE_LENGTH = 4
 const MAX_CODE_LENGTH = 6
 
 export const JoinLobbyModal = () => {
+  const t = useTranslations("joinLobbyModal")
   const router = useRouter()
-  const { closeModal } = useModal(KEY)
 
   const [code, setCode] = useState("")
-  const [search, setSearch] = useState("")
 
-  const { data: lobby } = useGetLobbyByCodeQuery(
-    { code: search },
-    { skip: search.length < MIN_CODE_LENGTH },
+  const { data: lobby, isFetching } = useGetLobbyByCodeQuery(
+    { code },
+    { skip: code.length < MIN_CODE_LENGTH },
   )
+
+  const isSearching = code.length >= MIN_CODE_LENGTH && isFetching
+  const notFound = code.length === MAX_CODE_LENGTH && !isFetching && !lobby
 
   const handleJoin = () => {
     if (!lobby) return
-    closeModal()
+
     router.push(`${PAGES.JOIN_LOBBY}/${lobby.code}`)
   }
 
-  const notFound = search.length >= MIN_CODE_LENGTH && !lobby
-
   return (
-    <ModalBase modalKey={KEY} className="max-w-md" title="Join a lobby">
+    <ModalBase modalKey={KEY} className="max-w-md" title={t("title")}>
       <div className="flex flex-col gap-4">
         <Input
+          data-testid={SELECTORS.JOIN_LOBBY_CODE_INPUT}
           value={code}
-          onChange={(e) => {
-            const v = e.target.value.toUpperCase()
-            setCode(v)
-            if (v.length >= MIN_CODE_LENGTH) setSearch(v)
-          }}
-          placeholder="Enter code (e.g. AB1C2D)"
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          placeholder={t("placeholder")}
           maxLength={MAX_CODE_LENGTH}
           className="font-mono uppercase"
         />
-        {lobby && (
-          <p className="text-sm text-muted-foreground">
-            Found a lobby with {lobby.players.length} player{lobby.players.length !== 1 && "s"}.
+        {isSearching && (
+          <p className="text-muted-foreground flex items-center gap-2 text-sm">
+            <Loader className="size-4" />
+            {t("searching")}
+          </p>
+        )}
+        {!isSearching && lobby && (
+          <p data-testid={SELECTORS.JOIN_LOBBY_FOUND} className="text-muted-foreground text-sm">
+            {t("found", { count: lobby.players.length })}
           </p>
         )}
         {notFound && (
-          <p className="text-sm text-destructive">No lobby found with this code.</p>
+          <p data-testid={SELECTORS.JOIN_LOBBY_NOT_FOUND} className="text-destructive text-sm">{t("notFound")}</p>
         )}
         <Button
+          data-testid={SELECTORS.JOIN_LOBBY_SUBMIT}
           className="w-full"
-          disabled={!lobby}
+          disabled={!lobby || isFetching}
           onClick={handleJoin}
         >
-          Join
+          {t("join")}
         </Button>
       </div>
     </ModalBase>

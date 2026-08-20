@@ -24,6 +24,8 @@ export const TABLES = {
   LEADERBOARD: "leaderboard",
   COUPONS: "coupons",
   MESSAGES: "messages",
+  CONVERSATIONS: "conversations",
+  CONVERSATION_MESSAGES: "conversationMessages",
 } as const
 
 export const METADATA_DOCS = {

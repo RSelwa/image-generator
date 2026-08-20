@@ -1,67 +1,46 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useQueryState } from "nuqs"
-import { useForm } from "react-hook-form"
+import { useEffect } from "react"
 import { toast } from "sonner"
-import z from "zod"
-import Loader from "@/components/icons/loader"
+import { useQueryState } from "nuqs"
+import { ConversationThread } from "@/components/conversations/conversation-thread"
 import { EmptySheet } from "@/components/sheet/empty"
-import { Button } from "@/components/ui/button"
-import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { QUERY_PARAMS } from "@/constants/mapping"
-import { useCreateMessageMutation } from "@/redux/api/messages"
+import { useFindOrCreateConversationMutation } from "@/redux/api/conversations"
 import { useGetUserByIdQuery } from "@/redux/api/user"
-
-const formSchema = z.object({
-    content: z.string().min(1),
-})
-type FormSchema = z.infer<typeof formSchema>
+import { selectUserId } from "@/redux/session/session.selectors"
+import { useAppSelector } from "@/redux/store"
 
 const SheetAdminUser = () => {
     const [userId, setUserId] = useQueryState(QUERY_PARAMS.USER_ID)
+    const adminId = useAppSelector(selectUserId)
 
     const { data: user } = useGetUserByIdQuery({ id: userId || "" }, { skip: !userId })
-    const [createMessage, { isLoading }] = useCreateMessageMutation()
+    const [findOrCreateConversation, { data: conversation, isLoading: isCreatingConversation }] = useFindOrCreateConversationMutation()
 
     const open = Boolean(userId)
 
-    const { handleSubmit, register, reset } = useForm<FormSchema>({
-        defaultValues: { content: "" },
-        resolver: zodResolver(formSchema),
-    })
+    useEffect(() => {
+        if (!userId || !adminId || !open) return
 
-    const onSubmit = async (data: FormSchema) => {
-        if (!userId) return
-
-        try {
-            await createMessage({
-                content: data.content,
-                targetType: "user",
-                targetId: userId,
-            }).unwrap()
-
-            toast.success("Message envoyé")
-            reset()
-        } catch {
-            toast.error("Erreur lors de l'envoi du message")
-        }
-    }
+        findOrCreateConversation({ uid: adminId, otherUid: userId }).catch(() => {
+            toast.error("Erreur lors du chargement de la conversation")
+        })
+    }, [userId, adminId, open, findOrCreateConversation])
 
     if (!user) return <Sheet open={open} onOpenChange={(open) => !open && setUserId(null)}><EmptySheet /></Sheet>
 
     return (
         <Sheet open={open} onOpenChange={(open) => !open && setUserId(null)}>
-            <SheetContent>
+            <SheetContent className="flex flex-col">
                 <SheetHeader>
                     <SheetTitle>{user.email}</SheetTitle>
                     <SheetDescription>Id of the user {user.id}</SheetDescription>
                 </SheetHeader>
-                <section className="flex flex-col flex-1 auto-rows-min gap-6 px-4">
-                    <article />
+                <section className="flex flex-col auto-rows-min gap-6 px-4">
                     <UserAvatar avatar={user.avatar || undefined} name={user.email || user.id} donorTier={user.donorTier} className="size-20" />
                     <article className="flex items-center gap-4">
                         <span>
@@ -70,19 +49,16 @@ const SheetAdminUser = () => {
                         <Switch checked={user.newsletter || false} disabled />
                     </article>
                 </section>
-                <section className="px-4 space-y-2">
-                    <h3 className="font-semibold text-sm">Envoyer un message</h3>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-                        <InputGroup>
-                            <InputGroupTextarea
-                                placeholder="Message pour le joueur..."
-                                {...register("content")}
-                            />
-                        </InputGroup>
-                        <Button type="submit" disabled={isLoading} className="w-full">
-                            Envoyer {isLoading && <Loader />}
-                        </Button>
-                    </form>
+                <section className="px-4 flex flex-col flex-1 min-h-0">
+                    <h3 className="font-semibold text-sm mb-2">Conversation</h3>
+                    {isCreatingConversation && (
+                        <p className="text-muted-foreground text-sm">Chargement…</p>
+                    )}
+                    {!isCreatingConversation && conversation && (
+                        <div className="flex-1 min-h-0 border rounded-md overflow-hidden">
+                            <ConversationThread conversationId={conversation.id} />
+                        </div>
+                    )}
                 </section>
             </SheetContent>
         </Sheet>

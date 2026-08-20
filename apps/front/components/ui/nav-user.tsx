@@ -34,6 +34,7 @@ import { UserAvatar } from "@/components/ui/user-avatar"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { BUY_ME_A_COFFEE_LINK, BUY_ME_A_COFFEE_LINK_MEMBERSHIPS, PORTFOLIO_LINK } from "@/constants/social"
+import { SELECTORS } from "@/constants/testing"
 import { useModal } from "@/hooks/use-modal"
 import { Link, useRouter } from "@/i18n/routing"
 import { useLogoutMutation } from "@/redux/api/auth"
@@ -105,7 +106,7 @@ export const NavUser = () => {
             <Gamepad2Icon />
             {t("play")}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openModal()} disabled={isLoading} className="cursor-pointer">
+          <DropdownMenuItem data-testid={SELECTORS.NAV_JOIN_LOBBY} onClick={() => openModal()} disabled={isLoading} className="cursor-pointer">
             <Gamepad2Icon />
             {t("joinLobby")}
           </DropdownMenuItem>
