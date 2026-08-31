@@ -182,3 +182,5 @@ export const getConversationRef = (conversationId: string | undefined) =>
 
 export const getConversationMessageRef = (conversationId: string, messageId: string) =>
   doc(TABLES_SUB_REFS[TABLES.CONVERSATION_MESSAGES](conversationId), messageId)
+
+export const getLobbyConversationId = (lobbyId: string) => `lobby_${lobbyId}`

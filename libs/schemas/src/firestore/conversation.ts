@@ -5,6 +5,7 @@ export const conversationDocSchema = z.object({
   participants: z.array(z.string().min(1)).min(1),
   lastMessage: z.string().default(""),
   lastMessageAt: timestampSchema.nullish().default(() => null),
+  lastReadAt: z.record(z.string(), timestampSchema).default({}),
   createdAt: timestampSchema.nullish().default(() => null),
   lobbyId: z.string().optional(),
 })
@@ -17,7 +18,6 @@ export const conversationDocWithIdSchema = z.object({
 export const conversationMessageDocSchema = z.object({
   content: z.string().min(1),
   senderId: z.string().min(1),
-  seenBy: z.array(z.string()).default([]),
   createdAt: timestampSchema.nullish().default(() => null),
 })
 

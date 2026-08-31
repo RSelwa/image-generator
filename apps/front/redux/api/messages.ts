@@ -1,4 +1,4 @@
-import { addDoc, deleteDoc, onSnapshot, query, serverTimestamp, type Unsubscribe, updateDoc, where } from "@firebase/firestore"
+import { addDoc, arrayUnion, deleteDoc, onSnapshot, query, serverTimestamp, type Unsubscribe, updateDoc, where } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES } from "@repo/common"
 import { type MessageDoc, type MessageDocWithId, messageDocWithIdSchema } from "@repo/schemas"
@@ -40,11 +40,11 @@ export const messagesApi = createApi({
         }
       },
     }),
-    markMessageSeen: builder.mutation<null, { id: string; uid: string }>({
+    markMessageSeen: builder.mutation<null, { id: string, uid: string }>({
       queryFn: async ({ id, uid }) => {
         try {
           const ref = getMessageRef(id)
-          await updateDoc(ref, { seenBy: [uid] })
+          await updateDoc(ref, { seenBy: arrayUnion(uid) })
 
           return { data: null }
         } catch (error) {

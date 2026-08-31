@@ -1,22 +1,47 @@
 "use client"
 
 import { Timestamp } from "@firebase/firestore"
-import { EyeOff } from "lucide-react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { EyeOff, Loader } from "lucide-react"
 import Image from "next/image"
 import { useQueryState } from "nuqs"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod"
 import { EmptySheet } from "@/components/sheet/empty"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group"
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { QUERY_PARAMS } from "@/constants/mapping"
+import { useFindOrCreateConversationMutation, useSendConversationMessageMutation } from "@/redux/api/conversations"
 import { useDeleteSuggestionMutation, useGetSuggestionByIdQuery, useUpdateSuggestionMutation } from "@/redux/api/suggestions"
+import { useGetUserByIdQuery } from "@/redux/api/user"
+import { selectUserId } from "@/redux/session/session.selectors"
+import { useAppSelector } from "@/redux/store"
+
+const messageFormSchema = z.object({
+    content: z.string().min(1),
+})
+type MessageFormSchema = z.infer<typeof messageFormSchema>
 
 export const SuggestionSheet = () => {
     const [suggestionId, setSuggestionId] = useQueryState(QUERY_PARAMS.SUGGESTION_ID)
+    const adminId = useAppSelector(selectUserId)
 
     const { data: suggestion } = useGetSuggestionByIdQuery({ id: suggestionId || "" }, { skip: !suggestionId })
+    const { data: userSuggestion } = useGetUserByIdQuery({ id: suggestion?.createdBy || "" }, { skip: !suggestion?.createdBy })
+
+    const [findOrCreateConversation] = useFindOrCreateConversationMutation()
+    const [sendConversationMessage, { isLoading: isLoadingSendingMessage }] = useSendConversationMessageMutation()
     const [updateSuggestion] = useUpdateSuggestionMutation()
     const [deleteSuggestion] = useDeleteSuggestionMutation()
+
+    const { handleSubmit, register, reset } = useForm<MessageFormSchema>({
+        defaultValues: { content: "" },
+        resolver: zodResolver(messageFormSchema),
+    })
 
     const open = Boolean(suggestionId)
 
@@ -40,6 +65,18 @@ export const SuggestionSheet = () => {
         setSuggestionId(null)
     }
 
+    const onSubmit = async (data: MessageFormSchema) => {
+        try {
+            if (!userSuggestion || !adminId) return
+
+            const conversation = await findOrCreateConversation({ uid: adminId, otherUid: userSuggestion.id }).unwrap()
+            await sendConversationMessage({ conversationId: conversation.id, content: data.content, senderId: adminId }).unwrap()
+            reset()
+        } catch {
+            toast.error("Erreur lors de l'envoi du message")
+        }
+    }
+
     return (
         <Sheet open={open} onOpenChange={close}>
             <SheetContent>
@@ -55,6 +92,22 @@ export const SuggestionSheet = () => {
                         {suggestion.message}
                     </p>
                 </section>
+                {userSuggestion && (
+                    <section className="px-4 font-shapiro ">
+                        <UserAvatar {...userSuggestion} avatar={userSuggestion?.avatar || ""} name={userSuggestion?.pseudo || "?"} />
+                        <p>
+                            {userSuggestion?.email}
+                        </p>
+                        <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2 items-end flex-1">
+                            <InputGroup className="flex-1">
+                                <InputGroupTextarea placeholder="Message..." {...register("content")} />
+                            </InputGroup>
+                            <Button type="submit" disabled={isLoadingSendingMessage} variant="outline">
+                                Envoyer {isLoadingSendingMessage && <Loader />}
+                            </Button>
+                        </form>
+                    </section>
+                )}
                 <section className="grid flex-1 lg:grid-cols-3 grid-cols-1 auto-rows-min gap-6 px-4">
                     {hasImages && suggestion.imagesUrls?.map((url, index) => (
                         <Image key={url} src={url} alt={`Suggestion image ${index + 1}`} width={200} height={200} className="rounded" />

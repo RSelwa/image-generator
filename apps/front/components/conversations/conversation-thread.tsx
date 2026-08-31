@@ -1,20 +1,31 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
 import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group"
-import { useMarkConversationMessageSeenMutation, useSendConversationMessageMutation, useSubscribeConversationMessagesQuery } from "@/redux/api/conversations"
+import { useMarkConversationReadMutation, useSendConversationMessageMutation, useSubscribeConversationMessagesQuery, useSubscribeConversationQuery } from "@/redux/api/conversations"
+import { useGetUserByIdQuery } from "@/redux/api/user"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { cn } from "@/utils"
 
 const formSchema = z.object({ content: z.string().min(1) })
 type FormSchema = z.infer<typeof formSchema>
+
+type SenderNameProps = {
+  senderId: string
+}
+
+const SenderName = ({ senderId }: SenderNameProps) => {
+  const { data: user } = useGetUserByIdQuery({ id: senderId }, { skip: !senderId })
+
+  return <p className="text-xs text-muted-foreground mb-0.5 truncate">{user?.pseudo || user?.email || ""}</p>
+}
 
 type Props = {
   conversationId: string
@@ -24,9 +35,12 @@ export const ConversationThread = ({ conversationId }: Props) => {
   const uid = useAppSelector(selectUserId)
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  const { data: conversation } = useSubscribeConversationQuery({ conversationId }, { skip: !conversationId })
   const { data: messages = [] } = useSubscribeConversationMessagesQuery({ conversationId }, { skip: !conversationId })
   const [sendMessage, { isLoading }] = useSendConversationMessageMutation()
-  const [markSeen] = useMarkConversationMessageSeenMutation()
+  const [markConversationRead] = useMarkConversationReadMutation()
+
+  const showsSenders = Boolean(conversation?.lobbyId)
 
   const { handleSubmit, register, reset } = useForm<FormSchema>({
     defaultValues: { content: "" },
@@ -40,12 +54,8 @@ export const ConversationThread = ({ conversationId }: Props) => {
   useEffect(() => {
     if (!uid || !messages.length) return
 
-    for (const message of messages) {
-      if (message.senderId !== uid && !message.seenBy.includes(uid)) {
-        markSeen({ conversationId, messageId: message.id, uid })
-      }
-    }
-  }, [messages, uid, conversationId, markSeen])
+    markConversationRead({ conversationId, uid })
+  }, [messages, uid, conversationId, markConversationRead])
 
   const onSubmit = async ({ content }: FormSchema) => {
     if (!uid) return
@@ -69,11 +79,10 @@ export const ConversationThread = ({ conversationId }: Props) => {
             key={message.id}
             className={cn(
               "max-w-[80%] rounded-lg px-3 py-2 text-sm",
-              message.senderId === uid
-                ? "ml-auto bg-primary text-primary-foreground"
-                : "bg-muted text-foreground",
+              message.senderId === uid ? "ml-auto bg-primary text-primary-foreground" : "bg-muted text-foreground",
             )}
           >
+            {showsSenders && message.senderId !== uid && <SenderName senderId={message.senderId} />}
             {message.content}
           </div>
         ))}
