@@ -16,7 +16,7 @@
     "lint": "biome check",
     "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
     "test": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 vitest run --coverage",
-    "test:emulator": "firebase emulators:exec --project tiktok-generator-fa261 'FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 vitest run --coverage'",
+    "test:emulator": "firebase emulators:exec --only firestore --project tiktok-generator-fa261 'FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 vitest run --coverage'",
     "clean": "del-cli dist isolate tsconfig.tsbuildinfo coverage",
     "deploy": "firebase deploy --project pusher-292200",
     "emulate": "firebase emulators:start --project pusher-292200",
