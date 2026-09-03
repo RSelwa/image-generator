@@ -144,6 +144,9 @@ test.describe("Death run playing", () => {
     // Game over overlay should appear
     await expect(page.getByTestId(SELECTORS.DEATH_RUN_LIVES)).toBeVisible({ timeout: 10_000 })
 
+    // -- Decline the revive offer --
+    await page.getByTestId(SELECTORS.DEATH_RUN_GIVE_UP).click()
+
     // -- Wait for finished screen --
     await expect(page.getByTestId(SELECTORS.DEATH_RUN_FINISHED)).toBeVisible({ timeout: 15_000 })
 

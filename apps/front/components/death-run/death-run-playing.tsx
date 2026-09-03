@@ -165,7 +165,7 @@ const DeathRunPlaying = ({
                   <MonitorPlay className="size-4" />
                   Watch an ad to get 1 life back
                 </Button>
-                <Button variant="ghost" size="sm" onClick={handleGiveUp}>
+                <Button data-testid={SELECTORS.DEATH_RUN_GIVE_UP} variant="ghost" size="sm" onClick={handleGiveUp}>
                   Give up
                 </Button>
               </div>
