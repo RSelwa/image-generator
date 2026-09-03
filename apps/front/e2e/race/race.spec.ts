@@ -73,6 +73,7 @@ const createRaceDoc = async ({
         isHost: true,
         isReady: true,
         joinedAt: now,
+        donorTier: null,
       },
     ],
     playersIds: [hostId],

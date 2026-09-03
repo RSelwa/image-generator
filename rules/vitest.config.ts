@@ -12,6 +12,7 @@ function config({ mode }) {
       env: loadEnv(mode, rootPath, ""),
       reporters: process.env.GITHUB_ACTIONS ? ["verbose", "github-actions"] : ["verbose"],
       retry: 2, // Retry flaky tests up to 2 times (Firebase emulator can be flaky)
+      fileParallelism: false, // Both suites share one emulator project and clear Firestore between tests
     },
   }
 }

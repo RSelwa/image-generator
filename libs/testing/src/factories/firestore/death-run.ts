@@ -25,6 +25,7 @@ export const deathRunRunFactory: FactoryDoc<DeathRunRunDocWithId> = (item = {}) 
   currentRoundIndex: 0,
   answers: [],
   livesRemaining: DEATH_RUN_LIVES,
+  revivesUsed: 0,
   startedAt: null,
   finishedAt: null,
   ...item,

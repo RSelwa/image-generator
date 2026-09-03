@@ -1,7 +1,7 @@
-import { METADATA_DOCS, mockedSphericalImageURL, RACE_SEED_EXTENSION_THRESHOLD, TABLES } from "@repo/common"
+import { METADATA_DOCS, mockedSphericalImageURL, RACE_SEED_EXTENSION_THRESHOLD, ROUND_TYPE, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { type DecodedIdToken } from "@repo/providers/firebase"
-import { type MarathonSeedDoc, type MarathonSeedDocWithId, type ReadyImagesDoc } from "@repo/schemas"
+import { type MarathonSeedDoc, type MarathonSeedDocWithId, type ReadyImageItem, readyImageItemSchema, type ReadyImagesDoc } from "@repo/schemas"
 import { gameFactory, marathonSeedFactory, sphericalFactory } from "@repo/testing/factory"
 import { getFirestore } from "firebase-admin/firestore"
 import firebaseFunctionsTest from "firebase-functions-test"
@@ -35,6 +35,9 @@ const setReadyImages = async (readyImages: ReadyImagesDoc) => {
   await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set(readyImages)
 }
 
+const buildReadySpherical = (item: Pick<ReadyImageItem, "id" | "gameId" | "image">) =>
+  readyImageItemSchema.parse({ type: ROUND_TYPE.SPHERICAL, ...item })
+
 const seedRound = (gameId: string, sphericalId: string) => ({
   gameId,
   sphericalId,
@@ -59,7 +62,7 @@ describe("populateRaceSeed", () => {
     const game = gameFactory({})
     const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
 
-    await setReadyImages({ sphericals: [{ id: spherical.id, gameId: game.id, image: spherical.image }], flats: [] })
+    await setReadyImages({ sphericals: [buildReadySpherical({ id: spherical.id, gameId: game.id, image: spherical.image })], flats: [] })
 
     const existingRounds = Array.from({ length: RACE_SEED_EXTENSION_THRESHOLD + 1 }, (_, i) =>
       seedRound(game.id, `sph-${i}`)
@@ -80,8 +83,8 @@ describe("populateRaceSeed", () => {
 
     await setReadyImages({
       sphericals: [
-        { id: spherical1.id, gameId: game1.id, image: spherical1.image },
-        { id: spherical2.id, gameId: game2.id, image: spherical2.image },
+        buildReadySpherical({ id: spherical1.id, gameId: game1.id, image: spherical1.image }),
+        buildReadySpherical({ id: spherical2.id, gameId: game2.id, image: spherical2.image }),
       ],
       flats: [],
     })
@@ -104,8 +107,8 @@ describe("populateRaceSeed", () => {
 
     await setReadyImages({
       sphericals: [
-        { id: usedSpherical.id, gameId: game1.id, image: usedSpherical.image },
-        { id: freshSpherical.id, gameId: game2.id, image: freshSpherical.image },
+        buildReadySpherical({ id: usedSpherical.id, gameId: game1.id, image: usedSpherical.image }),
+        buildReadySpherical({ id: freshSpherical.id, gameId: game2.id, image: freshSpherical.image }),
       ],
       flats: [],
     })
@@ -126,7 +129,7 @@ describe("populateRaceSeed", () => {
 
     // Only the ready one is in the metadata doc
     await setReadyImages({
-      sphericals: [{ id: readySpherical.id, gameId: game.id, image: readySpherical.image }],
+      sphericals: [buildReadySpherical({ id: readySpherical.id, gameId: game.id, image: readySpherical.image })],
       flats: [],
     })
 
@@ -144,8 +147,8 @@ describe("populateRaceSeed", () => {
 
     await setReadyImages({
       sphericals: [
-        { id: withImage.id, gameId: game.id, image: withImage.image },
-        { id: "no-image-id", gameId: game.id, image: "" },
+        buildReadySpherical({ id: withImage.id, gameId: game.id, image: withImage.image }),
+        buildReadySpherical({ id: "no-image-id", gameId: game.id, image: "" }),
       ],
       flats: [],
     })
@@ -163,7 +166,7 @@ describe("populateRaceSeed", () => {
     const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
 
     await setReadyImages({
-      sphericals: [{ id: spherical.id, gameId: game.id, image: spherical.image }],
+      sphericals: [buildReadySpherical({ id: spherical.id, gameId: game.id, image: spherical.image })],
       flats: [],
     })
 
@@ -180,7 +183,7 @@ describe("populateRaceSeed", () => {
     const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
 
     await setReadyImages({
-      sphericals: [{ id: spherical.id, gameId: game.id, image: spherical.image }],
+      sphericals: [buildReadySpherical({ id: spherical.id, gameId: game.id, image: spherical.image })],
       flats: [],
     })
 
@@ -228,7 +231,7 @@ describe("populate_race_seed cloud function", () => {
     const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
 
     await setReadyImages({
-      sphericals: [{ id: spherical.id, gameId: game.id, image: spherical.image }],
+      sphericals: [buildReadySpherical({ id: spherical.id, gameId: game.id, image: spherical.image })],
       flats: [],
     })
 

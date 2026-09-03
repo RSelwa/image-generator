@@ -12,12 +12,12 @@ describe("http_endpoint", () => {
   it("should return a function", async () => {
     const result = await test.wrap(http_endpoint_authenticated)({
       data: {},
-      auth: { uid: "abc", token: {} as DecodedIdToken },
+      auth: { uid: "abc", token: {} as DecodedIdToken, rawToken: "" },
       rawRequest: {} as unknown as Request,
       acceptsStreaming: false,
     })
 
     expect(result).toBeDefined()
-    expect(result?.customers.data).toHaveLength(0)
+    expect(result?.customers).toHaveLength(0)
   })
 })

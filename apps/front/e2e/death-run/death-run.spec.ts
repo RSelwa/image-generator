@@ -70,6 +70,7 @@ const createDeathRunDoc = async ({
         isHost: true,
         isReady: true,
         joinedAt: now,
+        donorTier: null,
       },
     ],
     playersIds: [hostId],
@@ -91,6 +92,7 @@ const createDeathRunRunDoc = async (deathRunId: string, uid: string) => {
     currentRoundIndex: 0,
     answers: [],
     livesRemaining: DEATH_RUN_LIVES,
+    revivesUsed: 0,
     startedAt: now,
     finishedAt: null,
   })

@@ -13,5 +13,6 @@ export const sphericalFactory: FactoryDoc<SphericalDoc & { id: string }> = (item
   updatedAt: Timestamp.fromDate(faker.date.recent()) as unknown as ClientTimestamp,
   difficulty: DIFFICULTIES.EASY,
   status: DOCUMENTS_STATUS.WAITING,
+  gratitude: [],
   ...item
 })

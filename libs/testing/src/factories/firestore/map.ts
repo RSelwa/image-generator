@@ -15,5 +15,6 @@ export const mapFactory: FactoryDoc<MapDoc & { id: string }> = (item = {}) => ({
   height: 828,
   name: faker.lorem.words(2),
   maxDistancePoints: DEFAULT_MAX_DISTANCE_POINTS,
+  gratitude: [],
   ...item
 })

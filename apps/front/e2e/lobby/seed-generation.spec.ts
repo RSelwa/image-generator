@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test"
-import { TABLES } from "@repo/common"
+import { DEFAULT_LOBBY_MODE, TABLES } from "@repo/common"
 import { collectionGroupRefs, refs, subRefs } from "@repo/providers/db-refs"
 import { type Round } from "@repo/schemas"
 import { lobbyFactory, roundFactory } from "@repo/testing/factory"
@@ -28,6 +28,7 @@ test.describe("Test seed generation", () => {
           maxPlayers: 8,
           playersLives: 3,
           roundDuration: 30,
+          mode: DEFAULT_LOBBY_MODE,
         },
         players: [playerHost,
         ]
@@ -72,6 +73,7 @@ test.describe("Test seed generation", () => {
           maxPlayers: 8,
           playersLives: 3,
           roundDuration: 30,
+          mode: DEFAULT_LOBBY_MODE,
         },
         players: [playerHost,
         ]
@@ -151,6 +153,7 @@ test.describe("Test seed generation", () => {
           maxPlayers: 8,
           playersLives: 3,
           roundDuration: 30,
+          mode: DEFAULT_LOBBY_MODE,
         },
         players: [playerHost],
       })
@@ -217,6 +220,7 @@ test.describe("Test seed generation", () => {
           maxPlayers: 8,
           playersLives: 3,
           roundDuration: 30,
+          mode: DEFAULT_LOBBY_MODE,
         },
         players: [playerHost],
       })
