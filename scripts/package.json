@@ -14,14 +14,14 @@
     "@std/cli": "jsr:^1.0.26",
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.10",
-    "acorn": "^8.15.0",
-    "acorn-walk": "^8.3.4",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
+    "acorn": "^8.18.0",
+    "acorn-walk": "^8.3.5",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "firebase-admin": "^12.6.0",
     "jsdom": "^27.4.0",
-    "nodemon": "^3.1.11",
-    "zod": "^4.3.6"
+    "nodemon": "^3.1.14",
+    "zod": "^4.5.4"
   }
 }

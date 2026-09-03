@@ -23,10 +23,10 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@firebase/firestore": "^4.10.0",
+    "@firebase/firestore": "^4.17.1",
     "@repo/common": "workspace:*",
-    "firebase": "^12.8.0",
-    "zod": "^4.3.6"
+    "firebase": "^12.18.0",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@codecompose/typescript-config": "^2.2.0",

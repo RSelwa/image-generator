@@ -30,18 +30,18 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@firebase/firestore": "^4.10.0",
+    "@firebase/firestore": "^4.17.1",
     "@repo/common": "workspace:*",
     "@repo/providers": "workspace:*",
     "@repo/schemas": "workspace:*",
     "firebase-admin": "^13.5.0",
-    "zod": "^4.1.12"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@codecompose/typescript-config": "^2.2.0",
-    "@faker-js/faker": "^10.1.0",
+    "@faker-js/faker": "^10.6.0",
     "del-cli": "^7.0.0",
-    "firebase": "^12.3.0",
+    "firebase": "^12.18.0",
     "madge": "^8.0.0",
     "tsdown": "^0.15.6",
     "typescript": "^5.7.3",
