@@ -8,6 +8,7 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> => {
   const { locale } = await params
+
   return {
     title: "Privacy Policy — Geo Gamer",
     description: "Read the Geo Gamer privacy policy to understand how we collect, use, and protect your personal information.",

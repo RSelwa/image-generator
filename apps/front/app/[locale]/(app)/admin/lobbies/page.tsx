@@ -1,6 +1,5 @@
 "use client"
 
-import { Link } from "@/i18n/routing"
 import AdminHeader from "@/components/admin-header"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/table"
 import { BADGE_VARIANTS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { Link } from "@/i18n/routing"
 import { useGetOngoingLobbiesQuery } from "@/redux/api/lobby"
 import { getBadgeVariantLobbyStatus } from "@/utils/badge"
 

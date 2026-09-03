@@ -1,5 +1,4 @@
 import { SquareArrowOutUpRight } from "lucide-react"
-import { Link } from "@/i18n/routing"
 import { useQueryState } from "nuqs"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import OpenFirestoreDoc from "@/components/open-firestore"
@@ -13,6 +12,7 @@ import { getSphericalRef } from "@/constants/db-refs"
 import { MODAL_KEYS, NEW_SEARCH_PARAM, QUERY_PARAMS, STATUS_TO_BADGE_VARIANT } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
+import { Link } from "@/i18n/routing"
 import { useGetSphericalByIdQuery } from "@/redux/api/spherical"
 
 const SphericalSheet = () => {

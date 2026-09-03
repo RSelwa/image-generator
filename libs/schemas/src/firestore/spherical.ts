@@ -1,8 +1,8 @@
 import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
 import z from "zod"
+import { gratitudeSchema } from "~/firestore/gratitude"
 // import { WITH_ID } from "./../zod.ts"
 import { timestampSchema, WITH_ID } from "~/zod"
-import { gratitudeSchema } from "~/firestore/gratitude"
 
 // Position on the map (percentage 0-100)
 export const mapPositionSchema = z.object({

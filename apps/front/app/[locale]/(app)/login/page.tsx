@@ -8,6 +8,7 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> => {
   const { locale } = await params
+
   return {
     title: "Login — Geo Gamer",
     description: "Sign in to your Geo Gamer account to track your daily challenge streak, save your scores, and challenge friends.",

@@ -1,10 +1,10 @@
 import { APP_BASE_URL } from "@repo/common"
 import { ArrowLeft } from "lucide-react"
 import { type Metadata } from "next"
-import { Link } from "@/i18n/routing"
 import { notFound } from "next/navigation"
 import { BLOG_POST_BY_SLUG, BLOG_POSTS } from "@/constants/blog"
 import { PAGES } from "@/constants/pages"
+import { Link } from "@/i18n/routing"
 
 export const generateStaticParams = () =>
   Object.values(BLOG_POSTS).map((post) => ({ slug: post.slug }))
@@ -12,7 +12,7 @@ export const generateStaticParams = () =>
 export const generateMetadata = async ({
   params,
 }: {
-  params: Promise<{ slug: string; locale: string }>
+  params: Promise<{ slug: string, locale: string }>
 }): Promise<Metadata> => {
   const { slug, locale } = await params
   const post = BLOG_POST_BY_SLUG(slug)

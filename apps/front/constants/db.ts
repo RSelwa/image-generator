@@ -1,10 +1,10 @@
-import { IS_PLAYWRIGHT_EMULATOR } from "@/constants/mapping"
 import { initializeApp } from "firebase/app"
 import { connectAuthEmulator, getAuth } from "firebase/auth"
 import { connectDatabaseEmulator, getDatabase } from "firebase/database"
 import { connectFirestoreEmulator, initializeFirestore } from "firebase/firestore"
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions"
 import { connectStorageEmulator, getStorage } from "firebase/storage"
+import { IS_PLAYWRIGHT_EMULATOR } from "@/constants/mapping"
 
 const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
 const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || ""

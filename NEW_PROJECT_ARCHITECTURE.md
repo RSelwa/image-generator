@@ -86,12 +86,13 @@ The bundler inlines the source, so there's no published lib to keep in sync.
 ```ts
 // functions/listen-docs/tsup.config.ts
 import { defineConfig } from "tsup"
+
 export default defineConfig({
   entry: ["src/index.ts"],
-  bundle: true,        // inlines ../../apps/front/src/shared/* into the output
+  bundle: true, // inlines ../../apps/front/src/shared/* into the output
   platform: "node",
   format: ["esm"],
-  noExternal: [/.*/],  // bundle own code; keep node_modules external as appropriate
+  noExternal: [/.*/], // bundle own code; keep node_modules external as appropriate
 })
 ```
 

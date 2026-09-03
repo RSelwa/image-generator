@@ -1,15 +1,15 @@
-import { Button } from '@/components/ui/button';
-import './header.css';
+import { Button } from "@/components/ui/button"
+import "./header.css"
 
 type User = {
-  name: string;
-};
+  name: string
+}
 
 export interface HeaderProps {
-  user?: User;
-  onLogin?: () => void;
-  onLogout?: () => void;
-  onCreateAccount?: () => void;
+  user?: User
+  onLogin?: () => void
+  onLogout?: () => void
+  onCreateAccount?: () => void
 }
 
 export const Header = ({ user, onLogin, onLogout, onCreateAccount }: HeaderProps) => (
@@ -40,15 +40,15 @@ export const Header = ({ user, onLogin, onLogout, onCreateAccount }: HeaderProps
             <span className="welcome">
               Welcome, <b>{user.name}</b>!
             </span>
-            <Button size="default" onClick={onLogout}  />
+            <Button size="default" onClick={onLogout} />
           </>
         ) : (
           <>
-              <Button size="default" onClick={onLogin} />
-            <Button size="default" onClick={onCreateAccount}/>
+            <Button size="default" onClick={onLogin} />
+            <Button size="default" onClick={onCreateAccount} />
           </>
         )}
       </div>
     </div>
   </header>
-);
+)

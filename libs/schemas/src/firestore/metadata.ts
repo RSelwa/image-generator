@@ -2,8 +2,8 @@ import { DEFAULT_MAX_DISTANCE_POINTS, DIFFICULTIES, ROUND_TYPE } from "@repo/com
 import z from "zod"
 import { type GameDoc } from "~/firestore/game"
 import { type MapDoc } from "~/firestore/map"
-import { type Round, roundSchema } from "~/firestore/seed.round"
 import { type SpecialRoundOption, specialRoundOptionSchema } from "~/firestore/seed.option"
+import { type Round, roundSchema } from "~/firestore/seed.round"
 import { type MapPosition, mapPositionSchema } from "~/firestore/spherical"
 
 export const gamesListItemSchema = z.object({

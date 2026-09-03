@@ -24,48 +24,48 @@ const fontFaces = `
 `
 
 export const ModeDecorator = (Story: any) => {
-    const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
 
-    const toggleMode = () => {
-        setIsDarkMode(!isDarkMode)
-        document.documentElement.classList.toggle("dark", !isDarkMode)
-    }
+  const toggleMode = () => {
+    setIsDarkMode(!isDarkMode)
+    document.documentElement.classList.toggle("dark", !isDarkMode)
+  }
 
-    useEffect(() => {
-        document.documentElement.setAttribute("data-marathon", "")
-        const root = document.documentElement
-        root.style.setProperty("--font-geist-sans", "'Geist', sans-serif")
-        root.style.setProperty("--font-fraktion", "'Fraktion', sans-serif")
-        root.style.setProperty("--font-fraktion-mono", "'Fraktion Mono', monospace")
-        root.style.setProperty("--font-mono", "'Fraktion Mono', monospace")
-        root.style.setProperty("--font-interference", "'Interference', sans-serif")
-        root.style.setProperty("--font-shapiro", "'Shapiro', sans-serif")
-        root.style.setProperty("--font-shapiro-wide", "'Shapiro-Wide', sans-serif")
-        toggleMode()
-    }, [])
+  useEffect(() => {
+    document.documentElement.setAttribute("data-marathon", "")
+    const root = document.documentElement
+    root.style.setProperty("--font-geist-sans", "'Geist', sans-serif")
+    root.style.setProperty("--font-fraktion", "'Fraktion', sans-serif")
+    root.style.setProperty("--font-fraktion-mono", "'Fraktion Mono', monospace")
+    root.style.setProperty("--font-mono", "'Fraktion Mono', monospace")
+    root.style.setProperty("--font-interference", "'Interference', sans-serif")
+    root.style.setProperty("--font-shapiro", "'Shapiro', sans-serif")
+    root.style.setProperty("--font-shapiro-wide", "'Shapiro-Wide', sans-serif")
+    toggleMode()
+  }, [])
 
-    return (
-        <>
-            <style>{fontFaces}</style>
-            <button
-                onClick={toggleMode}
-                style={{
-                    position: "fixed",
-                    top: 10,
-                    right: 10,
-                    zIndex: 9999,
-                    padding: "8px 12px",
-                    backgroundColor: isDarkMode ? "#333" : "#fff",
-                    color: isDarkMode ? "#fff" : "#333",
-                    border: "none",
-                    borderRadius: "5px",
-                }}
-            >
-                {isDarkMode ? "Light Mode" : "Dark Mode"}
-            </button>
-            <div data-marathon>
-                <Story />
-            </div>
-        </>
-    )
+  return (
+    <>
+      <style>{fontFaces}</style>
+      <button
+        onClick={toggleMode}
+        style={{
+          position: "fixed",
+          top: 10,
+          right: 10,
+          zIndex: 9999,
+          padding: "8px 12px",
+          backgroundColor: isDarkMode ? "#333" : "#fff",
+          color: isDarkMode ? "#fff" : "#333",
+          border: "none",
+          borderRadius: "5px",
+        }}
+      >
+        {isDarkMode ? "Light Mode" : "Dark Mode"}
+      </button>
+      <div data-marathon>
+        <Story />
+      </div>
+    </>
+  )
 }

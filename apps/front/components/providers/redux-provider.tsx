@@ -2,8 +2,8 @@
 
 import { type ReactNode, useEffect, useMemo } from "react"
 import { Provider } from "react-redux"
-import { makeStore } from "@/redux/store"
 import { IS_PLAYWRIGHT_EMULATOR } from "@/constants/mapping"
+import { makeStore } from "@/redux/store"
 
 const StoreProvider = ({ children }: { children: ReactNode }) => {
   const store = useMemo(() => makeStore(), [])

@@ -1,10 +1,9 @@
-import type { Preview } from '@storybook/nextjs-vite'
-import { themes } from 'storybook/theming'
-import '../app/globals.css'
-import { ModeDecorator } from "./modeDecorator";
+import { type Preview } from "@storybook/nextjs-vite"
+import { themes } from "storybook/theming"
+import { ModeDecorator } from "./modeDecorator"
+import "../app/globals.css"
 
-
-export const decorators = [ModeDecorator];
+export const decorators = [ModeDecorator]
 
 const preview: Preview = {
   parameters: {
@@ -13,11 +12,11 @@ const preview: Preview = {
     },
     controls: {
       matchers: {
-       color: /(background|color)$/i,
-       date: /Date$/i,
+        color: /(background|color)$/i,
+        date: /Date$/i,
       },
     },
   },
-};
+}
 
-export default preview;
+export default preview

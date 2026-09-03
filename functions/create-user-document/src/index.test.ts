@@ -82,7 +82,6 @@ describe("createUserDocument", () => {
     expect(userDoc?.pseudo).toBeTruthy()
     expect(userDoc).toHaveProperty("isAnonymousUser", false)
     expect(userDoc?.avatar).toBeTruthy()
-
   })
 
   // beforeUserCreated is not triggered for anonymous sign-in in the Firebase emulator

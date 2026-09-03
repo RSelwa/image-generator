@@ -1,23 +1,10 @@
 import { DOCUMENTS_STATUS, METADATA_DOCS, ROUND_TYPE, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { db } from "@repo/providers/firebase"
-import { buildReadyImageItem, type FlatDoc, type GameDoc, type MapDoc, type ReadyImageItem, readyImageItemSchema, readyImagesDocSchema, type SphericalDoc } from "@repo/schemas"
+import { buildReadyImageItem, type FlatDoc, type GameDoc, type MapDoc, type ReadyImageItem, readyImagesDocSchema, type SphericalDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
 
 const getMetadataRef = () => refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES)
-
-// Resilient read: drop entries that don't match the enriched shape (e.g. legacy
-// pre-backfill entries) instead of throwing. The backfill restores any dropped data.
-const parseReadyImageItems = (raw: unknown): ReadyImageItem[] =>
-  (Array.isArray(raw) ? raw : [])
-    .map((item) => readyImageItemSchema.safeParse(item))
-    .filter((parsed) => parsed.success)
-    .map((parsed) => parsed.data)
-
-const readReadyImages = (data: Record<string, unknown> | undefined) => ({
-  sphericals: parseReadyImageItems(data?.sphericals),
-  flats: parseReadyImageItems(data?.flats),
-})
 
 type ReadyImageKind = "sphericals" | "flats"
 
@@ -135,14 +122,12 @@ export const refreshReadyImagesForGame = async (
 
     const patch = (items: ReadyImageItem[]) =>
       items.map((item) =>
-        item.gameId === gameId
-          ? {
-              ...item,
-              gameTitle: after.title,
-              gameAlternateNames: after.alternateNames || null,
-              gameThumbnailUrl: after.image || null,
-            }
-          : item,
+        item.gameId === gameId ? {
+          ...item,
+          gameTitle: after.title,
+          gameAlternateNames: after.alternateNames || null,
+          gameThumbnailUrl: after.image || null,
+        } : item,
       )
 
     data.sphericals = patch(data.sphericals)
@@ -176,15 +161,13 @@ export const refreshReadyImagesForMap = async (
 
     const patch = (items: ReadyImageItem[]) =>
       items.map((item) =>
-        item.mapId === mapId
-          ? {
-              ...item,
-              mapImage: after.imageUrl || null,
-              mapWidth: after.width || null,
-              mapHeight: after.height || null,
-              maxDistancePoints: after.maxDistancePoints || null,
-            }
-          : item,
+        item.mapId === mapId ? {
+          ...item,
+          mapImage: after.imageUrl || null,
+          mapWidth: after.width || null,
+          mapHeight: after.height || null,
+          maxDistancePoints: after.maxDistancePoints || null,
+        } : item,
       )
 
     data.sphericals = patch(data.sphericals)

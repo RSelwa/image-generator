@@ -3,8 +3,8 @@ import { resolve } from "node:path"
 import { PROJECT_ID } from "@repo/common"
 import admin from "firebase-admin"
 import { getAuth } from "firebase-admin/auth"
-import { getFunctions } from "firebase-admin/functions"
 import { getDatabase } from "firebase-admin/database"
+import { getFunctions } from "firebase-admin/functions"
 import { getStorage } from "firebase-admin/storage"
 
 export type { DecodedIdToken } from "firebase-admin/auth"
@@ -16,6 +16,7 @@ const getCredential = () => {
 
   if (credentialsPath) {
     const base = process.env.INIT_CWD || process.cwd()
+
     return admin.credential.cert(
       JSON.parse(readFileSync(resolve(base, credentialsPath), "utf-8")),
     )

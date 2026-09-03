@@ -124,7 +124,7 @@ const SelectLabel = ({
 }: React.ComponentProps<typeof SelectPrimitive.Label>) => (
   <SelectPrimitive.Label
     data-slot="select-label"
-    className={cn("text-muted-foreground px-2 py-1.5 text-xs", "text-primary",className)}
+    className={cn("text-muted-foreground px-2 py-1.5 text-xs", "text-primary", className)}
     {...props}
   />
 )

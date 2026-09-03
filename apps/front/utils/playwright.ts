@@ -65,7 +65,6 @@ export const generateGameData = async () => {
     const sphericalWithThumbnail = sphericalFactory({ gameId: game.id, thumbnail: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
     const flat = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY, thumbnail: mockedGameImageURL })
     const flatWithMap = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY, thumbnail: mockedGameImageURL, mapId: map.id, mapPosition: { x: 50, y: 50 } })
-   
 
     return { game, map, sphericalWithMap, sphericalWithThumbnail, flat, flatWithMap }
   })

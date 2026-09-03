@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     name: ✅ E2E Tests Complete
     if: ${{ always() && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') }}
-    
+
     steps:
       - name: ✅ All E2E tests passed or skipped
         run: echo "E2E passed or skipped"
@@ -128,13 +128,12 @@ jobs:
         if: ${{ needs.e2e.result != 'success' && needs.e2e.result != 'skipped' }}
         run: exit 1
 
-
   deploy:
     needs: e2e-complete
     runs-on: ubuntu-latest
     if: ${{ needs.e2e-complete.result == 'success' && ( github.ref_name == 'main' || github.ref_name == 'develop' || contains(github.event.head_commit.message, '[force_deploy]')) }}
     steps:
-      - uses: actions/checkout@v4  # needed to access the composite action
+      - uses: actions/checkout@v4 # needed to access the composite action
       - name: Deploy
         uses: ./.github/actions/deploy
         with:

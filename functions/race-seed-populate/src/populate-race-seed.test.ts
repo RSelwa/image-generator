@@ -28,6 +28,7 @@ const cleanupCollection = async (collectionRef: FirebaseFirestore.Query) => {
 const createSeed = async (overrides: Partial<MarathonSeedDocWithId> = {}): Promise<MarathonSeedDocWithId> => {
   const seedData = marathonSeedFactory(overrides)
   await refs[TABLES.MARATHON_SEEDS].doc(seedData.id).set(seedData)
+
   return seedData
 }
 
@@ -65,8 +66,7 @@ describe("populateRaceSeed", () => {
     await setReadyImages({ sphericals: [buildReadySpherical({ id: spherical.id, gameId: game.id, image: spherical.image })], flats: [] })
 
     const existingRounds = Array.from({ length: RACE_SEED_EXTENSION_THRESHOLD + 1 }, (_, i) =>
-      seedRound(game.id, `sph-${i}`)
-    )
+      seedRound(game.id, `sph-${i}`))
 
     const seed = await createSeed({ rounds: existingRounds })
 
