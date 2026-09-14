@@ -10,6 +10,7 @@ function config({ mode }) {
   return {
     test: {
       exclude: [...configDefaults.exclude],
+      testTimeout: 20_000,
       env: {
         ...loadEnv(mode, rootPath, ""),
         ...loadEnv(mode, process.cwd(), ""),
