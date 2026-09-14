@@ -51,7 +51,7 @@ const Page = () => {
       <AdminHeader title="Games" numberOfElements={gameCount}>
         <div className="flex flex-col md:flex-row items-center gap-2 shrink-0">
           <Button asChild variant="ghost">
-            <FieldGroup className="min-w-48 max-w-max hover:bg-neutral-200">
+            <FieldGroup className="min-w-48 max-w-max hover:bg-muted">
               <Field orientation="horizontal">
                 <Checkbox id="toggle-only-images" checked={isOnlyDisplayMissingImages} onCheckedChange={(checked) => setDisplayMissingImages(checked ? "true" : "")} />
                 <FieldContent>

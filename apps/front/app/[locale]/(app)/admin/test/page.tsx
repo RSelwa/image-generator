@@ -89,7 +89,7 @@ const MapGuesser = () => {
   const isGameOver = currentRound === EXAMPLE_ROUNDS.length - 1 && hasSubmitted
 
   return (
-    <div className="relative min-h-screen bg-gray-900">
+    <div className="relative min-h-screen bg-background">
       {/* Main game area - this would be your panorama/image view */}
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-foreground text-center">
@@ -103,9 +103,9 @@ const MapGuesser = () => {
           </p>
 
           {/* Placeholder for panorama view */}
-          <div className="mt-8 p-8 border-2 border-dashed border-gray-600 rounded-lg">
-            <p className="text-gray-400">Panorama / Image view goes here</p>
-            <p className="text-gray-500 text-sm mt-2">
+          <div className="mt-8 p-8 border-2 border-dashed border-border rounded-lg">
+            <p className="text-muted-foreground">Panorama / Image view goes here</p>
+            <p className="text-muted-foreground text-sm mt-2">
               Hover the mini-map in the bottom-right to expand it
             </p>
           </div>

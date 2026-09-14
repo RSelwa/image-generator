@@ -92,7 +92,7 @@ const AccountForm = () => {
       <Card>
         <CardHeader className="flex justify-between">
           <div>
-            <CardTitle className="font-interference">{t("profilePicture")}</CardTitle>
+            <CardTitle>{t("profilePicture")}</CardTitle>
             <CardDescription className="font-mono">{t("profilePictureDescription")}</CardDescription>
           </div>
           <Popover>

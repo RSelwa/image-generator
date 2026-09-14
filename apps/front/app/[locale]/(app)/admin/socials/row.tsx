@@ -86,7 +86,7 @@ export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
             {social.status === SOCIALS_STATUS.READY_TO_POST && (
               <AlertDialogTrigger asChild>
                 <ContextMenuItem asChild>
-                  <Button variant="marathon" className="rounded-none cursor-pointer w-full justify-start">
+                  <Button variant="marathon" className="cursor-pointer w-full justify-start">
                     Publish
                   </Button>
                 </ContextMenuItem>
@@ -112,7 +112,7 @@ export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
         </section>
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
-            <Button variant="marathon-outline" className="rounded-none">
+            <Button variant="marathon-outline">
               Cancel
             </Button>
           </AlertDialogCancel>

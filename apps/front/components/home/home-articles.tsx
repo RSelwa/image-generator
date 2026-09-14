@@ -17,9 +17,9 @@ export const HomeArticles = ({ href, imageLink, title, description, ...props }: 
   const t = useTranslations("home")
 
   return (
-    <Link href={href} className="w-full bg-background flex flex-col border border-neutral-900" {...props}>
+    <Link href={href} className="w-full bg-background flex flex-col border border-border" {...props}>
       <Image src={imageLink} width={400} height={400} alt={`Image of ${description}`} className="w-full object-cover h-full lg:h-[25vw]" />
-      <p className="p-3 text-base uppercase font-interference">{description}</p>
+      <p className="p-3 text-base">{description}</p>
       <h2 className="pb-6 px-3 font-shapiro-wide lg:text-2xl text-3xl">{title}</h2>
       <Button variant="marathon-white" className="self-end mt-auto" size="lg">{t("readMore")} <ArrowUpRight className="size-6" /></Button>
     </Link>
@@ -39,7 +39,7 @@ export const ArticlesDescription = ({ subTitle, title, description, link, classN
 
   return (
     <article data-variant={variant} className={cn("relative data-[variant=black]:bg-background data-[variant=black]:text-foreground data-[variant=white]:bg-foreground data-[variant=white]:text-background flex flex-col gap-4 py-6 px-3 pb-16", className)}>
-      <h4 className="uppercase font-interference">
+      <h4>
         {subTitle}
       </h4>
       <h3 className="text-4xl font-shapiro-wide">

@@ -110,7 +110,7 @@ const SoundSheet = () => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel asChild>
-                  <Button variant="marathon-outline" className="rounded-none">
+                  <Button variant="marathon-outline">
                     Cancel
                   </Button>
                 </AlertDialogCancel>

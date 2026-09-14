@@ -52,14 +52,14 @@ const BlogPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
     <main className="max-w-3xl mx-auto px-5 py-16 md:py-24">
       <Link
         href={PAGES.HOME}
-        className="inline-flex items-center gap-2 font-interference uppercase text-sm opacity-60 hover:opacity-100 mb-12"
+        className="inline-flex items-center gap-2 text-sm opacity-60 hover:opacity-100 mb-12"
       >
         <ArrowLeft className="size-4" />
         Back to home
       </Link>
 
       <header className="mb-16">
-        <p className="font-interference uppercase text-sm mb-4 opacity-60">
+        <p className="text-sm mb-4 opacity-60">
           {post.publishedAt} · {post.readingTime} min read
         </p>
         <h1 className="font-shapiro-wide text-4xl md:text-6xl mb-6 leading-tight">

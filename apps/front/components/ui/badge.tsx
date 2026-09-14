@@ -10,8 +10,8 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-foreground [a&]:hover:bg-primary/90",
-        blur: "border-grey-100 bg-transparent backdrop-blur-sm text-white",
+        default: "bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        blur: "border-border bg-transparent backdrop-blur-sm text-foreground",
         secondary:
           "bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive:
@@ -20,17 +20,24 @@ const badgeVariants = cva(
           "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         link: "text-primary underline-offset-4 [a&]:hover:underline",
-        [BADGE_VARIANTS.GREEN]: "border-marathon-green bg-marathon-green text-marathon-green-foreground",
-        [BADGE_VARIANTS.BLUE]: "border-blue-accent bg-blue-accent-foreground text-blue-accent",
-        [BADGE_VARIANTS.RED]: "border-destructive bg-destructive/80 text-destructive-foreground backdrop-blur-sm",
-        "light-grey": "border-neutral-100 bg-transparent backdrop-blur-sm text-neutral-200",
-        [BADGE_VARIANTS.NEUTRAL]: "border-neutral-500 bg-neutral-900/90 text-white",
+        [BADGE_VARIANTS.GREEN]:
+          "border-success/20 bg-success/10 text-success-foreground",
+        [BADGE_VARIANTS.BLUE]: "border-info/20 bg-info/10 text-info-foreground",
+        [BADGE_VARIANTS.RED]:
+          "border-destructive/20 bg-destructive/10 text-destructive-foreground",
+        "light-grey":
+          "border-border bg-transparent backdrop-blur-sm text-muted-foreground",
+        [BADGE_VARIANTS.NEUTRAL]: "border-border bg-muted text-muted-foreground",
         [BADGE_VARIANTS.ORANGE]:
-          "border-primary bg-orange-400/50 text-primary-foreground",
-        [BADGE_VARIANTS.PURPLE]: "border-purple-600 bg-purple-400/50 text-purple-200",
-        [BADGE_VARIANTS.YELLOW]: "border-yellow-600 bg-yellow-400/50 text-yellow-200",
-        [BADGE_VARIANTS.PINK]: "border-marathon-pink bg-marathon-pink text-marathon-pink-foreground",
-        [BADGE_VARIANTS.LIME]: "border-lime-600 bg-lime-400/50 text-lime-200",
+          "border-warning/20 bg-warning/10 text-warning-foreground",
+        [BADGE_VARIANTS.PURPLE]:
+          "border-purple-500/20 bg-purple-500/10 text-purple-400",
+        [BADGE_VARIANTS.YELLOW]:
+          "border-yellow-500/20 bg-yellow-500/10 text-yellow-400",
+        [BADGE_VARIANTS.PINK]:
+          "border-marathon-pink/20 bg-marathon-pink/10 text-marathon-pink",
+        [BADGE_VARIANTS.LIME]:
+          "border-lime-500/20 bg-lime-500/10 text-lime-400",
       },
     },
     defaultVariants: {

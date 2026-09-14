@@ -25,22 +25,22 @@ export const generateMetadata = async ({
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
+    <div className="min-h-screen bg-background">
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-        <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">
+        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
           Privacy Policy
         </h1>
-        <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-12">
+        <p className="text-lg text-muted-foreground mb-12">
           Last updated: February 21, 2026
         </p>
 
         <div className="prose prose-zinc dark:prose-invert max-w-none">
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               1. Introduction
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               {APP_NAME}
               {" "}
               ("we", "our", or "us") is committed to protecting your privacy.
@@ -52,42 +52,42 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               2. Information We Collect
             </h2>
 
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
+            <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">
               2.1 Account Information
             </h3>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               When you create an account, we collect:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300 mb-4">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
               <li>Name and email address</li>
               <li>Account credentials (encrypted passwords)</li>
               <li>Profile information you choose to provide (e.g., username, avatar)</li>
             </ul>
 
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
+            <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">
               2.2 Gameplay Data
             </h3>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               To operate and improve the game, we collect:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300 mb-4">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
               <li>Your guesses and answers for each round</li>
               <li>Scores, streaks, and game history</li>
               <li>Time taken to answer each round</li>
               <li>Lobby activity and multiplayer session data</li>
             </ul>
 
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
+            <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">
               2.3 Usage Information
             </h3>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We automatically collect:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300 mb-4">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
               <li>Log data (IP address, browser type, operating system)</li>
               <li>Device information</li>
               <li>Usage patterns and interactions with the Service</li>
@@ -96,13 +96,13 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               3. How We Use Your Information
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We use the collected information to:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li>Provide, maintain, and improve the game experience</li>
               <li>Track scores, leaderboards, and game history</li>
               <li>Manage your account and sessions</li>
@@ -115,68 +115,68 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               4. How We Share Your Information
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We may share your information with:
             </p>
 
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
+            <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">
               4.1 Service Providers
             </h3>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We work with third-party companies that help us provide the
               Service, including:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300 mb-4">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
               <li>Cloud hosting providers</li>
               <li>Analytics services</li>
               <li>Customer support tools</li>
             </ul>
 
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
+            <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">
               4.2 Public Leaderboards
             </h3>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               Your username and scores may be displayed publicly on leaderboards
               within the game. You can update your username at any time from
               your account settings.
             </p>
 
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
+            <h3 className="text-xl font-semibold text-foreground mb-3 mt-6">
               4.3 Legal Requirements
             </h3>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We may disclose your information if required by law or in response
               to valid requests by public authorities.
             </p>
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               5. Data Security
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We implement appropriate technical and organizational measures to
               protect your personal information, including:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li>Encryption of data in transit and at rest</li>
               <li>Regular security assessments and updates</li>
               <li>Access controls and authentication measures</li>
             </ul>
-            <p className="text-zinc-700 dark:text-zinc-300 mt-4">
+            <p className="text-muted-foreground mt-4">
               However, no method of transmission over the internet is 100%
               secure, and we cannot guarantee absolute security.
             </p>
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               6. Data Retention
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We retain your personal information for as long as necessary to
               provide the Service and fulfill the purposes outlined in this
               Privacy Policy. When you delete your account, we will delete or
@@ -186,13 +186,13 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               7. Your Rights and Choices
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               Depending on your location, you may have the following rights:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li>
                 <strong>Access:</strong>
                 {" "}
@@ -230,7 +230,7 @@ export default function PrivacyPolicy() {
                 processing where applicable
               </li>
             </ul>
-            <p className="text-zinc-700 dark:text-zinc-300 mt-4">
+            <p className="text-muted-foreground mt-4">
               To exercise these rights, please contact us at
               {CONTACT_EMAIL}
               .
@@ -238,29 +238,29 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               8. Cookies and Tracking Technologies
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We use cookies and similar technologies to:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li>Keep you logged in</li>
               <li>Remember your preferences</li>
               <li>Analyze usage patterns</li>
               <li>Improve our Service</li>
             </ul>
-            <p className="text-zinc-700 dark:text-zinc-300 mt-4">
+            <p className="text-muted-foreground mt-4">
               You can control cookies through your browser settings, but
               disabling cookies may limit your use of certain features.
             </p>
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               9. International Data Transfers
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               Your information may be transferred to and processed in countries
               other than your country of residence. These countries may have
               different data protection laws. We ensure appropriate safeguards
@@ -270,10 +270,10 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               10. Children's Privacy
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               Our Service is not directed to children under 13 years of age. We
               do not knowingly collect personal information from children under
               13. If you are a parent or guardian and believe your child has
@@ -283,10 +283,10 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               11. Third-Party Links
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               Our Service may contain links to third-party websites. We are not
               responsible for the privacy practices of these websites. We
               encourage you to read their privacy policies.
@@ -294,10 +294,10 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               12. Changes to This Privacy Policy
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We may update this Privacy Policy from time to time. We will
               notify you of any material changes by posting the new Privacy
               Policy on this page and updating the "Last updated" date. We
@@ -306,14 +306,14 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               13. Contact Us
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               If you have any questions about this Privacy Policy or our privacy
               practices, please contact us:
             </p>
-            <div className="text-zinc-700 dark:text-zinc-300">
+            <div className="text-muted-foreground">
               <p>
                 Email:
                 {CONTACT_EMAIL}
@@ -322,37 +322,37 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               14. GDPR Compliance (EU Users)
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               If you are located in the European Economic Area (EEA), you have
               additional rights under the General Data Protection Regulation
               (GDPR):
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li>Right to lodge a complaint with a supervisory authority</li>
               <li>
                 Right to object to processing based on legitimate interests
               </li>
               <li>Right to restriction of processing</li>
             </ul>
-            <p className="text-zinc-700 dark:text-zinc-300 mt-4">
+            <p className="text-muted-foreground mt-4">
               Our legal basis for processing your data includes: contract
               performance, legitimate interests, and your consent.
             </p>
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               15. California Privacy Rights (CCPA)
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               If you are a California resident, you have specific rights
               regarding your personal information under the California Consumer
               Privacy Act (CCPA):
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li>Right to know what personal information is collected</li>
               <li>
                 Right to know whether personal information is sold or disclosed
@@ -361,7 +361,7 @@ export default function PrivacyPolicy() {
               <li>Right to delete personal information</li>
               <li>Right to equal service and price</li>
             </ul>
-            <p className="text-zinc-700 dark:text-zinc-300 mt-4">
+            <p className="text-muted-foreground mt-4">
               We do not sell your personal information to third parties.
             </p>
           </section>

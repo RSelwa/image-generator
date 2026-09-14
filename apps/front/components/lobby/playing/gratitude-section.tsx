@@ -34,7 +34,7 @@ const GratitudeSection = ({ gameId, sphericalId, flatId, mapId }: GratitudeSecti
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="text-xs font-interference">Thanks to</span>
+      <span className="text-xs">Thanks to</span>
       {players.map((player) => (
         <GratitudePlayer key={player.id} player={player} />
       ))}

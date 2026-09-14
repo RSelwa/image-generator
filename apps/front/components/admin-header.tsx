@@ -18,7 +18,7 @@ const AdminHeader = ({ children, title, numberOfElements }: Props) => {
         <h1 className="text-2xl font-semibold whitespace-nowrap">
           {title}
           {numberOfElements && (
-            <span className="ml-2 text-neutral-400">
+            <span className="ml-2 text-muted-foreground">
               (
               {numberOfElements}
               )

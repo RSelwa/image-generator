@@ -47,7 +47,7 @@ export const GameRow = ({ round }: { round: MarathonSeedRound }) => {
         </article>
       </PopoverTrigger>
       <PopoverContent side="right" asChild>
-        <div className="w-full flex flex-col items-center  gap-4">
+        <div className="w-full flex flex-col items-center gap-4">
           <img src={gameData.image} alt={gameData?.title} className="size-full max-h-36 object-contain rounded" />
           <h3 className="text-lg font-semibold">{gameData?.title}</h3>
           <div className="aspect-video h-40 justify-center items-center flex">
@@ -103,7 +103,7 @@ const RaceFinished = ({ race }: { race: RaceDocWithId }) => {
 
       {seed?.rounds && (
         <section className="w-full max-w-sm space-y-4 border border-primary">
-          <h2 className="text-lg font-semibold px-4 font-interference text-primary">{t("recap")}</h2>
+          <h2 className="text-lg font-semibold px-4 text-primary">{t("recap")}</h2>
           <div className="flex flex-col gap-2 max-h-72 overflow-scroll">
             {seed?.rounds?.map((round) => (
               <GameRow key={round.sphericalId || round.flatId} round={round} />

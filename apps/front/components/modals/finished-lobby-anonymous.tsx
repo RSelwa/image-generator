@@ -13,11 +13,11 @@ const FinishedLobbyAnonymous = () => {
 
   return (
     <AlertDialog open={true}>
-      <AlertDialogContent data-testid="finished-lobby-anonymous-modal" className="pt-0 px-0 rounded-none">
+      <AlertDialogContent data-testid="finished-lobby-anonymous-modal" className="pt-0 px-0">
         <Image src={IMAGES_URLS.ANONYMOUS} alt="Anonymous" width={120} height={120} className="w-full max-h-64 mb-4 object-cover" />
         <AlertDialogCancel asChild>
-          <Button variant="ghost" className="rounded-none text-foreground absolute right-0 top-0">
-            <XIcon className="" />
+          <Button variant="ghost" className="text-foreground absolute right-0 top-0">
+            <XIcon />
           </Button>
         </AlertDialogCancel>
         <div className="grid px-6 gap-4">
@@ -28,7 +28,7 @@ const FinishedLobbyAnonymous = () => {
             {t("description")}
           </AlertDialogDescription>
           <AlertDialogFooter className="flex gap-2">
-            <Button asChild className="rounded-none flex-1">
+            <Button asChild className="flex-1">
               <Link href={PAGES.SIGNUP}>
                 {t("createAccount")}
               </Link>

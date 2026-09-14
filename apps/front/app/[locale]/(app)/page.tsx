@@ -70,7 +70,7 @@ const Page = async () => {
       </section>
       <section className="grid grid-cols-1 lg:grid-cols-2">
         <article className="px-5 py-6 flex flex-col">
-          <p className="mb-3 font-interference">{t("latestNews")}</p>
+          <p className="mb-3">{t("latestNews")}</p>
           <h2 className="mb-6 text-4xl lg:text-6xl font-shapiro-wide">Geo Gamer</h2>
           <p className="lg:w-1/2 mb-8 font-sans opacity-60">
             {t("latestNewsDescription")}
@@ -96,11 +96,11 @@ const Page = async () => {
               <KeyRound className="size-6" />
               {tNav("joinLobby")}
             </JoinLobbyButton>
-            <Link href={PAGES.RACE} target="_blank" className="p-5  hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
+            <Link href={PAGES.RACE} target="_blank" className="p-5 hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
               <Timer />
               {tNav("race")}
             </Link>
-            <Link href={PAGES.DAILY_CHALLENGE} target="_blank" className="p-5  hover:text-primary hover:bg-primary-foreground flex items-center justify-center gap-2">
+            <Link href={PAGES.DAILY_CHALLENGE} target="_blank" className="p-5 hover:text-primary hover:bg-primary-foreground flex items-center justify-center gap-2">
               <Calendar className="size-6" />
               {tNav("dailyChallenge")}
             </Link>
@@ -108,7 +108,7 @@ const Page = async () => {
         </article>
       </section>
       <section className="px-5 py-16 lg:py-32">
-        <p className="font-interference uppercase mb-3">
+        <p className="mb-3">
           {t("taglineSubtitle")}
         </p>
         <h1 className="font-shapiro-wide font-bold text-5xl lg:text-9xl">
@@ -117,7 +117,7 @@ const Page = async () => {
       </section>
       <section className="grid grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-between lg:w-1/2">
-          <article className="p-5 font-mono space-y-4 uppercase">
+          <article className="p-5 font-mono space-y-4">
             <p>
               {t("dropIntoDescription")}
             </p>

@@ -95,7 +95,7 @@ const Page = () => {
                       <span>
                         {user.pseudo}
                       </span>
-                      <span className="text-neutral-400 text-xs">
+                      <span className="text-muted-foreground text-xs">
                         {user.email}
                       </span>
                     </div>

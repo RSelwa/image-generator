@@ -30,7 +30,7 @@ export const LobbyHistoryCard = ({ lobby }: { lobby: LobbyDocWithId }) => {
     <Link href={`${PAGES.LOBBY}/${lobby.id}`} data-testid="lobby-history-card">
       <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium font-interference">
+          <CardTitle className="text-sm font-medium">
             <div className="flex items-center gap-2">
               <Hash className="size-4" />
               {lobby.code}

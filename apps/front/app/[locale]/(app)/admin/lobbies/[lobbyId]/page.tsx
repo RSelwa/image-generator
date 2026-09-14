@@ -113,8 +113,8 @@ const AnswerCell = ({ answer }: { answer: PlayerAnswer }) => {
     return (
       <div className="flex flex-col gap-1">
         <Badge variant={BADGE_VARIANTS.GREEN}>Correct</Badge>
-        <span className="text-xs text-neutral-400">{answer.answer || `Option ${answer.selectedOptionIndex}`}</span>
-        <span className="text-xs text-neutral-500">{answer.points} pts ({answer.gamePoints} game + {answer.distancePoints} dist)</span>
+        <span className="text-xs text-muted-foreground">{answer.answer || `Option ${answer.selectedOptionIndex}`}</span>
+        <span className="text-xs text-muted-foreground">{answer.points} pts ({answer.gamePoints} game + {answer.distancePoints} dist)</span>
       </div>
     )
   }
@@ -123,8 +123,8 @@ const AnswerCell = ({ answer }: { answer: PlayerAnswer }) => {
     return (
       <div className="flex flex-col gap-1">
         <Badge variant={BADGE_VARIANTS.RED}>Wrong</Badge>
-        <span className="text-xs text-neutral-400">{answer.answer || `Option ${answer.selectedOptionIndex}`}</span>
-        <span className="text-xs text-neutral-500">{answer.points} pts</span>
+        <span className="text-xs text-muted-foreground">{answer.answer || `Option ${answer.selectedOptionIndex}`}</span>
+        <span className="text-xs text-muted-foreground">{answer.points} pts</span>
       </div>
     )
   }
@@ -133,7 +133,7 @@ const AnswerCell = ({ answer }: { answer: PlayerAnswer }) => {
     return <Badge variant={BADGE_VARIANTS.NEUTRAL}>No answer</Badge>
   }
 
-  return <span className="text-neutral-600">Pending</span>
+  return <span className="text-muted-foreground">Pending</span>
 }
 
 const RoundSection = ({ round, isCurrent }: { round: RoundAnswerDocWithId, isCurrent: boolean }) => (
@@ -144,7 +144,7 @@ const RoundSection = ({ round, isCurrent }: { round: RoundAnswerDocWithId, isCur
       {isCurrent && <Badge variant={BADGE_VARIANTS.ORANGE}>Current</Badge>}
       {round.isComplete && <Badge variant={BADGE_VARIANTS.GREEN}>Complete</Badge>}
       {round.type && <Badge variant={BADGE_VARIANTS.NEUTRAL}>{round.type}</Badge>}
-      {round.gameTitle && <span className="text-sm text-neutral-400">{round.gameTitle}</span>}
+      {round.gameTitle && <span className="text-sm text-muted-foreground">{round.gameTitle}</span>}
     </div>
 
     <Table noWrapper={false}>
@@ -162,14 +162,14 @@ const RoundSection = ({ round, isCurrent }: { round: RoundAnswerDocWithId, isCur
           <TableRow key={answer.uid}>
             <TableCell className="font-medium">{answer.playerName}</TableCell>
             <TableCell><AnswerCell answer={answer} /></TableCell>
-            <TableCell className="text-neutral-400">
+            <TableCell className="text-muted-foreground">
               {answer.timeMs > 0 && `${(answer.timeMs / 1000).toFixed(1)}s`}
               {answer.timeMs === 0 && "-"}
             </TableCell>
             <TableCell>{answer.livesUsed > 0 && answer.livesUsed}{answer.livesUsed === 0 && "-"}</TableCell>
             <TableCell>
               {answer.isReadyForNextRound && <Badge variant={BADGE_VARIANTS.GREEN}>Ready</Badge>}
-              {!answer.isReadyForNextRound && <span className="text-neutral-600">-</span>}
+              {!answer.isReadyForNextRound && <span className="text-muted-foreground">-</span>}
             </TableCell>
           </TableRow>
         ))}
@@ -201,7 +201,7 @@ const Page = () => {
       <div className="flex items-center gap-4 mb-6">
         <Link
           href={PAGES.ADMIN_LOBBIES}
-          className="text-sm text-neutral-400 hover:text-white transition-colors"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           &larr; Back to lobbies
         </Link>
@@ -218,27 +218,27 @@ const Page = () => {
       {/* Lobby info */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-sm">
         <div>
-          <p className="text-neutral-500">Players</p>
+          <p className="text-muted-foreground">Players</p>
           <p>{lobby.players.length} / {lobby.config.maxPlayers}</p>
         </div>
         <div>
-          <p className="text-neutral-500">Round</p>
+          <p className="text-muted-foreground">Round</p>
           <p>{lobby.currentRound} / {lobby.config.numberOfRounds}</p>
         </div>
         <div>
-          <p className="text-neutral-500">Duration</p>
+          <p className="text-muted-foreground">Duration</p>
           <p>{lobby.config.roundDuration}s</p>
         </div>
         <div>
-          <p className="text-neutral-500">Lives</p>
+          <p className="text-muted-foreground">Lives</p>
           <p>{lobby.config.playersLives || "Unlimited"}</p>
         </div>
         <div>
-          <p className="text-neutral-500">Created</p>
+          <p className="text-muted-foreground">Created</p>
           <p>{formatTimestamp(lobby.createdAt)}</p>
         </div>
         <div>
-          <p className="text-neutral-500">Special Rounds</p>
+          <p className="text-muted-foreground">Special Rounds</p>
           <p>{lobby.config.hasSpecialRounds && "Yes"}{!lobby.config.hasSpecialRounds && "No"}</p>
         </div>
       </section>
@@ -260,7 +260,7 @@ const Page = () => {
             {lobby.players.map((player) => (
               <TableRow key={player.uid}>
                 <TableCell className="font-medium">{player.name}</TableCell>
-                <TableCell className="text-neutral-400">{player.avatar}</TableCell>
+                <TableCell className="text-muted-foreground">{player.avatar}</TableCell>
                 <TableCell>{player.score}</TableCell>
                 <TableCell>
                   {player.isHost && <Badge variant={BADGE_VARIANTS.ORANGE}>Host</Badge>}
@@ -289,7 +289,7 @@ const Page = () => {
         <h2 className="text-xl font-semibold mb-4">Rounds</h2>
 
         {lobby.status === LOBBY_STATUS.WAITING && (
-          <p className="text-neutral-400">Game hasn&apos;t started yet</p>
+          <p className="text-muted-foreground">Game hasn&apos;t started yet</p>
         )}
 
         {roundsLoading && <p>Loading rounds...</p>}

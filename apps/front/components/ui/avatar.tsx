@@ -22,7 +22,6 @@ const Avatar = ({
     data-size={size}
     className={cn(
       "group/avatar relative flex size-8 shrink-0 rounded-full select-none data-[size=lg]:size-10 data-[size=sm]:size-6",
-      "rounded-none",
       className,
     )}
     {...props}
@@ -38,7 +37,7 @@ const AvatarImage = ({
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       // style={{ backgroundImage: `url(${AVATARS_BACKGROUND_URLS.PERIMETER})` }}
-      className={cn("aspect-square size-full rounded-full overflow-hidden object-cover", `rounded-none bg-cover`, "bg-white", className)}
+      className={cn("aspect-square size-full rounded-full overflow-hidden object-cover", `bg-cover`, "bg-white", className)}
       {...props}
     />
   )
@@ -71,7 +70,6 @@ const AvatarFallback = ({
     data-slot="avatar-fallback"
     className={cn(
       "bg-muted text-muted-foreground flex size-full items-center justify-center rounded-full text-sm group-data-[size=sm]/avatar:text-xs",
-      "rounded-none",
       className,
     )}
     {...props}

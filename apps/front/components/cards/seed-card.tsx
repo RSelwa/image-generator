@@ -43,7 +43,7 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
   return (
     <div
       onClick={() => openModal()}
-      className="relative cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-card p-4 transition-shadow hover:shadow-md"
+      className="relative cursor-pointer overflow-hidden rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-2">
         <h3 className="truncate text-lg font-semibold flex items-center gap-2">
@@ -53,7 +53,7 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
         <button
           type="button"
           onClick={handleCopyId}
-          className="shrink-0 rounded p-1 hover:bg-neutral-100"
+          className="shrink-0 rounded p-1 hover:bg-muted"
           title="Copy seed ID"
         >
           <Copy className="size-4 text-muted-foreground" />

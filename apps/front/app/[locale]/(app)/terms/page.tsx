@@ -25,22 +25,22 @@ export const generateMetadata = async ({
 
 export default function TermsOfService() {
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
+    <div className="min-h-screen bg-background">
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-        <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">
+        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
           Terms of Service
         </h1>
-        <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-12">
+        <p className="text-lg text-muted-foreground mb-12">
           Last updated: February 21, 2026
         </p>
 
         <div className="prose prose-zinc dark:prose-invert max-w-none">
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               1. Acceptance of Terms
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               By accessing and using
               {" "}
               {APP_NAME}
@@ -53,10 +53,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               2. Description of Service
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               {APP_NAME}
               {" "}
               is a web-based guessing game where players are shown
@@ -67,10 +67,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               3. User Accounts
             </h2>
-            <div className="text-zinc-700 dark:text-zinc-300 space-y-4">
+            <div className="text-muted-foreground space-y-4">
               <p>To use the Service, you must:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
@@ -93,10 +93,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               4. User Conduct
             </h2>
-            <div className="text-zinc-700 dark:text-zinc-300 space-y-4">
+            <div className="text-muted-foreground space-y-4">
               <p>You agree not to use the Service to:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
@@ -120,17 +120,17 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               5. Game Content and Intellectual Property
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               {APP_NAME}
               {" "}
               displays video game screenshots and assets for the purpose of
               identification as part of a quiz-style game. By using the Service,
               you acknowledge that:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li>
                 All game titles, screenshots, and related assets are the
                 property of their respective owners
@@ -153,10 +153,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               6. Scores and Leaderboards
             </h2>
-            <div className="text-zinc-700 dark:text-zinc-300 space-y-4">
+            <div className="text-muted-foreground space-y-4">
               <p>
                 <strong>Fair Play:</strong>
                 {" "}
@@ -180,10 +180,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               7. Intellectual Property
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               The Service and its original content, features, and functionality
               are owned by
               {" "}
@@ -196,10 +196,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               8. Termination
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We reserve the right to suspend or terminate your account and
               access to the Service at our sole discretion, without notice, for
               conduct that we believe violates these Terms of Service or is
@@ -209,10 +209,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               9. Limitation of Liability
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               To the maximum extent permitted by law,
               {" "}
               {APP_NAME}
@@ -227,10 +227,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               10. Disclaimer of Warranties
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               The Service is provided "as is" and "as available" without
               warranties of any kind, either express or implied. We do not
               guarantee that the Service will be uninterrupted, secure, or
@@ -239,10 +239,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               11. Changes to Terms
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               We reserve the right to modify these Terms of Service at any time.
               We will notify users of any material changes via email or through
               the Service. Your continued use of the Service after such
@@ -251,10 +251,10 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               12. Governing Law
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               These Terms shall be governed by and construed in accordance with
               the laws of the jurisdiction in which
               {" "}
@@ -266,14 +266,14 @@ export default function TermsOfService() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
               13. Contact Information
             </h2>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               If you have any questions about these Terms of Service, please
               contact us at:
             </p>
-            <p className="text-zinc-700 dark:text-zinc-300">
+            <p className="text-muted-foreground">
               Email:
               {" "}
               {CONTACT_EMAIL}

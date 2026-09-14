@@ -129,7 +129,7 @@ export const SeedDetailModal = () => {
       <div className="space-y-4 pt-4">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <div className="text-xl font-bold  flex items-center gap-4">
+            <div className="text-xl font-bold flex items-center gap-4">
               <Input
                 value={localName}
                 onChange={(e) => {
@@ -137,7 +137,7 @@ export const SeedDetailModal = () => {
                   debouncedChangeName(e.target.value)
                 }}
               />
-              <button disabled={isLoadingUpdate} onClick={() => toggleFeatured({ id: seed.id })} className="disabled:bg-neutral-300">
+              <button disabled={isLoadingUpdate} onClick={() => toggleFeatured({ id: seed.id })} className="disabled:bg-muted">
                 {seed.featuredAt ? <Star className="size-4 fill-primary text-primary" /> : <StarOff className="size-4 text-primary" />}
               </button>
             </div>

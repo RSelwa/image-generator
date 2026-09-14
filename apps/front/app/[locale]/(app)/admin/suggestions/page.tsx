@@ -52,7 +52,7 @@ const SuggestionRow = ({ suggestion, checkedIds, setCheckedIds }: {
           )
         }
       </TableCell>
-      <TableCell className="cursor-pointer underline text-neutral-400 hover:text-white transition-colors">{suggestion.createdBy}</TableCell>
+      <TableCell className="cursor-pointer underline text-muted-foreground hover:text-foreground transition-colors">{suggestion.createdBy}</TableCell>
       <TableCell>{getDateFromString(suggestion.createdAt?.toDate())}</TableCell>
     </TableRow>
   )

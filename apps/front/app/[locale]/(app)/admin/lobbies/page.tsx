@@ -33,7 +33,7 @@ const Page = () => {
       <AdminHeader title="Lobbies" numberOfElements={lobbies.length}>
         <button
           onClick={() => refetch()}
-          className="text-sm underline text-neutral-400 hover:text-white transition-colors"
+          className="text-sm underline text-muted-foreground hover:text-foreground transition-colors"
         >
           Refresh
         </button>
@@ -42,7 +42,7 @@ const Page = () => {
       {isLoading && <p>Loading...</p>}
 
       {!isLoading && lobbies.length === 0 && (
-        <p className="text-neutral-400 text-center mt-12">No ongoing lobbies</p>
+        <p className="text-muted-foreground text-center mt-12">No ongoing lobbies</p>
       )}
 
       {lobbies.length > 0 && (
@@ -65,7 +65,7 @@ const Page = () => {
             {lobbies.map((lobby) => (
               <TableRow key={lobby.id}>
                 <TableCell className="font-mono font-bold">{lobby.code}</TableCell>
-                <TableCell className="text-neutral-400 text-xs font-mono">{lobby.hostId}</TableCell>
+                <TableCell className="text-muted-foreground text-xs font-mono">{lobby.hostId}</TableCell>
                 <TableCell>
                   <Badge variant={getBadgeVariantLobbyStatus(lobby.status)}>
                     {lobby.status}
@@ -81,13 +81,13 @@ const Page = () => {
                 <TableCell>{lobby.config.playersLives || "Unlimited"}</TableCell>
                 <TableCell>
                   {lobby.isDemo && <Badge variant={BADGE_VARIANTS.PURPLE}>Demo</Badge>}
-                  {!lobby.isDemo && <span className="text-neutral-500">-</span>}
+                  {!lobby.isDemo && <span className="text-muted-foreground">-</span>}
                 </TableCell>
-                <TableCell className="text-neutral-400">{formatDate(lobby.createdAt)}</TableCell>
+                <TableCell className="text-muted-foreground">{formatDate(lobby.createdAt)}</TableCell>
                 <TableCell>
                   <Link
                     href={`${PAGES.ADMIN_LOBBIES}/${lobby.id}`}
-                    className="text-sm underline hover:text-white transition-colors"
+                    className="text-sm underline hover:text-foreground transition-colors"
                   >
                     View
                   </Link>

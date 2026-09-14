@@ -65,7 +65,7 @@ const NextRoundButton = (props: ComponentProps<"button">) => {
 
 const Rounds = ({ currentRound, numberOfRounds }: { currentRound: number, numberOfRounds: number }) => (
   <>
-    <article className="hidden lg:flex items-center gap-3 text-foreground font-bold font-interference">
+    <article className="hidden lg:flex items-center gap-3 text-foreground font-bold">
       {Array.from({ length: numberOfRounds }, (_, i) => (
         <Fragment key={i}>
           <div
@@ -80,7 +80,7 @@ const Rounds = ({ currentRound, numberOfRounds }: { currentRound: number, number
 
       ))}
     </article>
-    <article className="flex lg:hidden items-center gap-3 text-primary font-bold font-interference">
+    <article className="flex lg:hidden items-center gap-3 text-primary font-bold">
       <span> {currentRound} </span>/ <span>{numberOfRounds}</span>
     </article>
   </>
@@ -186,7 +186,7 @@ const InfosRoundNormal = () => {
         <span>
           0
         </span>
-        <Progress value={percentagePoints} indicatorClassName="bg-white" className="bg-neutral-500/50 w-52" />
+        <Progress value={percentagePoints} indicatorClassName="bg-white" className="bg-muted w-52" />
         <span>
           {currentRoundData.pointsDistance}
         </span>

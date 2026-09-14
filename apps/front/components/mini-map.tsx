@@ -257,7 +257,7 @@ export const MiniMap = ({
     <div
       data-testid="mini-map-container"
       ref={wrapperClickRef}
-      className={`${inline ? "relative" : "fixed bottom-6 right-6 z-50"} rounded-lg overflow-hidden border-2 border-white/50 shadow-2xl transition-all bg-neutral-950/90 duration-300 ease-out ${disabled || hasSubmitted ? "cursor-default" : "cursor-crosshair"} ${className ?? ""}`}
+      className={`${inline ? "relative" : "fixed bottom-6 right-6 z-50"} rounded-lg overflow-hidden border-2 border-white/50 shadow-2xl transition-all bg-background/90 duration-300 ease-out ${disabled || hasSubmitted ? "cursor-default" : "cursor-crosshair"} ${className ?? ""}`}
       style={{
         width: isMobileExpanded ? "80vw" : currentSize.width,
         height: currentSize.height,
