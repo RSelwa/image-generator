@@ -14,7 +14,7 @@ export default antfu({
   gitignore: true,
   isInEditor: false,
 
-  ignores: ["**/*.stories.*", "**/cli/**", "**/playwright-report/**", "**/test-results/**"],
+  ignores: ["**/*.stories.*", "**/cli/**", "**/playwright-report/**", "**/test-results/**", "**/next-env.d.ts"],
 
   stylistic: {
     quotes: "double",
