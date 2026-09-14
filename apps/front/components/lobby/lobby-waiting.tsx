@@ -319,7 +319,7 @@ const LobbyWaiting = () => {
                     disabled={isLoading || disabled}
                     {...register("seed")}
                     onPaste={(e) => {
-                      if (e.clipboardData.getData("text")) setTimeout(() => handleSubmit(onSubmitSeed)(), 0)
+                      if (e.clipboardData.getData("text")) setTimeout(handleSubmit(onSubmitSeed), 0)
                     }}
                   />
                   <InputGroupAddon>

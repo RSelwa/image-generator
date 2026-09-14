@@ -9,12 +9,13 @@ const rootPath = fileURLToPath(directoryUrl)
 const config = ({ mode }) => ({
   test: {
     exclude: [...configDefaults.exclude],
+    passWithNoTests: true,
     env: {
       ...loadEnv(mode, rootPath, ""),
       ...loadEnv(mode, process.cwd(), ""),
     },
   },
-  resolve: { alias: { "~": resolve(__dirname, "./src") } },
+  resolve: { alias: { "~": resolve(import.meta.dirname, "./src") } },
 })
 
 export default defineConfig(config)

@@ -1,9 +1,10 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { PROJECT_ID } from "@repo/common"
-import admin from "firebase-admin"
+import { applicationDefault, cert, getApp, getApps, initializeApp } from "firebase-admin/app"
 import { getAuth } from "firebase-admin/auth"
 import { getDatabase } from "firebase-admin/database"
+import { getFirestore } from "firebase-admin/firestore"
 import { getFunctions } from "firebase-admin/functions"
 import { getStorage } from "firebase-admin/storage"
 
@@ -17,41 +18,43 @@ const getCredential = () => {
   if (credentialsPath) {
     const base = process.env.INIT_CWD || process.cwd()
 
-    return admin.credential.cert(
+    return cert(
       JSON.parse(readFileSync(resolve(base, credentialsPath), "utf-8")),
     )
   }
 
   if (serviceAccountKey) {
-    return admin.credential.cert(JSON.parse(serviceAccountKey))
+    return cert(JSON.parse(serviceAccountKey))
   }
 
-  return admin.credential.applicationDefault()
+  return applicationDefault()
 }
 
-if (!admin.apps.length) {
-  if (process.env.FIRESTORE_EMULATOR_HOST) {
-    admin.initializeApp({
+const isEmulated = Boolean(process.env.FIRESTORE_EMULATOR_HOST)
+
+if (!getApps().length) {
+  if (isEmulated) {
+    initializeApp({
       projectId: PROJECT_ID,
       databaseURL: `http://${process.env.FIREBASE_DATABASE_EMULATOR_HOST || "127.0.0.1:9000"}?ns=${PROJECT_ID}-default-rtdb`,
     })
   } else {
     const credential = getCredential()
-    admin.initializeApp({
+    initializeApp({
       credential,
       storageBucket: `${PROJECT_ID}.firebasestorage.app`,
       databaseURL: `https://${PROJECT_ID}-default-rtdb.firebasedatabase.app`,
     })
   }
 
-  admin.firestore().settings({ ignoreUndefinedProperties: true, preferRest: true })
+  getFirestore().settings({ ignoreUndefinedProperties: true, preferRest: !isEmulated })
 }
 
-const firebaseApp = admin.app()
+const firebaseApp = getApp()
 
 export const region = "europe-west3"
 export const auth = getAuth(firebaseApp)
-export const db = admin.firestore(firebaseApp)
+export const db = getFirestore(firebaseApp)
 export const storage = getStorage(firebaseApp)
 export const rtdb = getDatabase(firebaseApp)
 export const functions = getFunctions(firebaseApp)

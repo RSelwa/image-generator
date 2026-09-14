@@ -1,8 +1,12 @@
-shellEmulator: true
+minimumReleaseAgeExcludePrune: true
 
 trustPolicy: no-downgrade
 trustPolicyExclude:
+  - "@pnpm/types"
   - semver
+
+shellEmulator: true
+
 packages:
   - libs/*
   - functions/*
@@ -12,6 +16,7 @@ packages:
 
 overrides:
   reselect: 5.1.0
+
 onlyBuiltDependencies:
   - "@firebase/util"
   - esbuild

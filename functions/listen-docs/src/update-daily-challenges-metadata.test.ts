@@ -1,8 +1,8 @@
 import { DIFFICULTIES, METADATA_DOCS, TABLES } from "@repo/common"
 import { type DailyChallengeDoc, type DailyChallengeHistoryDoc } from "@repo/schemas"
+import { makeDocumentSnapshot } from "@repo/testing/document-snapshot"
 import { getFirestore } from "firebase-admin/firestore"
 import firebaseFunctionsTest from "firebase-functions-test"
-import { makeDocumentSnapshot } from "firebase-functions-test/lib/providers/firestore"
 import { beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { listen_daily_challenges_written } from "~/index"
 

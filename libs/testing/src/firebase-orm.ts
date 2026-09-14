@@ -230,7 +230,7 @@ export class FirestoreORM<T extends string, M extends DocumentData> {
     const cred = await auth.createUser({
       email,
       password: pass,
-      photoURL,
+      photoURL: photoURL || undefined,
       emailVerified,
     })
 

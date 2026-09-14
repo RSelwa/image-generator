@@ -10,5 +10,6 @@ export default defineConfig({
   target: "es2022",
   sourcemap: true,
   dts: true,
+  fixedExtension: false,
   platform: "node",
 })

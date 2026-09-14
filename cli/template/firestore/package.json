@@ -38,7 +38,7 @@
     "@vitest/coverage-v8": "^3.2.3",
     "firebase-functions-test": "^3.4.1",
     "tsdown": "^0.15.6",
-    "typescript": "^5.7.3",
+    "typescript": "^6.0.3",
     "vite": "^6.3.5",
     "vitest": "^3.2.3"
   }

@@ -3,7 +3,9 @@ import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { chromium, type Page } from "@playwright/test"
 import { SOCIALS_STATUS, STORAGE_PATHS, TABLES } from "@repo/common"
-import admin from "firebase-admin"
+import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app"
+import { getFirestore } from "firebase-admin/firestore"
+import { getStorage } from "firebase-admin/storage"
 
 declare const window: {
   setCamera: (yaw: number, pitch: number) => void
@@ -63,31 +65,31 @@ const logError = (message: string) => console.error(`[Error] ${message}`)
 
 // Initialize Firebase Admin
 const initFirebase = () => {
-  if (admin.apps.length) return
+  if (getApps().length) return
 
   const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS
   const serviceAccountKey = process.env.SERVICE_ACCOUNT_KEY
 
   if (credentialsPath) {
-    admin.initializeApp({
-      credential: admin.credential.cert(
+    initializeApp({
+      credential: cert(
         JSON.parse(readFileSync(resolve(credentialsPath), "utf-8")),
       ),
       storageBucket: `${PROJECT_ID}.firebasestorage.app`,
     })
   } else if (serviceAccountKey) {
-    admin.initializeApp({
-      credential: admin.credential.cert(JSON.parse(serviceAccountKey)),
+    initializeApp({
+      credential: cert(JSON.parse(serviceAccountKey)),
       storageBucket: `${PROJECT_ID}.firebasestorage.app`,
     })
   } else {
-    admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
+    initializeApp({
+      credential: applicationDefault(),
       storageBucket: `${PROJECT_ID}.firebasestorage.app`,
     })
   }
 
-  admin.firestore().settings({ ignoreUndefinedProperties: true, preferRest: true })
+  getFirestore().settings({ ignoreUndefinedProperties: true, preferRest: true })
 }
 
 /**
@@ -295,8 +297,8 @@ const capture = async (imageUrl: string, outputPath?: string, duration?: number)
 const uploadAndUpdateDoc = async (videoPath: string, socialDocId: string) => {
   initFirebase()
 
-  const storage = admin.storage()
-  const db = admin.firestore()
+  const storage = getStorage()
+  const db = getFirestore()
 
   const storagePath = `${STORAGE_PATHS.SOCIALS}/${socialDocId}.mp4`
 
@@ -344,7 +346,7 @@ const main = async () => {
 
     if (socialDocId) {
       initFirebase()
-      const socialDoc = await admin.firestore().collection(TABLES.SOCIALS).doc(socialDocId).get()
+      const socialDoc = await getFirestore().collection(TABLES.SOCIALS).doc(socialDocId).get()
       const socialData = socialDoc.data()
 
       if (socialData?.duration) {
@@ -370,7 +372,7 @@ const main = async () => {
     if (socialDocId) {
       try {
         initFirebase()
-        const db = admin.firestore()
+        const db = getFirestore()
         await db.collection(TABLES.SOCIALS).doc(socialDocId).update({
           status: SOCIALS_STATUS.ERROR,
           errorInfo: (err as Error).message,

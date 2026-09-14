@@ -16,7 +16,7 @@ function config({ mode }) {
         ...loadEnv(mode, process.cwd(), ""),
       },
     },
-    resolve: { alias: { "~": resolve(__dirname, "./src") } },
+    resolve: { alias: { "~": resolve(import.meta.dirname, "./src") } },
   }
 }
 

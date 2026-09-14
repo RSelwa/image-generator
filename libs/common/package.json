@@ -25,15 +25,16 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "firebase-admin": "^13.5.0"
+    "firebase-admin": "^14.4.0"
   },
   "devDependencies": {
-    "@codecompose/typescript-config": "^2.2.0",
+    "@codecompose/typescript-config": "^5.1.0",
+    "@vitest/coverage-v8": "^5.0.0",
     "del-cli": "^7.0.0",
     "madge": "^8.0.0",
-    "tsdown": "^0.15.6",
-    "typescript": "^5.7.3",
-    "vite": "^7.1.7",
-    "vitest": "^3.2.4"
+    "tsdown": "^0.23.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0"
   }
 }

@@ -1,9 +1,9 @@
 import { DIFFICULTIES, DOCUMENTS_STATUS, METADATA_DOCS, mockedImageURL, mockedSphericalImageURL, ROUND_TYPE, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { buildReadyImageItem, type GameDoc, type ReadyImagesDoc, type SphericalDoc } from "@repo/schemas"
+import { makeDocumentSnapshot } from "@repo/testing/document-snapshot"
 import { flatFactory, gameFactory, sphericalFactory } from "@repo/testing/factory"
 import firebaseFunctionsTest from "firebase-functions-test"
-import { makeDocumentSnapshot } from "firebase-functions-test/lib/providers/firestore"
 import { beforeAll, describe, expect, it } from "vitest"
 import { listen_doc_flat_written, listen_doc_games_written, listen_doc_spherical_written } from "~/index"
 

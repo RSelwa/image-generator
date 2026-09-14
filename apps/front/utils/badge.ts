@@ -9,8 +9,7 @@ export const getBadgeVariantSocials = (status: ConstantValues<typeof SOCIALS_STA
   if (status === SOCIALS_STATUS.IN_PROGRESS_AUDIO_EXTRACTION ||
     status === SOCIALS_STATUS.IN_PROGRESS_CAPTURE ||
     status === SOCIALS_STATUS.IN_PROGRESS_CUSTOMIZATION ||
-    status === SOCIALS_STATUS.WAITING_FOR_POST
-  ) return BADGE_VARIANTS.ORANGE
+    status === SOCIALS_STATUS.WAITING_FOR_POST) return BADGE_VARIANTS.ORANGE
 
   if (status === SOCIALS_STATUS.READY_TO_POST) return BADGE_VARIANTS.BLUE
 
