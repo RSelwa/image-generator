@@ -1,7 +1,6 @@
 import { type SphericalDocWithId } from "@repo/schemas"
 import { Pencil, SquareArrowUpRight } from "lucide-react"
 import Image from "next/image"
-import { Link } from "@/i18n/routing"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { Badge } from "@/components/ui/badge"
@@ -9,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { MODAL_KEYS, NEW_SEARCH_PARAM, RESOURCE_BADGE_VARIANT, STATUS_TO_BADGE_VARIANT } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
+import { Link } from "@/i18n/routing"
 import { useGetGameByIdQuery, useGetMapsByGameIdQuery } from "@/redux/api/games"
 
 export const SphericalCard = ({

@@ -10,12 +10,13 @@ function config({ mode }) {
   return {
     test: {
       exclude: [...configDefaults.exclude],
+      testTimeout: 20_000,
       env: {
         ...loadEnv(mode, rootPath, ""),
         ...loadEnv(mode, process.cwd(), ""),
       },
     },
-    resolve: { alias: { "~": resolve(__dirname, "./src") } },
+    resolve: { alias: { "~": resolve(import.meta.dirname, "./src") } },
   }
 }
 

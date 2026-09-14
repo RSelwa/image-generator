@@ -7,7 +7,7 @@ export const publicPlayerSchema = z.object({
   ...WITH_ID.shape,
   pseudo: z.string().nullish(),
   avatar: z.enum(AVATARS_KEYS).nullish(),
-  donorTier: z.object(donorTierSchema).shape.nullish().default(null),
+  donorTier: donorTierSchema.default(null),
 })
 
 export const streakLeaderboardPlayerSchema = publicPlayerSchema.extend({

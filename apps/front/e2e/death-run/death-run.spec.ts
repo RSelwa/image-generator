@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker"
 import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
 import { type Page } from "@playwright/test"
 import { expect, test } from "@playwright/test"
-import { type ConstantValues, type AVATARS_KEYS } from "@repo/common"
+import { type AVATARS_KEYS, type ConstantValues } from "@repo/common"
 import { DEATH_RUN_LIVES, DEATH_RUN_STATUS, METADATA_DOCS, mockedGameImageURL, mockedSphericalImageURL, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { type MarathonSeedRound } from "@repo/schemas"
@@ -70,6 +70,7 @@ const createDeathRunDoc = async ({
         isHost: true,
         isReady: true,
         joinedAt: now,
+        donorTier: null,
       },
     ],
     playersIds: [hostId],
@@ -91,6 +92,7 @@ const createDeathRunRunDoc = async (deathRunId: string, uid: string) => {
     currentRoundIndex: 0,
     answers: [],
     livesRemaining: DEATH_RUN_LIVES,
+    revivesUsed: 0,
     startedAt: now,
     finishedAt: null,
   })
@@ -141,6 +143,9 @@ test.describe("Death run playing", () => {
 
     // Game over overlay should appear
     await expect(page.getByTestId(SELECTORS.DEATH_RUN_LIVES)).toBeVisible({ timeout: 10_000 })
+
+    // -- Decline the revive offer --
+    await page.getByTestId(SELECTORS.DEATH_RUN_GIVE_UP).click()
 
     // -- Wait for finished screen --
     await expect(page.getByTestId(SELECTORS.DEATH_RUN_FINISHED)).toBeVisible({ timeout: 15_000 })

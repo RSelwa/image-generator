@@ -3,8 +3,8 @@ import { Crown } from "lucide-react"
 import { Fragment } from "react/jsx-runtime"
 import { toast } from "sonner"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { UserAvatar } from "@/components/ui/user-avatar"
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import { usePathname } from "@/i18n/routing"
 import { useExcludePlayerMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectUser } from "@/redux/session/session.selectors"
@@ -17,7 +17,7 @@ const AvatarPlayer = ({ p, isOwner, isOnlyPlayer }: { p: Player, isOwner?: boole
     name={p.name}
     donorTier={p.donorTier}
     fallbackClassName="font-bold"
-    imageClassName={`data-[ready=true]:bg-ready data-[ready=false]:bg-destructive`}
+    imageClassName="data-[ready=true]:bg-ready data-[ready=false]:bg-destructive"
     imageData={{ "data-ready": p.isReady || isOnlyPlayer }}
     action={isOwner && <Crown className="absolute fill-primary -top-4 left-1/2 -translate-x-1/2 stroke-0 size-4 z-50" />}
   />

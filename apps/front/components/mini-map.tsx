@@ -68,8 +68,8 @@ const MarkersLayer = ({
   showCorrectMarker?: boolean
   showLine?: boolean
 }) => {
-  const { transformState } = useTransformContext()
-  const scale = transformState.scale
+  const { state } = useTransformContext()
+  const scale = state.scale
 
   const renderMarker = (position: Position, color: MarkerColor) => {
     return (
@@ -213,7 +213,7 @@ export const MiniMap = ({
       const clickX = touch.clientX - wrapperRect.left
       const clickY = touch.clientY - wrapperRect.top
 
-      const { scale, positionX, positionY } = transformRef.current.instance.transformState
+      const { scale, positionX, positionY } = transformRef.current.instance.state
 
       const mapX = (clickX - positionX) / scale
       const mapY = (clickY - positionY) / scale
@@ -240,7 +240,7 @@ export const MiniMap = ({
       const clickX = e.clientX - wrapperRect.left
       const clickY = e.clientY - wrapperRect.top
 
-      const { scale, positionX, positionY } = transformRef.current.instance.transformState
+      const { scale, positionX, positionY } = transformRef.current.instance.state
 
       const mapX = (clickX - positionX) / scale
       const mapY = (clickY - positionY) / scale

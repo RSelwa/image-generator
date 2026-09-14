@@ -13,15 +13,15 @@
     "clean": "del-cli dist tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@playwright/test": "^1.58.1",
+    "@playwright/test": "^1.63.0",
     "@repo/common": "workspace:*",
-    "firebase-admin": "^13.4.0"
+    "firebase-admin": "^14.4.0"
   },
   "devDependencies": {
-    "@codecompose/typescript-config": "^2.2.0",
-    "@types/node": "^22.10.10",
-    "del-cli": "^6.0.0",
-    "tsdown": "^0.15.6",
-    "typescript": "^5.9.0"
+    "@codecompose/typescript-config": "^5.1.0",
+    "@types/node": "^26.5.1",
+    "del-cli": "^7.0.0",
+    "tsdown": "^0.23.0",
+    "typescript": "^6.0.3"
   }
 }

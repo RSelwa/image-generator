@@ -1,8 +1,8 @@
 import { DIFFICULTIES, ROUND_TYPE, SPECIAL_ROUND_OPTIONS_COUNT } from "@repo/common"
 import z from "zod"
 import { specialRoundOptionSchema } from "~/firestore/seed.option"
-import { mapPositionSchema } from "~/firestore/spherical"
 import { type Round } from "~/firestore/seed.round"
+import { mapPositionSchema } from "~/firestore/spherical"
 
 // ─── Base fields shared by all normal (non-special) rounds ───────────────────
 

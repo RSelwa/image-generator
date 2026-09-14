@@ -13,7 +13,7 @@ export const usePanoUrl = (
     if (!id || !imageUrl || getCachedImage(id)) return
 
     preloadImage(id, imageUrl)
-      .then(() => forceUpdate(n => n + 1))
+      .then(() => forceUpdate((n) => n + 1))
       .catch(console.error)
   }, [id, imageUrl])
 

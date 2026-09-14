@@ -31,6 +31,7 @@ export const usePresence = (lobbyId: string | null, userId: string | undefined, 
     disconnectRefNode.remove()
       .then(() => {
         console.info("[RTDB] onDisconnect registered at", path)
+
         return set(presenceRefNode, true)
       })
       .then(() => console.info("[RTDB] Presence set successfully at", path))

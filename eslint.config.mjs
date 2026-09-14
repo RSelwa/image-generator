@@ -14,7 +14,7 @@ export default antfu({
   gitignore: true,
   isInEditor: false,
 
-  ignores: ["**/*.stories.*", "**/cli/**"],
+  ignores: ["**/*.stories.*", "**/cli/**", "**/playwright-report/**", "**/test-results/**", "**/next-env.d.ts"],
 
   stylistic: {
     quotes: "double",
@@ -40,7 +40,7 @@ export default antfu({
   rules: {
     // Next/react overrides
     "next/no-img-element": "off",
-    "react-hooks/exhaustive-deps": "off",
+    "react/exhaustive-deps": "off",
 
     // Antfu overrides
     "antfu/top-level-function": "off",
@@ -61,9 +61,14 @@ export default antfu({
     // "ts/consistent-type-definitions": ["error", "type"],
     "ts/consistent-type-definitions": "off",
     "regexp/prefer-w": "off",
-    "react-hooks-extra/no-direct-set-state-in-use-effect": "off",
+    "e18e/prefer-array-fill": "off",
+    "react/set-state-in-effect": "off",
     "react/no-nested-component-definitions": "off",
+    "react/static-components": "warn",
     "no-unmodified-loop-condition": "off",
-    "react-hooks/rules-of-hooks": "warn",
+    "react/rules-of-hooks": "warn",
   },
+}, {
+  files: ["**/*.md"],
+  rules: { "markdown/no-multiple-h1": "off" },
 })

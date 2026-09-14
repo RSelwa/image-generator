@@ -33,7 +33,7 @@ const LobbyStarting = () => {
   }, [])
 
   useEffect(() => {
-    const timeout = setTimeout(() => setIsStalled(true), STALL_TIMEOUT_MS)
+    const timeout = setTimeout(setIsStalled, STALL_TIMEOUT_MS, true)
 
     return () => clearTimeout(timeout)
   }, [])

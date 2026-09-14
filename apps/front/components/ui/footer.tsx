@@ -1,6 +1,6 @@
-import { Link } from "@/i18n/routing"
 import { APP_NAME } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
+import { Link } from "@/i18n/routing"
 
 const Footer = () => (
   <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 mt-8 border-t border-zinc-200 dark:border-zinc-800">

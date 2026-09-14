@@ -1,9 +1,9 @@
 import { type Metadata } from "next"
-import { Link } from "@/i18n/routing"
 import HomeFooter from "@/components/home/home-footer"
 import { Button } from "@/components/ui/button"
 import { LogoHeader } from "@/components/ui/navbar"
 import { PAGES } from "@/constants/pages"
+import { Link } from "@/i18n/routing"
 
 export const metadata: Metadata = {
   title: "404 - Page Not Found",

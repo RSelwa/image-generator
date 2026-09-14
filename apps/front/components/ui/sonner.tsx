@@ -35,7 +35,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: "cn-toast data-[type=error]:text-destructive! data-[type=error]:border-destructive! data-[type=warning]:text-foreground! data-[type=warning]:border-blue-accent! data-[type=warning]:bg-blue-accent! data-[type=info]:text-foreground! data-[type=info]:border-blue-accent! data-[type=info]:bg-blue-accent!",
-          title:"font-interference",
+          title: "font-interference",
         },
       }}
       {...props}

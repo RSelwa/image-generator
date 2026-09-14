@@ -36,6 +36,7 @@ export const SELECTORS = {
   DEATH_RUN_SCORE: "death-run-score",
   DEATH_RUN_LIVES: "death-run-lives",
   DEATH_RUN_ROUND_INDEX: "death-run-round-index",
+  DEATH_RUN_GIVE_UP: "death-run-give-up",
   DEATH_RUN_FINISHED: "death-run-finished",
   DEATH_RUN_FINISHED_SCORE: (uid: string) => `death-run-finished-score-${uid}`,
   DEATH_RUN_FINISHED_ROUNDS: (uid: string) => `death-run-finished-rounds-${uid}`,

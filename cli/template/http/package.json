@@ -40,7 +40,7 @@
     "firebase-functions-test": "^3.4.1",
     "madge": "^8.0.0",
     "tsdown": "^0.15.6",
-    "typescript": "^5.9.0",
+    "typescript": "^6.0.3",
     "vite": "^7.1.7",
     "vitest": "^3.2.4"
   }

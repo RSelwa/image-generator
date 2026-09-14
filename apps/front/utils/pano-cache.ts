@@ -21,6 +21,7 @@ const downscaleBlob = (blob: Blob, maxWidth: number): Promise<Blob> =>
 
       if (img.width <= maxWidth) {
         resolve(blob)
+
         return
       }
 
@@ -31,12 +32,13 @@ const downscaleBlob = (blob: Blob, maxWidth: number): Promise<Blob> =>
       const ctx = canvas.getContext("2d")
       if (!ctx) {
         resolve(blob)
+
         return
       }
 
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
       canvas.toBlob(
-        result => (result ? resolve(result) : reject(new Error("toBlob failed"))),
+        (result) => (result ? resolve(result) : reject(new Error("toBlob failed"))),
         "image/jpeg",
         0.85,
       )
@@ -58,20 +60,22 @@ export const preloadImage = (id: string, imageUrl: string): Promise<string> => {
   if (pending) return pending
 
   const promise = fetch(buildProxyUrl(imageUrl))
-    .then(res => res.blob())
-    .then(blob => isMobileDevice() ? downscaleBlob(blob, MOBILE_MAX_TEXTURE_WIDTH) : blob)
-    .then(blob => {
+    .then((res) => res.blob())
+    .then((blob) => isMobileDevice() ? downscaleBlob(blob, MOBILE_MAX_TEXTURE_WIDTH) : blob)
+    .then((blob) => {
       const blobUrl = URL.createObjectURL(blob)
       panoCache.set(id, blobUrl)
       pendingRequests.delete(id)
+
       return blobUrl
     })
-    .catch(err => {
+    .catch((err) => {
       pendingRequests.delete(id)
       throw err
     })
 
   pendingRequests.set(id, promise)
+
   return promise
 }
 
@@ -79,7 +83,7 @@ export const getCachedImage = (id: string): string | null =>
   panoCache.get(id) || null
 
 export const clearPanoCache = () => {
-  panoCache.forEach(blobUrl => URL.revokeObjectURL(blobUrl))
+  panoCache.forEach((blobUrl) => URL.revokeObjectURL(blobUrl))
   panoCache.clear()
   pendingRequests.clear()
 }

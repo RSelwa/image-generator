@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { lobbyFactory } from "@repo/testing/factory"
+import { STORAGE_KEYS } from "@/constants/mapping"
 import {
   createFirestoreLobbyDoc,
   createLobbyViaUI,
@@ -7,7 +8,6 @@ import {
   loginViaUI,
   setupUser,
 } from "../helpers/lobby"
-import { STORAGE_KEYS } from "@/constants/mapping"
 
 const DRIVER_POPOVER = ".driver-popover"
 const DRIVER_NEXT_BTN = ".driver-popover-next-btn"

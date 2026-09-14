@@ -62,6 +62,7 @@ export const POST = async (request: Request) => {
     return Response.json({ tier: newTier })
   } catch (error) {
     console.error("Error in redeem-coupon:", error)
+
     return new Response("Internal Server Error", { status: 500 })
   }
 }

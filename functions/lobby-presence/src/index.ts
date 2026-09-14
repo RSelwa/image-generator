@@ -1,8 +1,8 @@
 import { LOBBY_STATUS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
+import { FieldValue } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 import { onValueDeleted } from "firebase-functions/v2/database"
-import { FieldValue } from "firebase-admin/firestore"
 
 export const on_lobby_player_disconnected = onValueDeleted(
   {
@@ -25,6 +25,7 @@ export const on_lobby_player_disconnected = onValueDeleted(
 
     if (!lobbySnap.exists) {
       logger.warn(`Lobby ${lobbyId} not found`)
+
       return
     }
 
@@ -32,6 +33,7 @@ export const on_lobby_player_disconnected = onValueDeleted(
 
     if (lobbyData?.status !== LOBBY_STATUS.WAITING) {
       logger.log(`Lobby ${lobbyId} is not waiting (status: ${lobbyData?.status}), skipping removal`)
+
       return
     }
 

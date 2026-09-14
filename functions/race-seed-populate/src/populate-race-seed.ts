@@ -74,7 +74,7 @@ export const populateRaceSeed = async (seedId: string, playerCurrentIndex: numbe
     const deduplicatedRounds = newRounds.filter((r) =>
       !freshGameIds.has(r.gameId) &&
       ((r.sphericalId && !freshSphericalIds.has(r.sphericalId)) ||
-      (r.flatId && !freshFlatIds.has(r.flatId)))
+        (r.flatId && !freshFlatIds.has(r.flatId)))
     )
 
     if (deduplicatedRounds.length === 0) return

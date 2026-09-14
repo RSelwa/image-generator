@@ -15,28 +15,28 @@ const modalKey = LIMITED_MODAL_KEYS.RACE_MODE
 const maxCount = LIMITED_MODAL_CONFIG[modalKey].maxCount
 
 export const RaceModePub = () => {
-    const { isOpen, close } = useLimitedModal(modalKey, maxCount)
-    const t = useTranslations("raceMode")
+  const { isOpen, close } = useLimitedModal(modalKey, maxCount)
+  const t = useTranslations("raceMode")
 
-    return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && close()}>
-            <DialogContent className="p-0 lg:max-w-1/2">
-                <Image src={IMAGES_URLS.PUBS.RACE_MODE} alt="Daily Challenge" width={2329} height={1262} className="object-cover max-h-96 w-full" />
-                <DialogTitle className="px-6">
-                    {t("title")}
-                </DialogTitle>
-                <DialogDescription className="px-6">
-                    {t("description")}
-                </DialogDescription>
-                <DialogFooter className="m-0 justify-center!">
-                    <Link href={PAGES.RACE} className="w-fit mx-auto">
-                        <Button variant="marathon-black" data-umami-event="click-pub-race-mode">
-                            {t("playNow")}
-                            <ArrowUpRightFromSquareIcon />
-                        </Button>
-                    </Link>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    )
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && close()}>
+      <DialogContent className="p-0 lg:max-w-1/2">
+        <Image src={IMAGES_URLS.PUBS.RACE_MODE} alt="Daily Challenge" width={2329} height={1262} className="object-cover max-h-96 w-full" />
+        <DialogTitle className="px-6">
+          {t("title")}
+        </DialogTitle>
+        <DialogDescription className="px-6">
+          {t("description")}
+        </DialogDescription>
+        <DialogFooter className="m-0 justify-center!">
+          <Link href={PAGES.RACE} className="w-fit mx-auto">
+            <Button variant="marathon-black" data-umami-event="click-pub-race-mode">
+              {t("playNow")}
+              <ArrowUpRightFromSquareIcon />
+            </Button>
+          </Link>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
 }

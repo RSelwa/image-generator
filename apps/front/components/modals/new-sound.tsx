@@ -20,83 +20,83 @@ import { useCreateSoundMutation } from "@/redux/api/sounds"
 const KEY = MODAL_KEYS.NEW_SOUND
 
 const soundFormSchema = z.object({
-    ...soundDocSchema.pick({
-        youtubeLink: true,
-        canBeUsedInPosts: true,
-        status: true,
-    }).shape
+  ...soundDocSchema.pick({
+    youtubeLink: true,
+    canBeUsedInPosts: true,
+    status: true,
+  }).shape
 })
 
 type SocialFormSchema = z.input<typeof soundFormSchema>
 
 const NewSound = () => {
-    const { closeModal } = useModal(KEY)
+  const { closeModal } = useModal(KEY)
 
-    const [createSound] = useCreateSoundMutation()
+  const [createSound] = useCreateSoundMutation()
 
-    const {
-        handleSubmit,
-        watch,
-        reset,
-        register
-    } = useForm<SocialFormSchema>({
-        resolver: zodResolver(soundFormSchema),
-        defaultValues: {
-            canBeUsedInPosts: true,
-            status: SOUND_STATUS.WAITING_FOR_EXTRACTION,
-        },
-    })
+  const {
+    handleSubmit,
+    watch,
+    reset,
+    register
+  } = useForm<SocialFormSchema>({
+    resolver: zodResolver(soundFormSchema),
+    defaultValues: {
+      canBeUsedInPosts: true,
+      status: SOUND_STATUS.WAITING_FOR_EXTRACTION,
+    },
+  })
 
-    const onSubmit: SubmitHandler<SocialFormSchema> = async (formData) => {
-        try {
-            await createSound(formData).unwrap()
+  const onSubmit: SubmitHandler<SocialFormSchema> = async (formData) => {
+    try {
+      await createSound(formData).unwrap()
 
-            reset()
-            closeModal()
-        } catch (error) {
-            console.error("Error creating social:", error)
-        }
+      reset()
+      closeModal()
+    } catch (error) {
+      console.error("Error creating social:", error)
     }
+  }
 
-    return (
-        <ModalBase modalKey={KEY} className="lg:max-w-4xl">
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8 space-y-4">
-                <section className="flex flex-col items-center gap-8 justify-between">
-                    <Field>
-                        <Label className="text-lg">Youtube Link</Label>
-                        <Input {...register("youtubeLink")} placeholder="https://www.youtube.com/watch?v=..." />
-                        {watch("youtubeLink") && (
-                            <YoutubeEmbed youtubeLink={watch("youtubeLink") || ""} />
+  return (
+    <ModalBase modalKey={KEY} className="lg:max-w-4xl">
+      <form onSubmit={handleSubmit(onSubmit)} className="p-6 pt-8 space-y-4">
+        <section className="flex flex-col items-center gap-8 justify-between">
+          <Field>
+            <Label className="text-lg">Youtube Link</Label>
+            <Input {...register("youtubeLink")} placeholder="https://www.youtube.com/watch?v=..." />
+            {watch("youtubeLink") && (
+              <YoutubeEmbed youtubeLink={watch("youtubeLink") || ""} />
 
-                        )}
-                    </Field>
-                    <Field>
-                        <FieldLabel> Can be used for imports</FieldLabel>
-                        <Switch {...register("canBeUsedInPosts")} />
-                    </Field>
-                    <Field>
-                        <Select {...register("status")}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Status" />
-                            </SelectTrigger>
-                            <SelectContent className="h-64">
-                                {Object.values(SOUND_STATUS).map((sound) => (
-                                    <SelectItem key={sound} value={sound}>
-                                        {sound}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </Field>
-                </section>
-                <section className="flex justify-end items-center gap-2">
-                    <Button type="submit">
-                        Create
-                    </Button>
-                </section>
-            </form>
-        </ModalBase>
-    )
+            )}
+          </Field>
+          <Field>
+            <FieldLabel> Can be used for imports</FieldLabel>
+            <Switch {...register("canBeUsedInPosts")} />
+          </Field>
+          <Field>
+            <Select {...register("status")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="h-64">
+                {Object.values(SOUND_STATUS).map((sound) => (
+                  <SelectItem key={sound} value={sound}>
+                    {sound}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        </section>
+        <section className="flex justify-end items-center gap-2">
+          <Button type="submit">
+            Create
+          </Button>
+        </section>
+      </form>
+    </ModalBase>
+  )
 }
 
 export default NewSound

@@ -13,5 +13,12 @@ export const userFactory: FactoryDoc<UserDoc & { id: string }> = (item = {}) => 
   pseudo: faker.person.fullName(),
   avatar: faker.helpers.arrayElement(Object.values(AVATARS_KEYS)),
   isAnonymousUser: false,
+  streak: 0,
+  lastStreakDate: null,
+  maxStreak: 0,
+  bestRaceScore: 0,
+  bestDeathRunScore: 0,
+  donorTier: null,
+  newsletter: false,
   ...item
 })

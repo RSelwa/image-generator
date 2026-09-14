@@ -1,7 +1,7 @@
 import { DEFAULT_TIME_PER_ROUND } from "@repo/common"
-import { usePathname } from "@/i18n/routing"
 import * as React from "react"
 import { useCountdown } from "@/hooks/use-countdown"
+import { usePathname } from "@/i18n/routing"
 import { useSubscribeLobbyQuery } from "@/redux/api/lobby"
 import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectHasSelectedOption, selectLobbyConfig } from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -29,7 +29,7 @@ const Timer = () => {
 
   return (
     <span className="absolute z-10 bg-background font-fraktion-mono px-4 py-1 text-primary top-4 left-1/2 -translate-x-1/2 font-bold drop-shadow-2xl text-center text-6xl">
-      {timeRemaining<10&& 0}{timeRemaining}
+      {timeRemaining < 10 && 0}{timeRemaining}
     </span>
   )
 }
