@@ -70,9 +70,9 @@ This plan builds the structure, the following features come once everything is s
   - [x] Add rules + tests: anyone reads `achievements`, only admin writes them; a user reads only their own `unlockedAchievements`, nobody writes them from a client (admin SDK only)
   - [x] Create one basic achievement: modify your userName (`change_username`)
 
-- [ ] Achievements API
+- [x] Achievements API
   - [x] Implement strongly typed schemas for the event payload: a discriminated union on `key`, and depending on it some other object in the payload is required (ex: `change_username` requires `before` and `after` user data, typed like the firestore function `Change` before/after)
-  - [ ] Create an endpoint to receive all achievement events in the Next API (uid from bearer token, payload validated by the schemas above, idempotent transaction described in Security principles), add tests to cover it. We will populate this endpoint depending on future achievements
+  - [x] Create an endpoint to receive all achievement events in the Next API (uid from bearer token, payload validated by the schemas above, idempotent transaction described in Security principles), add tests to cover it. We will populate this endpoint depending on future achievements
 
 - [ ] Front Achievements
   - [ ] In admin side, create the crud for the achievements: a global admin page to see them all, a redux endpoint, + form to modify them easily
