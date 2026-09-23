@@ -9,6 +9,7 @@ import { JoinLobbyModal } from "@/components/modals/join-lobby"
 import { MakeSuggestion } from "@/components/modals/make-suggestion"
 import { ModalMapId } from "@/components/modals/map-id"
 import { MapsGallery } from "@/components/modals/maps-gallery"
+import { NewAchievement } from "@/components/modals/new-achievement"
 import NewDailyChallenge from "@/components/modals/new-daily-challenge"
 import NewSocial from "@/components/modals/new-social"
 import NewSound from "@/components/modals/new-sound"
@@ -30,6 +31,7 @@ export const ModalProvider = () => {
   if (type === MODAL_KEYS.NEW_SOUND) return <NewSound />
   if (type === MODAL_KEYS.NEW_SOCIALS) return <NewSocial />
   if (type === MODAL_KEYS.NEW_DAILY_CHALLENGE) return <NewDailyChallenge />
+  if (type === MODAL_KEYS.NEW_ACHIEVEMENT) return <NewAchievement />
   if (type === MODAL_KEYS.MAKE_SUGGESTION) return <MakeSuggestion />
   if (type === MODAL_KEYS.REPORT_BUG) return <ReportBugModal />
   if (type === MODAL_KEYS.SUGGEST_GAME) return <SuggestGameModal />
