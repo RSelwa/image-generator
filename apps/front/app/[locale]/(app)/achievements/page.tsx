@@ -4,6 +4,7 @@ import { achievementDocSchema } from "@repo/schemas"
 import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { connection } from "next/server"
+import { PAGES } from "@/constants/pages"
 import { AchievementsContent } from "@/app/[locale]/(app)/achievements/achievements-content"
 
 export const generateMetadata = async ({
@@ -19,11 +20,11 @@ export const generateMetadata = async ({
     description: t("metaDescription"),
     robots: { index: false },
     alternates: {
-      canonical: `${APP_BASE_URL}/${locale}/achievements`,
+      canonical: `${APP_BASE_URL}/${locale}${PAGES.ACHIEVEMENTS}`,
       languages: {
-        en: `${APP_BASE_URL}/en/achievements`,
-        fr: `${APP_BASE_URL}/fr/achievements`,
-        "x-default": `${APP_BASE_URL}/en/achievements`,
+        en: `${APP_BASE_URL}/en${PAGES.ACHIEVEMENTS}`,
+        fr: `${APP_BASE_URL}/fr${PAGES.ACHIEVEMENTS}`,
+        "x-default": `${APP_BASE_URL}/en${PAGES.ACHIEVEMENTS}`,
       },
     },
     openGraph: {
@@ -41,10 +42,11 @@ export const generateMetadata = async ({
   }
 }
 
-const getAchievements = async () => {
+const AchievementsPage = async () => {
+  await connection()
   const snapshot = await refs[TABLES.ACHIEVEMENTS].get()
 
-  return snapshot.docs.flatMap((doc) => {
+  const achievements = snapshot.docs.flatMap((doc) => {
     const { data, error } = achievementDocSchema.safeParse(doc.data())
 
     if (error) {
@@ -55,11 +57,6 @@ const getAchievements = async () => {
 
     return [data]
   })
-}
-
-const AchievementsPage = async () => {
-  await connection()
-  const achievements = await getAchievements()
 
   return <AchievementsContent achievements={achievements} />
 }
