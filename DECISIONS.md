@@ -127,3 +127,13 @@ Branch `feat/create-user-credits-referral`, PR into `develop`.
 - **Tests:** `generateReferralCode` unit tests (leading zeros, highest digit, format) in `libs/common`; `generateUniqueReferralCode` against the emulator with `generateReferralCode` mocked (free first code, taken code regenerated); the existing CF trigger test also checks `credits` and the `referralCode` format.
 - **`fileParallelism: false` in the function's vitest config.** `index.test.ts` wipes every user in its `beforeAll`; run in parallel with `referral-code.test.ts` it could delete the seeded taken-code user mid-test. Both files share one emulator database, so they run one after the other.
 - **libs/common tests are local-only**: CI has no job for lib unit tests (recorded in the schema sub-bullet).
+
+## Users schemas › Create a script that populates credits and referralCode for existing users
+
+Branch `feat/populate-users-credits-referral`, PR into `develop`. Not run against any real project.
+
+- **`scripts/src/scripts/populate-credits-referral-code.ts`**, a Deno script like the other backfills (`add-newsletter-to-user.ts`, `add-streak.ts`), run with `pnpm --filter scripts run src/scripts/populate-credits-referral-code.ts`.
+- **Only missing fields are written.** `credits` is set to 0 only when it is not a number (an existing balance is never reset), `referralCode` only when absent. Users already complete are skipped; the script is safe to re-run.
+- **Uniqueness is checked in memory**, not with one query per user like the CF: every existing code is loaded from the single `users` read into a `Set`, and each generated code is added to it, so two users in the same run can't get the same code (a per-user query would miss codes generated earlier in the run and not yet committed). It reuses `generateReferralCode` from `libs/common`.
+- **Batched writes of 500** (Firestore's batch limit), with `update` so no other field is touched.
+- **No unit test**: `scripts/` has no test runner and the script is top-level code, like every other script there. It was checked once against the Firestore emulator (3 seeded users: no fields / credits only / both): the first two got a code and the missing `credits: 0`, the existing `credits: 42` and the complete user were left untouched.
