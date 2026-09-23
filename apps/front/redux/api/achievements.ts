@@ -3,6 +3,7 @@ import { TABLES } from "@repo/common"
 import {
   type AchievementDoc,
   achievementDocSchema,
+  type AchievementEvent,
   type UnlockedAchievementDoc,
   unlockedAchievementDocSchema,
 } from "@repo/schemas"
@@ -13,21 +14,30 @@ import {
   runTransaction,
   setDoc,
 } from "firebase/firestore"
+import { z } from "zod"
 import {
   getAchievementRef,
   TABLE_REFS,
   TABLES_SUB_REFS,
 } from "@/constants/db-refs"
-import { db } from "@/constants/db"
+import { auth, db } from "@/constants/db"
+import { API_ENDPOINTS } from "@/constants/mapping"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
 const ACHIEVEMENT_KEY_TAKEN_MESSAGE =
   "An achievement with this key already exists"
 
+const achievementEventResultSchema = z.discriminatedUnion("unlocked", [
+  z.object({ unlocked: z.literal(true), reward: z.number() }),
+  z.object({ unlocked: z.literal(false) }),
+])
+
+type AchievementEventResult = z.infer<typeof achievementEventResultSchema>
+
 export const achievementsApi = createApi({
   reducerPath: "achievementsApi",
   baseQuery: fakeBaseQuery<GlobalError>(),
-  tagTypes: ["Achievement", "AchievementList"],
+  tagTypes: ["Achievement", "AchievementList", "UnlockedAchievements"],
   endpoints: (builder) => ({
     getAllAchievements: builder.query<AchievementDoc[], void>({
       queryFn: async () => {
@@ -122,6 +132,44 @@ export const achievementsApi = createApi({
           return { error: globalErrorHandler(error) }
         }
       },
+      providesTags: ["UnlockedAchievements"],
+    }),
+    sendAchievementEvent: builder.mutation<
+      AchievementEventResult,
+      AchievementEvent
+    >({
+      queryFn: async (event) => {
+        try {
+          const token = await auth.currentUser?.getIdToken()
+
+          if (!token) throw new Error("No authenticated user found")
+
+          const response = await fetch(API_ENDPOINTS.ACHIEVEMENT_EVENTS, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(event),
+          })
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to send achievement event: ${await response.text()}`,
+            )
+          }
+
+          return {
+            data: achievementEventResultSchema.parse(await response.json()),
+          }
+        } catch (error) {
+          console.error(`Error sending achievement event: ${event.key}`, error)
+
+          return { error: globalErrorHandler(error) }
+        }
+      },
+      invalidatesTags: (_result, error) =>
+        error ? [] : ["UnlockedAchievements"],
     }),
     createAchievement: builder.mutation<AchievementDoc, AchievementDoc>({
       queryFn: async (input) => {
@@ -189,6 +237,7 @@ export const {
   useGetAllAchievementsQuery,
   useGetAchievementByKeyQuery,
   useGetUnlockedAchievementsQuery,
+  useSendAchievementEventMutation,
   useCreateAchievementMutation,
   useUpdateAchievementMutation,
   useDeleteAchievementMutation,
