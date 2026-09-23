@@ -66,4 +66,6 @@ export const SELECTORS = {
   ACHIEVEMENT_FORM_KEY_ERROR: "achievement-form-key-error",
   ACHIEVEMENT_DELETE: "achievement-delete",
   ACHIEVEMENT_DELETE_CONFIRM: "achievement-delete-confirm",
+  NAV_ACHIEVEMENTS: "nav-achievements",
+  ACHIEVEMENTS_ITEM: (key: string) => `achievements-item-${key}`,
 } as const

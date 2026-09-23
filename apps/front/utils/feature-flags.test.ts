@@ -1,7 +1,28 @@
 import { describe, expect, it } from "vitest"
 import { FEATURE_FLAGS } from "@/constants/feature-flags"
 import { QUERY_PARAMS } from "@/constants/mapping"
-import { getFeatureFlagUrl, parseFeatureFlagParam } from "@/utils/feature-flags"
+import {
+  getFeatureFlagUrl,
+  isFeatureFlagEnabled,
+  parseFeatureFlagParam,
+} from "@/utils/feature-flags"
+
+describe("isFeatureFlagEnabled", () => {
+  describe("when the stored value is true", () => {
+    it("should return true", () => {
+      expect(isFeatureFlagEnabled(true)).toBe(true)
+    })
+  })
+
+  describe("when the stored value is anything else", () => {
+    it.each([false, null, undefined, "true", 1])(
+      "should return false for %s",
+      (storedValue) => {
+        expect(isFeatureFlagEnabled(storedValue)).toBe(false)
+      },
+    )
+  })
+})
 
 describe("parseFeatureFlagParam", () => {
   describe("when the param enables a known flag", () => {

@@ -132,6 +132,13 @@ export const TABLES_SUB_REFS = {
       userId,
       TABLES.DAILY_CHALLENGE_RESULTS,
     ) as CustomCollectionRef<typeof TABLES.DAILY_CHALLENGE_RESULTS>,
+  [TABLES.UNLOCKED_ACHIEVEMENTS]: (uid: string) =>
+    collection(
+      db,
+      TABLES.USERS,
+      uid,
+      TABLES.UNLOCKED_ACHIEVEMENTS,
+    ) as CustomCollectionRef<typeof TABLES.UNLOCKED_ACHIEVEMENTS>,
   [TABLES.CONVERSATION_MESSAGES]: (conversationId: string) =>
     collection(
       db,
