@@ -3,7 +3,11 @@ import { readFile } from "node:fs/promises"
 const mapping = [
   {
     key: "front",
-    patterns: [".github/workflows/front.yml", ".github/actions/deploy/"],
+    patterns: [
+      ".github/workflows/front.yml",
+      ".github/actions/deploy/",
+      "ecosystem.config.cjs",
+    ],
   },
   {
     key: "cf",
