@@ -4,6 +4,13 @@ export const DIFFICULTIES = {
   HARD: "hard",
 } as const
 
+export const ACHIEVEMENT_DIFFICULTY = {
+  EASY: "easy",
+  MEDIUM: "medium",
+  HARD: "hard",
+  LEGENDARY: "legendary",
+} as const
+
 export const DOCUMENTS_STATUS = {
   WAITING: "waiting",
   ERROR: "error",

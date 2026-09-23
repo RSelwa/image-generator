@@ -26,6 +26,8 @@ export const TABLES = {
   MESSAGES: "messages",
   CONVERSATIONS: "conversations",
   CONVERSATION_MESSAGES: "conversationMessages",
+  ACHIEVEMENTS: "achievements",
+  UNLOCKED_ACHIEVEMENTS: "unlockedAchievements",
 } as const
 
 export const METADATA_DOCS = {
