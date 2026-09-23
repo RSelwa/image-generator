@@ -103,3 +103,15 @@ Branch `feat/user-credits-referral-schema`, PR into `develop`.
 - **Side effect to handle in the rules sub-bullet:** because `userDocSchema.parse` now fills `credits: 0`, every writer that spreads a parsed doc writes it — `create-user-document` (wanted), but also the client-side anonymous user creation in `apps/front/redux/api/auth.ts`. When the rules forbid clients from writing `credits` on create, that client write has to stop sending it (or the rule has to accept `credits == 0`). Not changed here: today no rule rejects it.
 - **`userFactory` (`libs/testing`) sets `credits: 0`**, required by the new output type.
 - **Schema unit tests in `libs/schemas/src/firestore/user.test.ts`** (vitest, already configured in the package). They run with `pnpm --filter @repo/schemas test`; CI has no job for lib unit tests yet, so they are local-only for now — adding that job is a CI change of its own.
+
+## Users schemas › Add rules to not let users write credits and referralCode
+
+Branch `feat/user-credits-referral-rules`, PR into `develop`.
+
+- **One `serverOnlyUserFields()` list in `firestore.rules`** (`['credits', 'referralCode']`), used by both checks, so a future server-only field is added in one place.
+- **Create: `!request.resource.data.keys().hasAny(serverOnlyUserFields())`.** Strict, as the spec says: a client may not send the fields at all, not even `credits: 0`. Allowing `credits == 0` was rejected: it is harmless today but turns the invariant ("clients never write credits") into a value check to keep right.
+- **Update: the owner branch gets `noUpdatesOnFields(serverOnlyUserFields())`** (the existing helper, which diffs the doc, so re-sending an unchanged value is not a write). The admin branch is untouched.
+- **Admin stays allowed on create and update** through `signedInAdmin()`, and the admin SDK bypasses rules anyway (create-user-document, the future achievements endpoint).
+- **Pre-existing, not changed:** `allow create: if isSignedIn()` lets any signed-in user create any `users/{uid}` doc, not only their own. Tightening it to `request.auth.uid == user` is a separate fix.
+- **The client anonymous-user creation (`redux/api/auth.ts`) now drops `credits`** from the parsed doc — the side effect recorded in the schema sub-bullet — so the new create rule does not reject it. It writes with `{ merge: true }`: the typed users ref requires a full `UserDoc` for a plain `setDoc`, `merge` takes a partial one, and on a doc that does not exist yet (checked just above) it is still a create for the rules. Anonymous users therefore have no `credits` field until the populate script runs; the schema reads it as 0.
+- **Rule tests** (`rules/src/rules.test.ts`, `when a client writes a server-only field`): a user creating or updating either field is denied, a user creating their doc without them / updating another field is allowed, an admin creating or updating either field is allowed. The 4 deny cases were checked to fail against the previous rules.

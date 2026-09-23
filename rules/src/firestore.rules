@@ -43,10 +43,14 @@ service cloud.firestore {
       allow read: if isDocOwner(right);
     } 
 
-    match /users/{user} {
-      allow create: if isSignedIn();
+    function serverOnlyUserFields() {
+      return ['credits', 'referralCode'];
+    }
 
-      allow update: if isDocOwner(user) || signedInAdmin();
+    match /users/{user} {
+      allow create: if isSignedIn() && !request.resource.data.keys().hasAny(serverOnlyUserFields());
+
+      allow update: if (isDocOwner(user) && noUpdatesOnFields(serverOnlyUserFields())) || signedInAdmin();
       allow delete: if request.auth.uid == user;
      
       allow read: if true;

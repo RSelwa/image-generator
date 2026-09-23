@@ -337,6 +337,99 @@ describe("firebase Security Rules", () => {
         }),
       )
     })
+
+    describe("when a client writes a server-only field", () => {
+      const uid = "uid"
+      const adminUid = "admin"
+      const SERVER_ONLY_FIELDS = [
+        { credits: 1_000 },
+        { referralCode: "042137" },
+      ]
+
+      const setupAdmin = async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+            uid: adminUid,
+            right: "admin",
+          })
+        })
+      }
+
+      const setupOwnDoc = async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `users/${uid}`), {
+            uid,
+            credits: 0,
+            referralCode: "123456",
+          })
+        })
+      }
+
+      it("should let a user create their doc without them", async () => {
+        const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(setDoc(doc(authedUserDb, `users/${uid}`), { uid }))
+      })
+
+      it.each(SERVER_ONLY_FIELDS)(
+        "should deny a user creating their doc with %o",
+        async (field) => {
+          const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+          await assertFails(
+            setDoc(doc(authedUserDb, `users/${uid}`), { uid, ...field }),
+          )
+        },
+      )
+
+      it.each(SERVER_ONLY_FIELDS)(
+        "should deny a user updating their own %o",
+        async (field) => {
+          await setupOwnDoc()
+          const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+          await assertFails(updateDoc(doc(authedUserDb, `users/${uid}`), field))
+        },
+      )
+
+      it("should let a user update their other fields", async () => {
+        await setupOwnDoc()
+        const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(
+          updateDoc(doc(authedUserDb, `users/${uid}`), { pseudo: "pseudo" }),
+        )
+      })
+
+      it.each(SERVER_ONLY_FIELDS)(
+        "should let an admin create a user doc with %o",
+        async (field) => {
+          await setupAdmin()
+          const authedAdminDb = testEnv
+            .authenticatedContext(adminUid)
+            .firestore()
+
+          await assertSucceeds(
+            setDoc(doc(authedAdminDb, `users/${uid}`), { uid, ...field }),
+          )
+        },
+      )
+
+      it.each(SERVER_ONLY_FIELDS)(
+        "should let an admin update a user %o",
+        async (field) => {
+          await setupAdmin()
+          await setupOwnDoc()
+          const authedAdminDb = testEnv
+            .authenticatedContext(adminUid)
+            .firestore()
+
+          await assertSucceeds(
+            updateDoc(doc(authedAdminDb, `users/${uid}`), field),
+          )
+        },
+      )
+    })
   })
 
   describe("games collection", () => {

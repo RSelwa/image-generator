@@ -237,11 +237,18 @@ export const authApi = createApi({
                     newsletter: true,
                   }
 
-                  await setDoc(userRef, {
-                    ...userDocSchema.parse(parsingData),
-                    createdAt: serverTimestamp(),
-                    updatedAt: serverTimestamp(),
-                  })
+                  const { credits: _, ...newUserDoc } =
+                    userDocSchema.parse(parsingData)
+
+                  await setDoc(
+                    userRef,
+                    {
+                      ...newUserDoc,
+                      createdAt: serverTimestamp(),
+                      updatedAt: serverTimestamp(),
+                    },
+                    { merge: true },
+                  )
                 }
 
                 const sessionUser = formatSessionFromAnonymousUser({
