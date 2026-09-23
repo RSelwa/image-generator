@@ -24,6 +24,8 @@ export const userDocSchema = z.object({
   bestDeathRunScore: z.number().nullish().default(0),
   donorTier: donorTierSchema.default(null),
   newsletter: z.boolean().nullish().default(false),
+  credits: z.number().nullish().default(0),
+  referralCode: z.string().nullish(),
 })
 
 export const userDocWithIdSchema = z.object({
