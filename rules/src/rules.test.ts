@@ -2747,6 +2747,143 @@ describe("firebase Security Rules", () => {
     })
   })
 
+  describe("achievements collection", () => {
+    const uid = "user1"
+    const adminUid = "admin"
+    const achievementPath = "achievements/change_username"
+    const achievement = {
+      key: "change_username",
+      name: "New identity",
+      description: "Change your username",
+      reward: 50,
+    }
+
+    const setupAchievement = async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), achievementPath), achievement)
+      })
+    }
+
+    const setupAdmin = async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+      })
+    }
+
+    describe("when anyone reads an achievement", () => {
+      it("should allow a signed-out visitor", async () => {
+        await setupAchievement()
+        const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+        await assertSucceeds(getDoc(doc(unauthedDb, achievementPath)))
+      })
+    })
+
+    describe("when a user writes an achievement", () => {
+      it("should deny creating one", async () => {
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(setDoc(doc(authedDb, achievementPath), achievement))
+      })
+
+      it("should deny updating one", async () => {
+        await setupAchievement()
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(
+          updateDoc(doc(authedDb, achievementPath), { reward: 1_000 }),
+        )
+      })
+    })
+
+    describe("when an admin writes an achievement", () => {
+      it("should allow creating one", async () => {
+        await setupAdmin()
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(setDoc(doc(adminDb, achievementPath), achievement))
+      })
+
+      it("should allow updating one", async () => {
+        await setupAdmin()
+        await setupAchievement()
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(
+          updateDoc(doc(adminDb, achievementPath), { reward: 100 }),
+        )
+      })
+    })
+  })
+
+  describe("unlockedAchievements subcollection", () => {
+    const uid = "user1"
+    const otherUid = "user2"
+    const unlockedPath = (userId: string) =>
+      `users/${userId}/unlockedAchievements/change_username`
+    const unlocked = { achievedAt: new Date(), reward: 50 }
+
+    const setupUnlocked = async (userId: string) => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), unlockedPath(userId)), unlocked)
+      })
+    }
+
+    describe("when a user reads their own unlocked achievement", () => {
+      it("should allow it", async () => {
+        await setupUnlocked(uid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(getDoc(doc(authedDb, unlockedPath(uid))))
+      })
+    })
+
+    describe("when a user reads another user's unlocked achievement", () => {
+      it("should deny it", async () => {
+        await setupUnlocked(otherUid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(getDoc(doc(authedDb, unlockedPath(otherUid))))
+      })
+    })
+
+    describe("when a signed-out visitor reads an unlocked achievement", () => {
+      it("should deny it", async () => {
+        await setupUnlocked(uid)
+        const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+        await assertFails(getDoc(doc(unauthedDb, unlockedPath(uid))))
+      })
+    })
+
+    describe("when a user writes their own unlocked achievement", () => {
+      it("should deny creating it", async () => {
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(setDoc(doc(authedDb, unlockedPath(uid)), unlocked))
+      })
+
+      it("should deny updating it", async () => {
+        await setupUnlocked(uid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(
+          updateDoc(doc(authedDb, unlockedPath(uid)), { reward: 1_000 }),
+        )
+      })
+
+      it("should deny deleting it", async () => {
+        await setupUnlocked(uid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(deleteDoc(doc(authedDb, unlockedPath(uid))))
+      })
+    })
+  })
+
   describe("dailyChallengeResults subcollection", () => {
     const resultData = {
       date: "2026-03-09",

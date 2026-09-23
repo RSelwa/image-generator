@@ -60,7 +60,18 @@ service cloud.firestore {
         allow create, read: if isSignedIn() && request.auth.uid == user;
         allow write: if signedInAdmin();
       }
+
+      // Unlocked achievements - owner reads, written by the server only (admin SDK)
+      match /unlockedAchievements/{achievement} {
+        allow read: if isSignedIn() && request.auth.uid == user;
+      }
     } 
+
+    // Achievement definitions - anyone reads, admin writes
+    match /achievements/{achievement} {
+      allow read: if true;
+      allow write: if signedInAdmin();
+    }
 
     match /games/{game} {
       allow create, update: if signedInIconograph();
