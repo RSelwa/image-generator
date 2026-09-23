@@ -150,3 +150,13 @@ Branch `feat/achievements-schemas`, PR into `develop`.
 - **`achievedAt` is required** on the unlock (always written by the server transaction), with the shared `timestampSchema`.
 - **No db refs (`refs` / `subRefs` in `libs/providers`, front `db-refs.ts`) yet**: nothing reads the collections until the rules / first achievement / endpoint sub-bullets, which add the refs they use.
 - **Schema unit tests** in `libs/schemas` (local-only, see the user schema sub-bullet).
+
+## Achievements data › Add rules + tests for achievements and unlockedAchievements
+
+Branch `feat/achievements-rules`, PR into `develop`.
+
+- **`achievements/{achievement}`: `read: if true`, `write: if signedInAdmin()`.** Read is public, signed-out included: the achievements page is server-rendered from the raw definitions (Front Achievements), and nothing in a definition is private.
+- **`users/{user}/unlockedAchievements/{achievement}`: only `read: if isSignedIn() && request.auth.uid == user`**, nested under `users/{user}` next to `dailyChallengeResults`. No `write` rule at all, so every client write is denied; the achievements endpoint writes with the admin SDK, which bypasses rules.
+- **Accepted: an admin can still write unlocked achievements from a client**, through the existing global `match /{document=**} { allow read, write: if signedInAdmin() }`. Rules are OR'd across matches, so a sub-match cannot take that back; narrowing the global admin rule changes every collection and is its own ticket. Same as for `credits`: admins are trusted.
+- **No `collectionGroup("unlockedAchievements")` read rule**: nothing queries across users; a leaderboard of achievements would add it.
+- **Tests** in `rules/src/rules.test.ts`: definitions readable signed-out, user create/update denied, admin create/update allowed; unlocks readable by their owner only (other user and signed-out denied), owner create/update/delete denied. The two allow cases were checked to fail against the previous rules (the deny cases already held through default-deny).
