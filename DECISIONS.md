@@ -160,3 +160,14 @@ Branch `feat/achievements-rules`, PR into `develop`.
 - **Accepted: an admin can still write unlocked achievements from a client**, through the existing global `match /{document=**} { allow read, write: if signedInAdmin() }`. Rules are OR'd across matches, so a sub-match cannot take that back; narrowing the global admin rule changes every collection and is its own ticket. Same as for `credits`: admins are trusted.
 - **No `collectionGroup("unlockedAchievements")` read rule**: nothing queries across users; a leaderboard of achievements would add it.
 - **Tests** in `rules/src/rules.test.ts`: definitions readable signed-out, user create/update denied, admin create/update allowed; unlocks readable by their owner only (other user and signed-out denied), owner create/update/delete denied. The two allow cases were checked to fail against the previous rules (the deny cases already held through default-deny).
+
+## Achievements data › Create one basic achievement: change_username
+
+Branch `feat/change-username-achievement`, PR into `develop`.
+
+- **`ACHIEVEMENT_KEYS = { CHANGE_USERNAME: "change_username" }`** in `libs/common/src/constants/constants.ts`, next to `ACHIEVEMENT_DIFFICULTY`. The event payload union (Achievements API) and the front will discriminate on these keys.
+- **The definition lives in Firestore, created by a seed script** (`scripts/src/scripts/seed-achievements.ts`, Deno like the other scripts). Definitions are data an admin edits (Front Achievements CRUD), not code: the script only bootstraps them. Not run against any real project yet.
+- **The script never overwrites**: an existing `achievements/{key}` doc is skipped, so re-running it after an admin changed a reward keeps the admin's value. New achievements are added to its list and created on the next run. Each doc goes through `achievementDocSchema.parse` before the write.
+- **`change_username`: "New identity" / "Change your username", reward 50, difficulty `easy`, no `goalToAchieve`** (a one-shot action). 50 is small on purpose: the accepted risk in FEATURES.md is that a user can forge this event.
+- **`refs.achievements`** added to `libs/providers/src/db-refs.ts` (admin SDK, typed `AchievementDoc`), used by the script and by the endpoint later. No `unlockedAchievements` sub-ref yet: the endpoint adds it with its first use.
+- **No automated test**: `scripts/` has no test runner. Checked once against the Firestore emulator: first run creates the doc, a second run after changing `reward` to 999 skips it and keeps 999.
