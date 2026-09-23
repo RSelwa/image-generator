@@ -171,3 +171,14 @@ Branch `feat/change-username-achievement`, PR into `develop`.
 - **`change_username`: "New identity" / "Change your username", reward 50, difficulty `easy`, no `goalToAchieve`** (a one-shot action). 50 is small on purpose: the accepted risk in FEATURES.md is that a user can forge this event.
 - **`refs.achievements`** added to `libs/providers/src/db-refs.ts` (admin SDK, typed `AchievementDoc`), used by the script and by the endpoint later. No `unlockedAchievements` sub-ref yet: the endpoint adds it with its first use.
 - **No automated test**: `scripts/` has no test runner. Checked once against the Firestore emulator: first run creates the doc, a second run after changing `reward` to 999 skips it and keeps 999.
+
+## Achievements API › Strongly typed event payload schemas
+
+Branch `feat/achievement-event-schemas`, PR into `develop`.
+
+- **`achievementEventSchema` in `libs/schemas/src/firestore/achievement.event.ts`**, a dotted sub-module next to `achievement.ts`, with its `AchievementEvent` type. A `z.discriminatedUnion("key", …)` whose members use `z.literal(ACHIEVEMENT_KEYS.…)`, so an unknown key is rejected and TS narrows the payload on `key`. One member today (`change_username`); each new achievement adds one.
+- **`change_username` requires `before` and `after`**, shaped like the Cloud Functions `Change<T>` (two snapshots of the same doc), typed from `userDocSchema`.
+- **`before` / `after` only carry `pseudo`** (`userDocSchema.pick({ pseudo: true })`), not the whole user doc. The payload is JSON: a serialized Firestore `Timestamp` (`createdAt`…) loses `toDate` and would fail `timestampSchema`, and the full doc would also require `email`. The endpoint only needs the username to verify the change, and fewer client-sent fields means less forgeable surface. Other fields sent inside `before` / `after` are stripped (zod's default), so a front sending its whole user doc still parses.
+- **No generic `changeSchema(schema)` helper**: one instantiation today (simplicity); extract it when a second event needs a before/after pair.
+- **The event object is strict (`z.strictObject`): a `uid`, or any unknown top-level field, is rejected**, not silently stripped. The uid comes from the bearer token only; a client sending one is a bug worth a 400 rather than a payload that looks accepted.
+- **Unit tests** in `achievement.event.test.ts`: valid event parses, extra user fields stripped, missing `before` / `after` rejected, unknown key rejected, `uid` rejected (local-only, CI has no lib unit test job).
