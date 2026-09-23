@@ -41,7 +41,8 @@
     "play": "Jouer",
     "joinLobby": "Rejoindre un lobby",
     "about": "À propos",
-    "deathRun": "Death Run"
+    "deathRun": "Death Run",
+    "achievements": "Succès"
   },
   "auth": {
     "loginTitle": "Connexion",
@@ -292,5 +293,13 @@
       "hard": "Difficile",
       "legendary": "Légendaire"
     }
+  },
+  "achievements": {
+    "metaTitle": "Succès — Geo Gamer",
+    "metaDescription": "Débloquez des succès en jouant à Geo Gamer et gagnez des crédits.",
+    "title": "Succès",
+    "description": "Débloquez des succès pour gagner des crédits",
+    "empty": "Aucun succès pour le moment.",
+    "error": "Impossible de charger vos succès."
   }
 }

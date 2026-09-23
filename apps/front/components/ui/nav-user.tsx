@@ -13,6 +13,7 @@ import {
   MenuIcon,
   Skull,
   Timer,
+  Trophy,
   User,
   Wrench,
 } from "lucide-react"
@@ -31,6 +32,7 @@ import {
 import NavUserAdmin from "@/components/ui/nav-user.admin"
 import { Separator } from "@/components/ui/separator"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { FEATURE_FLAGS } from "@/constants/feature-flags"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import {
@@ -39,6 +41,7 @@ import {
   PORTFOLIO_LINK,
 } from "@/constants/social"
 import { SELECTORS } from "@/constants/testing"
+import { useFeatureFlag } from "@/hooks/use-feature-flag"
 import { useModal } from "@/hooks/use-modal"
 import { Link, useRouter } from "@/i18n/routing"
 import { useLogoutMutation } from "@/redux/api/auth"
@@ -60,6 +63,7 @@ export const NavUser = () => {
   const userStreak = useAppSelector(selectUserSteak)
   const user = useAppSelector(selectUser)
   const isAdmin = useAppSelector(selectIsAdmin)
+  const isAchievementsEnabled = useFeatureFlag(FEATURE_FLAGS.ACHIEVEMENTS)
 
   const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
   const isCreatingRef = useRef(false)
@@ -162,6 +166,18 @@ export const NavUser = () => {
               {t("history")}
             </Link>
           </DropdownMenuItem>
+          {isAchievementsEnabled && (
+            <DropdownMenuItem asChild>
+              <Link
+                href={PAGES.ACHIEVEMENTS}
+                className="cursor-pointer"
+                data-testid={SELECTORS.NAV_ACHIEVEMENTS}
+              >
+                <Trophy />
+                {t("achievements")}
+              </Link>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuGroup />
         <DropdownMenuSeparator />

@@ -41,7 +41,8 @@
     "play": "Play",
     "joinLobby": "Join a lobby",
     "about": "About",
-    "deathRun": "Death Run"
+    "deathRun": "Death Run",
+    "achievements": "Achievements"
   },
   "auth": {
     "loginTitle": "Login",
@@ -292,5 +293,13 @@
       "hard": "Hard",
       "legendary": "Legendary"
     }
+  },
+  "achievements": {
+    "metaTitle": "Achievements — Geo Gamer",
+    "metaDescription": "Unlock achievements while playing Geo Gamer and earn credits.",
+    "title": "Achievements",
+    "description": "Unlock achievements to earn credits",
+    "empty": "No achievements yet.",
+    "error": "Your achievements could not be loaded."
   }
 }

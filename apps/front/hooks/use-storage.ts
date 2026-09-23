@@ -6,7 +6,7 @@ import {
   setItemInSessionStorage,
 } from "@/utils/storage"
 
-const subscribe = (callback: () => void) => {
+export const subscribeToStorage = (callback: () => void) => {
   window.addEventListener("storage", callback)
 
   return () => {
@@ -19,7 +19,7 @@ export const useLocalStorage = <T>(
   defaultValue?: T,
 ): [T, (value: T) => void] => {
   const value = useSyncExternalStore(
-    subscribe,
+    subscribeToStorage,
     () => getItemFromLocalStorage<T>(key),
     () => defaultValue || null,
   )
@@ -37,7 +37,7 @@ export const useSessionStorage = <T>(
   defaultValue?: T,
 ): [T, (value: T) => void] => {
   const value = useSyncExternalStore(
-    subscribe,
+    subscribeToStorage,
     () => getItemFromSessionStorage<T>(key),
     () => defaultValue || null,
   )

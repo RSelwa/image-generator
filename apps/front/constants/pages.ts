@@ -27,6 +27,7 @@ export const PAGES = {
   MY_SEEDS: "/my-seeds",
   ACCOUNT: "/account",
   HISTORY: "/history",
+  ACHIEVEMENTS: "/achievements",
   PROMO: "/promo",
   BLOG: (slug: string) => `/blog/${slug}`,
   DAILY_CHALLENGE: "/daily-challenge",

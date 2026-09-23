@@ -1,6 +1,11 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES } from "@repo/common"
-import { type AchievementDoc, achievementDocSchema } from "@repo/schemas"
+import {
+  type AchievementDoc,
+  achievementDocSchema,
+  type UnlockedAchievementDoc,
+  unlockedAchievementDocSchema,
+} from "@repo/schemas"
 import {
   deleteDoc,
   getDoc,
@@ -8,7 +13,11 @@ import {
   runTransaction,
   setDoc,
 } from "firebase/firestore"
-import { getAchievementRef, TABLE_REFS } from "@/constants/db-refs"
+import {
+  getAchievementRef,
+  TABLE_REFS,
+  TABLES_SUB_REFS,
+} from "@/constants/db-refs"
 import { db } from "@/constants/db"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
@@ -79,6 +88,41 @@ export const achievementsApi = createApi({
         { type: "Achievement", id: key },
       ],
     }),
+    getUnlockedAchievements: builder.query<
+      Record<string, UnlockedAchievementDoc>,
+      { uid: string }
+    >({
+      queryFn: async ({ uid }) => {
+        try {
+          const snapshot = await getDocs(
+            TABLES_SUB_REFS[TABLES.UNLOCKED_ACHIEVEMENTS](uid),
+          )
+
+          const unlockedAchievements = snapshot.docs.flatMap((doc) => {
+            const { data, error } = unlockedAchievementDocSchema.safeParse(
+              doc.data(),
+            )
+
+            if (error) {
+              console.error(
+                `Error parsing unlocked achievement: ${doc.id}`,
+                error,
+              )
+
+              return []
+            }
+
+            return [[doc.id, data] as const]
+          })
+
+          return { data: Object.fromEntries(unlockedAchievements) }
+        } catch (error) {
+          console.error(`Error fetching unlocked achievements: ${uid}`, error)
+
+          return { error: globalErrorHandler(error) }
+        }
+      },
+    }),
     createAchievement: builder.mutation<AchievementDoc, AchievementDoc>({
       queryFn: async (input) => {
         try {
@@ -144,6 +188,7 @@ export const achievementsApi = createApi({
 export const {
   useGetAllAchievementsQuery,
   useGetAchievementByKeyQuery,
+  useGetUnlockedAchievementsQuery,
   useCreateAchievementMutation,
   useUpdateAchievementMutation,
   useDeleteAchievementMutation,
