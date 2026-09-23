@@ -47,7 +47,7 @@ This plan builds the structure, the following features come once everything is s
   - [x] Modify the create user CF (`functions/create-user-document`) to add these fields when user is created (for the referral code, create a util that generates a 6 digit number, regenerate until no user has it yet)
   - [x] Create a script that populates these fields for existing users (do not run it yet, since it won't be in prod)
 
-- [ ] Achievements data
+- [x] Achievements data
   - [x] Create schemas and constants for the architecture: an `achievements` collection, and a `unlockedAchievements` sub collection on each user, where the id of the doc is the id of the achievement. Use the achievement `key` as doc id, so an event carrying a `key` needs no lookup.
     - `achievements/{key}`: `key`: string (ex: `change_username`), `name`: string, `description`: string, `reward`: number, `difficulty`?: `AchievementDifficulty`, `goalToAchieve`?: number
     - `users/{uid}/unlockedAchievements/{key}`: `achievedAt`: FirestoreTimestamp, `reward`: number (snapshot of the reward paid, so editing an achievement's reward later doesn't change what users were paid)
@@ -68,7 +68,7 @@ This plan builds the structure, the following features come once everything is s
       >
       ```
   - [x] Add rules + tests: anyone reads `achievements`, only admin writes them; a user reads only their own `unlockedAchievements`, nobody writes them from a client (admin SDK only)
-  - [ ] Create one basic achievement: modify your userName (`change_username`)
+  - [x] Create one basic achievement: modify your userName (`change_username`)
 
 - [ ] Achievements API
   - [ ] Implement strongly typed schemas for the event payload: a discriminated union on `key`, and depending on it some other object in the payload is required (ex: `change_username` requires `before` and `after` user data, typed like the firestore function `Change` before/after)
