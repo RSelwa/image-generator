@@ -48,7 +48,7 @@ This plan builds the structure, the following features come once everything is s
   - [x] Create a script that populates these fields for existing users (do not run it yet, since it won't be in prod)
 
 - [ ] Achievements data
-  - [ ] Create schemas and constants for the architecture: an `achievements` collection, and a `unlockedAchievements` sub collection on each user, where the id of the doc is the id of the achievement. Use the achievement `key` as doc id, so an event carrying a `key` needs no lookup.
+  - [x] Create schemas and constants for the architecture: an `achievements` collection, and a `unlockedAchievements` sub collection on each user, where the id of the doc is the id of the achievement. Use the achievement `key` as doc id, so an event carrying a `key` needs no lookup.
     - `achievements/{key}`: `key`: string (ex: `change_username`), `name`: string, `description`: string, `reward`: number, `difficulty`?: `AchievementDifficulty`, `goalToAchieve`?: number
     - `users/{uid}/unlockedAchievements/{key}`: `achievedAt`: FirestoreTimestamp, `reward`: number (snapshot of the reward paid, so editing an achievement's reward later doesn't change what users were paid)
     - Difficulty, same pattern as `DIFFICULTIES` / `difficulty: z.enum(DIFFICULTIES)` in `spherical.ts` (separate constant, since achievements add `legendary`):
