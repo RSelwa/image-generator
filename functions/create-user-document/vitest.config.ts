@@ -10,6 +10,7 @@ function config({ mode }) {
   return {
     test: {
       exclude: [...configDefaults.exclude],
+      fileParallelism: false,
       env: {
         ...loadEnv(mode, rootPath, ""),
         ...loadEnv(mode, process.cwd(), ""),

@@ -9,6 +9,7 @@ import { userDocSchema } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 import { beforeUserCreated, HttpsError } from "firebase-functions/identity"
+import { generateUniqueReferralCode } from "~/referral-code"
 
 export const createUserDocument: ReturnType<typeof beforeUserCreated> =
   beforeUserCreated(async (event) => {
@@ -34,6 +35,7 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
         isAnonymousUser: !user.email,
         avatar: getRandomAvatar(),
         newsletter: true,
+        referralCode: await generateUniqueReferralCode(),
       })
 
       await refs.users.doc(user.uid).set(userDoc)
