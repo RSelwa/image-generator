@@ -219,3 +219,19 @@ Branch `feat/admin-achievements`, PR into `develop`.
 - **`getAchievementByKey` returns `null` for a missing doc** instead of throwing (not found is a normal outcome); the sheet shows `EmptySheet` for it.
 - **`NAV_USER_DROPDOWN_TRIGGER` added to `SELECTORS`** and used by `nav-user.tsx` (the element that emits it) and the new spec. The existing literal in `e2e/helpers/lobby.ts` is left as is.
 - **Review: the reviewer proposed splitting (list / create / edit+delete); overruled.** FEATURES.md defines the CRUD as one sub-bullet, and the three parts share the page, API and form. Not done, as in the neighbouring admin sheets: failed saves / deletes in the sheet are not surfaced (no `.unwrap()`), and `key` has no charset constraint in `achievementDocSchema` (a `/` in a key makes the create fail, and the error is shown under the key field).
+
+## Front Achievements › AchievementCard component
+
+Branch `feat/achievement-card`, PR into `develop`.
+
+- **`AchievementCard` in `components/cards/achievement-card.tsx`**, next to the other cards, built on the shadcn `Card` like `LobbyHistoryCard` (title, description, `CardAction` badge, icon + text meta row).
+- **Props: `achievement: AchievementDoc` and optional `unlocked?: UnlockedAchievementDoc`.** The achievements page maps the server-fetched definitions and looks each one's unlock up by `key` in the client-fetched list; no unlock = locked. No `isUnlocked` boolean prop: it would be derivable from `unlocked`.
+- **Locked vs unlocked is a `data-unlocked` attribute** styled with Tailwind `data-[unlocked=false]:` variants (dashed border, muted text), plus a `Lock` / `Trophy` icon with an `aria-label`. No opacity (project rule).
+- **Reward: unlocked shows the paid snapshot (`unlocked.reward`), locked shows the definition's reward**, so editing a reward later never changes what the card says a user earned. A ternary, not `||`: a paid reward of 0 is a real value.
+- **`achievedAt` formatted with next-intl `useFormatter().dateTime(…, { dateStyle: "medium" })`**, locale aware, instead of the `toLocaleDateString()` of older cards.
+- **Difficulty badge reuses `ACHIEVEMENT_DIFFICULTY_TO_BADGE_VARIANT`** (added with the admin CRUD, `legendary` purple); label translated. No badge when the difficulty is unset. `goalToAchieve` shown as "Goal: N" when set (no progress tracked yet).
+- **i18n: new `achievementCard` namespace in `messages/en.json` and `fr.json`**, reward with an ICU plural (`# credit` / `# credits`).
+- **No `"use client"`**: the card has no state or effects, and the next-intl hooks work in both; its parent (the client list) decides.
+- **No loading state, no skeleton export.** Loading is global (spec): the list waits for its unlocks and renders the cards once. A list skeleton, if any, belongs to the achievements page sub-bullet, which owns the loading.
+- **Story `stories/AchievementCard.stories.tsx`**: locked, unlocked, with goal, without difficulty, and every difficulty locked + unlocked. It wraps the story in a `NextIntlClientProvider` (en messages, UTC) as a meta decorator, since it is the first story of a translated component; a global preview decorator was not needed for one story.
+- **No unit test**: the card has no pure logic outside JSX (the front vitest config is node-only, no component rendering).
