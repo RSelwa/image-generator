@@ -7,7 +7,11 @@ import {
   PREFIX_ANONYMOUS_USER,
   SUFFIX_ANONYMOUS_USER,
 } from "@repo/common"
-import { type UserDoc, userDocSchema } from "@repo/schemas"
+import {
+  type ClientUserDoc,
+  clientUserDocSchema,
+  type UserDoc,
+} from "@repo/schemas"
 import {
   createUserWithEmailAndPassword,
   EmailAuthProvider,
@@ -227,7 +231,7 @@ export const authApi = createApi({
                 const pseudo = generateUsername()
 
                 if (!userDoc.exists()) {
-                  const parsingData: Partial<UserDoc> = {
+                  const parsingData: Partial<ClientUserDoc> = {
                     email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
                     pseudo,
                     isAnonymousUser: true,
@@ -237,8 +241,8 @@ export const authApi = createApi({
                     newsletter: true,
                   }
 
-                  await setDoc(userRef, {
-                    ...userDocSchema.parse(parsingData),
+                  await setDoc(userRef as DocumentReference<ClientUserDoc>, {
+                    ...clientUserDocSchema.parse(parsingData),
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
                   })

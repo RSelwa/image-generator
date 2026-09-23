@@ -92,3 +92,16 @@ Branch `feat/credits-achievements-flags`, PR into `develop`.
 - **`FEATURE_FLAGS = { CREDITS: "credits", ACHIEVEMENTS: "achievements" }`.** Lowercase values: they are the localStorage keys, the `?ff=` link value and the dev tools menu label. No `-` in a value, since `-` separates the flag from its status in the link. Neither key collides with an existing localStorage key.
 - **Still no `useFeatureFlag` hook.** Nothing reads these flags until the credits / achievements UI lands, so a hook now would have zero callers (simplicity: 2+ call sites, or at least one real consumer). The first sub-bullet that gates UI (the achievements page) adds it with its consumer. The dev tools menu already lists both flags, since it iterates `FEATURE_FLAGS`.
 - **Unit tests use the real flags**, the `vi.mock` of `@/constants/feature-flags` is gone. Added a round-trip test over every declared flag (link built by `getFeatureFlagUrl`, parsed back by `parseFeatureFlagParam`), which fails if a future flag value breaks the link format.
+
+## Users schemas › Add optional fields credits and referralCode
+
+Branch `feat/user-credits-schema`, PR into `develop`.
+
+- **`userDocSchema` is the read schema and holds both fields**: `credits: z.number().default(0)` (a doc without it reads as `0`, and the type is `number`, not `number | null`) and `referralCode: z.string().optional()`. `UserDoc` / `userDocWithId` gain them, so every server read and write (admin SDK) sees the real stored shape. No 6-digit regex on `referralCode`: only the server writes it, and a strict check would make `safeParse` drop a user from lists over one bad field.
+- **`clientUserDocSchema` / `ClientUserDoc` for client writes**: `userDocSchema.omit({ credits, referralCode })`. Omitted rather than defaulted, so the `.default(0)` can never put `credits: 0` into a client payload, and zod strips both keys even when the input carries them. The next sub-bullet's rules deny a client create/update containing them, so no client path may send them.
+- **Every client write path uses it**: the anonymous user `setDoc` in `redux/api/auth.ts` parses with `clientUserDocSchema` (the ref is cast to `DocumentReference<ClientUserDoc>` for that call, since the collection ref is typed with the full read shape); `updateUserDoc` takes `Partial<ClientUserDoc>`, and the daily-challenge update payload is typed the same way.
+- **Field names in `USERS_FIELDS`** (`CREDITS`, `REFERRAL_CODE`), next to `IS_ANONYMOUS_USER`, used as the schema keys and in the `omit`.
+- **The create-user CF writes `credits: 0` from now on**, as a side effect: it parses with `userDocSchema` on the admin SDK, which is allowed to write it. The CF sub-bullet only has `referralCode` left to add.
+- **`userFactory` (libs/testing) sets `credits: 0`**: it is typed with the read shape and seeds through the admin SDK.
+- **Not in the session user.** Nothing displays credits yet; the auth listener casts the snapshot instead of parsing it, so the first UI that shows credits adds the field to `sessionUserSchema` and reads it through the schema to get the `0` default.
+- **Tests**: `libs/schemas/src/firestore/user.test.ts` (vitest, the package's existing `test` script and config): missing `credits` reads `0`, `referralCode` stays absent, both kept when present, the client schema adds neither and strips both from its input.

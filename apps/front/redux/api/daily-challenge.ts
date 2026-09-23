@@ -20,7 +20,7 @@ import {
   type DailyChallengeEntity,
   type DailyChallengeResultDocWithId,
   type UpdateDailyChallengeInput,
-  type UserDoc,
+  type ClientUserDoc,
 } from "@repo/schemas"
 import {
   dailyChallengeDocWithIdSchema,
@@ -480,7 +480,7 @@ export const dailyChallengeApi = createApi({
             const currentMaxStreak = user?.maxStreak || 0
             const yesterday = getYesterday(date)
 
-            const updatedData: Partial<UserDoc> = {
+            const updatedData: Partial<ClientUserDoc> = {
               streak: 1,
               lastStreakDate: date,
               updatedAt: Timestamp.now(),

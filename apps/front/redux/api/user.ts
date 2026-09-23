@@ -22,7 +22,7 @@ import {
   raceRunDocSchema,
   type StreakLeaderboardPlayer,
   streakLeaderboardPlayerSchema,
-  type UserDoc,
+  type ClientUserDoc,
   type userDocWithId,
   userDocWithIdSchema,
   type WeeklyRaceLeaderboardPlayer,
@@ -140,7 +140,7 @@ export const userApi = createApi({
     }),
     updateUserDoc: builder.mutation<
       null,
-      { id: string; data: Partial<UserDoc> }
+      { id: string; data: Partial<ClientUserDoc> }
     >({
       queryFn: async ({ id, data }) => {
         try {

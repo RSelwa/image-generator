@@ -24,6 +24,13 @@ export const userDocSchema = z.object({
   bestDeathRunScore: z.number().nullish().default(0),
   donorTier: donorTierSchema.default(null),
   newsletter: z.boolean().nullish().default(false),
+  [USERS_FIELDS.CREDITS]: z.number().default(0),
+  [USERS_FIELDS.REFERRAL_CODE]: z.string().optional(),
+})
+
+export const clientUserDocSchema = userDocSchema.omit({
+  [USERS_FIELDS.CREDITS]: true,
+  [USERS_FIELDS.REFERRAL_CODE]: true,
 })
 
 export const userDocWithIdSchema = z.object({
@@ -32,5 +39,6 @@ export const userDocWithIdSchema = z.object({
 })
 
 export type UserDoc = z.infer<typeof userDocSchema>
+export type ClientUserDoc = z.infer<typeof clientUserDocSchema>
 export type userDocWithId = z.infer<typeof userDocWithIdSchema>
 export type DonorTier = z.infer<typeof donorTierSchema>
