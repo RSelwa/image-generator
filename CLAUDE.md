@@ -33,4 +33,5 @@ This project is a game made in Next.js, it's the same style as the geo guessr bu
 
 # Workflow
 
+- When working through `FEATURES.md`: once a sub-bullet's PR to `develop` is green in CI, merge it into `develop` (never `main`), tick it in `FEATURES.md`, write its decisions in `DECISIONS.md`, clear the context and start the next sub-bullet — automatically, without asking.
 - Always launch commands from root directory and use '--filter <package>' when launching commands

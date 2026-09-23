@@ -2,6 +2,8 @@
 
 Start from develop. **One branch per sub-bullet**, in the order below. Let the reviewer do only 2 turns to not lose too many tokens. Create the PR from the branch to `develop`, wait for all tests to be green in CI before merging. Once merged, tick the sub-bullet (`- [x]`) in this file (and the parent bullet once all its sub-bullets are ticked). Clear context after each task completed.
 
+**Run it automatically, without asking**: when a sub-bullet is done (PR open against `develop`, CI green), merge it into `develop` (never `main`), tick it here, record its decisions in `DECISIONS.md` (grouped by the sub-bullet they concern), clear the context, and start the next sub-bullet. Take every decision yourself, don't ask for advice. Stop only when every bullet is ticked, or when CI stays red after a fix attempt.
+
 Goal: we will add an achievements system to allow users to win virtual money (`credits`), that they could exchange to open packs like a TCG. The goal of the achievements is to ensure that users share the app to their friends and bring new players.
 We will also allow them to buy cosmetics with these.
 
@@ -32,7 +34,7 @@ This plan builds the structure, the following features come once everything is s
 ---
 
 - [ ] Clean codebase
-  - [ ] Change eslint for oxlint + oxfmt + clean (all current codebase), don't review files that will be formatted (you will lose tokens for nothing). Must be merged before any other branch starts, otherwise every branch conflicts on the reformat.
+  - [x] Change eslint for oxlint + oxfmt + clean (all current codebase), don't review files that will be formatted (you will lose tokens for nothing). Must be merged before any other branch starts, otherwise every branch conflicts on the reformat.
   - [ ] Take the config of CI, CLI from flim-monorepo (we've made refacto to clean this system to not have bunch of CI files)
 
 - [ ] Front Feature flags
