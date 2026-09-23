@@ -137,3 +137,16 @@ Branch `feat/populate-users-credits-referral`, PR into `develop`. Not run agains
 - **Uniqueness is checked in memory**, not with one query per user like the CF: every existing code is loaded from the single `users` read into a `Set`, and each generated code is added to it, so two users in the same run can't get the same code (a per-user query would miss codes generated earlier in the run and not yet committed). It reuses `generateReferralCode` from `libs/common`.
 - **Batched writes of 500** (Firestore's batch limit), with `update` so no other field is touched.
 - **No unit test**: `scripts/` has no test runner and the script is top-level code, like every other script there. It was checked once against the Firestore emulator (3 seeded users: no fields / credits only / both): the first two got a code and the missing `credits: 0`, the existing `credits: 42` and the complete user were left untouched.
+
+## Achievements data › Create schemas and constants for the architecture
+
+Branch `feat/achievements-schemas`, PR into `develop`.
+
+- **Constants in `libs/common`:** `ACHIEVEMENT_DIFFICULTY` next to `DIFFICULTIES` in `constants/constants.ts` (as specified, a separate constant because of `legendary`), `TABLES.ACHIEVEMENTS` (`achievements`) and `TABLES.UNLOCKED_ACHIEVEMENTS` (`unlockedAchievements`) in `constants/firebase.ts`.
+- **Two schema files in `libs/schemas/src/firestore`**, one per collection like the rest: `achievement.ts` (`achievementDifficultySchema`, `achievementDocSchema`, `AchievementDifficulty`, `AchievementDoc`) and `unlocked-achievement.ts` (`unlockedAchievementDocSchema`, `UnlockedAchievementDoc`). Both are added to `DocumentMapping`, which requires an entry for every `TABLES` value.
+- **`key` stays a `z.string().min(1)`**, not an enum of known keys: the definitions are admin-edited data, and the typed keys come with the event payload union (Achievements API). `key` duplicates the doc id on purpose (spec), so a doc read without its id still carries it.
+- **`reward` is a non-negative integer**, not just a number: credits are a whole-unit balance and a negative reward would take credits away on unlock. `unlockedAchievementDocSchema.reward` reuses the same field schema, since it is a snapshot of it.
+- **`goalToAchieve` is a positive integer, optional**; `difficulty` optional, no default (the spec makes it optional; defaulting to `easy` would state a difficulty nobody chose). `name` non-empty, `description` any string.
+- **`achievedAt` is required** on the unlock (always written by the server transaction), with the shared `timestampSchema`.
+- **No db refs (`refs` / `subRefs` in `libs/providers`, front `db-refs.ts`) yet**: nothing reads the collections until the rules / first achievement / endpoint sub-bullets, which add the refs they use.
+- **Schema unit tests** in `libs/schemas` (local-only, see the user schema sub-bullet).
