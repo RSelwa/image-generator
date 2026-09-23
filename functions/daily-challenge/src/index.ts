@@ -14,7 +14,7 @@ export const schedule_daily_challenge = onSchedule("0 0 * * *", async () => {
 
 export const create_daily_challenge = https.onCall<
   z.infer<typeof payloadCreateDailyChallengeSchema>
->({ region: region as string, cors: "*" }, async ({ auth, data }) => {
+>({ region: region, cors: "*" }, async ({ auth, data }) => {
   try {
     if (!auth?.uid) {
       throw new HttpsError("unauthenticated", "User must be authenticated")

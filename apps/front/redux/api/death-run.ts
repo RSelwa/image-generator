@@ -103,7 +103,7 @@ export const deathRunApi = createApi({
           if (snapshot.empty) return { data: null }
           const docSnap = snapshot.docs[0]
 
-          return { data: parseDeathRun(docSnap.id, docSnap.data() as object) }
+          return { data: parseDeathRun(docSnap.id, docSnap.data()) }
         } catch (error) {
           console.error("Error fetching death run by code:", error)
 
@@ -124,7 +124,7 @@ export const deathRunApi = createApi({
           const docSnap = await getDoc(getDeathRunRef(deathRunId))
           if (!docSnap.exists()) return { data: null }
 
-          return { data: parseDeathRun(docSnap.id, docSnap.data() as object) }
+          return { data: parseDeathRun(docSnap.id, docSnap.data()) }
         } catch (error) {
           return { error: globalErrorHandler(error) }
         }
@@ -142,10 +142,7 @@ export const deathRunApi = createApi({
 
               return
             }
-            const deathRun = parseDeathRun(
-              snapshot.id,
-              snapshot.data() as object,
-            )
+            const deathRun = parseDeathRun(snapshot.id, snapshot.data())
             if (deathRun) updateCachedData(() => deathRun)
           })
         } catch {

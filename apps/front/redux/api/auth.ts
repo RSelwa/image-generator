@@ -126,7 +126,7 @@ export const authApi = createApi({
           console.error(error)
           toast.error("Failed to Signup. Please check your credentials.")
 
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),
@@ -191,7 +191,7 @@ export const authApi = createApi({
           console.error(error)
           toast.error("Failed to login with Google.")
 
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),
@@ -209,64 +209,68 @@ export const authApi = createApi({
           await cacheDataLoaded
           dispatch(updateSessionStatus(SESSION_STATUS.LOADING))
 
-          unsubscribe = onAuthStateChanged(auth, async (user) => {
-            const isSignedIn = !!user && !user.isAnonymous
+          unsubscribe = onAuthStateChanged(auth, (user) => {
+            void (async () => {
+              const isSignedIn = !!user && !user.isAnonymous
 
-            if (!user) {
-              signInAnonymously(auth)
+              if (!user) {
+                signInAnonymously(auth)
 
-              return
-            }
-
-            if (user.isAnonymous) {
-              // beforeUserCreated blocking function doesn't trigger for anonymous sign-ins,
-              // so we create the user doc client-side if it doesn't exist
-              const userRef = getUserRef(user.uid)
-              const userDoc = await getDoc(userRef)
-              const pseudo = generateUsername()
-
-              if (!userDoc.exists()) {
-                const parsingData: Partial<UserDoc> = {
-                  email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
-                  pseudo,
-                  isAnonymousUser: true,
-                  avatar: getRandomAvatar(),
-                  streak: 0,
-                  lastStreakDate: null,
-                  newsletter: true,
-                }
-
-                await setDoc(userRef, {
-                  ...userDocSchema.parse(parsingData),
-                  createdAt: serverTimestamp(),
-                  updatedAt: serverTimestamp(),
-                })
+                return
               }
 
-              const sessionUser = formatSessionFromAnonymousUser({
-                authUser: user,
-                pseudo: userDoc.data()?.pseudo || pseudo,
-              })
+              if (user.isAnonymous) {
+                // beforeUserCreated blocking function doesn't trigger for anonymous sign-ins,
+                // so we create the user doc client-side if it doesn't exist
+                const userRef = getUserRef(user.uid)
+                const userDoc = await getDoc(userRef)
+                const pseudo = generateUsername()
 
-              dispatch(
-                updateSession({
+                if (!userDoc.exists()) {
+                  const parsingData: Partial<UserDoc> = {
+                    email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
+                    pseudo,
+                    isAnonymousUser: true,
+                    avatar: getRandomAvatar(),
+                    streak: 0,
+                    lastStreakDate: null,
+                    newsletter: true,
+                  }
+
+                  await setDoc(userRef, {
+                    ...userDocSchema.parse(parsingData),
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp(),
+                  })
+                }
+
+                const sessionUser = formatSessionFromAnonymousUser({
                   authUser: user,
-                  user: sessionUser,
-                  status: SESSION_STATUS.SUCCESS,
-                }),
-              )
+                  pseudo: userDoc.data()?.pseudo || pseudo,
+                })
 
-              return
-            }
+                dispatch(
+                  updateSession({
+                    authUser: user,
+                    user: sessionUser,
+                    status: SESSION_STATUS.SUCCESS,
+                  }),
+                )
 
-            if (isSignedIn)
-              await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+                return
+              }
+
+              if (isSignedIn)
+                await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+            })()
           })
         } catch (error) {
           dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
           console.error(error)
 
-          throw new Error("Something went wrong with auth listener")
+          throw new Error("Something went wrong with auth listener", {
+            cause: error,
+          })
         }
 
         await cacheEntryRemoved
@@ -283,7 +287,7 @@ export const authApi = createApi({
         } catch (error) {
           toast.error("Failed to login. Please check your credentials.")
 
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),
@@ -294,7 +298,7 @@ export const authApi = createApi({
 
           return { data: null }
         } catch (error) {
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),
@@ -380,7 +384,7 @@ export const authApi = createApi({
 
           unsubscribe = onSnapshot(
             ref,
-            async (snapshot) => {
+            (snapshot) => {
               if (!snapshot.exists()) return unsubscribe?.()
 
               try {
@@ -407,7 +411,7 @@ export const authApi = createApi({
               } catch (error) {
                 console.error("Error parsing user document:", error)
                 dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
-                await auth.signOut()
+                auth.signOut()
               }
             },
             (error) => {
@@ -422,7 +426,9 @@ export const authApi = createApi({
         } catch (error) {
           console.error("Error in user document listener:", error)
 
-          throw new Error(`Something went wrong with ${ref.path}`)
+          throw new Error(`Something went wrong with ${ref.path}`, {
+            cause: error,
+          })
         }
         await cacheEntryRemoved
         unsubscribe?.()
@@ -438,7 +444,7 @@ export const authApi = createApi({
           console.error(error)
           toast.error("Failed to sign in anonymously.")
 
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),

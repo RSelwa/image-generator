@@ -7,6 +7,9 @@ export default defineConfig({
   rules: {
     "react/react-in-jsx-scope": "off",
     "react-hooks/exhaustive-deps": "off",
+    "react/exhaustive-effect-dependencies": "off",
+    "react/set-state-in-effect": "off",
+    "react/incompatible-library": "off",
     "nextjs/no-img-element": "off",
     "react/no-unstable-nested-components": ["warn", { allowAsProps: true }],
   },
@@ -23,6 +26,10 @@ export default defineConfig({
     {
       files: ["**/*.stories.tsx"],
       rules: { "react/rules-of-hooks": "off" },
+    },
+    {
+      files: ["redux/**/*.ts"],
+      rules: { "typescript/unbound-method": "off" },
     },
   ],
 })

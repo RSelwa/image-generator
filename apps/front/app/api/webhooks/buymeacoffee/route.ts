@@ -1,6 +1,6 @@
 import { DONOR_TIERS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import z from "zod"
+import { z } from "zod"
 import { createCoupon } from "@/app/api/webhooks/buymeacoffee/create-coupon"
 import { payloadSchema } from "@/app/api/webhooks/buymeacoffee/schema"
 import { MEMBERSHIPS_EVENTS, MEMBERSHIPS_ID } from "@/constants/mapping"

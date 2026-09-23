@@ -1,7 +1,7 @@
 import { region } from "@repo/providers/firebase"
 import { https } from "firebase-functions"
 import { HttpsError } from "firebase-functions/https"
-import z from "zod"
+import { z } from "zod"
 import { populateRaceSeed } from "~/populate-race-seed"
 
 const populateRaceSeedPayloadSchema = z.object({
@@ -11,7 +11,7 @@ const populateRaceSeedPayloadSchema = z.object({
 
 export const populate_race_seed = https.onCall<
   z.infer<typeof populateRaceSeedPayloadSchema>
->({ region: region as string, cors: "*" }, async ({ auth, data }) => {
+>({ region: region, cors: "*" }, async ({ auth, data }) => {
   try {
     if (!auth?.uid) {
       throw new HttpsError("unauthenticated", "User must be authenticated")

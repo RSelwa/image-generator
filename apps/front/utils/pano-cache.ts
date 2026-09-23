@@ -17,7 +17,7 @@ const downscaleBlob = (blob: Blob, maxWidth: number): Promise<Blob> =>
     const img = new Image()
     const url = URL.createObjectURL(blob)
 
-    img.onload = () => {
+    img.addEventListener("load", () => {
       URL.revokeObjectURL(url)
 
       if (img.width <= maxWidth) {
@@ -44,12 +44,12 @@ const downscaleBlob = (blob: Blob, maxWidth: number): Promise<Blob> =>
         "image/jpeg",
         0.85,
       )
-    }
+    })
 
-    img.onerror = () => {
+    img.addEventListener("error", () => {
       URL.revokeObjectURL(url)
       reject(new Error("Image load failed"))
-    }
+    })
 
     img.src = url
   })

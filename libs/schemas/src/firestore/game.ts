@@ -1,5 +1,5 @@
 import { type DocumentReference } from "@firebase/firestore"
-import z from "zod"
+import { z } from "zod"
 import { timestampSchema, WITH_ID } from "~/zod"
 
 export const gameDocSchema = z.object({

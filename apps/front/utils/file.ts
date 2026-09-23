@@ -67,7 +67,7 @@ export const getAvatarKeyFromUrl = (avatarUrlOrKey: string) => {
 
 export const getVideoIdFromYoutubeLink = (link: string) => {
   const regex =
-    /(?:https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-]{11})/
+    /(?:https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w-]{11})/
   const match = link.match(regex)
 
   return match ? match[1] : ""

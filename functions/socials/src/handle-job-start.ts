@@ -7,7 +7,7 @@ import {
 import { refs } from "@repo/providers/db-refs"
 import { type SocialDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
-import z from "zod"
+import { z } from "zod"
 
 const responseSchema = z.object({
   soundId: z.string(),

@@ -152,7 +152,7 @@ export const raceApi = createApi({
           if (snapshot.empty) return { data: null }
           const docSnap = snapshot.docs[0]
 
-          return { data: parseRace(docSnap.id, docSnap.data() as object) }
+          return { data: parseRace(docSnap.id, docSnap.data()) }
         } catch (error) {
           return { error: globalErrorHandler(error) }
         }
@@ -166,7 +166,7 @@ export const raceApi = createApi({
           const docSnap = await getDoc(getRaceRef(raceId))
           if (!docSnap.exists()) return { data: null }
 
-          return { data: parseRace(docSnap.id, docSnap.data() as object) }
+          return { data: parseRace(docSnap.id, docSnap.data()) }
         } catch (error) {
           return { error: globalErrorHandler(error) }
         }
@@ -184,7 +184,7 @@ export const raceApi = createApi({
 
               return
             }
-            const race = parseRace(snapshot.id, snapshot.data() as object)
+            const race = parseRace(snapshot.id, snapshot.data())
             if (race) updateCachedData(() => race)
           })
         } catch {

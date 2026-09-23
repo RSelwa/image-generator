@@ -17,7 +17,7 @@ export const createAuthUser = async (email: string, password: string) => {
   )
   const data = await response.json()
 
-  return (data as unknown as any).localId as string
+  return (data as any).localId as string
 }
 
 export type FirestoreFieldValue =

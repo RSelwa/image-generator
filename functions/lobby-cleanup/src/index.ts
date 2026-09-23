@@ -1,6 +1,5 @@
 import { LOBBY_STATUS, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
-import { type Timestamp } from "firebase-admin/firestore"
 import { FieldValue } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 import { onSchedule } from "firebase-functions/scheduler"
@@ -42,7 +41,7 @@ export const schedule_lobby_cleanup = onSchedule(
 
       if (!data.createdAt || !data.config) return false
 
-      return isAbandoned(data.createdAt as Timestamp, data.currentRound || 0, {
+      return isAbandoned(data.createdAt, data.currentRound || 0, {
         numberOfRounds: data.config.numberOfRounds,
         roundDuration: data.config.roundDuration,
       })

@@ -33,6 +33,18 @@ export default defineConfig({
     "unicorn/prefer-set-has": "off",
     "no-await-in-loop": "off",
     "no-underscore-dangle": "off",
+    "no-shadow": "off",
+    "no-unmodified-loop-condition": "off",
+    "typescript/consistent-return": "off",
+    "no-unused-vars": [
+      "warn",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+        ignoreRestSiblings: true,
+      },
+    ],
   },
   ignorePatterns: [
     "**/dist/**",
@@ -56,6 +68,10 @@ export default defineConfig({
         "no-console": "off",
         "unicorn/consistent-function-scoping": "off",
       },
+    },
+    {
+      files: ["scripts/**", "cli/**"],
+      rules: { "no-console": "off" },
     },
   ],
 })

@@ -62,12 +62,10 @@ export const generateSeedRounds = async ({
       const isRoundSpecial = hasSpecialRounds
         ? (index + 1) % NUMBER_OF_ROUNDS_PER_STAGE === 0
         : false // Every 6th round is special
-      const excludedGameIds = rounds
-        .map(
-          (round) =>
-            round.gameId || round?.options?.map((option) => option.gameId),
-        )
-        .flat()
+      const excludedGameIds = rounds.flatMap(
+        (round) =>
+          round.gameId || round?.options?.map((option) => option.gameId),
+      )
 
       if (isRoundSpecial) {
         const options: Round["options"] = []

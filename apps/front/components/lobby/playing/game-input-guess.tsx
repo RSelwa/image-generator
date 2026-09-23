@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { isSameNormalized, ROUND_POINTS } from "@repo/common"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import useSound from "use-sound"
-import z from "zod"
+import { useSound } from "use-sound"
+import { z } from "zod"
 import {
   Combobox,
   ComboboxContent,
@@ -80,7 +80,7 @@ const GameInputGuess = () => {
 
     if (!currentRoundData) return
 
-    const playerAnswerValue = input?.toString() || ""
+    const playerAnswerValue = input || ""
 
     const correctGameName =
       selectedOption?.gameTitle || currentRoundData.gameTitle || ""

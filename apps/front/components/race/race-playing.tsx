@@ -10,8 +10,8 @@ import {
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import useSound from "use-sound"
-import z from "zod"
+import { useSound } from "use-sound"
+import { z } from "zod"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import {
   Combobox,

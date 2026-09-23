@@ -58,7 +58,7 @@ const ShareDailyChallengeModal = ({ challenge }: Props) => {
           <Image
             data-testid="daily-challenge-result-thumbnail"
             src={challenge.gameThumbnailUrl}
-            alt={`${challenge.gameTitle}`}
+            alt={challenge.gameTitle}
             height={500}
             width={1000}
             className="max-h-56 object-contain"

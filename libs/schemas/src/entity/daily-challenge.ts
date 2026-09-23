@@ -1,5 +1,5 @@
 import { DIFFICULTIES } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import {
   dailyChallengeDateSchema,
   type DailyChallengeDocWithId,

@@ -7,7 +7,7 @@ import Image from "next/image"
 import { useQueryState } from "nuqs"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import z from "zod"
+import { z } from "zod"
 import { EmptySheet } from "@/components/sheet/empty"
 import {
   AlertDialog,

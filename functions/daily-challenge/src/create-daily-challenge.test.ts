@@ -49,7 +49,7 @@ const getTargetDate = () => {
 const getChallengeData = async (date: string) => {
   const doc = await refs[TABLES.DAILY_CHALLENGES].doc(date).get()
 
-  return doc.data() as DailyChallengeDoc | undefined
+  return doc.data()
 }
 
 const cleanupCollection = async (collectionRef: FirebaseFirestore.Query) => {

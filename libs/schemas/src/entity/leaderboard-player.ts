@@ -1,5 +1,5 @@
 import { AVATARS_KEYS } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { donorTierSchema } from "~/firestore"
 import { WITH_ID } from "~/zod"
 

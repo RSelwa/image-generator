@@ -1,5 +1,5 @@
 import { type Timestamp } from "@firebase/firestore"
-import z from "zod"
+import { z } from "zod"
 
 export const WITH_ID = z.object({
   id: z.string().min(1),

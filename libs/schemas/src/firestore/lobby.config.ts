@@ -7,7 +7,7 @@ import {
   LOBBY_MODES,
   MAX_PLAYERS,
 } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 
 // Lobby configuration
 export const lobbyConfigSchema = z.object({

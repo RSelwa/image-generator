@@ -67,7 +67,7 @@ const docsToUpdate = docs.filter((doc) => {
 
   if (!data.createdAt || !data.config) return false
 
-  return isAbandoned(data.createdAt as Timestamp, data.currentRound || 0, {
+  return isAbandoned(data.createdAt, data.currentRound || 0, {
     numberOfRounds: data.config.numberOfRounds,
     roundDuration: data.config.roundDuration,
   })

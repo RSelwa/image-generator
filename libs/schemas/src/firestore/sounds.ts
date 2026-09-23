@@ -1,5 +1,5 @@
 import { SOUND_STATUS } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { timestampSchema, WITH_ID } from "~/zod"
 
 export const soundDocSchema = z.object({

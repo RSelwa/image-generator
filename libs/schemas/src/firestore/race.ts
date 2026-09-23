@@ -1,5 +1,5 @@
 import { RACE_STATUS } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { playerSchema } from "~/firestore/players"
 import { timestampSchema, WITH_ID } from "~/zod"
 

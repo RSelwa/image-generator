@@ -14,7 +14,7 @@ import Image from "next/image"
 import { useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import z from "zod"
+import { z } from "zod"
 import { LobbyAvatars } from "@/components/lobby/avatars"
 import { Button } from "@/components/ui/button"
 import { Field, FieldDescription } from "@/components/ui/field"
@@ -396,7 +396,7 @@ const LobbyWaiting = () => {
                     {...register("seed")}
                     onPaste={(e) => {
                       if (e.clipboardData.getData("text"))
-                        setTimeout(handleSubmit(onSubmitSeed), 0)
+                        setTimeout(() => void handleSubmit(onSubmitSeed)(), 0)
                     }}
                   />
                   <InputGroupAddon>

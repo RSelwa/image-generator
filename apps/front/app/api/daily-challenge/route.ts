@@ -1,6 +1,6 @@
 import { TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import z from "zod"
+import { z } from "zod"
 
 export const createSeedPayload = z.object({
   date: z.string(),

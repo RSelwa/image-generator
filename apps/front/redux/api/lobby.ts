@@ -47,7 +47,7 @@ import {
   where,
 } from "firebase/firestore"
 import { toast } from "sonner"
-import z from "zod"
+import { z } from "zod"
 import { DEFAULT_SIZE_LOBBY_HISTORY } from "@/constants/api"
 import { auth } from "@/constants/db"
 import { getLobbyRef, getRoundAnswerRef, TABLE_REFS } from "@/constants/db-refs"

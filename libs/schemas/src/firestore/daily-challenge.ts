@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 
 import { roundSchema } from "~/firestore/seed.round"
 import { WITH_ID } from "~/zod"

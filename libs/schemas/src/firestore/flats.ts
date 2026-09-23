@@ -1,5 +1,5 @@
 import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { gratitudeSchema } from "~/firestore/gratitude"
 import { mapPositionSchema } from "~/firestore/spherical"
 import { timestampSchema, WITH_ID } from "~/zod"

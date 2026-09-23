@@ -1,5 +1,5 @@
 import { AVATARS_KEYS, DONOR_TIERS, getRandomAvatar } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { timestampSchema } from "~/zod"
 
 // Player in a lobby

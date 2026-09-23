@@ -4,7 +4,7 @@ import {
   getRandomAvatar,
   USERS_FIELDS,
 } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { dailyChallengeDateSchema } from "~/firestore/daily-challenge"
 import { timestampSchema, WITH_ID } from "~/zod"
 

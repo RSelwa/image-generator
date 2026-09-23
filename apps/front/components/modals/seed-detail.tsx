@@ -53,13 +53,7 @@ const RoundRow = ({ round, index }: { round: Round; index: number }) => {
               {round.type}
             </Badge>
           )}
-          <Badge
-            variant={
-              DIFFICULTIES_TO_BADGE_VARIANT[
-                round.difficulty as keyof typeof DIFFICULTIES_TO_BADGE_VARIANT
-              ]
-            }
-          >
+          <Badge variant={DIFFICULTIES_TO_BADGE_VARIANT[round.difficulty]}>
             {round.difficulty}
           </Badge>
         </div>

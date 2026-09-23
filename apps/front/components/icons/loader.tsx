@@ -2,7 +2,7 @@
 
 import { type ComponentProps, useEffect, useState } from "react"
 import { type BrailleSpinnerName } from "unicode-animations"
-import spinners from "unicode-animations"
+import { spinners } from "unicode-animations"
 import { cn } from "@/utils"
 
 const Loader = (props: ComponentProps<"svg">) => (

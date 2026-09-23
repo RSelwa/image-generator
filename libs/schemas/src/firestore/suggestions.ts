@@ -1,5 +1,5 @@
 import { SUGGESTIONS_TYPE } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { timestampSchema, WITH_ID } from "~/zod"
 
 export const suggestionsDocSchema = z.object({

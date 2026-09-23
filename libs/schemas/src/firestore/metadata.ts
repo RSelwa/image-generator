@@ -3,7 +3,7 @@ import {
   DIFFICULTIES,
   ROUND_TYPE,
 } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { type GameDoc } from "~/firestore/game"
 import { type MapDoc } from "~/firestore/map"
 import {

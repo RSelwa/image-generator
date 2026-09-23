@@ -43,7 +43,7 @@ export const buildPath = (count: number): string =>
   Array.from({ length: count }, (_, i) => getPoint(i)).reduce(
     (acc, pt, i, pts) => {
       if (i === 0) return `M ${pt.x} ${pt.y}`
-      const prev = pts[i - 1]!
+      const prev = pts[i - 1]
       const cy = ITEM_HEIGHT * 0.6
 
       return `${acc} C ${prev.x} ${prev.y + cy} ${pt.x} ${pt.y - cy} ${pt.x} ${pt.y}`

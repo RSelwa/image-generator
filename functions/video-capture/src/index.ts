@@ -304,7 +304,7 @@ const capture = async (
     await page.goto(url, { waitUntil: "load", timeout: 60000 })
 
     log("Page loaded, waiting for viewer to initialize...")
-    await page.waitForFunction(() => window.sceneReady === true, {
+    await page.waitForFunction(() => window.sceneReady, {
       timeout: 60000,
     })
 

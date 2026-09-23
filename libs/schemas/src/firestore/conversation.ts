@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 import { timestampSchema, WITH_ID } from "~/zod"
 
 export const conversationDocSchema = z.object({

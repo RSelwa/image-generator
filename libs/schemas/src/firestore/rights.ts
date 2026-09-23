@@ -1,5 +1,5 @@
 import { USER_RIGHT } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 
 export const rightDocSchema = z.object({
   uid: z.string(),

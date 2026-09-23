@@ -22,9 +22,9 @@ export default function NotFound() {
             <Button className="mb-8">Go home</Button>
           </Link>
           <p className="mb-8">404 - YOU SHOULDN'T BE H~~~~%^&*+:"?~~</p>
-          <p>//////////////PLEASE//////////////////</p>
-          <p>////////////////TRY///////////////////</p>
-          <p>////////////////AGAIN/////////////////</p>
+          <p>{"//////////////PLEASE//////////////////"}</p>
+          <p>{"////////////////TRY///////////////////"}</p>
+          <p>{"////////////////AGAIN/////////////////"}</p>
         </article>
       </section>
       <HomeFooter />

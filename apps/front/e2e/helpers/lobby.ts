@@ -16,8 +16,8 @@ import {
   type UserDoc,
   type userDocWithId,
   userDocWithIdSchema,
+  userDocSchema,
 } from "@repo/schemas"
-import { userDocSchema } from "@repo/schemas"
 import { createAuthUser, createFirestoreDoc } from "@repo/testing/emulator"
 import { lobbyFactory, seedFactory, userFactory } from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"

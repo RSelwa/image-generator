@@ -8,7 +8,7 @@ import { refs } from "@repo/providers/db-refs"
 import { auth } from "@repo/providers/firebase"
 import { seedDocSchema } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
-import z from "zod"
+import { z } from "zod"
 import { generateSeedRounds } from "@/libs/seed"
 
 export const createSeedPayload = z.object({

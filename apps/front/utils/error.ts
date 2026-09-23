@@ -1,6 +1,6 @@
 import { type FetchBaseQueryError } from "@reduxjs/toolkit/query/react"
 import { FirebaseError } from "firebase/app"
-import z from "zod"
+import { z } from "zod"
 
 export const globalErrorSchema = z.object({
   status: z.number(),
@@ -26,7 +26,7 @@ const isRTKQueryError = (error: unknown): error is FetchBaseQueryError => {
 }
 
 const maybeLogAndReturn = <T>(data: T, log?: boolean): T => {
-  log && console.info("⛔️ Logged error:", data)
+  if (log) console.info("⛔️ Logged error:", data)
 
   return data
 }

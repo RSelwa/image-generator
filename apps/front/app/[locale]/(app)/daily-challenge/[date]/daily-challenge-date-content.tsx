@@ -25,7 +25,7 @@ const DailyChallengeDateContent = ({
 
   const { data: challenge } = useGetDailyChallengeEntityByDateQuery({ date })
   const { data: result, isLoading } = useGetMyDailyChallengeResultByDateQuery(
-    { uid: userId!, date },
+    { uid: userId, date },
     { skip: !userId },
   )
 

@@ -3,7 +3,7 @@ import {
   ROUND_TYPE,
   SPECIAL_ROUND_OPTIONS_COUNT,
 } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { specialRoundOptionSchema } from "~/firestore/seed.option"
 import { mapPositionSchema } from "~/firestore/spherical"
 

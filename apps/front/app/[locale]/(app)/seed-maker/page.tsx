@@ -29,7 +29,7 @@ import {
 import { type Round, roundSchema, type SpecialRoundOption } from "@repo/schemas"
 import { memo, useCallback, useMemo, useState } from "react"
 import { toast } from "sonner"
-import z from "zod"
+import { z } from "zod"
 import { type DragData } from "@/components/seed-maker/draggable-image-card"
 import GameGallery from "@/components/seed-maker/game-gallery"
 import ImagePicker from "@/components/seed-maker/image-picker"
@@ -357,7 +357,7 @@ const Page = () => {
           newOptions[optionIndex] = option
 
           next[roundIndex] = {
-            ...(round || {}),
+            ...round,
             isSpecial: true,
             options: newOptions as Round["options"],
             difficulty: round?.difficulty || DIFFICULTIES.EASY,

@@ -3,8 +3,8 @@ import { isSameNormalized } from "@repo/common"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import useSound from "use-sound"
-import z from "zod"
+import { useSound } from "use-sound"
+import { z } from "zod"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -75,7 +75,7 @@ const GameInputGuessDaily = ({ date }: { date: string }) => {
 
     if (!challenge || isSubmitting) return
 
-    const playerAnswerValue = input?.toString() || ""
+    const playerAnswerValue = input || ""
 
     const { gameTitle, gameAlternateNames } = challenge
 
@@ -87,7 +87,7 @@ const GameInputGuessDaily = ({ date }: { date: string }) => {
 
     if (isCorrect) {
       playCorrect()
-      await submitResult({ answer: input, date, isCorrect, uid: userId! })
+      await submitResult({ answer: input, date, isCorrect, uid: userId })
     } else {
       playWrong()
       reset()
@@ -103,7 +103,7 @@ const GameInputGuessDaily = ({ date }: { date: string }) => {
   const giveUp = async () => {
     if (!challenge || isSubmitting) return
 
-    await submitResult({ answer: "", date, isCorrect: false, uid: userId! })
+    await submitResult({ answer: "", date, isCorrect: false, uid: userId })
   }
 
   if (isLoading) return null

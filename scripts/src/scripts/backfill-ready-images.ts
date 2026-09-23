@@ -87,11 +87,8 @@ const [sphericalSnap, flatSnap] = await Promise.all([
     .get(),
 ])
 
-const sphericals = await buildEntries(
-  sphericalSnap as QuerySnapshot,
-  ROUND_TYPE.SPHERICAL,
-)
-const flats = await buildEntries(flatSnap as QuerySnapshot, ROUND_TYPE.FLAT)
+const sphericals = await buildEntries(sphericalSnap, ROUND_TYPE.SPHERICAL)
+const flats = await buildEntries(flatSnap, ROUND_TYPE.FLAT)
 
 const data = readyImagesDocSchema.parse({ sphericals, flats })
 

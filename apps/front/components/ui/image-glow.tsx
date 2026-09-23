@@ -65,7 +65,7 @@ export const ImageGlow = ({
   }
 
   const styledImage = React.cloneElement(children, {
-    style: { ...glowStyle, ...(childStyle || {}) },
+    style: { ...glowStyle, ...childStyle },
     className: `${childClassName || ""} ${className}`.trim(),
   })
 

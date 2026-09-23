@@ -58,7 +58,7 @@ export const POST = async (request: Request) => {
     if (!userDoc.exists) return new Response("User not found", { status: 404 })
 
     const currentTier = userDoc.data()?.donorTier as DonorTier | null
-    const newTier = getHigherTier(currentTier, coupon.tier as DonorTier)
+    const newTier = getHigherTier(currentTier, coupon.tier)
 
     await Promise.all([
       userRef.update({

@@ -31,7 +31,7 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
         createdAt: now,
         updatedAt: now,
         pseudo,
-        isAnonymousUser: Boolean(!user.email),
+        isAnonymousUser: !user.email,
         avatar: getRandomAvatar(),
         newsletter: true,
       })

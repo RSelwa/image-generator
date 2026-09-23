@@ -7,7 +7,7 @@ import {
   LOBBY_STATUS,
   MAX_PLAYERS,
 } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { lobbyConfigSchema } from "~/firestore/lobby.config"
 
 import { playerSchema } from "~/firestore/players"

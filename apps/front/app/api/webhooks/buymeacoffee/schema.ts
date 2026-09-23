@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 import { MEMBERSHIPS_EVENTS } from "@/constants/mapping"
 
 const membershipData = z.object({
