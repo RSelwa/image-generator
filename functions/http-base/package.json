@@ -1,18 +1,17 @@
 {
   "name": "@repo/http",
-  "type": "module",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "files": [
     ".env.*",
     "dist"
   ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "scripts": {
     "compile": "tsc --noEmit",
-    "lint": "biome check",
     "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
     "test": "vitest run --coverage",
     "build": "tsdown",
