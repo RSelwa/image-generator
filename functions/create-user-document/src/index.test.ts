@@ -1,5 +1,9 @@
 import { faker } from "@faker-js/faker"
-import { PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
+import {
+  PREFIX_ANONYMOUS_USER,
+  REFERRAL_CODE_LENGTH,
+  SUFFIX_ANONYMOUS_USER,
+} from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { db } from "@repo/providers/firebase"
 import { beforeAll, describe, expect, it } from "vitest"
@@ -88,6 +92,10 @@ describe("createUserDocument", () => {
     expect(userDoc?.pseudo).toBeTruthy()
     expect(userDoc).toHaveProperty("isAnonymousUser", false)
     expect(userDoc?.avatar).toBeTruthy()
+    expect(userDoc).toHaveProperty("credits", 0)
+    expect(userDoc?.referralCode).toMatch(
+      new RegExp(`^\\d{${REFERRAL_CODE_LENGTH}}$`),
+    )
   })
 
   // beforeUserCreated is not triggered for anonymous sign-in in the Firebase emulator

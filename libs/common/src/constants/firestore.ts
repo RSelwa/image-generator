@@ -1,6 +1,9 @@
 export const USERS_FIELDS = {
   IS_ANONYMOUS_USER: "isAnonymousUser",
+  REFERRAL_CODE: "referralCode",
 } as const
+
+export const REFERRAL_CODE_LENGTH = 6
 
 export const DONOR_TIERS = {
   BRONZE: "bronze",
