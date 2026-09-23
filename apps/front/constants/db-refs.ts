@@ -25,6 +25,10 @@ export const TABLE_REFS = {
     db,
     TABLES.DAILY_CHALLENGES,
   ) as CustomCollectionRef<typeof TABLES.DAILY_CHALLENGES>,
+  [TABLES.ACHIEVEMENTS]: collection(
+    db,
+    TABLES.ACHIEVEMENTS,
+  ) as CustomCollectionRef<typeof TABLES.ACHIEVEMENTS>,
   [TABLES.RIGHTS]: collection(db, TABLES.RIGHTS) as CustomCollectionRef<
     typeof TABLES.RIGHTS
   >,
@@ -207,6 +211,9 @@ export const getDailyChallengeHistoryRef = (): DocumentReference<
     TABLE_REFS[TABLES.METADATA],
     METADATA_DOCS.DAILY_CHALLENGE_HISTORY,
   ) as DocumentReference<DailyChallengeHistoryDoc, DailyChallengeHistoryDoc>
+
+export const getAchievementRef = (key: string) =>
+  doc(TABLE_REFS[TABLES.ACHIEVEMENTS], key)
 
 export const getMarathonSeedRef = (seedId: string) =>
   doc(TABLE_REFS[TABLES.MARATHON_SEEDS], seedId)

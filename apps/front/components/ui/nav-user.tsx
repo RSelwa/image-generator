@@ -84,7 +84,7 @@ export const NavUser = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        data-testid="nav-user-dropdown-trigger"
+        data-testid={SELECTORS.NAV_USER_DROPDOWN_TRIGGER}
         className="flex w-fit font-shapiro-wide font-medium items-center gap-4 outline-none"
       >
         Menu
