@@ -43,7 +43,7 @@ This plan builds the structure, the following features come once everything is s
 
 - [ ] Users schemas
   - [x] Add in user's schemas optional fields `credits` (default to 0 if not existing) and `referralCode`
-  - [ ] Add rules to not let users write any of these two fields, on **create** (currently `allow create: if isSignedIn()`) and on **update** (currently `isDocOwner(user)` can write any field) + tests: user denied, admin allowed
+  - [x] Add rules to not let users write any of these two fields, on **create** (currently `allow create: if isSignedIn()`) and on **update** (currently `isDocOwner(user)` can write any field) + tests: user denied, admin allowed
   - [ ] Modify the create user CF (`functions/create-user-document`) to add these fields when user is created (for the referral code, create a util that generates a 6 digit number, regenerate until no user has it yet)
   - [ ] Create a script that populates these fields for existing users (do not run it yet, since it won't be in prod)
 
