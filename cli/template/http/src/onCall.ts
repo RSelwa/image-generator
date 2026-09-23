@@ -1,5 +1,5 @@
 import { region } from "@repo/providers/config"
-import { https } from "firebase-functions"
+import { https, logger } from "firebase-functions"
 import { HttpsError } from "firebase-functions/https"
 
 export const {{FUNCTION_NAME}} = https.onCall(
@@ -13,13 +13,15 @@ export const {{FUNCTION_NAME}} = https.onCall(
 
       return {  }
     } catch (error) {
-      console.error(error)
+      logger.error(error)
+
+      if (error instanceof HttpsError) throw error
 
       if (error instanceof Error) {
         throw new HttpsError("internal", error.message)
       }
 
-      new HttpsError("cancelled", "Request was cancelled")
+      throw new HttpsError("cancelled", "Request was cancelled")
     }
   }
 )

@@ -1,14 +1,12 @@
 name: ⚙️ Initialize Node.js Environment
 description:
-  Initialize the Node.js environment for the project by setting up pnpm and
-  Node.js, and installing dependencies with pnpm
+  Initialize the Node.js environment for the project by setting up Java (for
+  the Firebase emulators), pnpm and Node.js, and installing dependencies with
+  pnpm. The caller checks the repository out first.
 
 runs:
   using: composite
   steps:
-    - name: ✨ Checkout
-      uses: actions/checkout@v4
-
     - name: ⚙️ Change Java version to 25
       shell: bash
       run: |

@@ -1,0 +1,164 @@
+name: 🔍 Detect affected packages
+description:
+  Runs turbo's affected-package detection against a base sha and reports the
+  result. The caller must have checked out the repository with fetch-depth 0 —
+  turbo needs the full git range to compare against.
+
+inputs:
+  base:
+    description:
+      Sha that turbo compares the working tree against (TURBO_SCM_BASE). A pull
+      request passes its base sha, a push passes github.event.before.
+    required: true
+  comment-marker:
+    description: >
+      HTML marker identifying the pull request comment to create or update, for
+      example "<!-- changed-packages -->". Leave empty to skip commenting and
+      report through the job summary only. A caller that sets it needs the
+      pull-requests write permission.
+    required: false
+    default: ""
+  title:
+    description: Heading used in both the job summary and the pull request comment.
+    required: false
+    default: 📦 Changed Packages
+  github-token:
+    description:
+      Token used to post the comment. A composite action gets no implicit token,
+      so this has to be passed down explicitly.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  json:
+    description: Raw `turbo ls --affected --output json` output.
+    value: ${{ steps.affected.outputs.json }}
+  packages:
+    description: JSON array of affected package names, e.g. ["@repo/front","@repo/socials"].
+    value: ${{ steps.affected.outputs.packages }}
+  all_changed:
+    description: '"true" when every package in the repository is affected.'
+    value: ${{ steps.affected.outputs.all_changed }}
+
+runs:
+  using: composite
+  steps:
+    - name: ⚙️ Initialize Node.js Environment
+      uses: ./.github/actions/initialization
+
+    - name: 🔍 Detect affected packages
+      id: affected
+      shell: bash
+      env:
+        DO_NOT_TRACK: "1"
+        TURBO_SCM_BASE: ${{ inputs.base }}
+      run: |
+        set -euo pipefail
+        pnpm exec turbo ls --affected --output json \
+          > "$RUNNER_TEMP/affected.json" 2> "$RUNNER_TEMP/turbo.stderr" || { cat "$RUNNER_TEMP/turbo.stderr"; exit 1; }
+        cat "$RUNNER_TEMP/turbo.stderr"
+        if grep -q 'unable to detect git range' "$RUNNER_TEMP/turbo.stderr"; then
+          echo "::error::turbo could not compute the git range (shallow clone or missing base commit); refusing to treat every package as affected."
+          exit 1
+        fi
+        jq -e '.packages.items' "$RUNNER_TEMP/affected.json" > /dev/null
+
+        pnpm exec turbo ls --output json > "$RUNNER_TEMP/all.json" 2>/dev/null
+
+        AFFECTED_COUNT=$(jq '.packages.items | length' "$RUNNER_TEMP/affected.json")
+        TOTAL_COUNT=$(jq '.packages.items | length' "$RUNNER_TEMP/all.json")
+
+        if [ "$AFFECTED_COUNT" -eq "$TOTAL_COUNT" ] && [ "$TOTAL_COUNT" -gt 0 ]; then
+          echo "all_changed=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "all_changed=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        PACKAGES=$(jq -c '[.packages.items[].name]' "$RUNNER_TEMP/affected.json")
+        echo "packages=$PACKAGES" >> "$GITHUB_OUTPUT"
+
+        {
+          echo 'json<<TURBO_JSON_EOF'
+          cat "$RUNNER_TEMP/affected.json"
+          echo 'TURBO_JSON_EOF'
+        } >> "$GITHUB_OUTPUT"
+
+    - name: 📋 Job summary
+      shell: bash
+      env:
+        AFFECTED_JSON: ${{ steps.affected.outputs.json }}
+        ALL_CHANGED: ${{ steps.affected.outputs.all_changed }}
+        TITLE: ${{ inputs.title }}
+      run: |
+        set -euo pipefail
+        COUNT=$(echo "$AFFECTED_JSON" | jq '.packages.items | length')
+
+        {
+          echo "## $TITLE"
+          echo
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No affected packages detected."
+          elif [ "$ALL_CHANGED" = "true" ]; then
+            echo "> ⚠️ **All packages are affected.**"
+          else
+            echo "| Package | Path |"
+            echo "|---------|------|"
+            echo "$AFFECTED_JSON" | jq -r '.packages.items[] | "| `\(.name)` | `\(.path)` |"'
+            echo
+            echo "> $COUNT package(s) affected"
+          fi
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    - name: 📝 Comment on PR
+      if: inputs.comment-marker != '' && github.event_name == 'pull_request'
+      uses: actions/github-script@v9
+      env:
+        AFFECTED_JSON: ${{ steps.affected.outputs.json }}
+        ALL_CHANGED: ${{ steps.affected.outputs.all_changed }}
+        MARKER: ${{ inputs.comment-marker }}
+        TITLE: ${{ inputs.title }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const marker = process.env.MARKER
+          const title = process.env.TITLE
+          const data = JSON.parse(process.env.AFFECTED_JSON)
+          const items = data.packages?.items || []
+          const allChanged = process.env.ALL_CHANGED === "true"
+
+          if (items.length === 0) {
+            console.log("No affected packages detected.")
+            return
+          }
+
+          const rows = items.map((p) => `| \`${p.name}\` | \`${p.path}\` |`)
+          const table = ["| Package | Path |", "|---------|------|", ...rows]
+          const content = allChanged
+            ? ["> ⚠️ **All packages are affected — every package will be redeployed.**"]
+            : [...table, "", `> ${items.length} package(s) affected`]
+          const body = [marker, `## ${title}`, "", ...content].join("\n")
+
+          const comments = await github.paginate(github.rest.issues.listComments, {
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          })
+          const existing = comments.find((c) => c.body?.includes(marker))
+
+          if (existing) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existing.id,
+              body,
+            })
+            return
+          }
+
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body,
+          })

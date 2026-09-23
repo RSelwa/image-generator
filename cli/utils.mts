@@ -1,35 +1,42 @@
-import { exec as _exec } from "node:child_process"
-import { existsSync, readFileSync, writeFileSync } from "node:fs"
-import { readdir, readFile, unlink, writeFile } from "node:fs/promises"
-import { promisify } from "node:util"
 import { spinner } from "@clack/prompts"
 import { consola } from "consola"
+import { exec as _exec } from "node:child_process"
+import { existsSync, readFileSync, writeFileSync } from "node:fs"
+import {
+  cp,
+  readdir,
+  readFile,
+  rename,
+  unlink,
+  writeFile,
+} from "node:fs/promises"
+import { promisify } from "node:util"
 import { TYPE_FUNCTIONS } from "./constant.mts"
 import type { FIRESTORE_EVENTS } from "./create-function.firestore.mts"
 import type { HTTP_EVENTS } from "./create-function.http.mts"
 
 const exec = promisify(_exec)
 
-export function camelToDash(value: string) {
+export const camelToDash = (value: string) => {
   return value.replace(/([a-z\d])([A-Z])/g, "$1-$2").toLowerCase()
 }
 
-export function dashToCamel(value: string) {
+export const dashToCamel = (value: string) => {
   return value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
 }
 
-export function dashToSnake(value: string) {
+export const dashToSnake = (value: string) => {
   return value.replace(/-/g, "_")
 }
 
-export function updateFirebaseConfigFile(rawName: string) {
+export const updateFirebaseConfigFile = (rawName: string) => {
   const name = camelToDash(rawName)
 
   const newFunction = {
     source: `functions/${name}`,
     runtime: "nodejs22",
     isolate: true,
-    predeploy: [`pnpm build:${name}`],
+    predeploy: ["pnpm build:cf"],
     codebase: name,
   }
 
@@ -41,13 +48,11 @@ export function updateFirebaseConfigFile(rawName: string) {
 
   // Check if the function already exists
   const functionExists = functionsConfig.some(
-    // biome-ignore lint/suspicious/noExplicitAny: Fix linter
-    (func: any) => func.source === newFunction.source,
+    (func) => func.source === newFunction.source,
   )
 
   if (functionExists) {
     consola.info(`Function ${rawName} already exists in firebase.json`)
-
     return
   }
 
@@ -62,46 +67,14 @@ export function updateFirebaseConfigFile(rawName: string) {
   consola.info(`Function ${name} added to firebase.json`)
 }
 
-export function updateMainPackageFile(rawName: string) {
-  const name = camelToDash(rawName)
-  const mainPackage = "package.json"
-
-  const fileContent = readFileSync(mainPackage, "utf8")
-  const packageContent = JSON.parse(fileContent)
-  const scripts = packageContent.scripts || {}
-
-  // Check if the function already exists
-  const scriptAlreadyExists = Object.keys(scripts).some(
-    (scriptName) =>
-      scriptName === `build:${name}` || scriptName === `watch:${name}`,
-  )
-
-  if (scriptAlreadyExists) {
-    consola.warn(`Function ${name} already exists in package.json scripts`)
-
-    return
-  }
-
-  // Add the new scripts for build and watch
-  scripts[`build:${name}`] = `turbo run build --filter=@repo/${name}`
-
-  // Update the package content with the new scripts
-  packageContent.scripts = scripts
-
-  // Write the updated package content back to the file
-  writeFileSync(mainPackage, JSON.stringify(packageContent, null, 2), "utf8")
-
-  consola.info(`Scripts for ${name} added to package.json`)
-}
-
-export async function copyTemplateFiles(
+export const copyTemplateFiles = async (
   rawName: string,
   type: (typeof TYPE_FUNCTIONS)[keyof typeof TYPE_FUNCTIONS],
   event:
     | (typeof FIRESTORE_EVENTS)[keyof typeof FIRESTORE_EVENTS]
     | (typeof HTTP_EVENTS)[keyof typeof HTTP_EVENTS],
   options?: { documentPath?: string; forceDashCase?: boolean },
-) {
+) => {
   const dashedName = camelToDash(rawName)
   const camelCaseName = dashToCamel(dashedName)
   const snakeCaseName = dashToSnake(dashedName)
@@ -120,8 +93,7 @@ export async function copyTemplateFiles(
       throw new Error(`Directory ${destinationPath} already exists.`)
     }
 
-    await exec(`cp -R ${templatePath} ${cfDir}/${type}`)
-    await exec(`mv ${cfDir}/${type} ${destinationPath}`)
+    await cp(templatePath, destinationPath, { recursive: true })
 
     const hasFileToRename = existsSync(`${destinationPath}/src/${event}.ts`)
 
@@ -129,26 +101,13 @@ export async function copyTemplateFiles(
       consola.error(
         `Template file for event ${event} does not exist in ${destinationPath}/src`,
       )
-
       return
     }
 
-    await exec(
-      `mv ${destinationPath}/src/${event}.ts ${destinationPath}/src/index.ts`,
+    await rename(
+      `${destinationPath}/src/${event}.ts`,
+      `${destinationPath}/src/index.ts`,
     )
-
-    // GH Actions
-    const ghActionFilePath = `.github/workflows/deploy-${dashedName}-function.yml`
-
-    await exec(`mv ${destinationPath}/gh-action.yml ${ghActionFilePath}`)
-
-    const fileContentGHAction = await readFile(ghActionFilePath, "utf8")
-
-    const updatedContentGHAction = fileContentGHAction
-      .replaceAll("{{FUNCTION_NAME}}", dashedName)
-      .replaceAll("{{FUNCTION_FOLDER}}", dashedName)
-
-    writeFileSync(ghActionFilePath, updatedContentGHAction, "utf8")
 
     const files = await readdir(`${destinationPath}/src`)
 

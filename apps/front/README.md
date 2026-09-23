@@ -61,7 +61,7 @@ fit.
 - Firebase emulators with hot reloading
 - Shared Biomejs configuration for linting and formatting
 - [Vitest](https://vitest.dev/) for testing
-- [Husky](https://typicode.github.io/husky/#/) for pre-commit and pre-push hooks
+- [Lefthook](https://lefthook.dev) for pre-commit and pre-push hooks
 - [PNPM](https://pnpm.io/) as a package manager
 
 ## Getting Started

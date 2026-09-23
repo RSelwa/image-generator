@@ -40,3 +40,30 @@ Branch `improvement/oxlint-oxfmt`, PR into `develop`.
 ### Commits
 
 The branch has 3 commits so the review can skip the reformat: tooling, then `🎨 Format the codebase with oxfmt` (formatting only, don't review), then the lint fixes.
+
+## Clean codebase › Take the config of CI, CLI from flim-monorepo
+
+Branch `improvement/ci-cli`, PR into `develop`.
+
+### CI
+
+- **One entry point, `ci.yml`, like flim-monorepo.** It runs on every pull request and on pushes to `main` / `develop`, lists the affected packages with `turbo ls --affected` (`detect-affected` action, which also comments the list on the PR), then calls reusable workflows for what changed: `deploy-cloud-functions.yml`, `deploy-cloud-run.yml`, `front.yml`. The 12 per-target workflows are gone; 4 workflows + 1 path-triggered rules workflow remain.
+- **Affected detection replaces the hand-written `paths:` lists.** A function is rebuilt/tested/deployed when turbo says it (or a lib it depends on) changed. This is a superset of the old lists (e.g. `lobby-cleanup` now also redeploys on a `libs/schemas` change), and fixes the old filters that never matched (`functions/create-user-document` without `/**`, `libs/schemas/src/firestore/user`).
+- **Non-package paths go through `.github/scripts/ci-check-workflow-changes.mjs`**, ported from flim-monorepo: the workflow files themselves, `firebase.json`, and the three Cloud Run services, which keep exactly their old triggers (`functions/<service>/`, `libs/common/`, `apps/front/app/capture/` for video-capture). `ci-merge-packages.mjs` turns both into the job inputs.
+- **Concurrency is per deploy target, not per workflow.** One shared group would let GitHub replace a pending run and drop its changes (each run only diffs its own push). So `ci.yml` groups pushes by sha and only cancels superseded PR runs; function chunks, each Cloud Run service and the VPS deploy each have their own non-cancelling group. Changed files come from `git diff` in the checkout rather than the compare API, which caps at 300 files on a large develop → main merge.
+- **Cloud functions: one matrix workflow with a blacklist.** Deploys run in chunks of 5 with `firebase deploy --only functions:a,functions:b --force`. `CF_BLACKLIST` holds `http-base` (had no deploy workflow) and `video-capture` (a Cloud Run job), so the deployed list is exactly the 8 functions deployed today. `workflow_dispatch` takes a comma-separated list (empty = all).
+- **Function tests stay one job per function**, not flim's shared-emulator chunks: the emulator loads every built codebase, so building only the function under test keeps another function's triggers away from its data, as the old per-function workflows did. `--project` is omitted because the tests hardcode the `.firebaserc` id (`tiktok-generator-fa261`). `lobby-cleanup`'s unit tests now run too (they passed, never ran in CI before).
+- **Deploys wait for lint and format** (flim's `!cancelled() && !failure()` gate). A red lint on `develop` now blocks the deploy; before, lint only ran for `create-party-doc`.
+- **Lint in CI is `pnpm lint:ci`** (build libs, then oxlint) because type-aware rules need the `@repo/*` `dist/`. No `--deny-warnings`: the 36 known warnings are left visible on purpose (previous sub-bullet). **Format uses `format:check`**; flim-monorepo's job runs `format`, which never fails.
+- **Cloud Run: one workflow, one job per service**, with the build-and-wait loop moved into a `cloud-build` composite action (it was copy-pasted 3 times). Same images, flags, secrets and region. Only deploys from `main` / `develop`, dispatch included.
+- **Front: `e2e-front.yml` became the reusable `front.yml`**, same 6 suites and VPS deploy. It runs when `@repo/front`, `create-user-document` or `lobby-presence` is affected (the old workflow listed the two functions). `[force_deploy]` / `[force_deploy_race_seed_populate]` commit tags are replaced by `workflow_dispatch` on `front.yml` / `deploy-cloud-functions.yml`; `[skip_e2e]` is kept. E2E no longer runs on a branch push without a PR.
+- **Secrets and environments unchanged**: `prod` environment, `GCP_SA_KEY`, `PROJECT_ID`, `FIREBASE_TOKEN` untouched, `STRIPE_API_KEY` still written to `create-party-doc/.env.test`, `VPS_HOST` / `VPS_USER` / `SSH_PRIVATE_KEY` at repo level.
+- **Actions kept at the majors this repo already runs** (`checkout@v4`, `setup-node@v4`, `pnpm/action-setup@v4`, `cache@v4`, `google-github-actions/*@v2`). Rejected flim's `pnpm/setup@v2`: it only installs pnpm 11+, this repo is on pnpm 10. `firebase` comes from the local `firebase-tools-with-isolate` (`pnpm exec firebase`) instead of a global `firebase-tools` install per job; it is the one `npx firebase` already resolved to.
+- **Turbo cache action ported**, pointed at `.turbo/cache` (turbo 2's location; flim's `node_modules/.cache/turbo` is turbo 1's).
+- **Not ported**: label sync, storybook / Amplify / gh-pages / release / Linear workflows, `pr-cleanup` — no counterpart in this repo. `python-initialization` action deleted: nothing used it.
+
+### CLI and scripts
+
+- **`cli/` synced with flim-monorepo**: arrow functions, `cp` / `rename` instead of shelling out, the http template fixes (`{{FUNCTION_NAME}}` placeholder, `throw new HttpsError`). The CLI no longer generates a per-function workflow (`gh-action.yml` templates deleted) nor a `build:<name>` script: a new function is picked up by `ci.yml` automatically.
+- **`firebase.json` predeploy is `pnpm build:cf`** (`turbo run build --filter='./functions/*'`) for every function, like flim-monorepo. The 8 `build:<function>` scripts and `build:functions` are removed; `http-base`'s predeploy called a `build:http` script that did not exist. The glob is quoted because `shellEmulator: true` expands it otherwise.
+- **Lefthook replaces Husky** (flim-monorepo's `lefthook.yml`): pre-commit formats the staged files and re-stages them, pre-push lints the pushed files. Markdown and YAML added to the format glob, since oxfmt formats them here. `--deny-warnings` dropped from pre-push for the same reason as in CI. `lefthook` added to `onlyBuiltDependencies` so its postinstall installs the hooks.

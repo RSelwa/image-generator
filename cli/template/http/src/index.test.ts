@@ -1,5 +1,5 @@
 import type { DecodedIdToken } from "@repo/providers/firebase"
-import { {FUNCTION_NAME} } from "./index"
+import { {{FUNCTION_NAME}} } from "./index"
 
 import type { Request } from "firebase-functions/https"
 import firebaseFunctionsTest from "firebase-functions-test"
@@ -9,7 +9,7 @@ const test = firebaseFunctionsTest()
 
 // ? Example of tests https://github.com/firebase/firebase-functions-test/tree/master/spec/providers
 
-describe("http_endpoint", () => {
+describe("{{FUNCTION_NAME}}", () => {
   it("should return a function", async () => {
     const result = await test.wrap({{FUNCTION_NAME}})({
       data: {},

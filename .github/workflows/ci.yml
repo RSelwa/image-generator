@@ -1,0 +1,132 @@
+name: 🔄 CI
+run-name: 🔄 CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - develop
+      - main
+
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    name: 📦 List Changed Packages
+    outputs:
+      packages: ${{ steps.merge.outputs.packages }}
+      cf_affected: ${{ steps.merge.outputs.cf_affected }}
+      cf_functions: ${{ steps.merge.outputs.cf_functions }}
+      front_affected: ${{ steps.merge.outputs.front_affected }}
+      cloud_run: ${{ steps.workflow_check.outputs.cloud_run }}
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+
+      - name: 🔍 Detect affected packages
+        id: affected
+        uses: ./.github/actions/detect-affected
+        with:
+          base: ${{ github.event.pull_request.base.sha || github.event.before }}
+          comment-marker: "<!-- changed-packages -->"
+
+      - name: 📄 List changed files
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: git diff --name-only "$BASE" HEAD > "$RUNNER_TEMP/changed-files.txt"
+
+      - name: 🔗 Check non-package file changes
+        id: workflow_check
+        uses: actions/github-script@v9
+        env:
+          CHANGED_FILES: ${{ runner.temp }}/changed-files.txt
+        with:
+          script: |
+            const { default: run } = await import(process.cwd() + '/.github/scripts/ci-check-workflow-changes.mjs')
+            await run({ core })
+
+      - name: 🔀 Merge detected packages
+        id: merge
+        uses: actions/github-script@v9
+        env:
+          TURBO_JSON: ${{ steps.affected.outputs.json }}
+          CF_WORKFLOW_HIT: ${{ steps.workflow_check.outputs.cf }}
+          FRONT_WORKFLOW_HIT: ${{ steps.workflow_check.outputs.front }}
+        with:
+          script: |
+            const { default: run } = await import(process.cwd() + '/.github/scripts/ci-merge-packages.mjs')
+            await run({ core })
+
+  lint:
+    runs-on: ubuntu-latest
+    name: ✅ Lint
+    needs: detect
+    if: needs.detect.outputs.packages != '[]'
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: 💾 Turbo Cache
+        uses: ./.github/actions/turbo-cache
+
+      - name: 🚨 Lint
+        run: pnpm run lint:ci
+
+  format:
+    runs-on: ubuntu-latest
+    name: 🎨 Format
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: 🎨 Format check
+        run: pnpm run format:check
+
+  cloud-functions:
+    needs: [detect, lint, format]
+    name: 🚀 Cloud Functions
+    if: >-
+      !cancelled() && !failure()
+      && needs.detect.outputs.cf_affected == 'true'
+    uses: ./.github/workflows/deploy-cloud-functions.yml
+    with:
+      functions: ${{ needs.detect.outputs.cf_functions }}
+    secrets: inherit
+
+  cloud-run:
+    needs: [detect, lint, format]
+    name: 🐳 Cloud Run
+    if: >-
+      !cancelled() && !failure()
+      && needs.detect.outputs.cloud_run != ''
+      && (github.ref_name == 'main' || github.ref_name == 'develop')
+    uses: ./.github/workflows/deploy-cloud-run.yml
+    with:
+      services: ${{ needs.detect.outputs.cloud_run }}
+    secrets: inherit
+
+  front:
+    needs: [detect, lint, format]
+    name: 🧪 Front
+    if: >-
+      !cancelled() && !failure()
+      && needs.detect.outputs.front_affected == 'true'
+    uses: ./.github/workflows/front.yml
+    secrets: inherit

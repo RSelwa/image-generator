@@ -6,15 +6,11 @@ import {
   camelToDash,
   copyTemplateFiles,
   updateFirebaseConfigFile,
-  updateMainPackageFile,
 } from "./utils.mts"
 
-export const HTTP_EVENTS = {
-  onRequest: "onRequest",
-  onCall: "onCall",
-} as const
+export const HTTP_EVENTS = { onRequest: "onRequest", onCall: "onCall" } as const
 
-export async function createHttpTriggeredFunction(name: string) {
+export const createHttpTriggeredFunction = async (name: string) => {
   const event = await select({
     message: "Select an HTTP event",
     options: [
@@ -35,8 +31,7 @@ export async function createHttpTriggeredFunction(name: string) {
 
   if (isCancel(event)) {
     cancel("👋 Operation cancelled by user, see you soon")
-
-    return process.exit(0)
+    process.exit(0)
   }
 
   const forceDashCase = await confirm({
@@ -46,13 +41,11 @@ export async function createHttpTriggeredFunction(name: string) {
 
   if (isCancel(forceDashCase)) {
     cancel("👋 Operation cancelled by user, see you soon")
-
-    return process.exit(0)
+    process.exit(0)
   }
 
   await copyTemplateFiles(name, TYPE_FUNCTIONS.http, event, { forceDashCase })
   updateFirebaseConfigFile(name)
-  updateMainPackageFile(name)
 
   consola.info(
     `Creating cloud function: ${colors.blueBright(name)} of type ${colors.greenBright(TYPE_FUNCTIONS.http)} with event ${colors.yellow(event)}`,

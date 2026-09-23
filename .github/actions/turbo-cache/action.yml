@@ -1,0 +1,16 @@
+name: 💾 Turbo Cache
+description:
+  Restore and save the Turborepo local cache via GitHub Actions cache so
+  unchanged tasks are replayed instead of rebuilt.
+
+runs:
+  using: composite
+  steps:
+    - name: 💾 Cache turbo build
+      uses: actions/cache@v4
+      with:
+        path: .turbo/cache
+        key: turbo-${{ runner.os }}-${{ github.job }}-${{ github.sha }}
+        restore-keys: |
+          turbo-${{ runner.os }}-${{ github.job }}-
+          turbo-${{ runner.os }}-
