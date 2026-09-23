@@ -75,7 +75,7 @@ This plan builds the structure, the following features come once everything is s
   - [x] Create an endpoint to receive all achievement events in the Next API (uid from bearer token, payload validated by the schemas above, idempotent transaction described in Security principles), add tests to cover it. We will populate this endpoint depending on future achievements
 
 - [ ] Front Achievements
-  - [ ] In admin side, create the crud for the achievements: a global admin page to see them all, a redux endpoint, + form to modify them easily
+  - [x] In admin side, create the crud for the achievements: a global admin page to see them all, a redux endpoint, + form to modify them easily
   - [ ] Create component `AchievementCard` to display an achievement. Loading: a global load rather than individual ones
   - [ ] In client side, add an achievements tab in the menu, that redirects to an achievements page: a server side page that fetches the raw achievements, a client component that fetches your unlocked ones. Behind the `Achievements` flag — the flag lives in localStorage, so the gate must be in a client component, the server page can't read it
   - [ ] Plug the username change event: if `change_username` isn't unlocked yet, call the endpoint; the endpoint verifies from `before` / `after` that the username changed, creates the `unlockedAchievements` doc with `achievedAt` + `reward`, and adds the reward to the user's `credits`
