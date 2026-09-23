@@ -92,3 +92,14 @@ Branch `feat/credits-achievements-flags`, PR into `develop`.
 - **`FEATURE_FLAGS = { CREDITS: "credits", ACHIEVEMENTS: "achievements" }`.** Lowercase values: they are the localStorage keys, the `?ff=` link value and the dev tools menu label. No `-` in a value, since `-` separates the flag from its status in the link. Neither key collides with an existing localStorage key.
 - **Still no `useFeatureFlag` hook.** Nothing reads these flags until the credits / achievements UI lands, so a hook now would have zero callers (simplicity: 2+ call sites, or at least one real consumer). The first sub-bullet that gates UI (the achievements page) adds it with its consumer. The dev tools menu already lists both flags, since it iterates `FEATURE_FLAGS`.
 - **Unit tests use the real flags**, the `vi.mock` of `@/constants/feature-flags` is gone. Added a round-trip test over every declared flag (link built by `getFeatureFlagUrl`, parsed back by `parseFeatureFlagParam`), which fails if a future flag value breaks the link format.
+
+## Users schemas › Add in user's schemas optional fields credits and referralCode
+
+Branch `feat/user-credits-referral-schema`, PR into `develop`.
+
+- **`credits: z.number().nullish().default(0)`**, the same `nullish().default()` pattern as `streak` / `bestRaceScore`: a user doc written before this field reads as 0 credits, no migration needed to read it.
+- **`referralCode: z.string().nullish()`, no default.** It is generated server side (create-user-document sub-bullet); an absent code stays absent instead of a fake `""` that would look like a real code. A string, not a number: the code is a 6-digit identifier, and a number would drop leading zeros (`042137`).
+- **No `USERS_FIELDS.CREDITS` / `REFERRAL_CODE` constants yet.** Nothing reads the field names outside the schema; the rules / CF sub-bullets add them if they need them.
+- **Side effect to handle in the rules sub-bullet:** because `userDocSchema.parse` now fills `credits: 0`, every writer that spreads a parsed doc writes it — `create-user-document` (wanted), but also the client-side anonymous user creation in `apps/front/redux/api/auth.ts`. When the rules forbid clients from writing `credits` on create, that client write has to stop sending it (or the rule has to accept `credits == 0`). Not changed here: today no rule rejects it.
+- **`userFactory` (`libs/testing`) sets `credits: 0`**, required by the new output type.
+- **Schema unit tests in `libs/schemas/src/firestore/user.test.ts`** (vitest, already configured in the package). They run with `pnpm --filter @repo/schemas test`; CI has no job for lib unit tests yet, so they are local-only for now — adding that job is a CI change of its own.

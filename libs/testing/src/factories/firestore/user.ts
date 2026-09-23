@@ -26,5 +26,6 @@ export const userFactory: FactoryDoc<UserDoc & { id: string }> = (
   bestDeathRunScore: 0,
   donorTier: null,
   newsletter: false,
+  credits: 0,
   ...item,
 })
