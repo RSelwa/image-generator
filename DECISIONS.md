@@ -84,3 +84,11 @@ Branch `feat/dev-tools`, PR into `develop`.
 - **Access: anyone outside production, admins only in production** (`selectIsAdmin`). flim gates on an email-domain / uid allow-list; this app already has an `admin` right, so no list to maintain. The bar is hidden by default everywhere (flim shows it by default in dev); its visibility persists in localStorage under `devtools`. Hidden by default keeps it out of e2e runs and dev screenshots without flim's extra env checks.
 - **Unit tests with vitest** (`apps/front/vitest.config.mts`, `pnpm --filter @repo/front test:unit`), a node environment — the tested logic (`utils/feature-flags.ts`) is pure, so no jsdom. `include` is `**/*.test.ts` so Playwright's `e2e/**/*.spec.ts` are never picked up. The config is `.mts` because `apps/front` is not `"type": "module"`. The tests mock `FEATURE_FLAGS` with one flag, since the real list is empty.
 - **CI: a `🧪 Unit Tests` job in `front.yml`** (build libs, run the unit tests); the VPS deploy now waits for it as well as for E2E.
+
+## Front Feature flags › Add the Feature Flags: Credits, Achievements
+
+Branch `feat/credits-achievements-flags`, PR into `develop`.
+
+- **`FEATURE_FLAGS = { CREDITS: "credits", ACHIEVEMENTS: "achievements" }`.** Lowercase values: they are the localStorage keys, the `?ff=` link value and the dev tools menu label. No `-` in a value, since `-` separates the flag from its status in the link. Neither key collides with an existing localStorage key.
+- **Still no `useFeatureFlag` hook.** Nothing reads these flags until the credits / achievements UI lands, so a hook now would have zero callers (simplicity: 2+ call sites, or at least one real consumer). The first sub-bullet that gates UI (the achievements page) adds it with its consumer. The dev tools menu already lists both flags, since it iterates `FEATURE_FLAGS`.
+- **Unit tests use the real flags**, the `vi.mock` of `@/constants/feature-flags` is gone. Added a round-trip test over every declared flag (link built by `getFeatureFlagUrl`, parsed back by `parseFeatureFlagParam`), which fails if a future flag value breaks the link format.
