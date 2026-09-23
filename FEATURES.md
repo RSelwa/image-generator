@@ -41,11 +41,11 @@ This plan builds the structure, the following features come once everything is s
   - [x] Integrate dev tools from `flim-monorepo` -> `apps/web`, pick the FEATURE_FLAGS system, the url, localstorage, the hotkeys system
   - [x] Add the Feature Flags: `Credits`, `Achievements`
 
-- [ ] Users schemas
+- [x] Users schemas
   - [x] Add in user's schemas optional fields `credits` (default to 0 if not existing) and `referralCode`
   - [x] Add rules to not let users write any of these two fields, on **create** (currently `allow create: if isSignedIn()`) and on **update** (currently `isDocOwner(user)` can write any field) + tests: user denied, admin allowed
   - [x] Modify the create user CF (`functions/create-user-document`) to add these fields when user is created (for the referral code, create a util that generates a 6 digit number, regenerate until no user has it yet)
-  - [ ] Create a script that populates these fields for existing users (do not run it yet, since it won't be in prod)
+  - [x] Create a script that populates these fields for existing users (do not run it yet, since it won't be in prod)
 
 - [ ] Achievements data
   - [ ] Create schemas and constants for the architecture: an `achievements` collection, and a `unlockedAchievements` sub collection on each user, where the id of the doc is the id of the achievement. Use the achievement `key` as doc id, so an event carrying a `key` needs no lookup.
