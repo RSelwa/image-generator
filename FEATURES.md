@@ -67,7 +67,7 @@ This plan builds the structure, the following features come once everything is s
         typeof achievementDifficultySchema
       >
       ```
-  - [ ] Add rules + tests: anyone reads `achievements`, only admin writes them; a user reads only their own `unlockedAchievements`, nobody writes them from a client (admin SDK only)
+  - [x] Add rules + tests: anyone reads `achievements`, only admin writes them; a user reads only their own `unlockedAchievements`, nobody writes them from a client (admin SDK only)
   - [ ] Create one basic achievement: modify your userName (`change_username`)
 
 - [ ] Achievements API
