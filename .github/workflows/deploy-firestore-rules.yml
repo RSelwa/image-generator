@@ -1,29 +1,21 @@
 name: 🔥 Deploy Firestore, Storage & Database Rules
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - .github/workflows/deploy-firestore-rules.yml
       - "rules/**"
 
+concurrency:
+  group: deploy-rules-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  init:
-    runs-on: ubuntu-latest
-    name: ⚙️ Initialize Node.js Environment
-    if: github.event_name != 'release'
-    steps:
-      - name: ✨ Checkout
-        uses: actions/checkout@v4
-
-      - name: ⚙️ Initialize Node.js Environment
-        uses: ./.github/actions/initialization
-
   deploy:
-    needs: init
     runs-on: ubuntu-latest
     name: 🔥 Deploy Firestore, Storage & Database Rules
     environment: prod
-
     steps:
       - name: ✨ Checkout
         uses: actions/checkout@v4
@@ -31,21 +23,17 @@ jobs:
       - name: ⚙️ Initialize Node.js Environment
         uses: ./.github/actions/initialization
 
-      - name: ⚙️ Install Firebase tools
-        run: pnpm install -g firebase-tools
-
       - name: 🧪 Test Security Rules
-        run: npx firebase emulators:exec --only firestore,storage "pnpm --filter
-          @repo/rules test"
+        run: pnpm exec firebase emulators:exec --only firestore,storage "pnpm --filter @repo/rules test"
 
       - name: 🔐 Authenticate to Google Cloud
+        if: github.ref_name == 'main' || github.ref_name == 'develop'
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: 🔥 Deploy Firestore, Storage & Database Rules
         if: github.ref_name == 'main' || github.ref_name == 'develop'
-        run: npx firebase deploy --project "$PROJECT_ID" --only
-          firestore,storage,database --force
+        run: pnpm exec firebase deploy --project "$PROJECT_ID" --only firestore,storage,database --force
         env:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}

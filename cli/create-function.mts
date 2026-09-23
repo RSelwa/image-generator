@@ -4,7 +4,7 @@ import { TYPE_FUNCTIONS } from "./constant.mts"
 import { createFirebaseTriggeredFunction } from "./create-function.firestore.mts"
 import { createHttpTriggeredFunction } from "./create-function.http.mts"
 
-async function init() {
+const init = async () => {
   intro("😎 Welcome to the Cloud Function Creator")
 
   try {
@@ -14,7 +14,7 @@ async function init() {
       validate: (input) => {
         if (input.length < 5) return "name must be at least 5 characters long"
 
-        if (!/^[a-z_-]+$/i.test(input)) {
+        if (!/^[a-zA-Z0-9_-]+$/.test(input)) {
           return "Function name can only contain letters, numbers, underscores, and hyphens"
         }
 
@@ -24,8 +24,7 @@ async function init() {
 
     if (isCancel(name)) {
       cancel("👋 Operation cancelled by user, see you soon")
-
-      return process.exit(0)
+      process.exit(0)
     }
 
     const type = await select({
@@ -53,8 +52,7 @@ async function init() {
 
     if (isCancel(name) || isCancel(type)) {
       cancel("👋 Operation cancelled by user, see you soon")
-
-      return process.exit(0)
+      process.exit(0)
     }
 
     if (type !== TYPE_FUNCTIONS.firestore && type !== TYPE_FUNCTIONS.http) {
@@ -62,7 +60,6 @@ async function init() {
         "Only HTTP and Firestore triggered functions are supported at the moment.",
       )
       outro("👋  Exiting the function creation process.")
-
       return
     }
 
@@ -76,7 +73,6 @@ async function init() {
     if (error instanceof Error) {
       if (error.name === "ExitPromptError")
         return consola.info("Exiting prompts gracefully")
-
       return consola.error(error.message)
     }
     consola.error(error)

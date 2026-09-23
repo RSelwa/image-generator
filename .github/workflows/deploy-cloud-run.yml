@@ -1,0 +1,128 @@
+name: 🐳 Deploy Cloud Run
+run-name: 🐳 Deploy Cloud Run
+
+on:
+  workflow_call:
+    inputs:
+      services:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      services:
+        description: Comma-separated services to deploy.
+        type: string
+        required: false
+        default: audio-extraction,video-capture,video-post-production
+
+jobs:
+  audio-extraction:
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy audio-extraction
+    concurrency:
+      group: deploy-audio-extraction-${{ github.ref }}
+      cancel-in-progress: false
+    if: >-
+      contains(inputs.services, 'audio-extraction')
+      && (github.ref_name == 'main' || github.ref_name == 'develop')
+    environment: prod
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐳 Build image
+        uses: ./.github/actions/cloud-build
+        with:
+          config: functions/audio-extraction/cloudbuild.yaml
+          project_id: ${{ secrets.PROJECT_ID }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: 🚀 Deploy to Cloud Run
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        run: |
+          gcloud run deploy audio-extraction \
+            --image "gcr.io/$PROJECT_ID/audio-extraction" \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --memory 2Gi \
+            --timeout 3600 \
+            --set-secrets YOUTUBE_COOKIES=youtube-cookies:latest,PROXY_KEY=proxy-key:latest \
+            --project "$PROJECT_ID"
+
+  video-capture:
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy video-capture
+    concurrency:
+      group: deploy-video-capture-${{ github.ref }}
+      cancel-in-progress: false
+    if: >-
+      contains(inputs.services, 'video-capture')
+      && (github.ref_name == 'main' || github.ref_name == 'develop')
+    environment: prod
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: ✨ Build libs
+        run: pnpm build:libs
+
+      - name: 🐳 Build image
+        uses: ./.github/actions/cloud-build
+        with:
+          config: functions/video-capture/cloudbuild.yaml
+          project_id: ${{ secrets.PROJECT_ID }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: 🚀 Deploy Cloud Run Job
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        run: |
+          gcloud run jobs deploy video-capture \
+            --image "gcr.io/$PROJECT_ID/video-capture" \
+            --region us-central1 \
+            --memory 4Gi \
+            --cpu 2 \
+            --task-timeout 30m \
+            --max-retries 1 \
+            --set-env-vars CAPTURE_URL=https://www.geo-gamer.net/capture \
+            --project "$PROJECT_ID"
+
+  video-post-production:
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy video-post-production
+    concurrency:
+      group: deploy-video-post-production-${{ github.ref }}
+      cancel-in-progress: false
+    if: >-
+      contains(inputs.services, 'video-post-production')
+      && (github.ref_name == 'main' || github.ref_name == 'develop')
+    environment: prod
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐳 Build image
+        uses: ./.github/actions/cloud-build
+        with:
+          config: functions/video-post-production/cloudbuild.yaml
+          project_id: ${{ secrets.PROJECT_ID }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: 🚀 Deploy Cloud Run Job
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        run: |
+          gcloud run jobs deploy video-post-production \
+            --image "gcr.io/$PROJECT_ID/video-post-production" \
+            --region us-central1 \
+            --memory 2Gi \
+            --cpu 2 \
+            --task-timeout 10m \
+            --max-retries 1 \
+            --set-secrets="PROXY_KEY=proxy-key:latest,YOUTUBE_COOKIES=youtube-cookies:latest" \
+            --project "$PROJECT_ID"

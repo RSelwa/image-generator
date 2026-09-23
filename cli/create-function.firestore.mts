@@ -6,7 +6,6 @@ import {
   camelToDash,
   copyTemplateFiles,
   updateFirebaseConfigFile,
-  updateMainPackageFile,
 } from "./utils.mts"
 
 export const FIRESTORE_EVENTS = {
@@ -16,7 +15,7 @@ export const FIRESTORE_EVENTS = {
   documentWritten: "documentWritten",
 } as const
 
-export async function createFirebaseTriggeredFunction(name: string) {
+export const createFirebaseTriggeredFunction = async (name: string) => {
   const event = await select({
     message: "Select a Firestore event",
     options: [
@@ -50,8 +49,7 @@ export async function createFirebaseTriggeredFunction(name: string) {
 
   if (isCancel(event) || isCancel(documentPath)) {
     cancel("👋 Operation cancelled by user, see you soon")
-
-    return process.exit(0)
+    process.exit(0)
   }
 
   const forceDashCase = await confirm({
@@ -61,8 +59,7 @@ export async function createFirebaseTriggeredFunction(name: string) {
 
   if (isCancel(forceDashCase)) {
     cancel("👋 Operation cancelled by user, see you soon")
-
-    return process.exit(0)
+    process.exit(0)
   }
 
   await copyTemplateFiles(name, TYPE_FUNCTIONS.firestore, event, {
@@ -70,7 +67,6 @@ export async function createFirebaseTriggeredFunction(name: string) {
     documentPath,
   })
   updateFirebaseConfigFile(name)
-  updateMainPackageFile(name)
 
   consola.info(
     `Creating cloud function: ${colors.blueBright(name)} of type ${colors.greenBright(TYPE_FUNCTIONS.firestore)} with event ${colors.yellow(event)}`,
