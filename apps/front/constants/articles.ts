@@ -5,35 +5,40 @@ import { PAGES } from "@/constants/pages"
 export const ARTICLES = {
   MULTIPLAYER: {
     title: "Multiplayer up to 8 players",
-    description: "Challenge your friends in real-time geo-guessing battles across video game universes",
+    description:
+      "Challenge your friends in real-time geo-guessing battles across video game universes",
     imageLink: IMAGES_URLS.ARTICLES.MULTIPLAYER,
     href: PAGES.BLOG(BLOG_POSTS.MULTIPLAYER.slug),
   },
   SCENES: {
     title: "300+ scenes available",
-    description: "Hundreds of iconic environments from your favorite video games, ready to explore",
+    description:
+      "Hundreds of iconic environments from your favorite video games, ready to explore",
     imageLink: IMAGES_URLS.ARTICLES.SCENES,
     href: PAGES.BLOG(BLOG_POSTS.SCENES.slug),
   },
   SPECIAL_ROUNDS: {
     title: "Special Rounds",
-    description: "Hand-pick scenes for each round and craft your own custom challenges",
+    description:
+      "Hand-pick scenes for each round and craft your own custom challenges",
     imageLink: IMAGES_URLS.ARTICLES.SPECIAL_ROUNDS,
     imageLinkLarge: IMAGES_URLS.ARTICLES.SPECIAL_ROUNDS_LARGE,
     href: PAGES.BLOG(BLOG_POSTS.SPECIAL_ROUNDS.slug),
   },
   DAILY_CHALLENGES: {
     title: "Daily Challenges",
-    description: "New geo-guessing puzzles every day to test your skills and climb the leaderboard",
+    description:
+      "New geo-guessing puzzles every day to test your skills and climb the leaderboard",
     imageLink: IMAGES_URLS.ARTICLES.DAILY_CHALLENGES,
     href: PAGES.DAILY_CHALLENGE,
   },
   RACE: {
     title: "Race Mode",
-    description: "Compete against the clock in a high-speed geo-guessing race, where every second counts",
+    description:
+      "Compete against the clock in a high-speed geo-guessing race, where every second counts",
     imageLink: IMAGES_URLS.ARTICLES.RACE,
     href: PAGES.RACE,
-  }
+  },
 } as const
 
 export const HOME_ARTICLES = [

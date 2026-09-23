@@ -1,8 +1,19 @@
-import { DOCUMENTS_STATUS, METADATA_DOCS, mockedMapImageURL, TABLES, USER_RIGHT } from "@repo/common"
+import {
+  DOCUMENTS_STATUS,
+  METADATA_DOCS,
+  mockedMapImageURL,
+  TABLES,
+  USER_RIGHT,
+} from "@repo/common"
 import { collectionGroupRefs, refs, subRefs } from "@repo/providers/db-refs"
 import { type DecodedIdToken } from "@repo/providers/firebase"
 import { type DailyChallengeDoc, toDailyChallengeEntity } from "@repo/schemas"
-import { flatFactory, gameFactory, mapFactory, sphericalFactory } from "@repo/testing/factory"
+import {
+  flatFactory,
+  gameFactory,
+  mapFactory,
+  sphericalFactory,
+} from "@repo/testing/factory"
 import { getFirestore } from "firebase-admin/firestore"
 import firebaseFunctionsTest from "firebase-functions-test"
 import { type Request } from "firebase-functions/https"
@@ -14,12 +25,16 @@ const test = firebaseFunctionsTest()
 
 beforeAll(() => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
-    throw new Error("FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.")
+    throw new Error(
+      "FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.",
+    )
   }
 })
 
 const getHistoryRef = () =>
-  getFirestore().doc(`${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`)
+  getFirestore().doc(
+    `${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`,
+  )
 
 const getTargetDate = () => {
   const date = new Date()
@@ -34,7 +49,7 @@ const getTargetDate = () => {
 const getChallengeData = async (date: string) => {
   const doc = await refs[TABLES.DAILY_CHALLENGES].doc(date).get()
 
-  return doc.data() as DailyChallengeDoc | undefined
+  return doc.data()
 }
 
 const cleanupCollection = async (collectionRef: FirebaseFirestore.Query) => {
@@ -63,7 +78,10 @@ beforeEach(async () => {
 describe("createDailyChallenge", () => {
   it("should create a challenge with a ready spherical image without map", async () => {
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
@@ -121,7 +139,10 @@ describe("createDailyChallenge", () => {
 
   it("should create a challenge with a ready flat image without map", async () => {
     const game = gameFactory({})
-    const flat = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+    const flat = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.FLAT](game.id).doc(flat.id).set(flat)
@@ -179,14 +200,26 @@ describe("createDailyChallenge", () => {
 
   it("should not pick a spherical image that is already in the history", async () => {
     const game = gameFactory({})
-    const usedSpherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
-    const freshSpherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+    const usedSpherical = sphericalFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
+    const freshSpherical = sphericalFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(usedSpherical.id).set(usedSpherical)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(freshSpherical.id).set(freshSpherical)
+    await subRefs[TABLES.SPHERICAL](game.id)
+      .doc(usedSpherical.id)
+      .set(usedSpherical)
+    await subRefs[TABLES.SPHERICAL](game.id)
+      .doc(freshSpherical.id)
+      .set(freshSpherical)
 
-    await getHistoryRef().set({ usedImages: { [usedSpherical.id]: "2026-03-01" } })
+    await getHistoryRef().set({
+      usedImages: { [usedSpherical.id]: "2026-03-01" },
+    })
 
     await createDailyChallenge()
 
@@ -201,8 +234,14 @@ describe("createDailyChallenge", () => {
 
   it("should not pick a flat image that is already in the history", async () => {
     const game = gameFactory({})
-    const usedFlat = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
-    const freshFlat = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+    const usedFlat = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
+    const freshFlat = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.FLAT](game.id).doc(usedFlat.id).set(usedFlat)
@@ -223,12 +262,22 @@ describe("createDailyChallenge", () => {
 
   it("should not pick images that are not ready", async () => {
     const game = gameFactory({})
-    const waitingSpherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.WAITING })
-    const readySpherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+    const waitingSpherical = sphericalFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.WAITING,
+    })
+    const readySpherical = sphericalFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(waitingSpherical.id).set(waitingSpherical)
-    await subRefs[TABLES.SPHERICAL](game.id).doc(readySpherical.id).set(readySpherical)
+    await subRefs[TABLES.SPHERICAL](game.id)
+      .doc(waitingSpherical.id)
+      .set(waitingSpherical)
+    await subRefs[TABLES.SPHERICAL](game.id)
+      .doc(readySpherical.id)
+      .set(readySpherical)
 
     await createDailyChallenge()
 
@@ -242,7 +291,10 @@ describe("createDailyChallenge", () => {
 
   it("should not create a challenge if one already exists for the target date", async () => {
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
@@ -289,7 +341,10 @@ describe("createDailyChallenge", () => {
 
   it("should not create a challenge if no images are available", async () => {
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
@@ -307,8 +362,14 @@ describe("createDailyChallenge", () => {
   it("should pick from both spherical and flat images when both are available", async () => {
     const game1 = gameFactory({})
     const game2 = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game1.id, status: DOCUMENTS_STATUS.READY })
-    const flat = flatFactory({ gameId: game2.id, status: DOCUMENTS_STATUS.READY })
+    const spherical = sphericalFactory({
+      gameId: game1.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
+    const flat = flatFactory({
+      gameId: game2.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game1.id).set(game1)
     await refs[TABLES.GAMES].doc(game2.id).set(game2)
@@ -342,7 +403,10 @@ describe("createDailyChallenge", () => {
 
     it("should create the challenge for the given date, not the default +7 days date", async () => {
       const game = gameFactory({})
-      const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+      const spherical = sphericalFactory({
+        gameId: game.id,
+        status: DOCUMENTS_STATUS.READY,
+      })
 
       await refs[TABLES.GAMES].doc(game.id).set(game)
       await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
@@ -360,7 +424,10 @@ describe("createDailyChallenge", () => {
 
     it("should not create a challenge if one already exists for the given date", async () => {
       const game = gameFactory({})
-      const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+      const spherical = sphericalFactory({
+        gameId: game.id,
+        status: DOCUMENTS_STATUS.READY,
+      })
 
       await refs[TABLES.GAMES].doc(game.id).set(game)
       await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
@@ -385,7 +452,9 @@ describe("createDailyChallenge", () => {
         difficulty: "easy",
       }
 
-      await refs[TABLES.DAILY_CHALLENGES].doc(customDateStr).set(existingChallenge)
+      await refs[TABLES.DAILY_CHALLENGES]
+        .doc(customDateStr)
+        .set(existingChallenge)
 
       await createDailyChallenge(customDateStr)
 
@@ -398,9 +467,18 @@ describe("createDailyChallenge", () => {
 
   it("should skip all used images and pick the only remaining one", async () => {
     const game = gameFactory({})
-    const used1 = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
-    const used2 = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
-    const fresh = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+    const used1 = sphericalFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
+    const used2 = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
+    const fresh = sphericalFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(used1.id).set(used1)
@@ -435,28 +513,41 @@ describe("createDailyChallenge", () => {
       })
 
     it("should throw error when unauthenticated", async () => {
-      await expect(callAs(undefined, {})).rejects.toMatchObject({ code: "unauthenticated" })
+      await expect(callAs(undefined, {})).rejects.toMatchObject({
+        code: "unauthenticated",
+      })
     })
 
     it("should throw error when not admin", async () => {
-      await expect(callAs("non-admin-uid", {})).rejects.toMatchObject({ code: "permission-denied" })
+      await expect(callAs("non-admin-uid", {})).rejects.toMatchObject({
+        code: "permission-denied",
+      })
     })
 
     it("should throw an error if payload is wrong", async () => {
-      await refs[TABLES.RIGHTS].doc("admin-uid").set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
+      await refs[TABLES.RIGHTS]
+        .doc("admin-uid")
+        .set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
 
-      await expect(callAs("admin-uid", { date: "not-a-date" })).rejects.toMatchObject({ code: "invalid-argument" })
+      await expect(
+        callAs("admin-uid", { date: "not-a-date" }),
+      ).rejects.toMatchObject({ code: "invalid-argument" })
     })
 
     it("should create a daily challenge with correct date when a date is passed", async () => {
       const customDateStr = "2026-08-20"
 
       const game = gameFactory({})
-      const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+      const spherical = sphericalFactory({
+        gameId: game.id,
+        status: DOCUMENTS_STATUS.READY,
+      })
 
       await refs[TABLES.GAMES].doc(game.id).set(game)
       await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
-      await refs[TABLES.RIGHTS].doc("admin-uid").set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
+      await refs[TABLES.RIGHTS]
+        .doc("admin-uid")
+        .set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
 
       await callAs("admin-uid", { date: customDateStr })
 
@@ -468,11 +559,16 @@ describe("createDailyChallenge", () => {
 
     it("should create a daily challenge in seven days when a date is not passed", async () => {
       const game = gameFactory({})
-      const spherical = sphericalFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY })
+      const spherical = sphericalFactory({
+        gameId: game.id,
+        status: DOCUMENTS_STATUS.READY,
+      })
 
       await refs[TABLES.GAMES].doc(game.id).set(game)
       await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
-      await refs[TABLES.RIGHTS].doc("admin-uid").set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
+      await refs[TABLES.RIGHTS]
+        .doc("admin-uid")
+        .set({ uid: "admin-uid", right: USER_RIGHT.ADMIN })
 
       await callAs("admin-uid", {})
 

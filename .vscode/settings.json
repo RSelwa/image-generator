@@ -14,8 +14,7 @@
   ],
   "json.validate.enable": false,
   "deno.lint": false,
-  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-  "biome.notifyErrors": false,
+  "editor.defaultFormatter": "oxc.oxc-vscode",
   "files.eol": "\n",
   "terminal.integrated.env.windows": {
     "GOOGLE_APPLICATION_CREDENTIALS": "${workspaceFolder}/service-account.json"
@@ -26,60 +25,11 @@
   "terminal.integrated.env.osx": {
     "GOOGLE_APPLICATION_CREDENTIALS": "/Users/raphael/image-generator/service-account.json"
   },
-  // Disable the default formatter, use eslint instead
   "prettier.enable": false,
   "editor.formatOnSave": true,
-
-  // Auto fix
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
+    "source.fixAll.oxc": "explicit",
     "source.organizeImports": "never"
-  },
-
-  // Silent the stylistic rules in your IDE, but still auto fix them
-  "eslint.rules.customizations": [
-    { "rule": "style/*", "severity": "off", "fixable": true },
-    { "rule": "format/*", "severity": "off", "fixable": true },
-    { "rule": "*-indent", "severity": "off", "fixable": true },
-    { "rule": "*-spacing", "severity": "off", "fixable": true },
-    { "rule": "*-spaces", "severity": "off", "fixable": true },
-    { "rule": "*-order", "severity": "off", "fixable": true },
-    { "rule": "*-dangle", "severity": "off", "fixable": true },
-    { "rule": "*-newline", "severity": "off", "fixable": true },
-    { "rule": "*quotes", "severity": "off", "fixable": true },
-    { "rule": "*semi", "severity": "off", "fixable": true }
-  ],
-
-  // Enable eslint as a formatter
-  "eslint.format.enable": true,
-
-  // Enable eslint for all supported languages
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "vue",
-    "html",
-    "markdown",
-    "json",
-    "json5",
-    "jsonc",
-    "yaml",
-    "toml",
-    "xml",
-    "gql",
-    "graphql",
-    "astro",
-    "svelte",
-    "css",
-    "less",
-    "scss",
-    "pcss",
-    "postcss"
-  ],
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"

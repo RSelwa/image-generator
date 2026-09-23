@@ -1,10 +1,15 @@
 import { METADATA_DOCS, TABLES } from "@repo/common"
-import { type DailyChallengeDoc, type DailyChallengeHistoryDoc } from "@repo/schemas"
+import {
+  type DailyChallengeDoc,
+  type DailyChallengeHistoryDoc,
+} from "@repo/schemas"
 import { FieldValue, getFirestore } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 
 const getMetadataRef = () =>
-  getFirestore().doc(`${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`) as FirebaseFirestore.DocumentReference<DailyChallengeHistoryDoc>
+  getFirestore().doc(
+    `${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`,
+  ) as FirebaseFirestore.DocumentReference<DailyChallengeHistoryDoc>
 
 const getImageId = (doc: DailyChallengeDoc) =>
   doc.isSpherical ? doc.sphericalId : doc.flatId
@@ -47,7 +52,9 @@ export const updateDailyChallengesMetadata = async (
       })
     }
 
-    logger.info(`Added image ${imageId} (date: ${date}) to dailyChallengeHistory metadata`)
+    logger.info(
+      `Added image ${imageId} (date: ${date}) to dailyChallengeHistory metadata`,
+    )
 
     return
   }
@@ -70,6 +77,8 @@ export const updateDailyChallengesMetadata = async (
 
     await getMetadataRef().update(updates)
 
-    logger.info(`Updated dailyChallengeHistory metadata: ${beforeImageId} → ${afterImageId} (date: ${date})`)
+    logger.info(
+      `Updated dailyChallengeHistory metadata: ${beforeImageId} → ${afterImageId} (date: ${date})`,
+    )
   }
 }

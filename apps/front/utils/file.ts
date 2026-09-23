@@ -1,4 +1,8 @@
-import { AVATARS_KEYS, type ConstantValues, type STORAGE_PATHS } from "@repo/common"
+import {
+  AVATARS_KEYS,
+  type ConstantValues,
+  type STORAGE_PATHS,
+} from "@repo/common"
 import { ENDPOINTS_BASE } from "@/constants/api"
 import { auth } from "@/constants/db"
 import { AVATARS_URLS } from "@/constants/images"
@@ -43,7 +47,8 @@ export const uploadFileToBucket = async ({
   return { url, width, height }
 }
 
-export const getAvatarUrl = (avatarKey: ConstantValues<typeof AVATARS_KEYS>) => AVATARS_URLS[avatarKey]
+export const getAvatarUrl = (avatarKey: ConstantValues<typeof AVATARS_KEYS>) =>
+  AVATARS_URLS[avatarKey]
 
 export const getAvatarKeyFromUrl = (avatarUrlOrKey: string) => {
   const allKeys = Object.values(AVATARS_KEYS) as string[]
@@ -51,13 +56,18 @@ export const getAvatarKeyFromUrl = (avatarUrlOrKey: string) => {
     return avatarUrlOrKey as ConstantValues<typeof AVATARS_KEYS>
   }
 
-  const entry = Object.entries(AVATARS_URLS).find(([, url]) => url === avatarUrlOrKey)
+  const entry = Object.entries(AVATARS_URLS).find(
+    ([, url]) => url === avatarUrlOrKey,
+  )
 
-  return entry ? (entry[0] as ConstantValues<typeof AVATARS_KEYS>) : AVATARS_KEYS.ASSASSIN
+  return entry
+    ? (entry[0] as ConstantValues<typeof AVATARS_KEYS>)
+    : AVATARS_KEYS.ASSASSIN
 }
 
 export const getVideoIdFromYoutubeLink = (link: string) => {
-  const regex = /(?:https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-]{11})/
+  const regex =
+    /(?:https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w-]{11})/
   const match = link.match(regex)
 
   return match ? match[1] : ""

@@ -11,9 +11,10 @@ await Promise.all(
   allSeeds.docs.map(async (seed) => {
     const seedData = seed.data()
 
-    if (seed.id === DEMO_SEED_ID || seedData?.name || seedData?.featuredAt) return
+    if (seed.id === DEMO_SEED_ID || seedData?.name || seedData?.featuredAt)
+      return
 
     console.log(`Deleting seed ${seed.id}...`)
     await refs[TABLES.SEEDS].doc(seed.id).delete()
-  })
+  }),
 )

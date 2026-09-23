@@ -1,9 +1,14 @@
-import { BUCKETS_ACTIONS, type ConstantValues } from "@repo/common"
-import { getNowString, RIGHTS_CREATE_TO_BUCKETS, STORAGE_PATHS } from "@repo/common"
+import {
+  BUCKETS_ACTIONS,
+  type ConstantValues,
+  getNowString,
+  RIGHTS_CREATE_TO_BUCKETS,
+  STORAGE_PATHS,
+} from "@repo/common"
 import { storage } from "@repo/providers/firebase"
 import { type RightDoc } from "@repo/schemas"
 import sharp from "sharp"
-import z from "zod"
+import { z } from "zod"
 import { getUserRight } from "@/utils/api"
 
 export const payloadSchema = z.object({
@@ -16,8 +21,14 @@ export const payloadSchema = z.object({
   }),
 })
 
-const hasRightToUpload = (userRight: RightDoc["right"], bucketPath: ConstantValues<typeof STORAGE_PATHS>) => {
-  const bucketRights = RIGHTS_CREATE_TO_BUCKETS[bucketPath as keyof typeof RIGHTS_CREATE_TO_BUCKETS]
+const hasRightToUpload = (
+  userRight: RightDoc["right"],
+  bucketPath: ConstantValues<typeof STORAGE_PATHS>,
+) => {
+  const bucketRights =
+    RIGHTS_CREATE_TO_BUCKETS[
+      bucketPath as keyof typeof RIGHTS_CREATE_TO_BUCKETS
+    ]
 
   if (!bucketRights) return true
 
@@ -25,7 +36,9 @@ const hasRightToUpload = (userRight: RightDoc["right"], bucketPath: ConstantValu
 
   if (!bucket) return false
 
-  return userRight === bucket.role && bucket.rights.includes(BUCKETS_ACTIONS.CREATE)
+  return (
+    userRight === bucket.role && bucket.rights.includes(BUCKETS_ACTIONS.CREATE)
+  )
 }
 
 export const POST = async (request: Request) => {
@@ -35,13 +48,9 @@ export const POST = async (request: Request) => {
     if ("error" in right) {
       console.error("Authentication error:", right.error)
 
-      const status =
-        "status" in right ? right.status : 500
+      const status = "status" in right ? right.status : 500
 
-      return Response.json(
-        { error: right.error },
-        { status },
-      )
+      return Response.json({ error: right.error }, { status })
     }
 
     const formData = await request.formData()
@@ -56,7 +65,12 @@ export const POST = async (request: Request) => {
       )
     }
 
-    if (!hasRightToUpload(right.data.right, bucketPath as ConstantValues<typeof STORAGE_PATHS>)) {
+    if (
+      !hasRightToUpload(
+        right.data.right,
+        bucketPath as ConstantValues<typeof STORAGE_PATHS>,
+      )
+    ) {
       return Response.json(
         { error: "Not authorized to write in this bucket" },
         { status: 401 },
@@ -65,10 +79,12 @@ export const POST = async (request: Request) => {
 
     const dateStr = getNowString()
 
-    const safeGameName = gameName ? gameName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") : "untitled"
+    const safeGameName = gameName
+      ? gameName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+      : "untitled"
     const extension = file?.name?.split(".").pop() || "jpg"
     const storagePath = `${bucketPath}/${safeGameName}-${dateStr}.${extension}`
 

@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 import { gameDocWithIdSchema } from "~/firestore"
 
 export const gameEntitySchema = z.object({

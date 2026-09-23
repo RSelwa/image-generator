@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 
 import { mapPositionSchema } from "~/firestore/spherical"
 import { timestampSchema, WITH_ID } from "~/zod"
@@ -16,7 +16,12 @@ export const dailyChallengeResultDocSchema = z.object({
   completedAt: timestampSchema.nullish().default(() => null),
 })
 
-export const dailyChallengeResultDocWithIdSchema = dailyChallengeResultDocSchema.merge(WITH_ID)
+export const dailyChallengeResultDocWithIdSchema =
+  dailyChallengeResultDocSchema.merge(WITH_ID)
 
-export type DailyChallengeResultDoc = z.infer<typeof dailyChallengeResultDocSchema>
-export type DailyChallengeResultDocWithId = z.infer<typeof dailyChallengeResultDocWithIdSchema>
+export type DailyChallengeResultDoc = z.infer<
+  typeof dailyChallengeResultDocSchema
+>
+export type DailyChallengeResultDocWithId = z.infer<
+  typeof dailyChallengeResultDocWithIdSchema
+>

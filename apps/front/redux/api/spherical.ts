@@ -46,7 +46,7 @@ export const sphericalApi = createApi({
     getSphericals: builder.infiniteQuery<
       SphericalEntity[],
       { hideReady?: boolean },
-      { limit?: number, startAfter?: Timestamp | null }
+      { limit?: number; startAfter?: Timestamp | null }
     >({
       queryFn: async ({ queryArg, pageParam }, { dispatch }) => {
         try {
@@ -58,13 +58,9 @@ export const sphericalApi = createApi({
           if (pageParam.startAfter)
             constraints.push(startAfter(pageParam.startAfter))
 
-          if (pageParam.limit)
-            constraints.push(limit(pageParam.limit))
+          if (pageParam.limit) constraints.push(limit(pageParam.limit))
 
-          const q = query(
-            TABLES_GROUP_REFS[TABLES.SPHERICAL],
-            ...constraints,
-          )
+          const q = query(TABLES_GROUP_REFS[TABLES.SPHERICAL], ...constraints)
 
           const snapshot = await getDocs(q)
 
@@ -78,11 +74,14 @@ export const sphericalApi = createApi({
                 }),
               ).unwrap()
 
-              const docWithId = sphericalDocWithIdSchema.parse({ id: doc.id, ...doc.data(), gameId })
+              const docWithId = sphericalDocWithIdSchema.parse({
+                id: doc.id,
+                ...doc.data(),
+                gameId,
+              })
               const data = toSphericalEntity(docWithId, game)
 
-              if (!data)
-                throw new Error(`Spherical ${doc.id} is incomplete`)
+              if (!data) throw new Error(`Spherical ${doc.id} is incomplete`)
 
               return data
             }),
@@ -120,16 +119,18 @@ export const sphericalApi = createApi({
         },
       },
       providesTags: (result) =>
-        result ? [
-          ...result.pages
-            .flat()
-            .map(({ id }) => ({ type: "Spherical" as const, id })),
-          { type: "SphericalList" as const },
-        ] : [{ type: "SphericalList" as const }],
+        result
+          ? [
+              ...result.pages
+                .flat()
+                .map(({ id }) => ({ type: "Spherical" as const, id })),
+              { type: "SphericalList" as const },
+            ]
+          : [{ type: "SphericalList" as const }],
     }),
     getSphericalById: builder.query<
       SphericalEntity,
-      { gameId: string, id: string }
+      { gameId: string; id: string }
     >({
       queryFn: async ({ id, gameId }, { dispatch }) => {
         try {
@@ -145,7 +146,10 @@ export const sphericalApi = createApi({
             }),
           ).unwrap()
 
-          const docWithId = sphericalDocWithIdSchema.parse({ id: docSnap.id, ...docSnap.data() })
+          const docWithId = sphericalDocWithIdSchema.parse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
           const data = toSphericalEntity(docWithId, game)
 
           if (!data) throw new Error(`Spherical ${docSnap.id} is incomplete`)
@@ -180,7 +184,7 @@ export const sphericalApi = createApi({
       },
       providesTags: [{ type: "SphericalCount" }],
     }),
-    deleteSpherical: builder.mutation<null, { gameId: string, id: string }>({
+    deleteSpherical: builder.mutation<null, { gameId: string; id: string }>({
       queryFn: async ({ gameId, id }) => {
         try {
           await deleteDoc(getSphericalRef(gameId, id))
@@ -212,7 +216,7 @@ export const sphericalApi = createApi({
     }),
     createSpherical: builder.mutation<
       SphericalDocWithId,
-      { gameId: string, data: CreateSphericalInput }
+      { gameId: string; data: CreateSphericalInput }
     >({
       queryFn: async ({ gameId, data: input }) => {
         try {
@@ -265,7 +269,7 @@ export const sphericalApi = createApi({
     }),
     updateSphericalById: builder.mutation<
       SphericalDocWithId,
-      { gameId: string, id: string, data: UpdateSphericalInput }
+      { gameId: string; id: string; data: UpdateSphericalInput }
     >({
       queryFn: async ({ gameId, id, data: input }) => {
         try {

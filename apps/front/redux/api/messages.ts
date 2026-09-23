@@ -1,7 +1,21 @@
-import { addDoc, arrayUnion, deleteDoc, onSnapshot, query, serverTimestamp, type Unsubscribe, updateDoc, where } from "@firebase/firestore"
+import {
+  addDoc,
+  arrayUnion,
+  deleteDoc,
+  onSnapshot,
+  query,
+  serverTimestamp,
+  type Unsubscribe,
+  updateDoc,
+  where,
+} from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES } from "@repo/common"
-import { type MessageDoc, type MessageDocWithId, messageDocWithIdSchema } from "@repo/schemas"
+import {
+  type MessageDoc,
+  type MessageDocWithId,
+  messageDocWithIdSchema,
+} from "@repo/schemas"
 import { getMessageRef, TABLE_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
@@ -10,7 +24,10 @@ export const messagesApi = createApi({
   baseQuery: fakeBaseQuery<GlobalError>(),
   tagTypes: ["Message"],
   endpoints: (builder) => ({
-    createMessage: builder.mutation<MessageDocWithId, Omit<MessageDoc, "seenBy" | "createdAt">>({
+    createMessage: builder.mutation<
+      MessageDocWithId,
+      Omit<MessageDoc, "seenBy" | "createdAt">
+    >({
       queryFn: async (input) => {
         try {
           const docRef = await addDoc(TABLE_REFS[TABLES.MESSAGES], {
@@ -19,7 +36,9 @@ export const messagesApi = createApi({
             createdAt: serverTimestamp(),
           })
 
-          return { data: { ...input, id: docRef.id, seenBy: [], createdAt: null } }
+          return {
+            data: { ...input, id: docRef.id, seenBy: [], createdAt: null },
+          }
         } catch (error) {
           console.error("Error creating message:", error)
 
@@ -40,7 +59,7 @@ export const messagesApi = createApi({
         }
       },
     }),
-    markMessageSeen: builder.mutation<null, { id: string, uid: string }>({
+    markMessageSeen: builder.mutation<null, { id: string; uid: string }>({
       queryFn: async ({ id, uid }) => {
         try {
           const ref = getMessageRef(id)
@@ -54,7 +73,10 @@ export const messagesApi = createApi({
         }
       },
     }),
-    subscribeLobbyMessages: builder.query<MessageDocWithId[], { lobbyId: string }>({
+    subscribeLobbyMessages: builder.query<
+      MessageDocWithId[],
+      { lobbyId: string }
+    >({
       queryFn: () => ({ data: [] }),
       onCacheEntryAdded: async (
         { lobbyId },

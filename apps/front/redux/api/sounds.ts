@@ -1,7 +1,21 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { SOUND_STATUS, TABLES } from "@repo/common"
-import { type SoundDoc, soundDocSchema, type SoundDocWithId, soundDocWithIdSchema } from "@repo/schemas"
-import { addDoc, deleteDoc, getDoc, getDocs, orderBy, query, Timestamp, updateDoc } from "firebase/firestore"
+import {
+  type SoundDoc,
+  soundDocSchema,
+  type SoundDocWithId,
+  soundDocWithIdSchema,
+} from "@repo/schemas"
+import {
+  addDoc,
+  deleteDoc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore"
 import { getSoundRef, TABLE_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
@@ -42,10 +56,12 @@ export const soundsApi = createApi({
         }
       },
       providesTags: (result) =>
-        result ? [
-          ...result.map(({ id }) => ({ type: "Sound" as const, id })),
-          "SoundList",
-        ] : ["SoundList"],
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Sound" as const, id })),
+              "SoundList",
+            ]
+          : ["SoundList"],
     }),
     getSoundById: builder.query<SoundDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
@@ -76,7 +92,8 @@ export const soundsApi = createApi({
       queryFn: async (input) => {
         try {
           const now = Timestamp.now()
-          const { data: validatedInput, error: validationError } = soundDocSchema.safeParse(input)
+          const { data: validatedInput, error: validationError } =
+            soundDocSchema.safeParse(input)
 
           if (validationError) {
             throw new Error(validationError.message || "Validation error")
@@ -107,7 +124,10 @@ export const soundsApi = createApi({
       },
       invalidatesTags: ["SoundList"],
     }),
-    updateSoundById: builder.mutation<SoundDocWithId, { id: string, data: Partial<SoundDoc> }>({
+    updateSoundById: builder.mutation<
+      SoundDocWithId,
+      { id: string; data: Partial<SoundDoc> }
+    >({
       queryFn: async ({ id, data: input }) => {
         try {
           const soundRef = getSoundRef(id)
@@ -161,4 +181,10 @@ export const soundsApi = createApi({
   }),
 })
 
-export const { useGetAllSoundsQuery, useGetSoundByIdQuery, useCreateSoundMutation, useUpdateSoundByIdMutation, useDeleteSoundByIdMutation } = soundsApi
+export const {
+  useGetAllSoundsQuery,
+  useGetSoundByIdQuery,
+  useCreateSoundMutation,
+  useUpdateSoundByIdMutation,
+  useDeleteSoundByIdMutation,
+} = soundsApi

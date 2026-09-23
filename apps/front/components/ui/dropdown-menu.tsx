@@ -9,7 +9,11 @@ import { cn } from "@/utils"
 const DropdownMenu = ({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) => (
-  <DropdownMenuPrimitive.Root modal={false} data-slot="dropdown-menu" {...props} />
+  <DropdownMenuPrimitive.Root
+    modal={false}
+    data-slot="dropdown-menu"
+    {...props}
+  />
 )
 
 const DropdownMenuPortal = ({
@@ -21,10 +25,7 @@ const DropdownMenuPortal = ({
 const DropdownMenuTrigger = ({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) => (
-  <DropdownMenuPrimitive.Trigger
-    data-slot="dropdown-menu-trigger"
-    {...props}
-  />
+  <DropdownMenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
 )
 
 const DropdownMenuContent = ({

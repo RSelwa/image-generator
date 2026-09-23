@@ -70,7 +70,7 @@ describe("firebase Storage Rules", () => {
     await testEnv.cleanup()
   })
 
-  const testFile = new Uint8Array([0x48, 0x65, 0x6C, 0x6C, 0x6F]) // "Hello" in bytes
+  const testFile = new Uint8Array([0x48, 0x65, 0x6c, 0x6c, 0x6f]) // "Hello" in bytes
 
   describe("game-thumbnails", () => {
     it("should allow unauthenticated read", async () => {
@@ -106,7 +106,7 @@ describe("firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(
@@ -154,7 +154,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "game-thumbnails/test.png"), updatedFile),
@@ -193,7 +193,7 @@ describe("firebase Storage Rules", () => {
       const iconoStorage = testEnv
         .authenticatedContext(ICONOGRAPH_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(iconoStorage, "game-thumbnails/test.png"), updatedFile),
@@ -249,7 +249,7 @@ describe("firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "sphericals/test.jpg"), updatedFile),
@@ -266,9 +266,7 @@ describe("firebase Storage Rules", () => {
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
 
-      await assertFails(
-        deleteObject(ref(authedStorage, "sphericals/test.jpg")),
-      )
+      await assertFails(deleteObject(ref(authedStorage, "sphericals/test.jpg")))
     })
 
     it("should deny unauthenticated create", async () => {
@@ -294,7 +292,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "sphericals/test.jpg"), updatedFile),
@@ -333,7 +331,7 @@ describe("firebase Storage Rules", () => {
       const iconoStorage = testEnv
         .authenticatedContext(ICONOGRAPH_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(iconoStorage, "sphericals/test.jpg"), updatedFile),
@@ -387,7 +385,7 @@ describe("firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "map-thumbnails/test.png"), updatedFile),
@@ -432,7 +430,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "map-thumbnails/test.png"), updatedFile),
@@ -471,7 +469,7 @@ describe("firebase Storage Rules", () => {
       const iconoStorage = testEnv
         .authenticatedContext(ICONOGRAPH_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(iconoStorage, "map-thumbnails/test.png"), updatedFile),
@@ -527,7 +525,7 @@ describe("firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "flat-images/test.png"), updatedFile),
@@ -572,7 +570,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "flat-images/test.png"), updatedFile),
@@ -611,7 +609,7 @@ describe("firebase Storage Rules", () => {
       const iconoStorage = testEnv
         .authenticatedContext(ICONOGRAPH_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(iconoStorage, "flat-images/test.png"), updatedFile),
@@ -628,9 +626,7 @@ describe("firebase Storage Rules", () => {
         .authenticatedContext(ICONOGRAPH_UID)
         .storage()
 
-      await assertFails(
-        deleteObject(ref(iconoStorage, "flat-images/test.png")),
-      )
+      await assertFails(deleteObject(ref(iconoStorage, "flat-images/test.png")))
     })
   })
 
@@ -667,7 +663,7 @@ describe("firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(
@@ -715,7 +711,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "flat-thumbnails/test.png"), updatedFile),
@@ -754,7 +750,7 @@ describe("firebase Storage Rules", () => {
       const iconoStorage = testEnv
         .authenticatedContext(ICONOGRAPH_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(iconoStorage, "flat-thumbnails/test.png"), updatedFile),
@@ -835,7 +831,7 @@ describe("firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "suggestions/test.png"), updatedFile),
@@ -866,7 +862,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(unauthedStorage, "suggestions/test.png"), updatedFile),
@@ -906,7 +902,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "suggestions/test.png"), updatedFile),
@@ -951,9 +947,7 @@ describe("firebase Storage Rules", () => {
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
 
-      await assertFails(
-        getDownloadURL(ref(authedStorage, "socials/test.png")),
-      )
+      await assertFails(getDownloadURL(ref(authedStorage, "socials/test.png")))
     })
 
     it("should deny unauthenticated create", async () => {
@@ -983,7 +977,7 @@ describe("firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "socials/test.png"), updatedFile),
@@ -1000,9 +994,7 @@ describe("firebase Storage Rules", () => {
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
 
-      await assertFails(
-        deleteObject(ref(authedStorage, "socials/test.png")),
-      )
+      await assertFails(deleteObject(ref(authedStorage, "socials/test.png")))
     })
 
     it("should deny unauthenticated delete", async () => {
@@ -1013,9 +1005,7 @@ describe("firebase Storage Rules", () => {
 
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
-      await assertFails(
-        deleteObject(ref(unauthedStorage, "socials/test.png")),
-      )
+      await assertFails(deleteObject(ref(unauthedStorage, "socials/test.png")))
     })
 
     it.skip("should allow admin read", async () => {
@@ -1046,7 +1036,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "socials/test.png"), updatedFile),
@@ -1061,9 +1051,7 @@ describe("firebase Storage Rules", () => {
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
 
-      await assertSucceeds(
-        deleteObject(ref(adminStorage, "socials/test.png")),
-      )
+      await assertSucceeds(deleteObject(ref(adminStorage, "socials/test.png")))
     })
   })
 
@@ -1076,9 +1064,7 @@ describe("firebase Storage Rules", () => {
 
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
-      await assertFails(
-        getDownloadURL(ref(unauthedStorage, "sounds/test.png")),
-      )
+      await assertFails(getDownloadURL(ref(unauthedStorage, "sounds/test.png")))
     })
 
     it("should deny non-admin read", async () => {
@@ -1091,9 +1077,7 @@ describe("firebase Storage Rules", () => {
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
 
-      await assertFails(
-        getDownloadURL(ref(authedStorage, "sounds/test.png")),
-      )
+      await assertFails(getDownloadURL(ref(authedStorage, "sounds/test.png")))
     })
 
     it("should deny unauthenticated create", async () => {
@@ -1123,7 +1107,7 @@ describe("firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "sounds/test.png"), updatedFile),
@@ -1140,9 +1124,7 @@ describe("firebase Storage Rules", () => {
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
 
-      await assertFails(
-        deleteObject(ref(authedStorage, "sounds/test.png")),
-      )
+      await assertFails(deleteObject(ref(authedStorage, "sounds/test.png")))
     })
 
     it("should deny unauthenticated delete", async () => {
@@ -1153,9 +1135,7 @@ describe("firebase Storage Rules", () => {
 
       const unauthedStorage = testEnv.unauthenticatedContext().storage()
 
-      await assertFails(
-        deleteObject(ref(unauthedStorage, "sounds/test.png")),
-      )
+      await assertFails(deleteObject(ref(unauthedStorage, "sounds/test.png")))
     })
 
     it.skip("should allow admin read", async () => {
@@ -1166,9 +1146,7 @@ describe("firebase Storage Rules", () => {
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
 
-      await assertSucceeds(
-        getDownloadURL(ref(adminStorage, "sounds/test.png")),
-      )
+      await assertSucceeds(getDownloadURL(ref(adminStorage, "sounds/test.png")))
     })
 
     it.skip("should allow admin create", async () => {
@@ -1186,7 +1164,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "sounds/test.png"), updatedFile),
@@ -1201,9 +1179,7 @@ describe("firebase Storage Rules", () => {
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
 
-      await assertSucceeds(
-        deleteObject(ref(adminStorage, "sounds/test.png")),
-      )
+      await assertSucceeds(deleteObject(ref(adminStorage, "sounds/test.png")))
     })
   })
 
@@ -1251,7 +1227,7 @@ describe("firebase Storage Rules", () => {
       const authedStorage = testEnv
         .authenticatedContext(NON_ADMIN_UID)
         .storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertFails(
         uploadBytes(ref(authedStorage, "other/test.png"), updatedFile),
@@ -1297,7 +1273,7 @@ describe("firebase Storage Rules", () => {
       })
 
       const adminStorage = testEnv.authenticatedContext(ADMIN_UID).storage()
-      const updatedFile = new Uint8Array([0x57, 0x6F, 0x72, 0x6C, 0x64]) // "World"
+      const updatedFile = new Uint8Array([0x57, 0x6f, 0x72, 0x6c, 0x64]) // "World"
 
       await assertSucceeds(
         uploadBytes(ref(adminStorage, "other/test.png"), updatedFile),

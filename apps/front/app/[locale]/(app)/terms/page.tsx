@@ -11,7 +11,8 @@ export const generateMetadata = async ({
 
   return {
     title: "Terms of Service — Geo Gamer",
-    description: "Read the Geo Gamer terms of service to understand the rules and conditions for using our platform.",
+    description:
+      "Read the Geo Gamer terms of service to understand the rules and conditions for using our platform.",
     alternates: {
       canonical: `${APP_BASE_URL}/${locale}/terms`,
       languages: {
@@ -41,11 +42,7 @@ export default function TermsOfService() {
               1. Acceptance of Terms
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              By accessing and using
-              {" "}
-              {APP_NAME}
-              {" "}
-              (the "Service"), you accept and
+              By accessing and using {APP_NAME} (the "Service"), you accept and
               agree to be bound by the terms and provision of this agreement. If
               you do not agree to these Terms of Service, please do not use the
               Service.
@@ -57,11 +54,9 @@ export default function TermsOfService() {
               2. Description of Service
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              {APP_NAME}
-              {" "}
-              is a web-based guessing game where players are shown
-              a screenshot or scene from a video game and must identify which
-              game it is from. The Service includes features such as daily
+              {APP_NAME} is a web-based guessing game where players are shown a
+              screenshot or scene from a video game and must identify which game
+              it is from. The Service includes features such as daily
               challenges, multiplayer lobbies, score tracking, and leaderboards.
             </p>
           </section>
@@ -103,9 +98,7 @@ export default function TermsOfService() {
                   Cheat, exploit bugs, or use unauthorized tools to gain an
                   unfair advantage in the game
                 </li>
-                <li>
-                  Harass, abuse, or intimidate other players
-                </li>
+                <li>Harass, abuse, or intimidate other players</li>
                 <li>Infringe upon intellectual property rights of others</li>
                 <li>
                   Use bots or automated scripts to play the game or manipulate
@@ -124,11 +117,9 @@ export default function TermsOfService() {
               5. Game Content and Intellectual Property
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              {APP_NAME}
-              {" "}
-              displays video game screenshots and assets for the purpose of
-              identification as part of a quiz-style game. By using the Service,
-              you acknowledge that:
+              {APP_NAME} displays video game screenshots and assets for the
+              purpose of identification as part of a quiz-style game. By using
+              the Service, you acknowledge that:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
               <li>
@@ -136,9 +127,7 @@ export default function TermsOfService() {
                 property of their respective owners
               </li>
               <li>
-                {APP_NAME}
-                {" "}
-                does not claim ownership over any third-party game
+                {APP_NAME} does not claim ownership over any third-party game
                 content displayed within the Service
               </li>
               <li>
@@ -146,8 +135,8 @@ export default function TermsOfService() {
                 identification purposes
               </li>
               <li>
-                We will respond promptly to valid intellectual property
-                takedown requests from rights holders
+                We will respond promptly to valid intellectual property takedown
+                requests from rights holders
               </li>
             </ul>
           </section>
@@ -158,23 +147,19 @@ export default function TermsOfService() {
             </h2>
             <div className="text-zinc-700 dark:text-zinc-300 space-y-4">
               <p>
-                <strong>Fair Play:</strong>
-                {" "}
-                Scores are computed server-side to ensure fairness. Any attempt
-                to manipulate scores through unauthorized means will result in
-                account suspension.
+                <strong>Fair Play:</strong> Scores are computed server-side to
+                ensure fairness. Any attempt to manipulate scores through
+                unauthorized means will result in account suspension.
               </p>
               <p>
-                <strong>Leaderboard Resets:</strong>
-                {" "}
-                We reserve the right to reset leaderboards at any time,
-                including at the start of new seasons or competitive periods.
+                <strong>Leaderboard Resets:</strong> We reserve the right to
+                reset leaderboards at any time, including at the start of new
+                seasons or competitive periods.
               </p>
               <p>
-                <strong>Account Suspension:</strong>
-                {" "}
-                Accounts found cheating or abusing the game will be permanently
-                banned without prior notice.
+                <strong>Account Suspension:</strong> Accounts found cheating or
+                abusing the game will be permanently banned without prior
+                notice.
               </p>
             </div>
           </section>
@@ -185,11 +170,7 @@ export default function TermsOfService() {
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
               The Service and its original content, features, and functionality
-              are owned by
-              {" "}
-              {APP_NAME}
-              {" "}
-              and are protected by international
+              are owned by {APP_NAME} and are protected by international
               copyright, trademark, and other intellectual property laws. You
               retain ownership of content you post through the Service.
             </p>
@@ -213,11 +194,7 @@ export default function TermsOfService() {
               9. Limitation of Liability
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              To the maximum extent permitted by law,
-              {" "}
-              {APP_NAME}
-              {" "}
-              shall not be
+              To the maximum extent permitted by law, {APP_NAME} shall not be
               liable for any indirect, incidental, special, consequential, or
               punitive damages, or any loss of profits or revenues, whether
               incurred directly or indirectly, or any loss of data, use,
@@ -256,11 +233,7 @@ export default function TermsOfService() {
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
               These Terms shall be governed by and construed in accordance with
-              the laws of the jurisdiction in which
-              {" "}
-              {APP_NAME}
-              {" "}
-              operates, without
+              the laws of the jurisdiction in which {APP_NAME} operates, without
               regard to its conflict of law provisions.
             </p>
           </section>
@@ -274,9 +247,7 @@ export default function TermsOfService() {
               contact us at:
             </p>
             <p className="text-zinc-700 dark:text-zinc-300">
-              Email:
-              {" "}
-              {CONTACT_EMAIL}
+              Email: {CONTACT_EMAIL}
             </p>
           </section>
         </div>

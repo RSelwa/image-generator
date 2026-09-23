@@ -1,7 +1,13 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { PROJECT_ID } from "@repo/common"
-import { applicationDefault, cert, getApp, getApps, initializeApp } from "firebase-admin/app"
+import {
+  applicationDefault,
+  cert,
+  getApp,
+  getApps,
+  initializeApp,
+} from "firebase-admin/app"
 import { getAuth } from "firebase-admin/auth"
 import { getDatabase } from "firebase-admin/database"
 import { getFirestore } from "firebase-admin/firestore"
@@ -47,7 +53,10 @@ if (!getApps().length) {
     })
   }
 
-  getFirestore().settings({ ignoreUndefinedProperties: true, preferRest: !isEmulated })
+  getFirestore().settings({
+    ignoreUndefinedProperties: true,
+    preferRest: !isEmulated,
+  })
 }
 
 const firebaseApp = getApp()

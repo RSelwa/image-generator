@@ -11,7 +11,8 @@ export const generateMetadata = async ({
 
   return {
     title: "Login — Geo Gamer",
-    description: "Sign in to your Geo Gamer account to track your daily challenge streak, save your scores, and challenge friends.",
+    description:
+      "Sign in to your Geo Gamer account to track your daily challenge streak, save your scores, and challenge friends.",
     alternates: {
       canonical: `${APP_BASE_URL}/${locale}/login`,
       languages: {

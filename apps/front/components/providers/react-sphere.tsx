@@ -17,7 +17,9 @@ export const ReactSphere = ({
   width = "100%",
   hideCursor = false,
 }: Props) => {
-  const proxySrc = src.startsWith("blob:") ? src : `/api/proxy-image?url=${encodeURIComponent(src)}`
+  const proxySrc = src.startsWith("blob:")
+    ? src
+    : `/api/proxy-image?url=${encodeURIComponent(src)}`
 
   return (
     <ReactPhotoSphereViewer

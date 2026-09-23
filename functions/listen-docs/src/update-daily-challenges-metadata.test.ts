@@ -1,5 +1,8 @@
 import { DIFFICULTIES, METADATA_DOCS, TABLES } from "@repo/common"
-import { type DailyChallengeDoc, type DailyChallengeHistoryDoc } from "@repo/schemas"
+import {
+  type DailyChallengeDoc,
+  type DailyChallengeHistoryDoc,
+} from "@repo/schemas"
 import { makeDocumentSnapshot } from "@repo/testing/document-snapshot"
 import { getFirestore } from "firebase-admin/firestore"
 import firebaseFunctionsTest from "firebase-functions-test"
@@ -8,24 +11,33 @@ import { listen_daily_challenges_written } from "~/index"
 
 beforeAll(() => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
-    throw new Error("FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.")
+    throw new Error(
+      "FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.",
+    )
   }
 })
 
 const test = firebaseFunctionsTest()
 
-const getDailyChallengePath = (date: string) => `${TABLES.DAILY_CHALLENGES}/${date}`
+const getDailyChallengePath = (date: string) =>
+  `${TABLES.DAILY_CHALLENGES}/${date}`
 
 const getHistoryData = async () => {
-  const doc = await getFirestore().doc(`${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`).get()
+  const doc = await getFirestore()
+    .doc(`${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`)
+    .get()
 
   return doc.data() as DailyChallengeHistoryDoc | undefined
 }
 
 const getHistoryRef = () =>
-  getFirestore().doc(`${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`)
+  getFirestore().doc(
+    `${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`,
+  )
 
-const makeSphericalChallenge = (overrides: Partial<DailyChallengeDoc> = {}): DailyChallengeDoc => ({
+const makeSphericalChallenge = (
+  overrides: Partial<DailyChallengeDoc> = {},
+): DailyChallengeDoc => ({
   date: "2026-03-15",
   isSpherical: true,
   gameId: "game-1",
@@ -46,7 +58,9 @@ const makeSphericalChallenge = (overrides: Partial<DailyChallengeDoc> = {}): Dai
   ...overrides,
 })
 
-const makeFlatChallenge = (overrides: Partial<DailyChallengeDoc> = {}): DailyChallengeDoc => ({
+const makeFlatChallenge = (
+  overrides: Partial<DailyChallengeDoc> = {},
+): DailyChallengeDoc => ({
   date: "2026-03-16",
   isSpherical: false,
   gameId: "game-2",
@@ -77,8 +91,14 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
       const cloudFnWrap = test.wrap(listen_daily_challenges_written)
       const challenge = makeSphericalChallenge()
 
-      const before = makeDocumentSnapshot({}, getDailyChallengePath(challenge.date))
-      const after = makeDocumentSnapshot(challenge, getDailyChallengePath(challenge.date))
+      const before = makeDocumentSnapshot(
+        {},
+        getDailyChallengePath(challenge.date),
+      )
+      const after = makeDocumentSnapshot(
+        challenge,
+        getDailyChallengePath(challenge.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },
@@ -94,8 +114,14 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
       const cloudFnWrap = test.wrap(listen_daily_challenges_written)
       const challenge = makeFlatChallenge()
 
-      const before = makeDocumentSnapshot({}, getDailyChallengePath(challenge.date))
-      const after = makeDocumentSnapshot(challenge, getDailyChallengePath(challenge.date))
+      const before = makeDocumentSnapshot(
+        {},
+        getDailyChallengePath(challenge.date),
+      )
+      const after = makeDocumentSnapshot(
+        challenge,
+        getDailyChallengePath(challenge.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },
@@ -111,8 +137,14 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
       const cloudFnWrap = test.wrap(listen_daily_challenges_written)
       const challenge = makeSphericalChallenge()
 
-      const before = makeDocumentSnapshot({}, getDailyChallengePath(challenge.date))
-      const after = makeDocumentSnapshot(challenge, getDailyChallengePath(challenge.date))
+      const before = makeDocumentSnapshot(
+        {},
+        getDailyChallengePath(challenge.date),
+      )
+      const after = makeDocumentSnapshot(
+        challenge,
+        getDailyChallengePath(challenge.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },
@@ -128,12 +160,20 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
     it("should append to existing history when metadata doc already exists", async () => {
       const cloudFnWrap = test.wrap(listen_daily_challenges_written)
 
-      await getHistoryRef().set({ usedImages: { "existing-image": "2026-03-10" } })
+      await getHistoryRef().set({
+        usedImages: { "existing-image": "2026-03-10" },
+      })
 
       const challenge = makeFlatChallenge()
 
-      const before = makeDocumentSnapshot({}, getDailyChallengePath(challenge.date))
-      const after = makeDocumentSnapshot(challenge, getDailyChallengePath(challenge.date))
+      const before = makeDocumentSnapshot(
+        {},
+        getDailyChallengePath(challenge.date),
+      )
+      const after = makeDocumentSnapshot(
+        challenge,
+        getDailyChallengePath(challenge.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },
@@ -154,10 +194,21 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
       const cloudFnWrap = test.wrap(listen_daily_challenges_written)
       const challenge = makeSphericalChallenge()
 
-      await getHistoryRef().set({ usedImages: { "spherical-1": "2026-03-15", "other-image": "2026-03-10" } })
+      await getHistoryRef().set({
+        usedImages: {
+          "spherical-1": "2026-03-15",
+          "other-image": "2026-03-10",
+        },
+      })
 
-      const before = makeDocumentSnapshot(challenge, getDailyChallengePath(challenge.date))
-      const after = makeDocumentSnapshot({}, getDailyChallengePath(challenge.date))
+      const before = makeDocumentSnapshot(
+        challenge,
+        getDailyChallengePath(challenge.date),
+      )
+      const after = makeDocumentSnapshot(
+        {},
+        getDailyChallengePath(challenge.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },
@@ -173,10 +224,18 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
       const cloudFnWrap = test.wrap(listen_daily_challenges_written)
       const challenge = makeFlatChallenge()
 
-      await getHistoryRef().set({ usedImages: { "flat-1": "2026-03-16", "other-image": "2026-03-10" } })
+      await getHistoryRef().set({
+        usedImages: { "flat-1": "2026-03-16", "other-image": "2026-03-10" },
+      })
 
-      const before = makeDocumentSnapshot(challenge, getDailyChallengePath(challenge.date))
-      const after = makeDocumentSnapshot({}, getDailyChallengePath(challenge.date))
+      const before = makeDocumentSnapshot(
+        challenge,
+        getDailyChallengePath(challenge.date),
+      )
+      const after = makeDocumentSnapshot(
+        {},
+        getDailyChallengePath(challenge.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },
@@ -192,13 +251,25 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
   describe("update", () => {
     it("should update history when a spherical challenge image changes", async () => {
       const cloudFnWrap = test.wrap(listen_daily_challenges_written)
-      const challengeBefore = makeSphericalChallenge({ sphericalId: "spherical-old" })
-      const challengeAfter = makeSphericalChallenge({ sphericalId: "spherical-new" })
+      const challengeBefore = makeSphericalChallenge({
+        sphericalId: "spherical-old",
+      })
+      const challengeAfter = makeSphericalChallenge({
+        sphericalId: "spherical-new",
+      })
 
-      await getHistoryRef().set({ usedImages: { "spherical-old": "2026-03-15" } })
+      await getHistoryRef().set({
+        usedImages: { "spherical-old": "2026-03-15" },
+      })
 
-      const before = makeDocumentSnapshot(challengeBefore, getDailyChallengePath(challengeBefore.date))
-      const after = makeDocumentSnapshot(challengeAfter, getDailyChallengePath(challengeAfter.date))
+      const before = makeDocumentSnapshot(
+        challengeBefore,
+        getDailyChallengePath(challengeBefore.date),
+      )
+      const after = makeDocumentSnapshot(
+        challengeAfter,
+        getDailyChallengePath(challengeAfter.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },
@@ -218,8 +289,14 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
 
       await getHistoryRef().set({ usedImages: { "flat-old": "2026-03-16" } })
 
-      const before = makeDocumentSnapshot(challengeBefore, getDailyChallengePath(challengeBefore.date))
-      const after = makeDocumentSnapshot(challengeAfter, getDailyChallengePath(challengeAfter.date))
+      const before = makeDocumentSnapshot(
+        challengeBefore,
+        getDailyChallengePath(challengeBefore.date),
+      )
+      const after = makeDocumentSnapshot(
+        challengeAfter,
+        getDailyChallengePath(challengeAfter.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },
@@ -239,8 +316,14 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
 
       await getHistoryRef().set({ usedImages: { "spherical-1": "2026-03-15" } })
 
-      const before = makeDocumentSnapshot(challengeBefore, getDailyChallengePath(challengeBefore.date))
-      const after = makeDocumentSnapshot(challengeAfter, getDailyChallengePath(challengeAfter.date))
+      const before = makeDocumentSnapshot(
+        challengeBefore,
+        getDailyChallengePath(challengeBefore.date),
+      )
+      const after = makeDocumentSnapshot(
+        challengeAfter,
+        getDailyChallengePath(challengeAfter.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },
@@ -256,12 +339,20 @@ describe("listen daily challenges docs changes for dailyChallengeHistory metadat
     it("should not update history when image id does not change", async () => {
       const cloudFnWrap = test.wrap(listen_daily_challenges_written)
       const challengeBefore = makeSphericalChallenge()
-      const challengeAfter = makeSphericalChallenge({ difficulty: DIFFICULTIES.HARD })
+      const challengeAfter = makeSphericalChallenge({
+        difficulty: DIFFICULTIES.HARD,
+      })
 
       await getHistoryRef().set({ usedImages: { "spherical-1": "2026-03-15" } })
 
-      const before = makeDocumentSnapshot(challengeBefore, getDailyChallengePath(challengeBefore.date))
-      const after = makeDocumentSnapshot(challengeAfter, getDailyChallengePath(challengeAfter.date))
+      const before = makeDocumentSnapshot(
+        challengeBefore,
+        getDailyChallengePath(challengeBefore.date),
+      )
+      const after = makeDocumentSnapshot(
+        challengeAfter,
+        getDailyChallengePath(challengeAfter.date),
+      )
 
       await cloudFnWrap({
         data: { before, after },

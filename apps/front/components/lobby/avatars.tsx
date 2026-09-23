@@ -3,15 +3,31 @@ import { Crown } from "lucide-react"
 import { Fragment } from "react/jsx-runtime"
 import { toast } from "sonner"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { usePathname } from "@/i18n/routing"
-import { useExcludePlayerMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
+import {
+  useExcludePlayerMutation,
+  useSubscribeLobbyQuery,
+} from "@/redux/api/lobby"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 
-const AvatarPlayer = ({ p, isOwner, isOnlyPlayer }: { p: Player, isOwner?: boolean, isOnlyPlayer?: boolean }) => (
+const AvatarPlayer = ({
+  p,
+  isOwner,
+  isOnlyPlayer,
+}: {
+  p: Player
+  isOwner?: boolean
+  isOnlyPlayer?: boolean
+}) => (
   <UserAvatar
     avatar={p.avatar}
     name={p.name}
@@ -19,7 +35,11 @@ const AvatarPlayer = ({ p, isOwner, isOnlyPlayer }: { p: Player, isOwner?: boole
     fallbackClassName="font-bold"
     imageClassName="data-[ready=true]:bg-ready data-[ready=false]:bg-destructive"
     imageData={{ "data-ready": p.isReady || isOnlyPlayer }}
-    action={isOwner && <Crown className="absolute fill-primary -top-4 left-1/2 -translate-x-1/2 stroke-0 size-4 z-50" />}
+    action={
+      isOwner && (
+        <Crown className="absolute fill-primary -top-4 left-1/2 -translate-x-1/2 stroke-0 size-4 z-50" />
+      )
+    }
   />
 )
 
@@ -30,9 +50,12 @@ export const LobbyAvatars = () => {
   const user = useAppSelector(selectUser)
 
   const [excludeUser] = useExcludePlayerMutation()
-  const { data: lobby } = useSubscribeLobbyQuery({ id: lobbyId }, {
-    skip: !lobbyId,
-  })
+  const { data: lobby } = useSubscribeLobbyQuery(
+    { id: lobbyId },
+    {
+      skip: !lobbyId,
+    },
+  )
 
   if (!lobby) return null
 
@@ -46,7 +69,6 @@ export const LobbyAvatars = () => {
 
   return (
     <div className="grid grid-cols-4 lg:grid-cols-8 gap-4 items-center justify-center">
-
       {Array.from({ length: lobby.config.maxPlayers }, (_, i) => {
         const player = lobby.players?.[i]
 
@@ -64,10 +86,17 @@ export const LobbyAvatars = () => {
           <Fragment key={player.uid}>
             <ContextMenu>
               <ContextMenuTrigger disabled={!isOwner}>
-                <AvatarPlayer p={player} isOwner={isPlayerOwner} isOnlyPlayer={isOnlyPlayer} />
+                <AvatarPlayer
+                  p={player}
+                  isOwner={isPlayerOwner}
+                  isOnlyPlayer={isOnlyPlayer}
+                />
               </ContextMenuTrigger>
               <ContextMenuContent>
-                <ContextMenuItem disabled={isPlayerOwner} onClick={() => handleExcludePlayer(player.uid)}>
+                <ContextMenuItem
+                  disabled={isPlayerOwner}
+                  onClick={() => handleExcludePlayer(player.uid)}
+                >
                   Exclude
                 </ContextMenuItem>
               </ContextMenuContent>

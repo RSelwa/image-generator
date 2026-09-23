@@ -26,7 +26,8 @@ export const Default: Story = {
 
 export const WithValue: Story = {
   args: {
-    defaultValue: "This is some pre-filled content in the textarea that demonstrates how it looks with text.",
+    defaultValue:
+      "This is some pre-filled content in the textarea that demonstrates how it looks with text.",
     className: "w-80",
   },
 }

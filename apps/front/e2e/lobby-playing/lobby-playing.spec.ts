@@ -3,23 +3,32 @@ import { LOBBY_MODES, LOBBY_STATUS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { lobbyFactory } from "@repo/testing/factory"
 import { SELECTORS } from "@/constants/testing"
-import { createFirestoreLobbyDoc, createLobbyViaUI, createPlayerFromUserDoc, hideDriverTutorial, loginViaUI, retrieveGamesFromLobby, setupUser, startSoloLobbyViaUI, waitForInputToBeVisible, waitToBeLogged } from "@/e2e/helpers/lobby"
+import {
+  createFirestoreLobbyDoc,
+  createLobbyViaUI,
+  createPlayerFromUserDoc,
+  hideDriverTutorial,
+  loginViaUI,
+  retrieveGamesFromLobby,
+  setupUser,
+  startSoloLobbyViaUI,
+  waitForInputToBeVisible,
+  waitToBeLogged,
+} from "@/e2e/helpers/lobby"
 
 test.describe("lobby playing", () => {
   test.describe("when is display game", () => {
-    test.skip("should not increment points after reload", () => {
-
-    })
+    test.skip("should not increment points after reload", () => {})
   })
 
   test.describe("when is special round", () => {
-    test.skip("should not start the timer while the player has not selected an option", () => {
-
-    })
+    test.skip("should not start the timer while the player has not selected an option", () => {})
   })
 
   test.describe("when joining a lobby while playing", () => {
-    test("should allow me to join and display the current game if already part of the player", async ({ page }) => {
+    test("should allow me to join and display the current game if already part of the player", async ({
+      page,
+    }) => {
       const host = await setupUser()
       const player2 = await setupUser()
 
@@ -42,7 +51,9 @@ test.describe("lobby playing", () => {
       await expect(page).toHaveURL(`/en/lobby/${lobby.id}`, { timeout: 10000 })
     })
 
-    test("should not allow me to join and display the current game if not part of the player", async ({ page }) => {
+    test("should not allow me to join and display the current game if not part of the player", async ({
+      page,
+    }) => {
       const host = await setupUser()
       const outsider = await setupUser()
 
@@ -82,7 +93,9 @@ test.describe("lobby playing", () => {
 
     await page.getByTestId("select-number-rounds-trigger").click()
     await page.getByTestId("select-number-rounds-6-item").click()
-    await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText("6")
+    await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText(
+      "6",
+    )
 
     const specialRoundsSwitch = page.getByTestId("special-rounds")
     await expect(specialRoundsSwitch).toBeChecked()
@@ -98,16 +111,24 @@ test.describe("lobby playing", () => {
 
     // round 1 - all answers correct
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[0].game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[0].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+    await page
+      .getByTestId(SELECTORS.MINIMAP)
+      .click({ position: { x: 50, y: 50 } })
+    await expect(
+      page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
-    await expect(page.getByTestId(SELECTORS.GAME_MAP(games[0].game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.GAME_MAP(games[0].game?.title)),
+    ).toBeVisible()
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
@@ -115,61 +136,91 @@ test.describe("lobby playing", () => {
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill("wrong answer")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
-    await expect(page.getByTestId(SELECTORS.LIVES_CONTAINER).locator(":nth-child(3)")).toHaveAttribute("data-is-filled", "false")
+    await expect(
+      page.getByTestId(SELECTORS.LIVES_CONTAINER).locator(":nth-child(3)"),
+    ).toHaveAttribute("data-is-filled", "false")
 
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill("wrong answer")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
-    await expect(page.getByTestId(SELECTORS.LIVES_CONTAINER).locator(":nth-child(2)")).toHaveAttribute("data-is-filled", "false")
+    await expect(
+      page.getByTestId(SELECTORS.LIVES_CONTAINER).locator(":nth-child(2)"),
+    ).toHaveAttribute("data-is-filled", "false")
 
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill("wrong answer")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await expect(page.getByTestId(SELECTORS.GAME_THUMBNAIL_TITLE(games[1].game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.GAME_THUMBNAIL_TITLE(games[1].game?.title)),
+    ).toBeVisible()
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
     // round 3 - No pin on map, line should appear and player marker neither but the correct position marker should be visible
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[2].game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[2].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(61_000)
 
-    await expect(page.getByTestId(SELECTORS.GAME_MAP(games[2].game?.title))).toBeVisible()
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toHaveCount(0)
+    await expect(
+      page.getByTestId(SELECTORS.GAME_MAP(games[2].game?.title)),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+    ).toHaveCount(0)
     await expect(page.getByTestId(SELECTORS.MAP_LINE)).toHaveCount(0)
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("primary"))).toHaveCount(1)
+    await expect(page.getByTestId(SELECTORS.MAP_MARKER("primary"))).toHaveCount(
+      1,
+    )
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
 
     // round 4
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[3].game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[3].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+    await page
+      .getByTestId(SELECTORS.MINIMAP)
+      .click({ position: { x: 50, y: 50 } })
+    await expect(
+      page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
-    await expect(page.getByTestId(SELECTORS.GAME_MAP(games[3].game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.GAME_MAP(games[3].game?.title)),
+    ).toBeVisible()
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
 
     // round 5
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[4].game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[4].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+    await page
+      .getByTestId(SELECTORS.MINIMAP)
+      .click({ position: { x: 50, y: 50 } })
+    await expect(
+      page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
-    await expect(page.getByTestId(SELECTORS.GAME_MAP(games[4].game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.GAME_MAP(games[4].game?.title)),
+    ).toBeVisible()
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
 
@@ -179,10 +230,16 @@ test.describe("lobby playing", () => {
 
     await page.getByTestId(SELECTORS.GAME_THUMBNAIL_OPTION("0")).click()
 
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[5].options?.[0]?.game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[5].options?.[0]?.game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await expect(page.getByTestId(SELECTORS.GAME_THUMBNAIL_TITLE(games[5].options?.[0]?.game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(
+        SELECTORS.GAME_THUMBNAIL_TITLE(games[5].options?.[0]?.game?.title),
+      ),
+    ).toBeVisible()
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
@@ -193,7 +250,9 @@ test.describe("lobby playing", () => {
 
     await page.waitForTimeout(1000) // Wait for the modal to appear
 
-    await expect(page.getByTestId(SELECTORS.FINISHED_LOBBY_ANONYMOUS_MODAL)).toHaveCount(0)
+    await expect(
+      page.getByTestId(SELECTORS.FINISHED_LOBBY_ANONYMOUS_MODAL),
+    ).toHaveCount(0)
   })
 
   test("should play a map-only game without game input", async ({ page }) => {
@@ -240,8 +299,12 @@ test.describe("lobby playing", () => {
       // Map should be visible directly
       await page.getByTestId(SELECTORS.MINIMAP).hover()
       await page.waitForTimeout(400)
-      await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-      await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+      await page
+        .getByTestId(SELECTORS.MINIMAP)
+        .click({ position: { x: 50, y: 50 } })
+      await expect(
+        page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+      ).toBeVisible()
       await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
       await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
@@ -255,7 +318,9 @@ test.describe("lobby playing", () => {
   })
 
   test.describe("when a solo game starts", () => {
-    test("should render the first round without a react render-loop error", async ({ page }) => {
+    test("should render the first round without a react render-loop error", async ({
+      page,
+    }) => {
       test.setTimeout(90000)
 
       const consoleErrors: string[] = []
@@ -274,8 +339,11 @@ test.describe("lobby playing", () => {
 
       await waitForInputToBeVisible(page)
 
-      const loopErrors = consoleErrors.filter((text) =>
-        text.includes("Maximum update depth") || text.includes("getSnapshot should be cached"))
+      const loopErrors = consoleErrors.filter(
+        (text) =>
+          text.includes("Maximum update depth") ||
+          text.includes("getSnapshot should be cached"),
+      )
 
       expect(loopErrors).toEqual([])
     })

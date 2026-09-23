@@ -1,8 +1,24 @@
-import { DEFAULT_MAX_DISTANCE_POINTS, DEMO_SEED_ID, DIFFICULTIES, DOCUMENTS_STATUS, mockedGameImageURL, mockedSphericalImageURL, ROUND_TYPE, SPECIAL_ROUND_OPTIONS_COUNT, TABLES } from "@repo/common"
+import {
+  DEFAULT_MAX_DISTANCE_POINTS,
+  DEMO_SEED_ID,
+  DIFFICULTIES,
+  DOCUMENTS_STATUS,
+  mockedGameImageURL,
+  mockedSphericalImageURL,
+  ROUND_TYPE,
+  SPECIAL_ROUND_OPTIONS_COUNT,
+  TABLES,
+} from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { gameDocWithIdSchema, type Round, roundSchema } from "@repo/schemas"
 import { createFirestoreDoc } from "@repo/testing/emulator"
-import { flatFactory, gameFactory, mapFactory, seedFactory, sphericalFactory } from "@repo/testing/factory"
+import {
+  flatFactory,
+  gameFactory,
+  mapFactory,
+  seedFactory,
+  sphericalFactory,
+} from "@repo/testing/factory"
 
 const GAME_TITLES = [
   "TEST-Minecraft",
@@ -59,42 +75,92 @@ const GAME_TITLES = [
 
 export const generateGameData = async () => {
   const games = GAME_TITLES.map((title) => {
-    const game = gameFactory({ title, alternateNames: [`${title}-alternate1`, `${title}-alternate2`] })
+    const game = gameFactory({
+      title,
+      alternateNames: [`${title}-alternate1`, `${title}-alternate2`],
+    })
     const map = mapFactory({ gameId: game.id })
-    const sphericalWithMap = sphericalFactory({ gameId: game.id, mapId: map.id, status: DOCUMENTS_STATUS.READY, mapPosition: { x: 50, y: 50 } })
-    const sphericalWithThumbnail = sphericalFactory({ gameId: game.id, thumbnail: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
-    const flat = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY, thumbnail: mockedGameImageURL })
-    const flatWithMap = flatFactory({ gameId: game.id, status: DOCUMENTS_STATUS.READY, thumbnail: mockedGameImageURL, mapId: map.id, mapPosition: { x: 50, y: 50 } })
+    const sphericalWithMap = sphericalFactory({
+      gameId: game.id,
+      mapId: map.id,
+      status: DOCUMENTS_STATUS.READY,
+      mapPosition: { x: 50, y: 50 },
+    })
+    const sphericalWithThumbnail = sphericalFactory({
+      gameId: game.id,
+      thumbnail: mockedSphericalImageURL,
+      status: DOCUMENTS_STATUS.READY,
+    })
+    const flat = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+      thumbnail: mockedGameImageURL,
+    })
+    const flatWithMap = flatFactory({
+      gameId: game.id,
+      status: DOCUMENTS_STATUS.READY,
+      thumbnail: mockedGameImageURL,
+      mapId: map.id,
+      mapPosition: { x: 50, y: 50 },
+    })
 
-    return { game, map, sphericalWithMap, sphericalWithThumbnail, flat, flatWithMap }
+    return {
+      game,
+      map,
+      sphericalWithMap,
+      sphericalWithThumbnail,
+      flat,
+      flatWithMap,
+    }
   })
 
   await Promise.all(
-    games.map(({ game: fields }) => createFirestoreDoc(refs[TABLES.GAMES], fields)),
+    games.map(({ game: fields }) =>
+      createFirestoreDoc(refs[TABLES.GAMES], fields),
+    ),
   )
 
   await Promise.all(
-    games.flatMap(({ game, map, sphericalWithMap, sphericalWithThumbnail, flat, flatWithMap }) => {
-      const { id: mapId, ...mapFields } = map
-      const { id: sphericalMapId, ...sphericalMapFields } = sphericalWithMap
-      const { id: sphericalThumbId, ...sphericalThumbFields } = sphericalWithThumbnail
-      const { id: flatId, ...flatFields } = flat
-      const { id: flatMapId, ...flatMapFields } = flatWithMap
+    games.flatMap(
+      ({
+        game,
+        map,
+        sphericalWithMap,
+        sphericalWithThumbnail,
+        flat,
+        flatWithMap,
+      }) => {
+        const { id: mapId, ...mapFields } = map
+        const { id: sphericalMapId, ...sphericalMapFields } = sphericalWithMap
+        const { id: sphericalThumbId, ...sphericalThumbFields } =
+          sphericalWithThumbnail
+        const { id: flatId, ...flatFields } = flat
+        const { id: flatMapId, ...flatMapFields } = flatWithMap
 
-      return [
-        createFirestoreDoc(subRefs[TABLES.MAPS](game.id), { id: mapId, ...mapFields }),
-        createFirestoreDoc(
-          subRefs[TABLES.SPHERICAL](game.id),
-          { ...sphericalMapFields, id: sphericalMapId },
-        ),
-        createFirestoreDoc(
-          subRefs[TABLES.SPHERICAL](game.id),
-          { id: sphericalThumbId, ...sphericalThumbFields },
-        ),
-        createFirestoreDoc(subRefs[TABLES.FLAT](game.id), { id: flatId, ...flatFields }),
-        createFirestoreDoc(subRefs[TABLES.FLAT](game.id), { id: flatMapId, ...flatMapFields }),
-      ]
-    }),
+        return [
+          createFirestoreDoc(subRefs[TABLES.MAPS](game.id), {
+            id: mapId,
+            ...mapFields,
+          }),
+          createFirestoreDoc(subRefs[TABLES.SPHERICAL](game.id), {
+            ...sphericalMapFields,
+            id: sphericalMapId,
+          }),
+          createFirestoreDoc(subRefs[TABLES.SPHERICAL](game.id), {
+            id: sphericalThumbId,
+            ...sphericalThumbFields,
+          }),
+          createFirestoreDoc(subRefs[TABLES.FLAT](game.id), {
+            id: flatId,
+            ...flatFields,
+          }),
+          createFirestoreDoc(subRefs[TABLES.FLAT](game.id), {
+            id: flatMapId,
+            ...flatMapFields,
+          }),
+        ]
+      },
+    ),
   )
 
   return {
@@ -105,7 +171,9 @@ export const generateGameData = async () => {
 
 type GeneratedGameData = Awaited<ReturnType<typeof generateGameData>>
 
-export const createDemoSeedData = async ({ gameEntries }: GeneratedGameData) => {
+export const createDemoSeedData = async ({
+  gameEntries,
+}: GeneratedGameData) => {
   const rounds: Round[] = []
 
   for (let i = 0; i < 6; i++) {
@@ -113,20 +181,23 @@ export const createDemoSeedData = async ({ gameEntries }: GeneratedGameData) => 
     const isSpecial = i === 5
 
     if (isSpecial) {
-      const options = Array.from({ length: SPECIAL_ROUND_OPTIONS_COUNT }, (_, optionIndex) => {
-        const optionEntry = gameEntries[6 + optionIndex]
+      const options = Array.from(
+        { length: SPECIAL_ROUND_OPTIONS_COUNT },
+        (_, optionIndex) => {
+          const optionEntry = gameEntries[6 + optionIndex]
 
-        return {
-          type: ROUND_TYPE.SPHERICAL,
-          gameId: optionEntry.game.id,
-          gameTitle: optionEntry.game.title,
-          gameAlternateNames: optionEntry.game.alternateNames,
-          gameThumbnailUrl: optionEntry.game.image,
-          thumbnailUrl: mockedSphericalImageURL,
-          sphericalId: optionEntry.sphericalWithThumbnail.id,
-          sphericalImage: optionEntry.sphericalWithThumbnail.image,
-        }
-      })
+          return {
+            type: ROUND_TYPE.SPHERICAL,
+            gameId: optionEntry.game.id,
+            gameTitle: optionEntry.game.title,
+            gameAlternateNames: optionEntry.game.alternateNames,
+            gameThumbnailUrl: optionEntry.game.image,
+            thumbnailUrl: mockedSphericalImageURL,
+            sphericalId: optionEntry.sphericalWithThumbnail.id,
+            sphericalImage: optionEntry.sphericalWithThumbnail.image,
+          }
+        },
+      )
 
       const parsed = roundSchema.parse({
         isSpecial: true,
@@ -153,7 +224,8 @@ export const createDemoSeedData = async ({ gameEntries }: GeneratedGameData) => 
       mapImage: entry.map.imageUrl,
       mapWidth: entry.map.width,
       mapHeight: entry.map.height,
-      maxDistancePoints: entry.map.maxDistancePoints || DEFAULT_MAX_DISTANCE_POINTS,
+      maxDistancePoints:
+        entry.map.maxDistancePoints || DEFAULT_MAX_DISTANCE_POINTS,
       difficulty: DIFFICULTIES.EASY,
     })
 

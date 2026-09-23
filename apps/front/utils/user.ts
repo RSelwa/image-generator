@@ -7,14 +7,22 @@ import { type SessionUser, sessionUserSchema } from "@/schemas/session"
 export const formatSessionFromFirebaseUser = ({
   user,
   authUser,
-  rightsDoc
+  rightsDoc,
 }: {
   user: UserDoc
   authUser: User
   rightsDoc: RightDoc | null
 }): SessionUser => {
   const { uid, displayName, isAnonymous } = authUser
-  const { email, pseudo, isAnonymousUser, streak, lastStreakDate, donorTier, newsletter } = user
+  const {
+    email,
+    pseudo,
+    isAnonymousUser,
+    streak,
+    lastStreakDate,
+    donorTier,
+    newsletter,
+  } = user
 
   const avatar = user.avatar || getRandomAvatar()
 
@@ -28,7 +36,7 @@ export const formatSessionFromFirebaseUser = ({
     streak,
     lastStreakDate,
     donorTier,
-    newsletter
+    newsletter,
   })
 
   if (!sessionUser.success) {
@@ -38,7 +46,13 @@ export const formatSessionFromFirebaseUser = ({
   return sessionUser.data
 }
 
-export const formatSessionFromAnonymousUser = ({ authUser, pseudo }: { authUser: User, pseudo: string }): SessionUser => ({
+export const formatSessionFromAnonymousUser = ({
+  authUser,
+  pseudo,
+}: {
+  authUser: User
+  pseudo: string
+}): SessionUser => ({
   id: authUser.uid,
   email: "",
   rights: null,
@@ -51,9 +65,12 @@ export const formatSessionFromAnonymousUser = ({ authUser, pseudo }: { authUser:
   newsletter: false,
 })
 
-export const isAvatarGlow = (donorTier: ConstantValues<typeof DONOR_TIERS>) => donorTier === DONOR_TIERS.GOLD || donorTier === DONOR_TIERS.SILVER
+export const isAvatarGlow = (donorTier: ConstantValues<typeof DONOR_TIERS>) =>
+  donorTier === DONOR_TIERS.GOLD || donorTier === DONOR_TIERS.SILVER
 
-export const isTextGlow = (donorTier: ConstantValues<typeof DONOR_TIERS> | null) => donorTier === DONOR_TIERS.GOLD
+export const isTextGlow = (
+  donorTier: ConstantValues<typeof DONOR_TIERS> | null,
+) => donorTier === DONOR_TIERS.GOLD
 
 export const getDonorTierByRank = (rank: number) => {
   if (rank === 1) return DONOR_TIERS.GOLD

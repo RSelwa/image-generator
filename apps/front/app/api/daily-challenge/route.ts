@@ -1,6 +1,6 @@
 import { TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import z from "zod"
+import { z } from "zod"
 
 export const createSeedPayload = z.object({
   date: z.string(),
@@ -17,7 +17,9 @@ export const POST = async (request: Request) => {
       return new Response("Invalid payload", { status: 400 })
     }
 
-    const dailyChallenge = await refs[TABLES.DAILY_CHALLENGES].doc(parsed.data.date).get()
+    const dailyChallenge = await refs[TABLES.DAILY_CHALLENGES]
+      .doc(parsed.data.date)
+      .get()
 
     if (!dailyChallenge.exists) {
       return new Response("Daily Challenge not found", { status: 404 })

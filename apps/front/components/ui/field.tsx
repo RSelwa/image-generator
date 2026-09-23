@@ -6,7 +6,10 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/utils"
 
-const FieldSet = ({ className, ...props }: React.ComponentProps<"fieldset">) => (
+const FieldSet = ({
+  className,
+  ...props
+}: React.ComponentProps<"fieldset">) => (
   <fieldset
     data-slot="field-set"
     className={cn(
@@ -123,7 +126,10 @@ const FieldTitle = ({ className, ...props }: React.ComponentProps<"div">) => (
   />
 )
 
-const FieldDescription = ({ className, ...props }: React.ComponentProps<"p">) => (
+const FieldDescription = ({
+  className,
+  ...props
+}: React.ComponentProps<"p">) => (
   <p
     data-slot="field-description"
     className={cn(

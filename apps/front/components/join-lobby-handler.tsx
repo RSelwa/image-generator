@@ -8,7 +8,10 @@ import { QUERY_PARAMS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useRouter } from "@/i18n/routing"
 import { useGetLobbyByCodeQuery, useJoinLobbyMutation } from "@/redux/api/lobby"
-import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
+import {
+  selectSessionIsReady,
+  selectUser,
+} from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { createPlayerFromSessionUser } from "@/utils/player"
 
@@ -49,8 +52,13 @@ const JoinLobbyHandler = ({ code }: Props) => {
 
     if ((isSessionReady && (!user || user.isAnonymous)) || !user) {
       toast.error(t("mustBeLogged"))
-      const searchParams = new URLSearchParams({ [QUERY_PARAMS.REDIRECT]: `${PAGES.JOIN_LOBBY}/${lobby.code}` })
-      const url = new URL(`${PAGES.LOGIN}?${searchParams.toString()}`, window.location.origin)
+      const searchParams = new URLSearchParams({
+        [QUERY_PARAMS.REDIRECT]: `${PAGES.JOIN_LOBBY}/${lobby.code}`,
+      })
+      const url = new URL(
+        `${PAGES.LOGIN}?${searchParams.toString()}`,
+        window.location.origin,
+      )
       router.replace(url.href)
 
       return

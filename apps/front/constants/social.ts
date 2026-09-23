@@ -21,26 +21,27 @@ export const SOCIALS_STATUS_TO_BADGE_VARIANT = {
 export const FOOTER_SOCIALS = [
   {
     label: "Tiktok",
-    href: "https://www.tiktok.com/@geo.gamer.net"
+    href: "https://www.tiktok.com/@geo.gamer.net",
   },
   {
     label: "Instagram",
-    href: "https://www.instagram.com/geo_gamer_v0/"
+    href: "https://www.instagram.com/geo_gamer_v0/",
   },
 ] as const
 
 export const FOOTER_LEGALS = [
   {
     label: "Terms",
-    href: PAGES.TERMS
+    href: PAGES.TERMS,
   },
   {
     label: "Privacy",
-    href: PAGES.PRIVACY
+    href: PAGES.PRIVACY,
   },
 ]
 
 export const PORTFOLIO_LINK = "https://me.geo-gamer.net/"
 
 export const BUY_ME_A_COFFEE_LINK = "https://buymeacoffee.com/rselwa"
-export const BUY_ME_A_COFFEE_LINK_MEMBERSHIPS = "https://buymeacoffee.com/rselwa/membership"
+export const BUY_ME_A_COFFEE_LINK_MEMBERSHIPS =
+  "https://buymeacoffee.com/rselwa/membership"

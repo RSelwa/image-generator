@@ -4,39 +4,33 @@ const win = {
   innerWidth: () => (typeof window !== "undefined" ? window.innerWidth : 0),
   origin: () => (typeof window !== "undefined" ? window.location.origin : ""),
   protocol: () =>
-    typeof window !== "undefined" ? window.location.protocol : ""
+    typeof window !== "undefined" ? window.location.protocol : "",
 }
 
 export const getItemFromLocalStorage = <T>(key: string, fallback?: T): T => {
-  if (!win.isBrowser())
-    return fallback as T
+  if (!win.isBrowser()) return fallback as T
 
   const item = localStorage.getItem(key)
-  if (item)
-    return JSON.parse(item) as T
+  if (item) return JSON.parse(item) as T
 
   return fallback as T
 }
 
 export const setItemInLocalStorage = <T>(key: string, value: T) => {
-  if (!win.isBrowser())
-    return
+  if (!win.isBrowser()) return
   localStorage.setItem(key, JSON.stringify(value))
 }
 
 export const getItemFromSessionStorage = <T>(key: string, fallback?: T): T => {
-  if (!win.isBrowser())
-    return fallback as T
+  if (!win.isBrowser()) return fallback as T
 
   const item = sessionStorage.getItem(key)
-  if (item)
-    return JSON.parse(item) as T
+  if (item) return JSON.parse(item) as T
 
   return fallback as T
 }
 
 export const setItemInSessionStorage = <T>(key: string, value: T) => {
-  if (!win.isBrowser())
-    return
+  if (!win.isBrowser()) return
   sessionStorage.setItem(key, JSON.stringify(value))
 }

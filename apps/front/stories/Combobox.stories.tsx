@@ -27,7 +27,16 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-const fruits = ["Apple", "Banana", "Cherry", "Grape", "Orange", "Peach", "Pear", "Plum"]
+const fruits = [
+  "Apple",
+  "Banana",
+  "Cherry",
+  "Grape",
+  "Orange",
+  "Peach",
+  "Pear",
+  "Plum",
+]
 
 export const Default: Story = {
   render: () => (
@@ -99,9 +108,13 @@ export const WithDisabledItems: Story = {
         <ComboboxEmpty>No fruit found.</ComboboxEmpty>
         <ComboboxList>
           <ComboboxItem value="apple">Apple</ComboboxItem>
-          <ComboboxItem value="banana" disabled>Banana (unavailable)</ComboboxItem>
+          <ComboboxItem value="banana" disabled>
+            Banana (unavailable)
+          </ComboboxItem>
           <ComboboxItem value="cherry">Cherry</ComboboxItem>
-          <ComboboxItem value="grape" disabled>Grape (unavailable)</ComboboxItem>
+          <ComboboxItem value="grape" disabled>
+            Grape (unavailable)
+          </ComboboxItem>
           <ComboboxItem value="orange">Orange</ComboboxItem>
         </ComboboxList>
       </ComboboxContent>

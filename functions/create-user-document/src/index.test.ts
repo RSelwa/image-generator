@@ -20,7 +20,7 @@ async function createAuthUser({
     },
   )
 
-  const data = (await res.json()) as { localId: string, email: string }
+  const data = (await res.json()) as { localId: string; email: string }
 
   return { uid: data.localId, email: data.email }
 }
@@ -42,7 +42,9 @@ async function createAnonymousAuthUser() {
 
 beforeAll(() => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
-    throw new Error("FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.")
+    throw new Error(
+      "FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.",
+    )
   }
 })
 
@@ -63,12 +65,16 @@ describe("createUserDocument", () => {
         { method: "DELETE" },
       )
     } else {
-      throw new Error("Tests must be run against the Firestore emulator. Aborting destructive operation.")
+      throw new Error(
+        "Tests must be run against the Firestore emulator. Aborting destructive operation.",
+      )
     }
   })
 
   it("should create a user document", async () => {
-    const email = faker.internet.email({ provider: "test.com" }).toLocaleLowerCase()
+    const email = faker.internet
+      .email({ provider: "test.com" })
+      .toLocaleLowerCase()
 
     const { uid } = await createAuthUser({ email })
 
@@ -93,7 +99,10 @@ describe("createUserDocument", () => {
     const userDoc = snapshot.data()
 
     expect(userDoc).toHaveProperty("isAnonymousUser", true)
-    expect(userDoc).toHaveProperty("email", `${PREFIX_ANONYMOUS_USER}${uid}${SUFFIX_ANONYMOUS_USER}`)
+    expect(userDoc).toHaveProperty(
+      "email",
+      `${PREFIX_ANONYMOUS_USER}${uid}${SUFFIX_ANONYMOUS_USER}`,
+    )
     expect(userDoc).toHaveProperty("createdAt")
     expect(userDoc).toHaveProperty("updatedAt")
     expect(userDoc?.pseudo).toBeTruthy()

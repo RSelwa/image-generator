@@ -2,19 +2,32 @@
 
 import { Timestamp } from "@firebase/firestore"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { type MarathonSeedDocWithId, type RaceDocWithId, type RaceRunDocWithId } from "@repo/schemas"
+import {
+  type MarathonSeedDocWithId,
+  type RaceDocWithId,
+  type RaceRunDocWithId,
+} from "@repo/schemas"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import useSound from "use-sound"
-import z from "zod"
+import { useSound } from "use-sound"
+import { z } from "zod"
 import { ReactSphere } from "@/components/providers/react-sphere"
-import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
 import { SOUNDS } from "@/constants/sound"
 import { useCountdown, useIsExpired } from "@/hooks/use-countdown"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useGetAllGamesNamesQuery } from "@/redux/api/games"
-import { useFinishRaceRunMutation, useSubmitRaceAnswerMutation } from "@/redux/api/race"
+import {
+  useFinishRaceRunMutation,
+  useSubmitRaceAnswerMutation,
+} from "@/redux/api/race"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
@@ -60,33 +73,29 @@ const RacePlaying = ({
   const { timeRemaining } = useCountdown(timestampStart, roundDuration)
   const isTimeCritical = timeRemaining <= 30
 
-  const {
-    register,
-    watch,
-    reset,
-  } = useForm<Schema>({
+  const { register, watch, reset } = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: { input: "" },
   })
 
   const currentRound = seed.rounds[run.currentRoundIndex]
   const isSpherical = Boolean(currentRound?.sphericalImageUrl)
-  const imageUrl = currentRound?.sphericalImageUrl || currentRound?.flatImageUrl || ""
+  const imageUrl =
+    currentRound?.sphericalImageUrl || currentRound?.flatImageUrl || ""
   const gameId = currentRound?.gameId || ""
   const input = watch("input")
 
-  const filteredGames = allGames?.filter(({ title }) =>
-    title.toLowerCase().includes(input.toLowerCase().trim())
-  ) || []
+  const filteredGames =
+    allGames?.filter(({ title }) =>
+      title.toLowerCase().includes(input.toLowerCase().trim()),
+    ) || []
 
   const handleGuess = async (gameTitle: string, guessedGameId: string) => {
     if (!race.seedId) return
 
     const isCorrect = guessedGameId === gameId
-    if (isCorrect)
-      playCorrect()
-    else
-      playWrong()
+    if (isCorrect) playCorrect()
+    else playWrong()
 
     await submitAnswer({
       raceId: race.id,
@@ -123,17 +132,31 @@ const RacePlaying = ({
       {/* Header: timer + score */}
       <div className="flex items-center justify-between px-6 py-3 border-b bg-background/80 backdrop-blur">
         <span className="text-sm text-muted-foreground">
-          Round <span data-testid="race-round-index" className="font-mono font-bold text-foreground">{run.currentRoundIndex + 1}</span>
+          Round{" "}
+          <span
+            data-testid="race-round-index"
+            className="font-mono font-bold text-foreground"
+          >
+            {run.currentRoundIndex + 1}
+          </span>
         </span>
-        <span data-testid="race-timer" className={`font-mono text-2xl font-bold tabular-nums ${isTimeCritical ? "text-destructive animate-pulse" : ""}`}>
+        <span
+          data-testid="race-timer"
+          className={`font-mono text-2xl font-bold tabular-nums ${isTimeCritical ? "text-destructive animate-pulse" : ""}`}
+        >
           {formatTime(timeRemaining)}
         </span>
-        <span data-testid="race-score" className="font-mono font-bold text-primary">{run.score} pts</span>
+        <span
+          data-testid="race-score"
+          className="font-mono font-bold text-primary"
+        >
+          {run.score} pts
+        </span>
       </div>
 
       {/* Image */}
       <div className="relative flex-1 overflow-hidden">
-        {imageUrl && isSpherical && (<ReactSphere src={imageUrl} />)}
+        {imageUrl && isSpherical && <ReactSphere src={imageUrl} />}
         {imageUrl && !isSpherical && (
           <Image
             src={imageUrl}

@@ -1,7 +1,26 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES } from "@repo/common"
-import { type SuggestionDoc, type SuggestionDocWithId, suggestionsDocWithIdSchema } from "@repo/schemas"
-import { addDoc, deleteDoc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, serverTimestamp, startAfter, Timestamp, updateDoc, where } from "firebase/firestore"
+import {
+  type SuggestionDoc,
+  type SuggestionDocWithId,
+  suggestionsDocWithIdSchema,
+} from "@repo/schemas"
+import {
+  addDoc,
+  deleteDoc,
+  getCountFromServer,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  type QueryConstraint,
+  serverTimestamp,
+  startAfter,
+  Timestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore"
 import { DEFAULT_SIZE_SUGGESTIONS } from "@/constants/api"
 import { getSuggestionRef, TABLE_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
@@ -14,7 +33,9 @@ export const suggestionsApi = createApi({
     getSuggestionsCount: builder.query<number, void>({
       queryFn: async () => {
         try {
-          const usersCount = await getCountFromServer(TABLE_REFS[TABLES.SUGGESTIONS])
+          const usersCount = await getCountFromServer(
+            TABLE_REFS[TABLES.SUGGESTIONS],
+          )
 
           return { data: usersCount.data().count }
         } catch (error) {
@@ -25,7 +46,7 @@ export const suggestionsApi = createApi({
           }
         }
       },
-      providesTags: () => [{ type: "SuggestionList" }]
+      providesTags: () => [{ type: "SuggestionList" }],
     }),
     getSuggestionById: builder.query<SuggestionDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
@@ -89,26 +110,23 @@ export const suggestionsApi = createApi({
     getAllSuggestions: builder.infiniteQuery<
       SuggestionDocWithId[],
       void,
-      { limit?: number, startAfter?: number }
+      { limit?: number; startAfter?: number }
     >({
       queryFn: async ({ pageParam }) => {
         try {
-          const constraints: QueryConstraint[] = [
-            orderBy("createdAt", "desc"),
-          ]
+          const constraints: QueryConstraint[] = [orderBy("createdAt", "desc")]
 
           if (pageParam.startAfter) {
-            constraints.push(startAfter(Timestamp.fromMillis(pageParam.startAfter)))
+            constraints.push(
+              startAfter(Timestamp.fromMillis(pageParam.startAfter)),
+            )
           }
 
           if (pageParam.limit) {
             constraints.push(limit(pageParam.limit))
           }
 
-          const q = query(
-            TABLE_REFS[TABLES.SUGGESTIONS],
-            ...constraints,
-          )
+          const q = query(TABLE_REFS[TABLES.SUGGESTIONS], ...constraints)
           const snapshot = await getDocs(q)
 
           const suggestions: SuggestionDocWithId[] = []
@@ -155,14 +173,19 @@ export const suggestionsApi = createApi({
         },
       },
       providesTags: (result) =>
-        result ? [
-          ...result.pages
-            .flat()
-            .map(({ id }) => ({ type: "Suggestion" as const, id })),
-          "SuggestionList",
-        ] : ["SuggestionList"],
+        result
+          ? [
+              ...result.pages
+                .flat()
+                .map(({ id }) => ({ type: "Suggestion" as const, id })),
+              "SuggestionList",
+            ]
+          : ["SuggestionList"],
     }),
-    createSuggestion: builder.mutation<SuggestionDocWithId, Omit<SuggestionDoc, "createdAt" | "updatedAt">>({
+    createSuggestion: builder.mutation<
+      SuggestionDocWithId,
+      Omit<SuggestionDoc, "createdAt" | "updatedAt">
+    >({
       queryFn: async (input) => {
         try {
           const docRef = await addDoc(TABLE_REFS[TABLES.SUGGESTIONS], {
@@ -189,7 +212,10 @@ export const suggestionsApi = createApi({
       },
       invalidatesTags: ["SuggestionList"],
     }),
-    updateSuggestion: builder.mutation<null, { id: string } & Partial<SuggestionDoc>>({
+    updateSuggestion: builder.mutation<
+      null,
+      { id: string } & Partial<SuggestionDoc>
+    >({
       queryFn: async ({ id, ...updates }) => {
         try {
           await updateDoc(getSuggestionRef(id), {
@@ -204,12 +230,19 @@ export const suggestionsApi = createApi({
           return { error: globalErrorHandler(error) }
         }
       },
-      onQueryStarted: async ({ id, ...updates }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { id, ...updates },
+        { dispatch, queryFulfilled },
+      ) => {
         const patchResult = dispatch(
-          suggestionsApi.util.updateQueryData("getSuggestionById", { id }, (draft) => {
-            if (!draft) return
-            Object.assign(draft, updates, { id })
-          })
+          suggestionsApi.util.updateQueryData(
+            "getSuggestionById",
+            { id },
+            (draft) => {
+              if (!draft) return
+              Object.assign(draft, updates, { id })
+            },
+          ),
         )
 
         try {
@@ -250,5 +283,5 @@ export const {
   useCreateSuggestionMutation,
   useUpdateSuggestionMutation,
   useDeleteSuggestionMutation,
-  useGetSuggestionsCountQuery
+  useGetSuggestionsCountQuery,
 } = suggestionsApi

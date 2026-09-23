@@ -1,19 +1,34 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Label } from "@radix-ui/react-dropdown-menu"
-import { DEFAULT_DURATION_SECONDS, getRandomHook, SOCIALS_HOOKS, SOCIALS_STATUS } from "@repo/common"
+import {
+  DEFAULT_DURATION_SECONDS,
+  getRandomHook,
+  SOCIALS_HOOKS,
+  SOCIALS_STATUS,
+} from "@repo/common"
 import { socialDocSchema } from "@repo/schemas"
 import Image from "next/image"
 import * as React from "react"
 import { type SubmitHandler } from "react-hook-form"
 import { useForm } from "react-hook-form"
-import z from "zod"
+import { z } from "zod"
 import { ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
 import { Field, FieldContent } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import YoutubeEmbed from "@/components/youtube-embed"
 import { MODAL_KEYS } from "@/constants/mapping"
@@ -32,7 +47,7 @@ const socialFormSchema = z.object({
     youtubeLink: true,
     status: true,
     urlSphericalVideoStorage: true,
-  }).shape
+  }).shape,
 })
 
 type SocialFormSchema = z.input<typeof socialFormSchema>
@@ -45,24 +60,23 @@ const NewSocial = () => {
   const { data } = useGetSphericalsInfiniteQuery({})
   const allSphericals = data?.pages.flat() || []
 
-  const {
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    register
-  } = useForm<SocialFormSchema>({
-    resolver: zodResolver(socialFormSchema),
-    defaultValues: {
-      duration: DEFAULT_DURATION_SECONDS,
-      hook: getRandomHook(),
-      status: SOCIALS_STATUS.WAITING_JOB_START,
-    },
-  })
+  const { handleSubmit, setValue, watch, reset, register } =
+    useForm<SocialFormSchema>({
+      resolver: zodResolver(socialFormSchema),
+      defaultValues: {
+        duration: DEFAULT_DURATION_SECONDS,
+        hook: getRandomHook(),
+        status: SOCIALS_STATUS.WAITING_JOB_START,
+      },
+    })
 
   const onSubmit: SubmitHandler<SocialFormSchema> = async (formData) => {
     try {
-      await createSocial({ ...formData, status: SOCIALS_STATUS.WAITING_CAPTURE, hook: getRandomHook() }).unwrap()
+      await createSocial({
+        ...formData,
+        status: SOCIALS_STATUS.WAITING_CAPTURE,
+        hook: getRandomHook(),
+      }).unwrap()
 
       reset()
       closeModal()
@@ -77,38 +91,60 @@ const NewSocial = () => {
         <section className="flex items-center gap-8 justify-between">
           <Field>
             <Popover>
-              <PopoverTrigger data-hasImage={Boolean(watch("sphericalId"))} className="data-[hasImage=true]:border-muted flex items-center justify-center data-[hasImage=false]:border-primary border p-2 size-32! border-dashed">
-                {watch("sphericalId") && <Image src={allSphericals.find((s) => s.id === watch("sphericalId"))?.image || ""} alt="Selected Spherical" width={112} height={112} className="aspect-square object-cover " />}
+              <PopoverTrigger
+                data-hasImage={Boolean(watch("sphericalId"))}
+                className="data-[hasImage=true]:border-muted flex items-center justify-center data-[hasImage=false]:border-primary border p-2 size-32! border-dashed"
+              >
+                {watch("sphericalId") && (
+                  <Image
+                    src={
+                      allSphericals.find((s) => s.id === watch("sphericalId"))
+                        ?.image || ""
+                    }
+                    alt="Selected Spherical"
+                    width={112}
+                    height={112}
+                    className="aspect-square object-cover "
+                  />
+                )}
               </PopoverTrigger>
               <PopoverContent asChild>
                 <ScrollArea className="h-64 w-96">
                   <div className=" grid grid-cols-5 gap-4">
-
                     {allSphericals?.map((spherical) => (
                       <button
                         key={spherical.id}
                         value={spherical.id}
                         className="font-mono"
                         onClick={() => {
-                          setValue("sphericalId", spherical.id, { shouldDirty: true })
-                          setValue("gameId", spherical.gameId, { shouldDirty: true })
+                          setValue("sphericalId", spherical.id, {
+                            shouldDirty: true,
+                          })
+                          setValue("gameId", spherical.gameId, {
+                            shouldDirty: true,
+                          })
                         }}
                       >
-                        <img src={spherical.image} alt={spherical.game.title} className="size-16 object-cover" />
+                        <img
+                          src={spherical.image}
+                          alt={spherical.game.title}
+                          className="size-16 object-cover"
+                        />
                       </button>
                     ))}
                   </div>
-
                 </ScrollArea>
               </PopoverContent>
             </Popover>
           </Field>
           <Field>
             <Label className="text-lg">Youtube Link</Label>
-            <Input {...register("youtubeLink")} placeholder="https://www.youtube.com/watch?v=..." />
+            <Input
+              {...register("youtubeLink")}
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
             {watch("youtubeLink") && (
               <YoutubeEmbed youtubeLink={watch("youtubeLink") || ""} />
-
             )}
           </Field>
         </section>
@@ -140,7 +176,9 @@ const NewSocial = () => {
               min={5}
               max={60}
               value={[watch("duration") || 5]}
-              onValueChange={([val]) => setValue("duration", val, { shouldDirty: true })}
+              onValueChange={([val]) =>
+                setValue("duration", val, { shouldDirty: true })
+              }
             />
           </Field>
         </section>
@@ -161,13 +199,14 @@ const NewSocial = () => {
           </Field>
           <Field>
             <Label className="text-lg">Url spherical video storage</Label>
-            <Input {...register("urlSphericalVideoStorage")} placeholder="Paste here the url of raw video storage" />
+            <Input
+              {...register("urlSphericalVideoStorage")}
+              placeholder="Paste here the url of raw video storage"
+            />
           </Field>
         </section>
         <section className="flex justify-end items-center gap-2">
-          <Button type="submit">
-            Create
-          </Button>
+          <Button type="submit">Create</Button>
         </section>
       </form>
     </ModalBase>

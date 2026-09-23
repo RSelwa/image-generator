@@ -1,7 +1,13 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { type ComponentProps, type ReactNode, type RefObject, useEffect, useRef } from "react"
+import {
+  type ComponentProps,
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useRef,
+} from "react"
 import * as React from "react"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
@@ -10,19 +16,30 @@ import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { useModal } from "@/hooks/use-modal"
 import { useRouter } from "@/i18n/routing"
-import { useCreateAndJoinLobbyMutation, useCreateDemoLobbyMutation } from "@/redux/api/lobby"
-import { selectIsAnonymous, selectUser } from "@/redux/session/session.selectors"
+import {
+  useCreateAndJoinLobbyMutation,
+  useCreateDemoLobbyMutation,
+} from "@/redux/api/lobby"
+import {
+  selectIsAnonymous,
+  selectUser,
+} from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
-export const CreateLobbyButton = ({ className, children }: { children?: ReactNode } & ComponentProps<"button">) => {
+export const CreateLobbyButton = ({
+  className,
+  children,
+}: { children?: ReactNode } & ComponentProps<"button">) => {
   const t = useTranslations("home")
   const router = useRouter()
 
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
 
-  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation({ fixedCacheKey: "create-lobby" })
-  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation({ fixedCacheKey: "create-demo-lobby" })
+  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] =
+    useCreateAndJoinLobbyMutation({ fixedCacheKey: "create-lobby" })
+  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] =
+    useCreateDemoLobbyMutation({ fixedCacheKey: "create-demo-lobby" })
 
   const isCreatingRef = useRef(false)
 
@@ -34,7 +51,9 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
     if (isLoading || isCreatingRef.current) return
     isCreatingRef.current = true
     try {
-      const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
+      const lobby = userIsAnonymous
+        ? await createDemoLobby({ user }).unwrap()
+        : await createLobbyDoc({ user }).unwrap()
 
       router.push(`${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
@@ -44,28 +63,45 @@ export const CreateLobbyButton = ({ className, children }: { children?: ReactNod
   }
 
   return (
-    <Button data-testid={user.isAnonymous ? "create-lobby-button-demo" : "create-lobby-button"} onClick={handleCreateLobby} disabled={isLoading} className={className}>
-      {children || t("playNowButton")}
-      {" "}
+    <Button
+      data-testid={
+        user.isAnonymous ? "create-lobby-button-demo" : "create-lobby-button"
+      }
+      onClick={handleCreateLobby}
+      disabled={isLoading}
+      className={className}
+    >
+      {children || t("playNowButton")}{" "}
       {isLoading && <Loader className="size-4" />}
     </Button>
   )
 }
 
-export const JoinLobbyButton = ({ className, children }: { children?: ReactNode } & ComponentProps<"button">) => {
+export const JoinLobbyButton = ({
+  className,
+  children,
+}: { children?: ReactNode } & ComponentProps<"button">) => {
   const user = useAppSelector(selectUser)
   const { openModal } = useModal(MODAL_KEYS.JOIN_LOBBY)
 
   if (!user) return null
 
   return (
-    <button type="button" data-testid={SELECTORS.HOME_JOIN_LOBBY} onClick={() => openModal()} className={className}>
+    <button
+      type="button"
+      data-testid={SELECTORS.HOME_JOIN_LOBBY}
+      onClick={() => openModal()}
+      className={className}
+    >
       {children}
     </button>
   )
 }
 
-export const HomePlayButton = ({ containerRef, isLoading }: {
+export const HomePlayButton = ({
+  containerRef,
+  isLoading,
+}: {
   containerRef: RefObject<HTMLButtonElement | null>
   isLoading?: boolean
 }) => {
@@ -123,14 +159,15 @@ export const HomePlayButton = ({ containerRef, isLoading }: {
   }, [])
 
   return (
-    <div ref={followerRef} className="absolute top-0 left-0 font-interference w-fit h-fit hidden lg:flex justify-center items-center text-4xl font-bold px-4 py-2 text-primary invisible ">
+    <div
+      ref={followerRef}
+      className="absolute top-0 left-0 font-interference w-fit h-fit hidden lg:flex justify-center items-center text-4xl font-bold px-4 py-2 text-primary invisible "
+    >
       <span className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-primary" />
       <span className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-primary" />
       <span className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-primary" />
       <span className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-primary" />
-      {t("play")}
-      {" "}
-      {isLoading && <Loader className="size-6" />}
+      {t("play")} {isLoading && <Loader className="size-6" />}
     </div>
   )
 }
@@ -144,8 +181,10 @@ export const CreateLobbyContainer = () => {
   const user = useAppSelector(selectUser)
   const userIsAnonymous = useAppSelector(selectIsAnonymous)
 
-  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] = useCreateAndJoinLobbyMutation({ fixedCacheKey: "create-lobby" })
-  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] = useCreateDemoLobbyMutation({ fixedCacheKey: "create-demo-lobby" })
+  const [createLobbyDoc, { isLoading: isLoadingCreateLobby }] =
+    useCreateAndJoinLobbyMutation({ fixedCacheKey: "create-lobby" })
+  const [createDemoLobby, { isLoading: isLoadingCreateDemoLobby }] =
+    useCreateDemoLobbyMutation({ fixedCacheKey: "create-demo-lobby" })
 
   if (!user) return null
 
@@ -155,7 +194,9 @@ export const CreateLobbyContainer = () => {
     if (isLoading || isCreatingRef.current) return
     isCreatingRef.current = true
     try {
-      const lobby = userIsAnonymous ? await createDemoLobby({ user }).unwrap() : await createLobbyDoc({ user }).unwrap()
+      const lobby = userIsAnonymous
+        ? await createDemoLobby({ user }).unwrap()
+        : await createLobbyDoc({ user }).unwrap()
 
       router.push(`${PAGES.LOBBY}/${lobby.id}`)
     } catch (error) {
@@ -165,12 +206,26 @@ export const CreateLobbyContainer = () => {
   }
 
   return (
-    <button ref={containerRef} className="relative cursor-none size-full" data-testid={user.isAnonymous ? "video-create-lobby-button-demo" : "video-create-lobby-button"} onClick={handleCreateLobby} disabled={isLoading}>
-      <video autoPlay loop muted className="w-full cursor-none h-full object-cover">
+    <button
+      ref={containerRef}
+      className="relative cursor-none size-full"
+      data-testid={
+        user.isAnonymous
+          ? "video-create-lobby-button-demo"
+          : "video-create-lobby-button"
+      }
+      onClick={handleCreateLobby}
+      disabled={isLoading}
+    >
+      <video
+        autoPlay
+        loop
+        muted
+        className="w-full cursor-none h-full object-cover"
+      >
         <source src="/home-video.mp4" />
       </video>
       <HomePlayButton {...{ containerRef, isLoading }} />
     </button>
-
   )
 }

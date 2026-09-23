@@ -20,7 +20,9 @@ let resolvedProject = "unknown (Application Default Credentials)"
 
 if (credentialsPath) {
   const base = process.env.INIT_CWD || process.cwd()
-  const keyFile = JSON.parse(readFileSync(resolve(base, credentialsPath), "utf-8"))
+  const keyFile = JSON.parse(
+    readFileSync(resolve(base, credentialsPath), "utf-8"),
+  )
   resolvedProject = `${keyFile.project_id} (from key file ${credentialsPath})`
 } else if (serviceAccountKey) {
   resolvedProject = `${JSON.parse(serviceAccountKey).project_id} (from SERVICE_ACCOUNT_KEY)`
@@ -29,30 +31,40 @@ if (credentialsPath) {
 console.log("=== Target check ===")
 console.log(`PROJECT_ID constant: ${PROJECT_ID}`)
 console.log(`Credential project:  ${resolvedProject}`)
-console.log(`Named database:      (default)  <- the only one @repo/providers ever uses`)
-console.log(`Emulator:            ${emulatorHost ? `YES -> ${emulatorHost} (NOT production)` : "no (live Firestore)"}`)
-console.log(`SDK databaseId:      ${(db as unknown as { databaseId?: string }).databaseId || "(default)"}`)
+console.log(
+  `Named database:      (default)  <- the only one @repo/providers ever uses`,
+)
+console.log(
+  `Emulator:            ${emulatorHost ? `YES -> ${emulatorHost} (NOT production)` : "no (live Firestore)"}`,
+)
+console.log(
+  `SDK databaseId:      ${(db as unknown as { databaseId?: string }).databaseId || "(default)"}`,
+)
 console.log("====================\n")
 
-const [sphericalsWithMap, flatsWithMap, sphericalsWithThumbnail, flatsWithThumbnail] =
-  await Promise.all([
-    collectionGroupRefs[TABLES.SPHERICAL]
-      .where("status", "==", DOCUMENTS_STATUS.READY)
-      .where("mapId", ">", "")
-      .get(),
-    collectionGroupRefs[TABLES.FLAT]
-      .where("status", "==", DOCUMENTS_STATUS.READY)
-      .where("mapId", ">", "")
-      .get(),
-    collectionGroupRefs[TABLES.SPHERICAL]
-      .where("status", "==", DOCUMENTS_STATUS.READY)
-      .where("thumbnail", ">", "")
-      .get(),
-    collectionGroupRefs[TABLES.FLAT]
-      .where("status", "==", DOCUMENTS_STATUS.READY)
-      .where("thumbnail", ">", "")
-      .get(),
-  ])
+const [
+  sphericalsWithMap,
+  flatsWithMap,
+  sphericalsWithThumbnail,
+  flatsWithThumbnail,
+] = await Promise.all([
+  collectionGroupRefs[TABLES.SPHERICAL]
+    .where("status", "==", DOCUMENTS_STATUS.READY)
+    .where("mapId", ">", "")
+    .get(),
+  collectionGroupRefs[TABLES.FLAT]
+    .where("status", "==", DOCUMENTS_STATUS.READY)
+    .where("mapId", ">", "")
+    .get(),
+  collectionGroupRefs[TABLES.SPHERICAL]
+    .where("status", "==", DOCUMENTS_STATUS.READY)
+    .where("thumbnail", ">", "")
+    .get(),
+  collectionGroupRefs[TABLES.FLAT]
+    .where("status", "==", DOCUMENTS_STATUS.READY)
+    .where("thumbnail", ">", "")
+    .get(),
+])
 
 const normalPool = sphericalsWithMap.size + flatsWithMap.size
 const specialPool = sphericalsWithThumbnail.size + flatsWithThumbnail.size
@@ -73,5 +85,9 @@ console.log(`flats:      ${flatsWithThumbnail.size}`)
 console.log(`total:      ${specialPool}`)
 console.log("")
 console.log("--- Candidate-pool size estimate ---")
-console.log(`~${APPROX_BYTES_PER_ENTRY} bytes/entry => ~${(estimatedNormalBytes / 1024).toFixed(0)} KB for the normal pool`)
-console.log(`Firestore doc limit is ~1024 KB. ${estimatedNormalBytes > 1024 * 1024 ? "OVER limit -> sharding needed." : "Fits in a single doc."}`)
+console.log(
+  `~${APPROX_BYTES_PER_ENTRY} bytes/entry => ~${(estimatedNormalBytes / 1024).toFixed(0)} KB for the normal pool`,
+)
+console.log(
+  `Firestore doc limit is ~1024 KB. ${estimatedNormalBytes > 1024 * 1024 ? "OVER limit -> sharding needed." : "Fits in a single doc."}`,
+)

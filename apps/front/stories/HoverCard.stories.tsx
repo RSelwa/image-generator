@@ -57,7 +57,9 @@ export const Simple: Story = {
         <Button variant="marathon-outline">Hover me</Button>
       </HoverCardTrigger>
       <HoverCardContent>
-        <p className="text-sm">This is a simple hover card with basic text content.</p>
+        <p className="text-sm">
+          This is a simple hover card with basic text content.
+        </p>
       </HoverCardContent>
     </HoverCard>
   ),

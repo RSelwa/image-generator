@@ -133,9 +133,7 @@ export const FieldSetExample: Story = {
           <FieldLabel>Password</FieldLabel>
           <FieldContent>
             <Input type="password" placeholder="Enter password" />
-            <FieldDescription>
-              Must be at least 8 characters.
-            </FieldDescription>
+            <FieldDescription>Must be at least 8 characters.</FieldDescription>
           </FieldContent>
         </Field>
       </FieldGroup>

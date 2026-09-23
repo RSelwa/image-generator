@@ -18,19 +18,23 @@ if (allUsersWithoutNewsletter.length === 0) {
   process.exit(0)
 }
 
-console.info(`Found ${allUsersWithoutNewsletter.length} users without newsletter field, updating them...`)
+console.info(
+  `Found ${allUsersWithoutNewsletter.length} users without newsletter field, updating them...`,
+)
 
 await Promise.all(
   allUsersWithoutNewsletter.map(async (user) => {
     const userData = user.data()
 
     if (userData.newsletter === undefined) {
-      console.info(`User ${user.id} has no newsletter field, setting it to true`)
+      console.info(
+        `User ${user.id} has no newsletter field, setting it to true`,
+      )
 
       await refs[TABLES.USERS].doc(user.id).update({
         newsletter: true,
       })
       console.info(`Updated user ${user.id} with newsletter field set to true`)
     }
-  })
+  }),
 )

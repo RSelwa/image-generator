@@ -91,7 +91,6 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: 🚀 Deploy to Firebase
-        run:
-          npx firebase deploy --project "$PROJECT_ID" --only functions:create-party-doc
+        run: npx firebase deploy --project "$PROJECT_ID" --only functions:create-party-doc
         env:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}

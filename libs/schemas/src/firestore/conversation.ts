@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 import { timestampSchema, WITH_ID } from "~/zod"
 
 export const conversationDocSchema = z.object({
@@ -28,5 +28,9 @@ export const conversationMessageDocWithIdSchema = z.object({
 
 export type ConversationDoc = z.infer<typeof conversationDocSchema>
 export type ConversationDocWithId = z.infer<typeof conversationDocWithIdSchema>
-export type ConversationMessageDoc = z.infer<typeof conversationMessageDocSchema>
-export type ConversationMessageDocWithId = z.infer<typeof conversationMessageDocWithIdSchema>
+export type ConversationMessageDoc = z.infer<
+  typeof conversationMessageDocSchema
+>
+export type ConversationMessageDocWithId = z.infer<
+  typeof conversationMessageDocWithIdSchema
+>

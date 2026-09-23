@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 import { mapPositionSchema } from "~/firestore/spherical"
 import { timestampSchema } from "~/zod"
 

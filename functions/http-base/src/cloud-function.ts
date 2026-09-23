@@ -16,7 +16,7 @@ const stripeApiKey = defineSecret("STRIPE_API_KEY")
 export const http_endpoint = https.onRequest(
   {
     secrets: [apiKey, stripeApiKey],
-    region: region as string,
+    region: region,
     cors: "*",
     labels: {
       service: "update-counter",
@@ -45,7 +45,7 @@ export const http_endpoint = https.onRequest(
 
 export const http_endpoint_authenticated = https.onCall(
   {
-    region: region as string,
+    region: region,
     secrets: [stripeApiKey],
     cors: "*",
     labels: {

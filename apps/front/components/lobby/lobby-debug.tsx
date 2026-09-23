@@ -3,10 +3,26 @@
 import { getDateString, LOBBY_STATUS, USER_RIGHT } from "@repo/common"
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { usePathname } from "@/i18n/routing"
-import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyMutation, useUpdateNextRoundMutation } from "@/redux/api/lobby"
+import {
+  useStartLobbyMutation,
+  useSubscribeLobbyQuery,
+  useUpdateLobbyMutation,
+  useUpdateNextRoundMutation,
+} from "@/redux/api/lobby"
 import { selectUserRights } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -17,9 +33,12 @@ export const LobbyDebug = () => {
 
   const rights = useAppSelector(selectUserRights)
 
-  const { data: lobby, isLoading: isLobbyLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {
-    skip: !lobbyId,
-  })
+  const { data: lobby, isLoading: isLobbyLoading } = useSubscribeLobbyQuery(
+    { id: lobbyId },
+    {
+      skip: !lobbyId,
+    },
+  )
 
   const [startLobby] = useStartLobbyMutation()
 
@@ -65,19 +84,13 @@ export const LobbyDebug = () => {
 
         <DropdownMenuItem>
           <section className="grid grid-cols-2 gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => startLobby({ lobbyId })}
-            >
+            <Button variant="secondary" onClick={() => startLobby({ lobbyId })}>
               Start
             </Button>
-            <Button onClick={() => nextRound({ lobbyId })}>
-              Next
-            </Button>
+            <Button onClick={() => nextRound({ lobbyId })}>Next</Button>
           </section>
         </DropdownMenuItem>
       </DropdownMenuGroup>
     </>
-
   )
 }

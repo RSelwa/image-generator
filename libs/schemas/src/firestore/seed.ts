@@ -1,5 +1,5 @@
 import { LOBBY_MODES } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 
 import { roundSchema } from "~/firestore/seed.round"
 import { timestampSchema, WITH_ID } from "../zod"

@@ -16,13 +16,27 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { usePopulateRaceSeedMutation } from "@/redux/api/cloud-functions"
-import { useCreateMarathonSeedMutation, useDeleteMarathonSeedMutation, useGetMarathonSeedsInfiniteQuery } from "@/redux/api/marathon-seed"
+import {
+  useCreateMarathonSeedMutation,
+  useDeleteMarathonSeedMutation,
+  useGetMarathonSeedsInfiniteQuery,
+} from "@/redux/api/marathon-seed"
 
 const Page = () => {
-  const { data, fetchNextPage, hasNextPage, isFetching, refetch } = useGetMarathonSeedsInfiniteQuery()
-  const [createSeed, { isLoading: isCreating }] = useCreateMarathonSeedMutation()
+  const { data, fetchNextPage, hasNextPage, isFetching, refetch } =
+    useGetMarathonSeedsInfiniteQuery()
+  const [createSeed, { isLoading: isCreating }] =
+    useCreateMarathonSeedMutation()
   const [deleteSeed] = useDeleteMarathonSeedMutation()
   const [populateSeed] = usePopulateRaceSeedMutation()
   const [newName, setNewName] = useState("")
@@ -45,14 +59,20 @@ const Page = () => {
     refetch()
   }
 
-  const handleIntersect = useCallback((entries: IntersectionObserverEntry[]) => {
-    if (entries[0]?.isIntersecting && hasNextPage && !isFetching) fetchNextPage()
-  }, [hasNextPage, isFetching, fetchNextPage])
+  const handleIntersect = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      if (entries[0]?.isIntersecting && hasNextPage && !isFetching)
+        fetchNextPage()
+    },
+    [hasNextPage, isFetching, fetchNextPage],
+  )
 
   useEffect(() => {
     const caption = captionRef.current
     if (!caption) return
-    const observer = new IntersectionObserver(handleIntersect, { threshold: 0.1 })
+    const observer = new IntersectionObserver(handleIntersect, {
+      threshold: 0.1,
+    })
     observer.observe(caption)
 
     return () => observer.disconnect()
@@ -72,7 +92,10 @@ const Page = () => {
             placeholder="Seed name"
             className="w-56"
           />
-          <Button onClick={handleCreate} disabled={isCreating || !newName.trim()}>
+          <Button
+            onClick={handleCreate}
+            disabled={isCreating || !newName.trim()}
+          >
             <PlusIcon className="size-4" />
             Create
           </Button>
@@ -97,9 +120,15 @@ const Page = () => {
             {seeds.map((seed) => (
               <TableRow key={seed.id}>
                 <TableCell className="font-medium">{seed.name}</TableCell>
-                <TableCell className="font-mono">{seed.rounds.length}</TableCell>
+                <TableCell className="font-mono">
+                  {seed.rounds.length}
+                </TableCell>
                 <TableCell className="text-muted-foreground text-sm">
-                  {seed.createdAt ? new Date(seed.createdAt.seconds * 1000).toLocaleDateString() : "—"}
+                  {seed.createdAt
+                    ? new Date(
+                        seed.createdAt.seconds * 1000,
+                      ).toLocaleDateString()
+                    : "—"}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1">
@@ -110,11 +139,17 @@ const Page = () => {
                       disabled={populatingId === seed.id}
                       onClick={() => handlePopulate(seed.id)}
                     >
-                      <RefreshCw className={`size-4 ${populatingId === seed.id ? "animate-spin" : ""}`} />
+                      <RefreshCw
+                        className={`size-4 ${populatingId === seed.id ? "animate-spin" : ""}`}
+                      />
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button size="icon" variant="ghost" className="text-destructive">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="text-destructive"
+                        >
                           <Trash2 className="size-4" />
                         </Button>
                       </AlertDialogTrigger>
@@ -122,12 +157,17 @@ const Page = () => {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete seed?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            This will permanently delete &quot;{seed.name}&quot; and its {seed.rounds.length} rounds.
+                            This will permanently delete &quot;{seed.name}&quot;
+                            and its {seed.rounds.length} rounds.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => deleteSeed({ seedId: seed.id })}>Delete</AlertDialogAction>
+                          <AlertDialogAction
+                            onClick={() => deleteSeed({ seedId: seed.id })}
+                          >
+                            Delete
+                          </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

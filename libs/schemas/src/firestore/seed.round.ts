@@ -1,5 +1,9 @@
-import { DIFFICULTIES, ROUND_TYPE, SPECIAL_ROUND_OPTIONS_COUNT } from "@repo/common"
-import z from "zod"
+import {
+  DIFFICULTIES,
+  ROUND_TYPE,
+  SPECIAL_ROUND_OPTIONS_COUNT,
+} from "@repo/common"
+import { z } from "zod"
 import { specialRoundOptionSchema } from "~/firestore/seed.option"
 import { mapPositionSchema } from "~/firestore/spherical"
 
@@ -28,11 +32,14 @@ export const roundSchema = z.object({
   maxDistancePoints: z.number().min(0).max(100).nullish().default(null), // Max distance (%) beyond which 0 points
 
   // For special rounds (isSpecial = true) - 4 options to choose from
-  options: z.array(specialRoundOptionSchema).length(SPECIAL_ROUND_OPTIONS_COUNT).nullish().default(null),
+  options: z
+    .array(specialRoundOptionSchema)
+    .length(SPECIAL_ROUND_OPTIONS_COUNT)
+    .nullish()
+    .default(null),
 
   // Common fields
   difficulty: z.enum(DIFFICULTIES).default(DIFFICULTIES.EASY),
-
 })
 
 export type Round = z.infer<typeof roundSchema>

@@ -1,5 +1,5 @@
 import { ROUND_TYPE } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 
 // Option for special rounds (one of 4 images to choose from)
 export const specialRoundOptionSchema = z.object({

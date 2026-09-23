@@ -3,15 +3,9 @@ import { MapCard } from "@/components/cards/map-card"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { Button } from "@/components/ui/button"
-import {
-  MODAL_KEYS,
-  NEW_SEARCH_PARAM,
-} from "@/constants/mapping"
+import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
-import {
-  useGetGameByIdQuery,
-  useGetMapsByGameIdQuery,
-} from "@/redux/api/games"
+import { useGetGameByIdQuery, useGetMapsByGameIdQuery } from "@/redux/api/games"
 
 export const MapsGallery = () => {
   const [gameId] = useQueryState(MODAL_KEYS.MAPS_GALLERY_ID)
@@ -19,7 +13,10 @@ export const MapsGallery = () => {
   const { closeModal } = useModal(MODAL_KEYS.MAPS_GALLERY_ID)
   const { openModal: openNewMapModal } = useModal(MODAL_KEYS.MAP_ID)
 
-  const { data: game } = useGetGameByIdQuery({ id: gameId || "" }, { skip: !gameId })
+  const { data: game } = useGetGameByIdQuery(
+    { id: gameId || "" },
+    { skip: !gameId },
+  )
   const { data: maps } = useGetMapsByGameIdQuery(
     { gameId: gameId || "" },
     { skip: !gameId },

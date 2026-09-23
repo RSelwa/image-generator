@@ -1,5 +1,13 @@
-import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LOBBY_MODE, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, DIFFICULTIES, LOBBY_MODES, MAX_PLAYERS } from "@repo/common"
-import z from "zod"
+import {
+  DEFAULT_HAS_SPECIAL_ROUNDS,
+  DEFAULT_LOBBY_MODE,
+  DEFAULT_NUMBERS_ROUNDS,
+  DEFAULT_TIME_PER_ROUND,
+  DIFFICULTIES,
+  LOBBY_MODES,
+  MAX_PLAYERS,
+} from "@repo/common"
+import { z } from "zod"
 
 // Lobby configuration
 export const lobbyConfigSchema = z.object({

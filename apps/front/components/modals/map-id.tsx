@@ -5,7 +5,13 @@ import { DEFAULT_MAX_DISTANCE_POINTS, STORAGE_PATHS } from "@repo/common"
 import { createMapInputSchema } from "@repo/schemas"
 import { ArrowLeft } from "lucide-react"
 import { useQueryState } from "nuqs"
-import { type MouseEvent, useCallback, useEffect, useRef, useState } from "react"
+import {
+  type MouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { type z } from "zod"
@@ -38,7 +44,7 @@ const KEY = MODAL_KEYS.MAP_ID
 // Helper to parse combined param format: "parentId_childId"
 export const parseSubcollectionParam = (
   param: string | null,
-): { parentId: string, childId: string } | null => {
+): { parentId: string; childId: string } | null => {
   if (!param) return null
   const separatorIndex = param.indexOf("_")
   if (separatorIndex === -1) return null
@@ -74,7 +80,10 @@ const MapForm = ({
   const [createMap, { isLoading: isCreating }] = useCreateMapMutation()
   const [updateMap, { isLoading: isUpdating }] = useUpdateMapByIdMutation()
   const [isUploading, setIsUploading] = useState(false)
-  const [clickPosition, setClickPosition] = useState<{ x: number, y: number } | null>(null)
+  const [clickPosition, setClickPosition] = useState<{
+    x: number
+    y: number
+  } | null>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
   const [, setModalParam] = useQueryState(KEY)
 
@@ -116,7 +125,8 @@ const MapForm = ({
         imageUrl: data.imageUrl ?? null,
         width: data.width ?? null,
         height: data.height ?? null,
-        maxDistancePoints: data.maxDistancePoints ?? DEFAULT_MAX_DISTANCE_POINTS,
+        maxDistancePoints:
+          data.maxDistancePoints ?? DEFAULT_MAX_DISTANCE_POINTS,
         gameId: data.gameId,
       })
     }
@@ -243,15 +253,21 @@ const MapForm = ({
             </div>
 
             <Field>
-              <FieldLabel>Max Distance Points ({maxDistancePoints || 0}%)</FieldLabel>
+              <FieldLabel>
+                Max Distance Points ({maxDistancePoints || 0}%)
+              </FieldLabel>
               <Slider
                 min={0}
                 max={100}
                 step={1}
                 value={[maxDistancePoints || 0]}
-                onValueChange={([val]) => setValue("maxDistancePoints", val, { shouldDirty: true })}
+                onValueChange={([val]) =>
+                  setValue("maxDistancePoints", val, { shouldDirty: true })
+                }
               />
-              <FieldDescription>Max distance (%) beyond which player gets 0 points</FieldDescription>
+              <FieldDescription>
+                Max distance (%) beyond which player gets 0 points
+              </FieldDescription>
               {errors.maxDistancePoints && (
                 <FieldError>{errors.maxDistancePoints.message}</FieldError>
               )}
@@ -266,13 +282,11 @@ const MapForm = ({
                   <strong>Game ID:</strong> {data.gameId}
                 </p>
                 <p>
-                  <strong>Created:</strong>
-                  {" "}
+                  <strong>Created:</strong>{" "}
                   {data.createdAt?.toDate().toLocaleString()}
                 </p>
                 <p>
-                  <strong>Updated:</strong>
-                  {" "}
+                  <strong>Updated:</strong>{" "}
                   {data.updatedAt?.toDate().toLocaleString()}
                 </p>
               </div>

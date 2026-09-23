@@ -3,8 +3,15 @@ import { ArrowUpRight, Calendar, Gamepad2, KeyRound, Timer } from "lucide-react"
 import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import Image from "next/image"
-import { ArticlesDescription, HomeArticles } from "@/components/home/home-articles"
-import { CreateLobbyButton, CreateLobbyContainer, JoinLobbyButton } from "@/components/home/home-create-lobby"
+import {
+  ArticlesDescription,
+  HomeArticles,
+} from "@/components/home/home-articles"
+import {
+  CreateLobbyButton,
+  CreateLobbyContainer,
+  JoinLobbyButton,
+} from "@/components/home/home-create-lobby"
 import HomeFooter from "@/components/home/home-footer"
 import { HomeLeaderboard } from "@/components/home/home-leaderboard"
 import { HomeStrips } from "@/components/home/home-strips"
@@ -71,21 +78,27 @@ const Page = async () => {
       <section className="grid grid-cols-1 lg:grid-cols-2">
         <article className="px-5 py-6 flex flex-col">
           <p className="mb-3 font-interference">{t("latestNews")}</p>
-          <h2 className="mb-6 text-4xl lg:text-6xl font-shapiro-wide">Geo Gamer</h2>
+          <h2 className="mb-6 text-4xl lg:text-6xl font-shapiro-wide">
+            Geo Gamer
+          </h2>
           <p className="lg:w-1/2 mb-8 font-sans opacity-60">
             {t("latestNewsDescription")}
           </p>
           <div className="flex flex-col lg:flex-row gap-3 lg:w-2/3">
-            <Button variant="marathon-white" className="flex-1" asChild><Link href="/blog">{t("seeAll")} <ArrowUpRight className="size-6" /></Link></Button>
+            <Button variant="marathon-white" className="flex-1" asChild>
+              <Link href="/blog">
+                {t("seeAll")} <ArrowUpRight className="size-6" />
+              </Link>
+            </Button>
           </div>
         </article>
         <article className="bg-primary text-primary-foreground flex flex-col justify-between">
           <div className="p-5">
             <MiniStrips className="h-5 mb-7" />
-            <h2 className="font-shapiro-wide lg:mb-6 lg:text-4xl">{t("playNow")}</h2>
-            <p className="lg:w-1/2">
-              {t("playNowDescription")}
-            </p>
+            <h2 className="font-shapiro-wide lg:mb-6 lg:text-4xl">
+              {t("playNow")}
+            </h2>
+            <p className="lg:w-1/2">{t("playNowDescription")}</p>
           </div>
           <div className="border-t border-background grid grid-cols-2 lg:grid-cols-4">
             <CreateLobbyButton className="p-5 h-full hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
@@ -96,11 +109,19 @@ const Page = async () => {
               <KeyRound className="size-6" />
               {tNav("joinLobby")}
             </JoinLobbyButton>
-            <Link href={PAGES.RACE} target="_blank" className="p-5  hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2">
+            <Link
+              href={PAGES.RACE}
+              target="_blank"
+              className="p-5  hover:text-primary hover:bg-primary-foreground border-r border-background flex items-center justify-center gap-2"
+            >
               <Timer />
               {tNav("race")}
             </Link>
-            <Link href={PAGES.DAILY_CHALLENGE} target="_blank" className="p-5  hover:text-primary hover:bg-primary-foreground flex items-center justify-center gap-2">
+            <Link
+              href={PAGES.DAILY_CHALLENGE}
+              target="_blank"
+              className="p-5  hover:text-primary hover:bg-primary-foreground flex items-center justify-center gap-2"
+            >
               <Calendar className="size-6" />
               {tNav("dailyChallenge")}
             </Link>
@@ -118,12 +139,8 @@ const Page = async () => {
       <section className="grid grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-between lg:w-1/2">
           <article className="p-5 font-mono space-y-4 uppercase">
-            <p>
-              {t("dropIntoDescription")}
-            </p>
-            <p>
-              {t("createLobbyDescription")}
-            </p>
+            <p>{t("dropIntoDescription")}</p>
+            <p>{t("createLobbyDescription")}</p>
           </article>
           <ArticlesDescription
             subTitle={t("challengeFriends")}
@@ -133,10 +150,22 @@ const Page = async () => {
             variant="white"
           />
         </div>
-        <Image src={ARTICLES.MULTIPLAYER.imageLink} alt="Geo Gamer multiplayer session" height={650} width={650} className="size-full" />
+        <Image
+          src={ARTICLES.MULTIPLAYER.imageLink}
+          alt="Geo Gamer multiplayer session"
+          height={650}
+          width={650}
+          className="size-full"
+        />
       </section>
       <section className="relative flex flex-col">
-        <Image src={ARTICLES.SPECIAL_ROUNDS.imageLinkLarge} alt="Special Rounds feature" height={650} width={650} className="w-full lg:h-full-height object-cover" />
+        <Image
+          src={ARTICLES.SPECIAL_ROUNDS.imageLinkLarge}
+          alt="Special Rounds feature"
+          height={650}
+          width={650}
+          className="w-full lg:h-full-height object-cover"
+        />
         <ArticlesDescription
           subTitle={t("customizeGame")}
           title={t("specialRounds")}

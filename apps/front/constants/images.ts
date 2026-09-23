@@ -11,13 +11,12 @@ export const IMAGES_URLS = {
     SPECIAL_ROUNDS_LARGE: "/articles/special-rounds-large.jpg",
     DAILY_CHALLENGES: "/pubs/daily-challenge.jpg",
     RACE: "/articles/race-mode.jpg",
-
   },
   PUBS: {
     DAILY_CHALLENGE: "/pubs/daily-challenge.jpg",
     RACE_MODE: "/pubs/race-mode.jpg",
-    DONATION: "/pubs/donation.jpg"
-  }
+    DONATION: "/pubs/donation.jpg",
+  },
 } as const
 
 export const AVATARS_URLS = {

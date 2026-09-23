@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
-import z from "zod"
+import { z } from "zod"
 import { ColoredGoogleIcon } from "@/components/icons"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
@@ -137,9 +137,16 @@ export const LoginForm = ({
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                {t("dontHaveAccount")}
-                {" "}
-                <Link href={redirect ? `${PAGES.SIGNUP}?${QUERY_PARAMS.REDIRECT}=${encodeURIComponent(redirect)}` : PAGES.SIGNUP}>{t("signupTitle")}</Link>
+                {t("dontHaveAccount")}{" "}
+                <Link
+                  href={
+                    redirect
+                      ? `${PAGES.SIGNUP}?${QUERY_PARAMS.REDIRECT}=${encodeURIComponent(redirect)}`
+                      : PAGES.SIGNUP
+                  }
+                >
+                  {t("signupTitle")}
+                </Link>
               </FieldDescription>
             </FieldGroup>
           </form>
@@ -153,14 +160,9 @@ export const LoginForm = ({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        {t("loginTermsAgreement")}
-        {" "}
-        <Link href={PAGES.TERMS}>{t("termsOfService")}</Link>
-        {" "}
-        {t("and")}
-        {" "}
-        <Link href={PAGES.PRIVACY}>{t("privacyPolicy")}</Link>
-        .
+        {t("loginTermsAgreement")}{" "}
+        <Link href={PAGES.TERMS}>{t("termsOfService")}</Link> {t("and")}{" "}
+        <Link href={PAGES.PRIVACY}>{t("privacyPolicy")}</Link>.
       </FieldDescription>
     </div>
   )

@@ -9,8 +9,16 @@ import { ASSET_URLS, FALL_BACK_IMAGE, STORAGE_KEYS } from "@/constants/mapping"
 import { usePanoUrl } from "@/hooks/use-pano-url"
 import { useLocalStorage } from "@/hooks/use-storage"
 import { usePathname } from "@/i18n/routing"
-import { useSelectOptionIndexMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { selectCurrentRoundData, selectCurrentRoundIndex, selectHasSelectedOption, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
+import {
+  useSelectOptionIndexMutation,
+  useSubscribeLobbyQuery,
+} from "@/redux/api/lobby"
+import {
+  selectCurrentRoundData,
+  selectCurrentRoundIndex,
+  selectHasSelectedOption,
+  selectSelectedOption,
+} from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -20,19 +28,29 @@ const PlayingSpecialRound = () => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
-  const [isSkipDriver, setIsSkipDriver] = useLocalStorage(STORAGE_KEYS.DRIVER_SPECIAL_ROUND, false)
+  const [isSkipDriver, setIsSkipDriver] = useLocalStorage(
+    STORAGE_KEYS.DRIVER_SPECIAL_ROUND,
+    false,
+  )
 
   const [selectOptionIndex] = useSelectOptionIndexMutation()
 
-  const { data: lobby } = useSubscribeLobbyQuery({ id: lobbyId }, {
-    skip: !lobbyId,
-  })
+  const { data: lobby } = useSubscribeLobbyQuery(
+    { id: lobbyId },
+    {
+      skip: !lobbyId,
+    },
+  )
 
   const user = useAppSelector(selectUser)
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
-  const hasSelectedOption = useAppSelector(selectHasSelectedOption(lobbyId, roundIndex))
-  const selectedOption = useAppSelector(selectSelectedOption(lobbyId, roundIndex))
+  const hasSelectedOption = useAppSelector(
+    selectHasSelectedOption(lobbyId, roundIndex),
+  )
+  const selectedOption = useAppSelector(
+    selectSelectedOption(lobbyId, roundIndex),
+  )
 
   const driverRef = useRef<ReturnType<typeof driver> | null>(null)
 
@@ -60,7 +78,7 @@ const PlayingSpecialRound = () => {
       overlayColor: "rgba(0, 0, 0, 0.9)",
       allowKeyboardControl: true,
       allowClose: false,
-      onCloseClick: () => setIsSkipDriver(true)
+      onCloseClick: () => setIsSkipDriver(true),
     })
 
     driverRef.current = driverObj
@@ -79,10 +97,16 @@ const PlayingSpecialRound = () => {
     driverRef.current?.destroy()
   }, [roundIndex])
 
-  const cachedSphereUrl = usePanoUrl(selectedOption?.sphericalId, selectedOption?.sphericalImage)
+  const cachedSphereUrl = usePanoUrl(
+    selectedOption?.sphericalId,
+    selectedOption?.sphericalImage,
+  )
   const sphereSrc = cachedSphereUrl || selectedOption?.sphericalImage || ""
 
-  const cachedFlatUrl = usePanoUrl(selectedOption?.flatId, selectedOption?.flatImage)
+  const cachedFlatUrl = usePanoUrl(
+    selectedOption?.flatId,
+    selectedOption?.flatImage,
+  )
   const flatSrc = cachedFlatUrl || selectedOption?.flatImage || FALL_BACK_IMAGE
 
   if (!currentRoundData) return null
@@ -94,10 +118,15 @@ const PlayingSpecialRound = () => {
           className="flex items-center justify-center h-full bg-repeat bg-center bg-size-[25%]"
           style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}
         >
-          <div id={DRIVER_IDS.SPECIAL_ROUND_MAIN} className="flex flex-col items-center gap-14 justify-center text-primary bg-background/80">
-
+          <div
+            id={DRIVER_IDS.SPECIAL_ROUND_MAIN}
+            className="flex flex-col items-center gap-14 justify-center text-primary bg-background/80"
+          >
             <p className="text-center font-bold text-2xl"> Round bonus </p>
-            <div id={DRIVER_IDS.SPECIAL_ROUND_SELECTION} className="grid grid-cols-2 gap-0 mx-auto">
+            <div
+              id={DRIVER_IDS.SPECIAL_ROUND_SELECTION}
+              className="grid grid-cols-2 gap-0 mx-auto"
+            >
               {currentRoundData.options?.map((option, index) => (
                 <div key={option.gameId} className="size-48">
                   <ImageGlow isBlurOnHover>
@@ -112,7 +141,6 @@ const PlayingSpecialRound = () => {
                     />
                   </ImageGlow>
                 </div>
-
               ))}
             </div>
             <div className="flex items-center gap-8 font-semibold text-lg">
@@ -120,7 +148,6 @@ const PlayingSpecialRound = () => {
               <span id={DRIVER_IDS.SPECIAL_ROUND_NO_MAP}>No map</span>
             </div>
           </div>
-
         </article>
       )}
 
@@ -132,11 +159,14 @@ const PlayingSpecialRound = () => {
             </div>
           )}
           {selectedOption?.type === ROUND_TYPE.FLAT && (
-            <img src={flatSrc} alt="Selected option" className="aspect-video size-full object-contain" />
+            <img
+              src={flatSrc}
+              alt="Selected option"
+              className="aspect-video size-full object-contain"
+            />
           )}
         </>
       )}
-
     </section>
   )
 }

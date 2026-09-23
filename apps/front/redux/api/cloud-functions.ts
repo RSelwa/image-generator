@@ -9,10 +9,16 @@ export const cloudFunctionsApi = createApi({
   baseQuery: fakeBaseQuery<GlobalError>(),
   tagTypes: ["Sound", "SoundList"],
   endpoints: (builder) => ({
-    createDailyChallengeFunction: builder.mutation<null, PayloadCreateDailyChallenge>({
+    createDailyChallengeFunction: builder.mutation<
+      null,
+      PayloadCreateDailyChallenge
+    >({
       queryFn: async (payload) => {
         try {
-          await httpsCallable<PayloadCreateDailyChallenge, null>(functions, "create_daily_challenge")(payload)
+          await httpsCallable<PayloadCreateDailyChallenge, null>(
+            functions,
+            "create_daily_challenge",
+          )(payload)
 
           return { data: null }
         } catch (error) {
@@ -23,10 +29,16 @@ export const cloudFunctionsApi = createApi({
       },
     }),
 
-    populateRaceSeed: builder.mutation<{ rounds: number }, { seedId: string, playerCurrentIndex: number }>({
+    populateRaceSeed: builder.mutation<
+      { rounds: number },
+      { seedId: string; playerCurrentIndex: number }
+    >({
       queryFn: async (payload) => {
         try {
-          const result = await httpsCallable<{ seedId: string, playerCurrentIndex: number }, { rounds: number }>(
+          const result = await httpsCallable<
+            { seedId: string; playerCurrentIndex: number },
+            { rounds: number }
+          >(
             functions,
             "populate_race_seed",
           )(payload)
@@ -42,4 +54,7 @@ export const cloudFunctionsApi = createApi({
   }),
 })
 
-export const { useCreateDailyChallengeFunctionMutation, usePopulateRaceSeedMutation } = cloudFunctionsApi
+export const {
+  useCreateDailyChallengeFunctionMutation,
+  usePopulateRaceSeedMutation,
+} = cloudFunctionsApi

@@ -83,13 +83,20 @@ export const Full: Story = {
     <Card>
       <CardHeader>
         <CardTitle>Full Card</CardTitle>
-        <CardDescription>This card uses all available sub-components.</CardDescription>
+        <CardDescription>
+          This card uses all available sub-components.
+        </CardDescription>
         <CardAction>
-          <Button variant="ghost" size="sm">Edit</Button>
+          <Button variant="ghost" size="sm">
+            Edit
+          </Button>
         </CardAction>
       </CardHeader>
       <CardContent>
-        <p>This is the main content area of the card. You can place any content here.</p>
+        <p>
+          This is the main content area of the card. You can place any content
+          here.
+        </p>
       </CardContent>
       <CardFooter>
         <Button variant="outline">Cancel</Button>

@@ -1,4 +1,4 @@
-import UploadPost from "upload-post"
+import { UploadPost } from "upload-post"
 
 const API_KEY = process.env.UPLOAD_POST_API_KEY || ""
 

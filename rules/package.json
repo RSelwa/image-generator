@@ -1,9 +1,9 @@
 {
   "name": "@repo/rules",
-  "type": "module",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
+  "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "scripts": {

@@ -1,6 +1,10 @@
 import { dateToString, METADATA_DOCS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type DailyChallengeDoc, type DailyChallengeDocWithId, type UserDoc } from "@repo/schemas"
+import {
+  type DailyChallengeDoc,
+  type DailyChallengeDocWithId,
+  type UserDoc,
+} from "@repo/schemas"
 import { createFirestoreDoc } from "@repo/testing/emulator"
 import {
   dailyChallengeFactory,
@@ -17,18 +21,22 @@ const getDateString = (daysOffset: number) => {
   return dateToString(date)
 }
 
-export const createDailyChallenge = async (challenge: DailyChallengeDoc & { id: string }) => {
+export const createDailyChallenge = async (
+  challenge: DailyChallengeDoc & { id: string },
+) => {
   await createFirestoreDoc(refs[TABLES.DAILY_CHALLENGES], challenge)
 
   return challenge
 }
 
-export const createGamesListMetadata = async (games: { id: string, title: string }[]) => {
+export const createGamesListMetadata = async (
+  games: { id: string; title: string }[],
+) => {
   await refs[TABLES.METADATA].doc(METADATA_DOCS.GAMES_LIST).set({ games })
 }
 
 export const setupDailyChallengesForPath = async () => {
-  const challenges: (DailyChallengeDocWithId)[] = []
+  const challenges: DailyChallengeDocWithId[] = []
 
   for (let i = 0; i <= 4; i++) {
     const date = getDateString(-i)
@@ -36,7 +44,10 @@ export const setupDailyChallengesForPath = async () => {
     challenges.push(challenge)
   }
 
-  const gamesList = challenges.map((c) => ({ id: c.gameId || "", title: c.gameTitle || "" }))
+  const gamesList = challenges.map((c) => ({
+    id: c.gameId || "",
+    title: c.gameTitle || "",
+  }))
 
   await createGamesListMetadata(gamesList)
 
@@ -47,10 +58,14 @@ export const setupDailyChallengesForPath = async () => {
   return challenges
 }
 
-export const setUserStreak = async (uid: string, streak: number, lastStreakDate: string, maxStreak?: number) => {
+export const setUserStreak = async (
+  uid: string,
+  streak: number,
+  lastStreakDate: string,
+  maxStreak?: number,
+) => {
   const data: Partial<UserDoc> = { streak, lastStreakDate }
-  if (maxStreak)
-    data.maxStreak = maxStreak
+  if (maxStreak) data.maxStreak = maxStreak
 
   await refs[TABLES.USERS].doc(uid).update(data)
 }
@@ -59,14 +74,20 @@ export const getUserStreak = async (uid: string) => {
   const doc = await refs[TABLES.USERS].doc(uid).get()
   const data = doc.data()
 
-  return { streak: data?.streak || 0, lastStreakDate: data?.lastStreakDate || "", maxStreak: data?.maxStreak || 0 }
+  return {
+    streak: data?.streak || 0,
+    lastStreakDate: data?.lastStreakDate || "",
+    maxStreak: data?.maxStreak || 0,
+  }
 }
 
 export const setupSphericalWithMapChallenge = async (date?: string) => {
   const d = date || getDateString(0)
   const challenge = dailyChallengeSphericalWithMapFactory({ date: d })
 
-  await createGamesListMetadata([{ id: challenge.gameId || "", title: challenge.gameTitle || "" }])
+  await createGamesListMetadata([
+    { id: challenge.gameId || "", title: challenge.gameTitle || "" },
+  ])
   await createDailyChallenge(challenge)
 
   return challenge
@@ -76,7 +97,9 @@ export const setupSphericalWithoutMapChallenge = async (date?: string) => {
   const d = date || getDateString(0)
   const challenge = dailyChallengeSphericalWithoutMapFactory({ date: d })
 
-  await createGamesListMetadata([{ id: challenge.gameId || "", title: challenge.gameTitle || "" }])
+  await createGamesListMetadata([
+    { id: challenge.gameId || "", title: challenge.gameTitle || "" },
+  ])
   await createDailyChallenge(challenge)
 
   return challenge
@@ -86,7 +109,9 @@ export const setupFlatWithMapChallenge = async (date?: string) => {
   const d = date || getDateString(0)
   const challenge = dailyChallengeFlatWithMapFactory({ date: d })
 
-  await createGamesListMetadata([{ id: challenge.gameId || "", title: challenge.gameTitle || "" }])
+  await createGamesListMetadata([
+    { id: challenge.gameId || "", title: challenge.gameTitle || "" },
+  ])
   await createDailyChallenge(challenge)
 
   return challenge
@@ -96,7 +121,9 @@ export const setupFlatWithoutMapChallenge = async (date?: string) => {
   const d = date || getDateString(0)
   const challenge = dailyChallengeFlatWithoutMapFactory({ date: d })
 
-  await createGamesListMetadata([{ id: challenge.gameId || "", title: challenge.gameTitle || "" }])
+  await createGamesListMetadata([
+    { id: challenge.gameId || "", title: challenge.gameTitle || "" },
+  ])
   await createDailyChallenge(challenge)
 
   return challenge

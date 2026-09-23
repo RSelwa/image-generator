@@ -1,7 +1,10 @@
 import { initializeApp } from "firebase/app"
 import { connectAuthEmulator, getAuth } from "firebase/auth"
 import { connectDatabaseEmulator, getDatabase } from "firebase/database"
-import { connectFirestoreEmulator, initializeFirestore } from "firebase/firestore"
+import {
+  connectFirestoreEmulator,
+  initializeFirestore,
+} from "firebase/firestore"
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions"
 import { connectStorageEmulator, getStorage } from "firebase/storage"
 import { IS_PLAYWRIGHT_EMULATOR } from "@/constants/mapping"
@@ -29,7 +32,10 @@ export const db = initializeFirestore(app, { ignoreUndefinedProperties: true })
 export const rtdb = getDatabase(app)
 
 if (IS_PLAYWRIGHT_EMULATOR) {
-  connectAuthEmulator(auth, process.env.NEXT_PUBLIC_AUTH_EMULATOR_HOST || "http://localhost:9099")
+  connectAuthEmulator(
+    auth,
+    process.env.NEXT_PUBLIC_AUTH_EMULATOR_HOST || "http://localhost:9099",
+  )
   connectDatabaseEmulator(rtdb, "localhost", 9000)
   connectFirestoreEmulator(db, "localhost", 8080)
   connectFunctionsEmulator(functions, "localhost", 5001)

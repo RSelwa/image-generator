@@ -52,9 +52,7 @@ export const VersionSwitcher = ({
                 key={version}
                 onSelect={() => setSelectedVersion(version)}
               >
-                v
-                {version}
-                {" "}
+                v{version}{" "}
                 {version === selectedVersion && <Check className="ml-auto" />}
               </DropdownMenuItem>
             ))}

@@ -3,7 +3,11 @@
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { type ConstantValues } from "@repo/common"
 import { useTranslations } from "next-intl"
-import { AlertDialog, AlertDialogContent, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import {
   Dialog,
   DialogContent,
@@ -28,7 +32,9 @@ export const AlertDialogBase = ({
 } & DialogProps) => {
   return (
     <AlertDialog open onOpenChange={customClose} {...props}>
-      <AlertDialogContent className={cn("max-h-[80vh] overflow-y-auto", className)}>
+      <AlertDialogContent
+        className={cn("max-h-[80vh] overflow-y-auto", className)}
+      >
         <VisuallyHidden>
           <AlertDialogTitle />
         </VisuallyHidden>
@@ -58,13 +64,15 @@ export const ModalBase = ({
 
   return (
     <Dialog open onOpenChange={customClose || closeModal} {...props}>
-      <DialogContent className={cn("max-h-[80vh] overflow-y-auto p-4", className)}>
+      <DialogContent
+        className={cn("max-h-[80vh] overflow-y-auto p-4", className)}
+      >
         <DialogHeader>
-          <DialogTitle>
-            {title}
-          </DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            {description && <span className="text-muted-foreground text-sm">{`This is the ${title} modal`}</span>}
+            {description && (
+              <span className="text-muted-foreground text-sm">{`This is the ${title} modal`}</span>
+            )}
           </DialogDescription>
         </DialogHeader>
         {children}

@@ -8,17 +8,24 @@ import { ReactSphere } from "@/components/providers/react-sphere"
 import { Button } from "@/components/ui/button"
 import { PAGES } from "@/constants/pages"
 import { Link } from "@/i18n/routing"
-import { useGetDailyChallengeEntityByDateQuery, useGetMyDailyChallengeResultByDateQuery } from "@/redux/api/daily-challenge"
+import {
+  useGetDailyChallengeEntityByDateQuery,
+  useGetMyDailyChallengeResultByDateQuery,
+} from "@/redux/api/daily-challenge"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
-const DailyChallengeDateContent = ({ params }: { params: Promise<{ date: string }> }) => {
+const DailyChallengeDateContent = ({
+  params,
+}: {
+  params: Promise<{ date: string }>
+}) => {
   const { date } = use(params)
   const userId = useAppSelector(selectUserId)
 
   const { data: challenge } = useGetDailyChallengeEntityByDateQuery({ date })
   const { data: result, isLoading } = useGetMyDailyChallengeResultByDateQuery(
-    { uid: userId!, date },
+    { uid: userId, date },
     { skip: !userId },
   )
 
@@ -31,17 +38,34 @@ const DailyChallengeDateContent = ({ params }: { params: Promise<{ date: string 
   }
 
   return (
-    <main data-testid={`daily-challenge-${challenge.isSpherical ? "spherical" : "flat"}`} className="h-full-height relative">
+    <main
+      data-testid={`daily-challenge-${challenge.isSpherical ? "spherical" : "flat"}`}
+      className="h-full-height relative"
+    >
       <Button asChild variant="marathon-white">
-        <Link href={PAGES.DAILY_CHALLENGE} data-testid="daily-challenge-back" className="absolute z-10 top-4 left-4">
+        <Link
+          href={PAGES.DAILY_CHALLENGE}
+          data-testid="daily-challenge-back"
+          className="absolute z-10 top-4 left-4"
+        >
           Back to Daily Challenge
         </Link>
       </Button>
-      {challenge.isSpherical && <ReactSphere src={challenge.sphericalImageUrl} />}
-      {!challenge.isSpherical && <Image src={challenge.flatImageUrl} alt="Challenge" width={1920} height={1080} className="aspect-video size-full object-contain" />}
+      {challenge.isSpherical && (
+        <ReactSphere src={challenge.sphericalImageUrl} />
+      )}
+      {!challenge.isSpherical && (
+        <Image
+          src={challenge.flatImageUrl}
+          alt="Challenge"
+          width={1920}
+          height={1080}
+          className="aspect-video size-full object-contain"
+        />
+      )}
 
-      {!isLoading && !result && (<GameInputGuessDaily date={date} />)}
-      {!isLoading && result && (<ShareDailyChallengeModal {...{ challenge }} />)}
+      {!isLoading && !result && <GameInputGuessDaily date={date} />}
+      {!isLoading && result && <ShareDailyChallengeModal {...{ challenge }} />}
     </main>
   )
 }

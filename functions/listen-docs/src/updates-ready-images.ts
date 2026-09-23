@@ -1,21 +1,40 @@
-import { DOCUMENTS_STATUS, METADATA_DOCS, ROUND_TYPE, TABLES } from "@repo/common"
+import {
+  DOCUMENTS_STATUS,
+  METADATA_DOCS,
+  ROUND_TYPE,
+  TABLES,
+} from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { db } from "@repo/providers/firebase"
-import { buildReadyImageItem, type FlatDoc, type GameDoc, type MapDoc, type ReadyImageItem, readyImagesDocSchema, type SphericalDoc } from "@repo/schemas"
+import {
+  buildReadyImageItem,
+  type FlatDoc,
+  type GameDoc,
+  type MapDoc,
+  type ReadyImageItem,
+  readyImagesDocSchema,
+  type SphericalDoc,
+} from "@repo/schemas"
 import { logger } from "firebase-functions"
 
-const getMetadataRef = () => refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES)
+const getMetadataRef = () =>
+  refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES)
 
 type ReadyImageKind = "sphericals" | "flats"
 
 // A spherical and a flat share every field the pool needs.
 type ReadyImageSource = SphericalDoc | FlatDoc
 
-const isImageReady = (doc: ReadyImageSource | undefined): doc is ReadyImageSource =>
+const isImageReady = (
+  doc: ReadyImageSource | undefined,
+): doc is ReadyImageSource =>
   doc?.status === DOCUMENTS_STATUS.READY && Boolean(doc.image)
 
 // Recompute only when readiness flipped or a denormalized-relevant field changed.
-const needsRefresh = (before: ReadyImageSource | undefined, after: ReadyImageSource | undefined) => {
+const needsRefresh = (
+  before: ReadyImageSource | undefined,
+  after: ReadyImageSource | undefined,
+) => {
   if (isImageReady(before) !== isImageReady(after)) return true
 
   return (
@@ -37,7 +56,9 @@ const buildEntry = async (
 ): Promise<ReadyImageItem | null> => {
   const [gameSnap, mapSnap] = await Promise.all([
     refs[TABLES.GAMES].doc(gameId).get(),
-    after.mapId ? subRefs[TABLES.MAPS](gameId).doc(after.mapId).get() : Promise.resolve(null),
+    after.mapId
+      ? subRefs[TABLES.MAPS](gameId).doc(after.mapId).get()
+      : Promise.resolve(null),
   ])
 
   return buildReadyImageItem({
@@ -65,7 +86,9 @@ const syncReadyImage = async (
 ) => {
   if (!needsRefresh(before, after)) return
 
-  const entry = isImageReady(after) ? await buildEntry(type, gameId, id, after) : null
+  const entry = isImageReady(after)
+    ? await buildEntry(type, gameId, id, after)
+    : null
 
   await db.runTransaction(async (tx) => {
     const snap = await tx.get(getMetadataRef())
@@ -77,7 +100,9 @@ const syncReadyImage = async (
     tx.set(getMetadataRef(), data)
   })
 
-  logger.info(`Synced readyImages metadata for ${kind} ${id} in game ${gameId} (${entry ? "ready" : "removed"})`)
+  logger.info(
+    `Synced readyImages metadata for ${kind} ${id} in game ${gameId} (${entry ? "ready" : "removed"})`,
+  )
 }
 
 export const updateReadySphericals = async (
@@ -85,7 +110,15 @@ export const updateReadySphericals = async (
   sphericalId: string,
   before: SphericalDoc | undefined,
   after: SphericalDoc | undefined,
-) => syncReadyImage("sphericals", ROUND_TYPE.SPHERICAL, gameId, sphericalId, before, after)
+) =>
+  syncReadyImage(
+    "sphericals",
+    ROUND_TYPE.SPHERICAL,
+    gameId,
+    sphericalId,
+    before,
+    after,
+  )
 
 export const updateReadyFlats = async (
   gameId: string,
@@ -94,11 +127,16 @@ export const updateReadyFlats = async (
   after: FlatDoc | undefined,
 ) => syncReadyImage("flats", ROUND_TYPE.FLAT, gameId, flatId, before, after)
 
-const arraysEqual = (a: string[] | null | undefined, b: string[] | null | undefined) => {
+const arraysEqual = (
+  a: string[] | null | undefined,
+  b: string[] | null | undefined,
+) => {
   const left = a || []
   const right = b || []
 
-  return left.length === right.length && left.every((value, i) => value === right[i])
+  return (
+    left.length === right.length && left.every((value, i) => value === right[i])
+  )
 }
 
 // Keep denormalized game fields fresh on the pool when a game is edited.
@@ -122,12 +160,14 @@ export const refreshReadyImagesForGame = async (
 
     const patch = (items: ReadyImageItem[]) =>
       items.map((item) =>
-        item.gameId === gameId ? {
-          ...item,
-          gameTitle: after.title,
-          gameAlternateNames: after.alternateNames || null,
-          gameThumbnailUrl: after.image || null,
-        } : item,
+        item.gameId === gameId
+          ? {
+              ...item,
+              gameTitle: after.title,
+              gameAlternateNames: after.alternateNames || null,
+              gameThumbnailUrl: after.image || null,
+            }
+          : item,
       )
 
     data.sphericals = patch(data.sphericals)
@@ -161,13 +201,15 @@ export const refreshReadyImagesForMap = async (
 
     const patch = (items: ReadyImageItem[]) =>
       items.map((item) =>
-        item.mapId === mapId ? {
-          ...item,
-          mapImage: after.imageUrl || null,
-          mapWidth: after.width || null,
-          mapHeight: after.height || null,
-          maxDistancePoints: after.maxDistancePoints || null,
-        } : item,
+        item.mapId === mapId
+          ? {
+              ...item,
+              mapImage: after.imageUrl || null,
+              mapWidth: after.width || null,
+              mapHeight: after.height || null,
+              maxDistancePoints: after.maxDistancePoints || null,
+            }
+          : item,
       )
 
     data.sphericals = patch(data.sphericals)

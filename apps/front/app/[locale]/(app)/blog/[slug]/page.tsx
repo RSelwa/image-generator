@@ -12,7 +12,7 @@ export const generateStaticParams = () =>
 export const generateMetadata = async ({
   params,
 }: {
-  params: Promise<{ slug: string, locale: string }>
+  params: Promise<{ slug: string; locale: string }>
 }): Promise<Metadata> => {
   const { slug, locale } = await params
   const post = BLOG_POST_BY_SLUG(slug)
@@ -87,8 +87,7 @@ const BlogPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
               <ul className="mt-5 space-y-3 border-l-2 border-primary pl-5">
                 {section.items.map((item, k) => (
                   <li key={k} className="opacity-80 leading-relaxed">
-                    <strong className="font-shapiro-wide">{item.label}</strong>
-                    {" "}
+                    <strong className="font-shapiro-wide">{item.label}</strong>{" "}
                     {item.text}
                   </li>
                 ))}

@@ -70,4 +70,5 @@ gcloud scheduler jobs create http video-capture-daily \
 4. Add Cloud Function triggers for post-processing
 
 ## Commands to not forget
-Execute job : gcloud run jobs execute video-capture   --region us-central1
+
+Execute job : gcloud run jobs execute video-capture --region us-central1

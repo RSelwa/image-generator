@@ -24,7 +24,12 @@ export const WithInput: Story = {
   render: () => (
     <div className="flex flex-col gap-2">
       <Label htmlFor="email">Email</Label>
-      <Input id="email" type="email" placeholder="you@example.com" className="w-64" />
+      <Input
+        id="email"
+        type="email"
+        placeholder="you@example.com"
+        className="w-64"
+      />
     </div>
   ),
 }

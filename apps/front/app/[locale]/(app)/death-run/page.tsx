@@ -6,7 +6,11 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PAGES } from "@/constants/pages"
-import { useCreateDeathRunMutation, useGetDeathRunByCodeQuery, useJoinDeathRunMutation } from "@/redux/api/death-run"
+import {
+  useCreateDeathRunMutation,
+  useGetDeathRunByCodeQuery,
+  useJoinDeathRunMutation,
+} from "@/redux/api/death-run"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
@@ -19,7 +23,8 @@ const Page = () => {
   const [joinCode, setJoinCode] = useState("")
   const [joinCodeSearch, setJoinCodeSearch] = useState("")
 
-  const [createDeathRun, { isLoading: isCreating }] = useCreateDeathRunMutation()
+  const [createDeathRun, { isLoading: isCreating }] =
+    useCreateDeathRunMutation()
   const [joinDeathRun, { isLoading: isJoining }] = useJoinDeathRunMutation()
 
   const { data: deathRunByCode } = useGetDeathRunByCodeQuery(
@@ -78,11 +83,14 @@ const Page = () => {
           />
           {deathRunByCode && (
             <p className="text-sm text-muted-foreground">
-              Found: death run with {deathRunByCode.players.length} player{deathRunByCode.players.length !== 1 ? "s" : ""}
+              Found: death run with {deathRunByCode.players.length} player
+              {deathRunByCode.players.length !== 1 ? "s" : ""}
             </p>
           )}
           {joinCodeSearch.length >= 4 && !deathRunByCode && (
-            <p className="text-sm text-destructive">No death run found with this code.</p>
+            <p className="text-sm text-destructive">
+              No death run found with this code.
+            </p>
           )}
           <Button
             className="w-full"

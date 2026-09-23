@@ -4,7 +4,11 @@ import YouTube from "react-youtube"
 import { cn } from "@/utils"
 import { getVideoIdFromYoutubeLink } from "@/utils/file"
 
-const YoutubeEmbed = ({ youtubeLink, className, ...props }: { youtubeLink: string, className?: string } & YouTubeProps) => {
+const YoutubeEmbed = ({
+  youtubeLink,
+  className,
+  ...props
+}: { youtubeLink: string; className?: string } & YouTubeProps) => {
   const opts = {
     height: "112",
     width: "200",
@@ -21,7 +25,14 @@ const YoutubeEmbed = ({ youtubeLink, className, ...props }: { youtubeLink: strin
     event.target.pauseVideo()
   }
 
-  return <YouTube {...{ opts, videoId }} onReady={onReady} id="video" className={cn(className)} />
+  return (
+    <YouTube
+      {...{ opts, videoId }}
+      onReady={onReady}
+      id="video"
+      className={cn(className)}
+    />
+  )
 }
 
 export default YoutubeEmbed

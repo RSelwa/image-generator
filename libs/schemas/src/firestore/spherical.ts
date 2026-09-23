@@ -1,5 +1,5 @@
 import { DIFFICULTIES, DOCUMENTS_STATUS } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { gratitudeSchema } from "~/firestore/gratitude"
 // import { WITH_ID } from "./../zod.ts"
 import { timestampSchema, WITH_ID } from "~/zod"
@@ -16,10 +16,7 @@ export const sphericalDocSchema = z.object({
   gameId: z.string(),
   image: z.string().optional().default(""),
   difficulty: z.enum(DIFFICULTIES).optional().default(DIFFICULTIES.EASY),
-  status: z
-    .enum(DOCUMENTS_STATUS)
-    .optional()
-    .default(DOCUMENTS_STATUS.WAITING),
+  status: z.enum(DOCUMENTS_STATUS).optional().default(DOCUMENTS_STATUS.WAITING),
   mapId: z.string().optional(), //* Sphericals with map
   mapPosition: mapPositionSchema.optional(), //* Sphericals with map
   thumbnail: z.string().optional(), // ? Sphericals with thumbnails
@@ -28,10 +25,16 @@ export const sphericalDocSchema = z.object({
   ...gratitudeSchema.shape,
 })
 
-export const sphericalDocWithIdSchema = z.object({ ...sphericalDocSchema.shape, ...WITH_ID.shape })
+export const sphericalDocWithIdSchema = z.object({
+  ...sphericalDocSchema.shape,
+  ...WITH_ID.shape,
+})
 
 // Input schemas for CRUD operations (without timestamps)
-export const createSphericalInputSchema = sphericalDocSchema.omit({ createdAt: true, updatedAt: true })
+export const createSphericalInputSchema = sphericalDocSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+})
 
 export const updateSphericalInputSchema = createSphericalInputSchema.partial()
 

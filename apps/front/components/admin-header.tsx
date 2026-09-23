@@ -10,7 +10,9 @@ type Props = {
 }
 
 const AdminHeader = ({ children, title, numberOfElements }: Props) => {
-  const [search, setSearch] = useQueryState(QUERY_PARAMS.SEARCH, { defaultValue: "" })
+  const [search, setSearch] = useQueryState(QUERY_PARAMS.SEARCH, {
+    defaultValue: "",
+  })
 
   return (
     <header className="py-4 sticky top-0 bg-background flex flex-col md:flex-row items-center w-full justify-between z-20">
@@ -18,12 +20,7 @@ const AdminHeader = ({ children, title, numberOfElements }: Props) => {
         <h1 className="text-2xl font-semibold whitespace-nowrap">
           {title}
           {numberOfElements && (
-            <span className="ml-2 text-neutral-400">
-              (
-              {numberOfElements}
-              )
-
-            </span>
+            <span className="ml-2 text-neutral-400">({numberOfElements})</span>
           )}
         </h1>
         <Input
@@ -33,7 +30,9 @@ const AdminHeader = ({ children, title, numberOfElements }: Props) => {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <div className="flex flex-col md:flex-row items-center justify-end gap-4">{children}</div>
+      <div className="flex flex-col md:flex-row items-center justify-end gap-4">
+        {children}
+      </div>
     </header>
   )
 }

@@ -1,7 +1,7 @@
 # Architecture notes for the next project
 
 Conclusions from reviewing the current monorepo (`geo-gamer`), to reuse on a future repo.
-Goal: keep the *organizational* benefits of the current setup without the build/relink machinery.
+Goal: keep the _organizational_ benefits of the current setup without the build/relink machinery.
 
 ---
 
@@ -68,9 +68,9 @@ my-game/
     "paths": {
       "@/*": ["./src/*"],
       "@shared/*": ["./src/shared/*"],
-      "@server/*": ["./src/server/*"]
-    }
-  }
+      "@server/*": ["./src/server/*"],
+    },
+  },
 }
 ```
 
@@ -121,19 +121,19 @@ having to bolt on OpenSearch for search.
 What this kind of app actually uses: Firestore, **Realtime DB for presence/lobby**, Auth,
 Storage, **Cloud Functions as doc-change listeners**, + OpenSearch.
 
-| Concern | Firebase | Supabase |
-|---|---|---|
-| Realtime presence | RTDB `onDisconnect` is best-in-class for "who's in the lobby" | Realtime Presence is good, but server-authoritative disconnect cleanup is weaker — lean on Postgres + a cleanup job |
-| IAM / GCP pain | Real (IAM, service accounts, per-fn deploy, env juggling) | Much simpler: one project/dashboard, Postgres roles + RLS |
-| Listener functions | Native (`onDocumentWritten`) | DB Webhooks/triggers → Edge Functions, or `LISTEN/NOTIFY`; simpler deploy (Deno, one CLI) |
-| Data model | Schemaless docs, flexible | Relational — leaderboards/aggregations (e.g. "top race runs by week") become clean SQL instead of denormalized counters |
-| Search | Bolted-on OpenSearch | Postgres FTS / pgvector built-in — one less service |
+| Concern            | Firebase                                                      | Supabase                                                                                                                |
+| ------------------ | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Realtime presence  | RTDB `onDisconnect` is best-in-class for "who's in the lobby" | Realtime Presence is good, but server-authoritative disconnect cleanup is weaker — lean on Postgres + a cleanup job     |
+| IAM / GCP pain     | Real (IAM, service accounts, per-fn deploy, env juggling)     | Much simpler: one project/dashboard, Postgres roles + RLS                                                               |
+| Listener functions | Native (`onDocumentWritten`)                                  | DB Webhooks/triggers → Edge Functions, or `LISTEN/NOTIFY`; simpler deploy (Deno, one CLI)                               |
+| Data model         | Schemaless docs, flexible                                     | Relational — leaderboards/aggregations (e.g. "top race runs by week") become clean SQL instead of denormalized counters |
+| Search             | Bolted-on OpenSearch                                          | Postgres FTS / pgvector built-in — one less service                                                                     |
 
 **Read:** Supabase would remove most of the named pain (IAM, per-function deploy, env sprawl) and
 simplify aggregation/leaderboard logic via SQL. It also reinforces Option A — Edge Functions are
 Deno single-file bundles, so "no built libs" is even more natural.
 
-**The one risk to validate first:** *presence*. Spike the lobby presence logic on Supabase
+**The one risk to validate first:** _presence_. Spike the lobby presence logic on Supabase
 Realtime Presence before committing — the `onDisconnect` guarantee is the single feature Firebase
 does clearly better, and it's load-bearing for a lobby game.
 
@@ -154,6 +154,7 @@ A multiplayer game is client-heavy and highly interactive, so most of Next's hea
 complexity tax (`"use client"` boundaries, server/client serialization) for benefits you barely use.
 
 **TanStack Start fits this case unusually well:**
+
 - Vite-based — simpler/faster dev than Next's bundler story; repo already leans Vite (`vitest`).
 - Type-safe routing + typed search params — natively replaces today's `nuqs` usage.
 - `createServerFn` server functions = a clean, thin RPC backend; matches the "just some endpoints"
@@ -161,6 +162,7 @@ complexity tax (`"use client"` boundaries, server/client serialization) for bene
 - No RSC mental model — SPA-first is the natural fit for a game UI.
 
 **Costs:**
+
 - Younger than Next (early 2026): smaller ecosystem, fewer examples, less battle-tested.
 - Switching cost — Next is already known from `geo-gamer`.
 - Ecosystem loss: `next-intl`, `next-themes`, Next image have no drop-in; i18n needs a deliberate pick.
@@ -171,5 +173,5 @@ TanStack Query is a well-trodden combo; adopting Start nudges data layer from Re
 
 **Read:** If willing to trade ecosystem maturity for a simpler, type-safe, Vite-native stack that
 genuinely suits an interactive game → strong choice, reinforces the "simplify" theme. If you want
-the safest path while *also* possibly moving to Supabase → stay on Next so only one big thing
+the safest path while _also_ possibly moving to Supabase → stay on Next so only one big thing
 changes at a time.

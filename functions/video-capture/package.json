@@ -1,9 +1,9 @@
 {
   "name": "@repo/video-capture",
-  "type": "module",
   "version": "1.0.0",
   "private": true,
   "description": "Cloud Run Job for 360° video capture",
+  "type": "module",
   "main": "./dist/index.js",
   "scripts": {
     "compile": "tsc --noEmit",

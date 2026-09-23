@@ -1,9 +1,11 @@
-import z from "zod"
+import { z } from "zod"
 
 import { roundSchema } from "~/firestore/seed.round"
 import { WITH_ID } from "~/zod"
 
-export const dailyChallengeDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+export const dailyChallengeDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
 
 export const dailyChallengeDocSchema = roundSchema
   .pick({
@@ -33,14 +35,24 @@ export const dailyChallengeDocSchema = roundSchema
     isSpherical: z.boolean(),
   })
 
-export const dailyChallengeDocWithIdSchema = z.object({ ...dailyChallengeDocSchema.shape, ...WITH_ID.shape })
+export const dailyChallengeDocWithIdSchema = z.object({
+  ...dailyChallengeDocSchema.shape,
+  ...WITH_ID.shape,
+})
 
 export type DailyChallengeDate = z.infer<typeof dailyChallengeDateSchema>
 export type DailyChallengeDoc = z.infer<typeof dailyChallengeDocSchema>
-export type DailyChallengeDocWithId = z.infer<typeof dailyChallengeDocWithIdSchema>
+export type DailyChallengeDocWithId = z.infer<
+  typeof dailyChallengeDocWithIdSchema
+>
 
 export const createDailyChallengeInputSchema = dailyChallengeDocSchema
-export const updateDailyChallengeInputSchema = createDailyChallengeInputSchema.partial()
+export const updateDailyChallengeInputSchema =
+  createDailyChallengeInputSchema.partial()
 
-export type CreateDailyChallengeInput = z.infer<typeof createDailyChallengeInputSchema>
-export type UpdateDailyChallengeInput = z.infer<typeof updateDailyChallengeInputSchema>
+export type CreateDailyChallengeInput = z.infer<
+  typeof createDailyChallengeInputSchema
+>
+export type UpdateDailyChallengeInput = z.infer<
+  typeof updateDailyChallengeInputSchema
+>
