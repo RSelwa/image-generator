@@ -95,8 +95,13 @@ export const ImageDropzone = ({
     }
 
     // Fallback: try to get URL and fetch the image
-    const imageUrl = e.dataTransfer.getData("text/uri-list") || e.dataTransfer.getData("text/plain")
-    if (imageUrl && (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))) {
+    const imageUrl =
+      e.dataTransfer.getData("text/uri-list") ||
+      e.dataTransfer.getData("text/plain")
+    if (
+      imageUrl &&
+      (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))
+    ) {
       try {
         const response = await fetch(imageUrl)
         if (!response.ok) throw new Error("Failed to fetch image")
@@ -148,7 +153,10 @@ export const ImageDropzone = ({
         onDrop={handleDrop}
         onClick={() => !displayImage && openFilePicker()}
         data-isdragging={isDragging}
-        className={cn("relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden border-2 border-dashed transition-colors data-[isdragging=true]:border-primary data-[isdragging=true]:bg-primary/10 data-[isdragging=false]:border-border data-[isdragging=false]:bg-muted/30 data-[isdragging=false]:hover:border-primary/50 data-[isdragging=false]:hover:bg-muted/50", className)}
+        className={cn(
+          "relative flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden border-2 border-dashed transition-colors data-[isdragging=true]:border-primary data-[isdragging=true]:bg-primary/10 data-[isdragging=false]:border-border data-[isdragging=false]:bg-muted/30 data-[isdragging=false]:hover:border-primary/50 data-[isdragging=false]:hover:bg-muted/50",
+          className,
+        )}
       >
         {displayImage ? (
           <>
@@ -172,7 +180,9 @@ export const ImageDropzone = ({
           <div className="text-muted-foreground flex flex-col items-center gap-2 p-4 text-center">
             <ImageIcon className="size-12 opacity-50" />
             <p className="text-sm">
-              {isDragging ? "Drop image here" : "Drag & drop or click to upload"}
+              {isDragging
+                ? "Drop image here"
+                : "Drag & drop or click to upload"}
             </p>
           </div>
         )}

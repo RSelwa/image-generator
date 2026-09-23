@@ -5,7 +5,12 @@ import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { ReactSphere } from "@/components/providers/react-sphere"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { MODAL_KEYS, NEW_SEARCH_PARAM, RESOURCE_BADGE_VARIANT, STATUS_TO_BADGE_VARIANT } from "@/constants/mapping"
+import {
+  MODAL_KEYS,
+  NEW_SEARCH_PARAM,
+  RESOURCE_BADGE_VARIANT,
+  STATUS_TO_BADGE_VARIANT,
+} from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
 import { Link } from "@/i18n/routing"
@@ -21,9 +26,15 @@ export const SphericalCard = ({
   const { data: game } = useGetGameByIdQuery({ id: gameId })
   const { data: maps } = useGetMapsByGameIdQuery({ gameId })
   const sphericalParam = buildSubcollectionParam(gameId, spherical.id)
-  const mapParam = buildSubcollectionParam(gameId, spherical.mapId || NEW_SEARCH_PARAM)
+  const mapParam = buildSubcollectionParam(
+    gameId,
+    spherical.mapId || NEW_SEARCH_PARAM,
+  )
 
-  const { openModal: openSphericalIdModal } = useModal(MODAL_KEYS.EDIT_SPHERICAL_ID, sphericalParam)
+  const { openModal: openSphericalIdModal } = useModal(
+    MODAL_KEYS.EDIT_SPHERICAL_ID,
+    sphericalParam,
+  )
   const { openModal: openMapIdModal } = useModal(MODAL_KEYS.MAP_ID, mapParam)
   const { closeModal } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID)
 
@@ -34,23 +45,46 @@ export const SphericalCard = ({
     closeModal()
   }
 
-  const shouldDisplayNoThumbnailOrMapBadge = !spherical.thumbnail && !spherical.mapId
-  const shouldDisplayNoPositionBadge = Boolean(spherical.mapId) && !spherical.mapPosition
+  const shouldDisplayNoThumbnailOrMapBadge =
+    !spherical.thumbnail && !spherical.mapId
+  const shouldDisplayNoPositionBadge =
+    Boolean(spherical.mapId) && !spherical.mapPosition
   const hasThumbnail = Boolean(spherical.thumbnail)
   const hasMap = Boolean(spherical.mapId)
 
   return (
     <section className="group relative w-full cursor-pointer overflow-hidden rounded-lg">
-      <Image loading="lazy" src={spherical.image} alt={spherical.id} width={300} height={300} className="object-cover aspect-video size-full group-hover:hidden" />
+      <Image
+        loading="lazy"
+        src={spherical.image}
+        alt={spherical.id}
+        width={300}
+        height={300}
+        className="object-cover aspect-video size-full group-hover:hidden"
+      />
       <div className="h-full aspect-video group-hover:block hidden">
         <ReactSphere src={spherical.image} />
       </div>
       <div className="absolute top-2 left-2 flex items-center gap-2">
-        <Badge variant={STATUS_TO_BADGE_VARIANT[spherical.status]}> {spherical.status} </Badge>
-        {!hasGameMaps && <Badge variant="destructive" onClick={openMapModal}> No map </Badge>}
-        {shouldDisplayNoThumbnailOrMapBadge && <Badge variant="red"> No thumbnail or map </Badge>}
-        {shouldDisplayNoPositionBadge && <Badge variant="red"> No position </Badge>}
-        {hasThumbnail && <Badge variant={RESOURCE_BADGE_VARIANT.THUMBNAIL}> Thumbnail </Badge>}
+        <Badge variant={STATUS_TO_BADGE_VARIANT[spherical.status]}>
+          {" "}
+          {spherical.status}{" "}
+        </Badge>
+        {!hasGameMaps && (
+          <Badge variant="destructive" onClick={openMapModal}>
+            {" "}
+            No map{" "}
+          </Badge>
+        )}
+        {shouldDisplayNoThumbnailOrMapBadge && (
+          <Badge variant="red"> No thumbnail or map </Badge>
+        )}
+        {shouldDisplayNoPositionBadge && (
+          <Badge variant="red"> No position </Badge>
+        )}
+        {hasThumbnail && (
+          <Badge variant={RESOURCE_BADGE_VARIANT.THUMBNAIL}> Thumbnail </Badge>
+        )}
         {hasMap && <Badge variant={RESOURCE_BADGE_VARIANT.MAP}> Map </Badge>}
       </div>
       <article className="absolute bottom-2 left-2 flex items-center gap-2 invisible group-hover:visible transition-all">
@@ -64,7 +98,14 @@ export const SphericalCard = ({
         >
           <Pencil className="size-4" />
         </Button>
-        <Button variant="secondary" asChild><Link href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${spherical.id}`} target="_blank"><SquareArrowUpRight className="size-4" /></Link></Button>
+        <Button variant="secondary" asChild>
+          <Link
+            href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${spherical.id}`}
+            target="_blank"
+          >
+            <SquareArrowUpRight className="size-4" />
+          </Link>
+        </Button>
       </article>
 
       {game && (
@@ -76,7 +117,9 @@ export const SphericalCard = ({
             alt={game.title}
             className="w-full max-h-20 group-hover:max-h-12 aspect-auto object-cover rounded-lg"
           />
-          <span className="mt-1 text-sm font-medium text-foreground drop-shadow-lg">{game.title}</span>
+          <span className="mt-1 text-sm font-medium text-foreground drop-shadow-lg">
+            {game.title}
+          </span>
         </div>
       )}
     </section>

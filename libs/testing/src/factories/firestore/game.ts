@@ -5,10 +5,16 @@ import { type GameDoc } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
 import { type FactoryDoc } from "~/orm"
 
-export const gameFactory: FactoryDoc<GameDoc & { id: string }> = (item = {}) => ({
+export const gameFactory: FactoryDoc<GameDoc & { id: string }> = (
+  item = {},
+) => ({
   id: faker.database.mongodbObjectId(),
-  createdAt: Timestamp.fromDate(faker.date.past()) as unknown as ClientTimestamp,
-  updatedAt: Timestamp.fromDate(faker.date.recent()) as unknown as ClientTimestamp,
+  createdAt: Timestamp.fromDate(
+    faker.date.past(),
+  ) as unknown as ClientTimestamp,
+  updatedAt: Timestamp.fromDate(
+    faker.date.recent(),
+  ) as unknown as ClientTimestamp,
   title: faker.lorem.words(3),
   description: faker.lorem.sentence(),
   image: mockedGameImageURL,
@@ -16,5 +22,5 @@ export const gameFactory: FactoryDoc<GameDoc & { id: string }> = (item = {}) => 
   hasSphericalImagesReady: false,
   alternateNames: [],
   midName: "",
-  ...item
+  ...item,
 })

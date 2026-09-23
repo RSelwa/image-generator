@@ -7,20 +7,38 @@ import { EmptySheet } from "@/components/sheet/empty"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { getSocialRef } from "@/constants/db-refs"
 import { QUERY_PARAMS } from "@/constants/mapping"
 import { SOCIALS_STATUS_TO_BADGE_VARIANT } from "@/constants/social"
-import { useGetSocialByIdQuery, useRetriggerPostProductionMutation } from "@/redux/api/socials"
+import {
+  useGetSocialByIdQuery,
+  useRetriggerPostProductionMutation,
+} from "@/redux/api/socials"
 
 const SocialSheet = () => {
   const [socialId, setSocialId] = useQueryState(QUERY_PARAMS.SOCIAL_ID)
   const open = Boolean(socialId)
 
   const [retriggerPostProduction] = useRetriggerPostProductionMutation()
-  const { data: social } = useGetSocialByIdQuery({ id: socialId || "" }, { skip: !socialId, refetchOnMountOrArgChange: true })
+  const { data: social } = useGetSocialByIdQuery(
+    { id: socialId || "" },
+    { skip: !socialId, refetchOnMountOrArgChange: true },
+  )
 
-  if (!social || !socialId) return <Sheet open={open} onOpenChange={(open) => !open && setSocialId(null)}><EmptySheet /></Sheet>
+  if (!social || !socialId)
+    return (
+      <Sheet open={open} onOpenChange={(open) => !open && setSocialId(null)}>
+        <EmptySheet />
+      </Sheet>
+    )
 
   const close = async (open: boolean) => {
     if (open) return
@@ -32,7 +50,9 @@ const SocialSheet = () => {
     <Sheet key={socialId} open={open} onOpenChange={close}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>{social.id} <OpenFirestoreDoc docRef={getSocialRef(socialId)} /></SheetTitle>
+          <SheetTitle>
+            {social.id} <OpenFirestoreDoc docRef={getSocialRef(socialId)} />
+          </SheetTitle>
           {social.status && (
             <SheetDescription asChild>
               <Badge variant={SOCIALS_STATUS_TO_BADGE_VARIANT[social.status]}>
@@ -51,19 +71,23 @@ const SocialSheet = () => {
             <article className="relative">
               {social.urlCustomizedVideoStorage && (
                 <>
-
                   <video controls autoPlay loop className="w-full h-auto">
-                    <source src={social.urlCustomizedVideoStorage} type="video/mp4" />
+                    <source
+                      src={social.urlCustomizedVideoStorage}
+                      type="video/mp4"
+                    />
                     Your browser does not support the video tag.
                   </video>
                   <div className="absolute top-2 left-2 flex items-center gap-1">
                     <Badge>Customized</Badge>
-                    <Button size="icon" onClick={() => retriggerPostProduction({ id: socialId })}>
+                    <Button
+                      size="icon"
+                      onClick={() => retriggerPostProduction({ id: socialId })}
+                    >
                       <RefreshCcw className="size-4" />
                     </Button>
                   </div>
                 </>
-
               )}
             </article>
             <article className="relative">
@@ -71,7 +95,10 @@ const SocialSheet = () => {
                 <>
                   <Badge className="absolute top-2 left-2">Raw capture</Badge>
                   <video controls autoPlay loop className="w-full h-auto">
-                    <source src={social.urlSphericalVideoStorage} type="video/mp4" />
+                    <source
+                      src={social.urlSphericalVideoStorage}
+                      type="video/mp4"
+                    />
                     Your browser does not support the video tag.
                   </video>
                 </>
@@ -82,7 +109,6 @@ const SocialSheet = () => {
 
         <SheetFooter />
       </SheetContent>
-
     </Sheet>
   )
 }

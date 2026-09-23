@@ -1,4 +1,9 @@
-import { DIFFICULTIES, DOCUMENTS_STATUS, DONOR_TIERS, SUGGESTIONS_TYPE } from "@repo/common"
+import {
+  DIFFICULTIES,
+  DOCUMENTS_STATUS,
+  DONOR_TIERS,
+  SUGGESTIONS_TYPE,
+} from "@repo/common"
 
 export const IS_PLAYWRIGHT_EMULATOR = process.env.NEXT_PUBLIC_EMULATOR
 

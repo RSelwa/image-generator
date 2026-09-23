@@ -27,7 +27,13 @@ export const weeklyRaceLeaderboardPlayerSchema = publicPlayerSchema.extend({
 })
 
 export type PublicPlayer = z.infer<typeof publicPlayerSchema>
-export type StreakLeaderboardPlayer = z.infer<typeof streakLeaderboardPlayerSchema>
+export type StreakLeaderboardPlayer = z.infer<
+  typeof streakLeaderboardPlayerSchema
+>
 export type RaceLeaderboardPlayer = z.infer<typeof raceLeaderboardPlayerSchema>
-export type DeathRunLeaderboardPlayer = z.infer<typeof deathRunLeaderboardPlayerSchema>
-export type WeeklyRaceLeaderboardPlayer = z.infer<typeof weeklyRaceLeaderboardPlayerSchema>
+export type DeathRunLeaderboardPlayer = z.infer<
+  typeof deathRunLeaderboardPlayerSchema
+>
+export type WeeklyRaceLeaderboardPlayer = z.infer<
+  typeof weeklyRaceLeaderboardPlayerSchema
+>

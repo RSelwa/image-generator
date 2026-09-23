@@ -1,11 +1,25 @@
 import { faker } from "@faker-js/faker"
 import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
 import { expect, test } from "@playwright/test"
-import { DEFAULT_MAX_DISTANCE_POINTS, DIFFICULTIES, DOCUMENTS_STATUS, LOBBY_STATUS, mockedSphericalImageURL, ROUND_TYPE, SPECIAL_ROUND_OPTIONS_COUNT, TABLES } from "@repo/common"
+import {
+  DEFAULT_MAX_DISTANCE_POINTS,
+  DIFFICULTIES,
+  DOCUMENTS_STATUS,
+  LOBBY_STATUS,
+  mockedSphericalImageURL,
+  ROUND_TYPE,
+  SPECIAL_ROUND_OPTIONS_COUNT,
+  TABLES,
+} from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { type Round, roundSchema } from "@repo/schemas"
 import { createFirestoreDoc } from "@repo/testing/emulator"
-import { gameFactory, mapFactory, seedFactory, sphericalFactory } from "@repo/testing/factory"
+import {
+  gameFactory,
+  mapFactory,
+  seedFactory,
+  sphericalFactory,
+} from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"
 import { SELECTORS } from "@/constants/testing"
 import {
@@ -45,17 +59,27 @@ const createGameEntries = async (count: number) => {
   )
 
   await Promise.all(
-    entries.flatMap(({ game, map, sphericalWithMap, sphericalWithThumbnail }) => [
-      createFirestoreDoc(subRefs[TABLES.MAPS](game.id), map),
-      createFirestoreDoc(subRefs[TABLES.SPHERICAL](game.id), sphericalWithMap),
-      createFirestoreDoc(subRefs[TABLES.SPHERICAL](game.id), sphericalWithThumbnail),
-    ]),
+    entries.flatMap(
+      ({ game, map, sphericalWithMap, sphericalWithThumbnail }) => [
+        createFirestoreDoc(subRefs[TABLES.MAPS](game.id), map),
+        createFirestoreDoc(
+          subRefs[TABLES.SPHERICAL](game.id),
+          sphericalWithMap,
+        ),
+        createFirestoreDoc(
+          subRefs[TABLES.SPHERICAL](game.id),
+          sphericalWithThumbnail,
+        ),
+      ],
+    ),
   )
 
   return entries
 }
 
-const buildRoundsFromEntries = (entries: ReturnType<typeof createGameEntry>[]) => {
+const buildRoundsFromEntries = (
+  entries: ReturnType<typeof createGameEntry>[],
+) => {
   const rounds: Round[] = []
 
   for (let i = 0; i < 6; i++) {
@@ -63,54 +87,64 @@ const buildRoundsFromEntries = (entries: ReturnType<typeof createGameEntry>[]) =
     const isSpecial = i === 5
 
     if (isSpecial) {
-      const options = Array.from({ length: SPECIAL_ROUND_OPTIONS_COUNT }, (_, optionIndex) => {
-        const optionEntry = entries[6 + optionIndex]
+      const options = Array.from(
+        { length: SPECIAL_ROUND_OPTIONS_COUNT },
+        (_, optionIndex) => {
+          const optionEntry = entries[6 + optionIndex]
 
-        return {
-          type: ROUND_TYPE.SPHERICAL,
-          gameId: optionEntry.game.id,
-          gameTitle: optionEntry.game.title,
-          gameAlternateNames: optionEntry.game.alternateNames,
-          gameThumbnailUrl: optionEntry.game.image,
-          thumbnailUrl: mockedSphericalImageURL,
-          sphericalId: optionEntry.sphericalWithThumbnail.id,
-          sphericalImage: optionEntry.sphericalWithThumbnail.image,
-        }
-      })
+          return {
+            type: ROUND_TYPE.SPHERICAL,
+            gameId: optionEntry.game.id,
+            gameTitle: optionEntry.game.title,
+            gameAlternateNames: optionEntry.game.alternateNames,
+            gameThumbnailUrl: optionEntry.game.image,
+            thumbnailUrl: mockedSphericalImageURL,
+            sphericalId: optionEntry.sphericalWithThumbnail.id,
+            sphericalImage: optionEntry.sphericalWithThumbnail.image,
+          }
+        },
+      )
 
-      rounds.push(roundSchema.parse({
-        isSpecial: true,
-        options,
-        difficulty: DIFFICULTIES.EASY,
-      }))
+      rounds.push(
+        roundSchema.parse({
+          isSpecial: true,
+          options,
+          difficulty: DIFFICULTIES.EASY,
+        }),
+      )
 
       continue
     }
 
-    rounds.push(roundSchema.parse({
-      isSpecial: false,
-      type: ROUND_TYPE.SPHERICAL,
-      gameId: entry.game.id,
-      gameTitle: entry.game.title,
-      gameAlternateNames: entry.game.alternateNames,
-      gameThumbnailUrl: entry.game.image,
-      sphericalId: entry.sphericalWithMap.id,
-      sphericalImageUrl: entry.sphericalWithMap.image,
-      mapId: entry.map.id,
-      mapPosition: entry.sphericalWithMap.mapPosition,
-      mapImage: entry.map.imageUrl,
-      mapWidth: entry.map.width,
-      mapHeight: entry.map.height,
-      maxDistancePoints: entry.map.maxDistancePoints || DEFAULT_MAX_DISTANCE_POINTS,
-      difficulty: DIFFICULTIES.EASY,
-    }))
+    rounds.push(
+      roundSchema.parse({
+        isSpecial: false,
+        type: ROUND_TYPE.SPHERICAL,
+        gameId: entry.game.id,
+        gameTitle: entry.game.title,
+        gameAlternateNames: entry.game.alternateNames,
+        gameThumbnailUrl: entry.game.image,
+        sphericalId: entry.sphericalWithMap.id,
+        sphericalImageUrl: entry.sphericalWithMap.image,
+        mapId: entry.map.id,
+        mapPosition: entry.sphericalWithMap.mapPosition,
+        mapImage: entry.map.imageUrl,
+        mapWidth: entry.map.width,
+        mapHeight: entry.map.height,
+        maxDistancePoints:
+          entry.map.maxDistancePoints || DEFAULT_MAX_DISTANCE_POINTS,
+        difficulty: DIFFICULTIES.EASY,
+      }),
+    )
   }
 
   return rounds
 }
 
 test.describe("lobby featured seed", () => {
-  test("should click a featured seed, apply it, and play until the end", async ({ page }) => {
+  test("should click a featured seed, apply it, and play until the end", async ({
+    page,
+  }) => {
     test.setTimeout(120_000)
 
     const entries = await createGameEntries(10)
@@ -138,8 +172,13 @@ test.describe("lobby featured seed", () => {
     await page.getByText(name).click()
 
     // Verify config is updated from the seed
-    await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText("6", { timeout: 10000 })
-    await expect(page.getByTestId("select-number-rounds-trigger")).toBeDisabled()
+    await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText(
+      "6",
+      { timeout: 10000 },
+    )
+    await expect(
+      page.getByTestId("select-number-rounds-trigger"),
+    ).toBeDisabled()
 
     const specialRoundsSwitch = page.getByTestId("special-rounds")
     await expect(specialRoundsSwitch).toBeChecked()
@@ -157,72 +196,112 @@ test.describe("lobby featured seed", () => {
 
     // Round 1
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[0].game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[0].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+    await page
+      .getByTestId(SELECTORS.MINIMAP)
+      .click({ position: { x: 50, y: 50 } })
+    await expect(
+      page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
-    await expect(page.getByTestId(SELECTORS.GAME_MAP(games[0].game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.GAME_MAP(games[0].game?.title)),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
     // Round 2
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[1].game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[1].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+    await page
+      .getByTestId(SELECTORS.MINIMAP)
+      .click({ position: { x: 50, y: 50 } })
+    await expect(
+      page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
-    await expect(page.getByTestId(SELECTORS.GAME_MAP(games[1].game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.GAME_MAP(games[1].game?.title)),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
     // Round 3
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[2].game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[2].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+    await page
+      .getByTestId(SELECTORS.MINIMAP)
+      .click({ position: { x: 50, y: 50 } })
+    await expect(
+      page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
-    await expect(page.getByTestId(SELECTORS.GAME_MAP(games[2].game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.GAME_MAP(games[2].game?.title)),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 
     // Round 4
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[3].game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[3].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+    await page
+      .getByTestId(SELECTORS.MINIMAP)
+      .click({ position: { x: 50, y: 50 } })
+    await expect(
+      page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
-    await expect(page.getByTestId(SELECTORS.GAME_MAP(games[3].game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.GAME_MAP(games[3].game?.title)),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
 
     // Round 5
     await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible()
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[4].game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[4].game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
     await page.getByTestId(SELECTORS.MINIMAP).hover()
     await page.waitForTimeout(400)
-    await page.getByTestId(SELECTORS.MINIMAP).click({ position: { x: 50, y: 50 } })
-    await expect(page.getByTestId(SELECTORS.MAP_MARKER("blue-accent"))).toBeVisible()
+    await page
+      .getByTestId(SELECTORS.MINIMAP)
+      .click({ position: { x: 50, y: 50 } })
+    await expect(
+      page.getByTestId(SELECTORS.MAP_MARKER("blue-accent")),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.MAP_SUBMIT).click()
 
-    await expect(page.getByTestId(SELECTORS.GAME_MAP(games[4].game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(SELECTORS.GAME_MAP(games[4].game?.title)),
+    ).toBeVisible()
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click({ force: true })
 
     // Round 6 - Special round
@@ -231,10 +310,16 @@ test.describe("lobby featured seed", () => {
 
     await page.getByTestId(SELECTORS.GAME_THUMBNAIL_OPTION("0")).click()
 
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(games[5].options?.[0]?.game?.title || "")
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(games[5].options?.[0]?.game?.title || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await expect(page.getByTestId(SELECTORS.GAME_THUMBNAIL_TITLE(games[5].options?.[0]?.game?.title))).toBeVisible()
+    await expect(
+      page.getByTestId(
+        SELECTORS.GAME_THUMBNAIL_TITLE(games[5].options?.[0]?.game?.title),
+      ),
+    ).toBeVisible()
 
     await page.getByTestId(SELECTORS.NEXT_ROUND_BUTTON).click()
 

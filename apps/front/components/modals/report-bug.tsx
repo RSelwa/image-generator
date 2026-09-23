@@ -11,12 +11,19 @@ import { ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
 import { DialogClose, DialogFooter } from "@/components/ui/dialog"
 import { ImageDropzone } from "@/components/ui/image-dropzone"
-import { InputGroup, InputGroupInput, InputGroupTextarea } from "@/components/ui/input-group"
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupTextarea,
+} from "@/components/ui/input-group"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import { usePathname } from "@/i18n/routing"
 import { useCreateSuggestionMutation } from "@/redux/api/suggestions"
-import { selectCurrentRoundIndex, selectCurrentRoundInfos } from "@/redux/lobby/lobby.selectors"
+import {
+  selectCurrentRoundIndex,
+  selectCurrentRoundInfos,
+} from "@/redux/lobby/lobby.selectors"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -26,7 +33,7 @@ const key = MODAL_KEYS.REPORT_BUG
 
 const formSchema = z.object({
   title: z.string().default(""),
-  description: z.string().default("")
+  description: z.string().default(""),
 })
 type FormSchema = z.infer<typeof formSchema>
 
@@ -41,7 +48,9 @@ export const ReportBugModal = () => {
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
-  const currentRoundInfos = useAppSelector(selectCurrentRoundInfos(lobbyId, roundIndex))
+  const currentRoundInfos = useAppSelector(
+    selectCurrentRoundInfos(lobbyId, roundIndex),
+  )
   const userId = useAppSelector(selectUserId)
 
   const [createSuggestionDoc, { isLoading }] = useCreateSuggestionMutation()
@@ -108,19 +117,27 @@ export const ReportBugModal = () => {
 
   return (
     <ModalBase title={t("title")} modalKey={key}>
-      <form autoComplete="off" onSubmit={handleSubmit(submitBug)} className="space-y-4">
+      <form
+        autoComplete="off"
+        onSubmit={handleSubmit(submitBug)}
+        className="space-y-4"
+      >
         <InputGroup>
           <InputGroupInput placeholder={t("bugTitle")} {...register("title")} />
         </InputGroup>
         <InputGroup>
-          <InputGroupTextarea autoFocus placeholder={t("describeProblem")} {...register("description")} />
+          <InputGroupTextarea
+            autoFocus
+            placeholder={t("describeProblem")}
+            {...register("description")}
+          />
         </InputGroup>
         <div className="flex flex-col lg:flex-row flex-wrap gap-2">
           <ImageDropzone
             key={imageUrls.length}
             imageUrl={null}
             onFileSelect={handleFileSelect}
-            onRemove={() => { }}
+            onRemove={() => {}}
             isUploading={isUploading}
             className="size-32"
             alt={t("screenshot")}
@@ -135,21 +152,16 @@ export const ReportBugModal = () => {
               alt={t("screenshotIndex", { index: index + 1 })}
             />
           ))}
-
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="marathon-outline">
-              {tCommon("cancel")}
-            </Button>
+            <Button variant="marathon-outline">{tCommon("cancel")}</Button>
           </DialogClose>
           <Button type="submit" disabled={isLoading}>
             {tCommon("submit")} {isLoading && <Loader />}
           </Button>
         </DialogFooter>
-
       </form>
-
     </ModalBase>
   )
 }

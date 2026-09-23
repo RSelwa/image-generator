@@ -1,5 +1,12 @@
 import { dateToString } from "@repo/common"
-import { DAILY_CHALLENGES_VARIANTS, FIRST_DAY, ITEM_HEIGHT, PADDING_Y, PATH_WIDTH, ZIGZAG_X } from "@/constants/daily-challenges"
+import {
+  DAILY_CHALLENGES_VARIANTS,
+  FIRST_DAY,
+  ITEM_HEIGHT,
+  PADDING_Y,
+  PATH_WIDTH,
+  ZIGZAG_X,
+} from "@/constants/daily-challenges"
 
 export const generateDates = (count: number): string[] => {
   const today = new Date()
@@ -33,13 +40,16 @@ export const getPoint = (index: number) => ({
 })
 
 export const buildPath = (count: number): string =>
-  Array.from({ length: count }, (_, i) => getPoint(i)).reduce((acc, pt, i, pts) => {
-    if (i === 0) return `M ${pt.x} ${pt.y}`
-    const prev = pts[i - 1]!
-    const cy = ITEM_HEIGHT * 0.6
+  Array.from({ length: count }, (_, i) => getPoint(i)).reduce(
+    (acc, pt, i, pts) => {
+      if (i === 0) return `M ${pt.x} ${pt.y}`
+      const prev = pts[i - 1]!
+      const cy = ITEM_HEIGHT * 0.6
 
-    return `${acc} C ${prev.x} ${prev.y + cy} ${pt.x} ${pt.y - cy} ${pt.x} ${pt.y}`
-  }, "")
+      return `${acc} C ${prev.x} ${prev.y + cy} ${pt.x} ${pt.y - cy} ${pt.x} ${pt.y}`
+    },
+    "",
+  )
 
 type ParamsVariant = {
   isToday: boolean
@@ -50,7 +60,10 @@ type ParamsVariant = {
   hasChallenge: boolean
 }
 
-export const getVisualStreak = (streak: number, lastStreakDate: string): number => {
+export const getVisualStreak = (
+  streak: number,
+  lastStreakDate: string,
+): number => {
   if (!lastStreakDate || streak <= 0) return 0
 
   const today = dateToString(new Date())
@@ -66,7 +79,8 @@ export const getVisualStreak = (streak: number, lastStreakDate: string): number 
 export const getDailyChallengeVariant = (props: ParamsVariant) => {
   if (props.isLoading) return DAILY_CHALLENGES_VARIANTS.LOADING
 
-  if (props.isCompleted && props.isToday) return DAILY_CHALLENGES_VARIANTS.COMPLETED_TODAY
+  if (props.isCompleted && props.isToday)
+    return DAILY_CHALLENGES_VARIANTS.COMPLETED_TODAY
 
   if (props.isCompleted) return DAILY_CHALLENGES_VARIANTS.COMPLETED
 

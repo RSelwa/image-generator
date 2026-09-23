@@ -3,10 +3,22 @@ import { timestampSchema, WITH_ID } from "~/zod"
 
 export const marathonSeedRoundSchema = z.object({
   gameId: z.string(),
-  sphericalId: z.string().nullish().default(() => null),
-  sphericalImageUrl: z.string().nullish().default(() => null),
-  flatId: z.string().nullish().default(() => null),
-  flatImageUrl: z.string().nullish().default(() => null),
+  sphericalId: z
+    .string()
+    .nullish()
+    .default(() => null),
+  sphericalImageUrl: z
+    .string()
+    .nullish()
+    .default(() => null),
+  flatId: z
+    .string()
+    .nullish()
+    .default(() => null),
+  flatImageUrl: z
+    .string()
+    .nullish()
+    .default(() => null),
 })
 
 export const marathonSeedDocSchema = z.object({
@@ -16,11 +28,19 @@ export const marathonSeedDocSchema = z.object({
   updatedAt: timestampSchema.nullish().default(() => null),
 })
 
-export const marathonSeedDocWithIdSchema = z.object({ ...marathonSeedDocSchema.shape, ...WITH_ID.shape })
+export const marathonSeedDocWithIdSchema = z.object({
+  ...marathonSeedDocSchema.shape,
+  ...WITH_ID.shape,
+})
 
-export const createMarathonSeedInputSchema = marathonSeedDocSchema.omit({ createdAt: true, updatedAt: true })
+export const createMarathonSeedInputSchema = marathonSeedDocSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+})
 
 export type MarathonSeedRound = z.infer<typeof marathonSeedRoundSchema>
 export type MarathonSeedDoc = z.infer<typeof marathonSeedDocSchema>
 export type MarathonSeedDocWithId = z.infer<typeof marathonSeedDocWithIdSchema>
-export type CreateMarathonSeedInput = z.infer<typeof createMarathonSeedInputSchema>
+export type CreateMarathonSeedInput = z.infer<
+  typeof createMarathonSeedInputSchema
+>

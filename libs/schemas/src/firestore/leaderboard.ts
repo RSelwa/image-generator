@@ -14,7 +14,10 @@ export const leaderboardDocSchema = z.object({
   finishedAt: timestampSchema.nullish().default(() => null),
 })
 
-export const leaderboardDocWithIdSchema = z.object({ ...leaderboardDocSchema.shape, ...WITH_ID.shape })
+export const leaderboardDocWithIdSchema = z.object({
+  ...leaderboardDocSchema.shape,
+  ...WITH_ID.shape,
+})
 
 export type LeaderboardDoc = z.infer<typeof leaderboardDocSchema>
 export type LeaderboardDocWithId = z.infer<typeof leaderboardDocWithIdSchema>

@@ -29,14 +29,14 @@ To **abort** at any time, move your mouse to the top-left corner of the screen (
 
 Edit the constants at the top of the script to adjust behavior:
 
-| Constant | Default | Description |
-|---|---|---|
-| `ROWS` | 7 | Number of vertical levels |
-| `COLS` | 10 | Number of horizontal positions per level |
-| `HORIZONTAL_PIXELS` | 200 | Mouse pixels moved per horizontal step |
-| `VERTICAL_PIXELS` | 100 | Mouse pixels moved up per row |
-| `DELAY_BETWEEN_SHOTS` | 0.3s | Wait time after each mouse move before capturing |
-| `INITIAL_DELAY` | 4s | Time to focus the 3D window before capture starts |
+| Constant              | Default | Description                                       |
+| --------------------- | ------- | ------------------------------------------------- |
+| `ROWS`                | 7       | Number of vertical levels                         |
+| `COLS`                | 10      | Number of horizontal positions per level          |
+| `HORIZONTAL_PIXELS`   | 200     | Mouse pixels moved per horizontal step            |
+| `VERTICAL_PIXELS`     | 100     | Mouse pixels moved up per row                     |
+| `DELAY_BETWEEN_SHOTS` | 0.3s    | Wait time after each mouse move before capturing  |
+| `INITIAL_DELAY`       | 4s      | Time to focus the 3D window before capture starts |
 
 Total screenshots = `ROWS` x `COLS` (default: 70).
 

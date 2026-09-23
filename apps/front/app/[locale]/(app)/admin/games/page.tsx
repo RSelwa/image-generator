@@ -5,9 +5,25 @@ import AdminHeader from "@/components/admin-header"
 import GameCard from "@/components/cards/game-card"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Field, FieldContent, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { MODAL_KEYS, NEW_SEARCH_PARAM, QUERY_PARAMS, SORT_OPTIONS, SORT_OPTIONS_LABEL } from "@/constants/mapping"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Field,
+  FieldContent,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
+import {
+  MODAL_KEYS,
+  NEW_SEARCH_PARAM,
+  QUERY_PARAMS,
+  SORT_OPTIONS,
+  SORT_OPTIONS_LABEL,
+} from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import {
   useGetAllGamesQuery,
@@ -17,34 +33,35 @@ import {
 const Page = () => {
   const [sort, setSort] = useQueryState(QUERY_PARAMS.SORT, { defaultValue: "" })
   const [search] = useQueryState(QUERY_PARAMS.SEARCH, { defaultValue: "" })
-  const [displayMissingImages, setDisplayMissingImages] = useQueryState(QUERY_PARAMS.MISSING_IMAGE, { defaultValue: "" })
+  const [displayMissingImages, setDisplayMissingImages] = useQueryState(
+    QUERY_PARAMS.MISSING_IMAGE,
+    { defaultValue: "" },
+  )
 
   const { openModal } = useModal(MODAL_KEYS.GAME_ID, NEW_SEARCH_PARAM)
 
   const { data: gameCount } = useGetTotalGamesCountQuery()
-  const { data, isLoading } =
-    useGetAllGamesQuery()
+  const { data, isLoading } = useGetAllGamesQuery()
 
   const games = data || []
 
   const isOnlyDisplayMissingImages = displayMissingImages === "true"
 
-  const filteredGames = games.filter((game) =>
-    game.title.toLowerCase().includes(search.toLowerCase()),
-  ).filter((game) => {
-    if (isOnlyDisplayMissingImages)
-      return !game.image
+  const filteredGames = games
+    .filter((game) => game.title.toLowerCase().includes(search.toLowerCase()))
+    .filter((game) => {
+      if (isOnlyDisplayMissingImages) return !game.image
 
-    return true
-  }).sort((a, b) => {
-    if (sort === SORT_OPTIONS.TITLE_ASC)
-      return a.title.localeCompare(b.title)
+      return true
+    })
+    .sort((a, b) => {
+      if (sort === SORT_OPTIONS.TITLE_ASC) return a.title.localeCompare(b.title)
 
-    if (sort === SORT_OPTIONS.TITLE_DESC)
-      return b.title.localeCompare(a.title)
+      if (sort === SORT_OPTIONS.TITLE_DESC)
+        return b.title.localeCompare(a.title)
 
-    return 0
-  })
+      return 0
+    })
 
   return (
     <main className="p-2 min-h-full-height-admin">
@@ -53,9 +70,17 @@ const Page = () => {
           <Button asChild variant="ghost">
             <FieldGroup className="min-w-48 max-w-max hover:bg-neutral-200">
               <Field orientation="horizontal">
-                <Checkbox id="toggle-only-images" checked={isOnlyDisplayMissingImages} onCheckedChange={(checked) => setDisplayMissingImages(checked ? "true" : "")} />
+                <Checkbox
+                  id="toggle-only-images"
+                  checked={isOnlyDisplayMissingImages}
+                  onCheckedChange={(checked) =>
+                    setDisplayMissingImages(checked ? "true" : "")
+                  }
+                />
                 <FieldContent>
-                  <FieldLabel htmlFor="toggle-only-images">Only missing images</FieldLabel>
+                  <FieldLabel htmlFor="toggle-only-images">
+                    Only missing images
+                  </FieldLabel>
                 </FieldContent>
               </Field>
             </FieldGroup>

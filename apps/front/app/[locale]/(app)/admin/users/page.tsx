@@ -8,25 +8,51 @@ import OpenFirestoreDoc from "@/components/open-firestore"
 import SheetAdminUser from "@/components/sheet/user-admin"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { getUserRef } from "@/constants/db-refs"
 import { QUERY_PARAMS } from "@/constants/mapping"
-import { useGetUsersCountQuery, useGetUsersInfiniteQuery } from "@/redux/api/user"
+import {
+  useGetUsersCountQuery,
+  useGetUsersInfiniteQuery,
+} from "@/redux/api/user"
 import { getBadgeVariantByDate } from "@/utils/badge"
 
 const Page = () => {
   const [_, setUserId] = useQueryState(QUERY_PARAMS.USER_ID)
 
   const { data: usersCount } = useGetUsersCountQuery()
-  const { data: users, fetchNextPage, hasNextPage, isFetching } = useGetUsersInfiniteQuery()
+  const {
+    data: users,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+  } = useGetUsersInfiniteQuery()
   const [input, setInput] = useState("")
   const [checkedIds, setCheckedIds] = useState<string[]>([])
-  const flatUsers = (users?.pages.flat() || []).filter((user) => user.id.includes(input) || user.email?.toLowerCase()?.includes(input.toLowerCase()))
+  const flatUsers = (users?.pages.flat() || []).filter(
+    (user) =>
+      user.id.includes(input) ||
+      user.email?.toLowerCase()?.includes(input.toLowerCase()),
+  )
 
-  const isAllChecked = flatUsers.length > 0 && flatUsers.every((user) => checkedIds.includes(user.id))
+  const isAllChecked =
+    flatUsers.length > 0 &&
+    flatUsers.every((user) => checkedIds.includes(user.id))
 
   const toggleAllChecked = (value: boolean) => {
     setCheckedIds(value ? flatUsers.map((user) => user.id) : [])
@@ -34,21 +60,25 @@ const Page = () => {
 
   const hasFetchedAtBottomRef = useRef(false)
 
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.currentTarget
-    const isBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget
+      const isBottom =
+        target.scrollHeight - target.scrollTop - target.clientHeight < 100
 
-    if (!isBottom) {
-      hasFetchedAtBottomRef.current = false
+      if (!isBottom) {
+        hasFetchedAtBottomRef.current = false
 
-      return
-    }
+        return
+      }
 
-    if (hasNextPage && !isFetching && !hasFetchedAtBottomRef.current) {
-      hasFetchedAtBottomRef.current = true
-      fetchNextPage()
-    }
-  }, [hasNextPage, isFetching, fetchNextPage])
+      if (hasNextPage && !isFetching && !hasFetchedAtBottomRef.current) {
+        hasFetchedAtBottomRef.current = true
+        fetchNextPage()
+      }
+    },
+    [hasNextPage, isFetching, fetchNextPage],
+  )
 
   return (
     <main className="h-full-height-admin max-h-full-height-admin p-4 space-y-4">
@@ -60,10 +90,20 @@ const Page = () => {
           <InputGroupAddon>
             <Search />
           </InputGroupAddon>
-          <InputGroupInput value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search by id or email" autoComplete="off" />
+          <InputGroupInput
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Search by id or email"
+            autoComplete="off"
+          />
         </InputGroup>
       </section>
-      <ScrollArea onScroll={handleScroll} className="h-5/6" viewportClassName="[overflow-anchor:none]" horizontal>
+      <ScrollArea
+        onScroll={handleScroll}
+        className="h-5/6"
+        viewportClassName="[overflow-anchor:none]"
+        horizontal
+      >
         <Table noWrapper>
           <TableCaption>
             {isFetching && "Loading..."}
@@ -71,7 +111,12 @@ const Page = () => {
           </TableCaption>
           <TableHeader className="sticky top-0 bg-background">
             <TableRow>
-              <TableHead className="w-14"><Checkbox checked={isAllChecked} onCheckedChange={toggleAllChecked} /></TableHead>
+              <TableHead className="w-14">
+                <Checkbox
+                  checked={isAllChecked}
+                  onCheckedChange={toggleAllChecked}
+                />
+              </TableHead>
               <TableHead className="w-20">Id</TableHead>
               <TableHead className="w-25">Email</TableHead>
               <TableHead>Created At</TableHead>
@@ -81,27 +126,44 @@ const Page = () => {
             {flatUsers.map((user) => {
               const checked = checkedIds.includes(user.id)
               const onCheckedChange = (value: boolean) =>
-                setCheckedIds((prev) => value ? [...prev, user.id] : prev.filter((id) => id !== user.id))
+                setCheckedIds((prev) =>
+                  value
+                    ? [...prev, user.id]
+                    : prev.filter((id) => id !== user.id),
+                )
 
               return (
                 <TableRow key={user.id} onClick={() => setUserId(user.id)}>
-                  <TableCell><Checkbox checked={checked} onCheckedChange={onCheckedChange} /></TableCell>
-                  <TableCell className="max-w-20 truncate"><OpenFirestoreDoc docRef={getUserRef(user.id)} />{user.id} </TableCell>
+                  <TableCell>
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={onCheckedChange}
+                    />
+                  </TableCell>
+                  <TableCell className="max-w-20 truncate">
+                    <OpenFirestoreDoc docRef={getUserRef(user.id)} />
+                    {user.id}{" "}
+                  </TableCell>
                   <TableCell className="font-medium flex items-center gap-2">
                     {user.avatar && (
-                      <UserAvatar avatar={user.avatar} name={user.pseudo || user.email || ""} donorTier={user.donorTier} className="size-9" />
+                      <UserAvatar
+                        avatar={user.avatar}
+                        name={user.pseudo || user.email || ""}
+                        donorTier={user.donorTier}
+                        className="size-9"
+                      />
                     )}
                     <div className="flex flex-col justify-start">
-                      <span>
-                        {user.pseudo}
-                      </span>
+                      <span>{user.pseudo}</span>
                       <span className="text-neutral-400 text-xs">
                         {user.email}
                       </span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getBadgeVariantByDate(user.createdAt?.toDate())}>
+                    <Badge
+                      variant={getBadgeVariantByDate(user.createdAt?.toDate())}
+                    >
                       {getDateFromString(user.createdAt?.toDate())}
                     </Badge>
                   </TableCell>

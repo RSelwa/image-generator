@@ -21,8 +21,14 @@ import {
 import { BADGE_VARIANTS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { Link, usePathname } from "@/i18n/routing"
-import { useFindOrCreateLobbyConversationMutation, useSendConversationMessageMutation } from "@/redux/api/conversations"
-import { useSubscribeAllRoundAnswersQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
+import {
+  useFindOrCreateLobbyConversationMutation,
+  useSendConversationMessageMutation,
+} from "@/redux/api/conversations"
+import {
+  useSubscribeAllRoundAnswersQuery,
+  useSubscribeLobbyQuery,
+} from "@/redux/api/lobby"
 import { useCreateMessageMutation } from "@/redux/api/messages"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -42,7 +48,11 @@ const LobbyMessageForm = ({ lobbyId }: { lobbyId: string }) => {
 
   const onSubmit = async (data: MessageFormSchema) => {
     try {
-      await createMessage({ content: data.content, targetType: "lobby", targetId: lobbyId }).unwrap()
+      await createMessage({
+        content: data.content,
+        targetType: "lobby",
+        targetId: lobbyId,
+      }).unwrap()
       toast.success("Message envoyé au lobby")
       reset()
     } catch {
@@ -51,9 +61,15 @@ const LobbyMessageForm = ({ lobbyId }: { lobbyId: string }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2 items-end flex-1">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex gap-2 items-end flex-1"
+    >
       <InputGroup className="flex-1">
-        <InputGroupTextarea placeholder="Toast pour tous les joueurs..." {...register("content")} />
+        <InputGroupTextarea
+          placeholder="Toast pour tous les joueurs..."
+          {...register("content")}
+        />
       </InputGroup>
       <Button type="submit" disabled={isLoading} variant="outline">
         Envoyer (v1) {isLoading && <Loader />}
@@ -64,7 +80,8 @@ const LobbyMessageForm = ({ lobbyId }: { lobbyId: string }) => {
 
 const LobbyMessageFormV2 = ({ lobbyId }: { lobbyId: string }) => {
   const adminUid = useAppSelector(selectUserId)
-  const [findOrCreateLobbyConversation] = useFindOrCreateLobbyConversationMutation()
+  const [findOrCreateLobbyConversation] =
+    useFindOrCreateLobbyConversationMutation()
   const [sendMessage, { isLoading }] = useSendConversationMessageMutation()
   const { handleSubmit, register, reset } = useForm<MessageFormSchema>({
     defaultValues: { content: "" },
@@ -74,8 +91,15 @@ const LobbyMessageFormV2 = ({ lobbyId }: { lobbyId: string }) => {
   const onSubmit = async (data: MessageFormSchema) => {
     if (!adminUid) return
     try {
-      const conversation = await findOrCreateLobbyConversation({ lobbyId, adminUid }).unwrap()
-      await sendMessage({ conversationId: conversation.id, content: data.content, senderId: adminUid }).unwrap()
+      const conversation = await findOrCreateLobbyConversation({
+        lobbyId,
+        adminUid,
+      }).unwrap()
+      await sendMessage({
+        conversationId: conversation.id,
+        content: data.content,
+        senderId: adminUid,
+      }).unwrap()
       toast.success("Message envoyé dans le salon")
       reset()
     } catch {
@@ -84,9 +108,15 @@ const LobbyMessageFormV2 = ({ lobbyId }: { lobbyId: string }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2 items-end flex-1">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex gap-2 items-end flex-1"
+    >
       <InputGroup className="flex-1">
-        <InputGroupTextarea placeholder="Message dans le panneau salon..." {...register("content")} />
+        <InputGroupTextarea
+          placeholder="Message dans le panneau salon..."
+          {...register("content")}
+        />
       </InputGroup>
       <Button type="submit" disabled={isLoading}>
         Envoyer (v2) {isLoading && <Loader />}
@@ -113,8 +143,13 @@ const AnswerCell = ({ answer }: { answer: PlayerAnswer }) => {
     return (
       <div className="flex flex-col gap-1">
         <Badge variant={BADGE_VARIANTS.GREEN}>Correct</Badge>
-        <span className="text-xs text-neutral-400">{answer.answer || `Option ${answer.selectedOptionIndex}`}</span>
-        <span className="text-xs text-neutral-500">{answer.points} pts ({answer.gamePoints} game + {answer.distancePoints} dist)</span>
+        <span className="text-xs text-neutral-400">
+          {answer.answer || `Option ${answer.selectedOptionIndex}`}
+        </span>
+        <span className="text-xs text-neutral-500">
+          {answer.points} pts ({answer.gamePoints} game +{" "}
+          {answer.distancePoints} dist)
+        </span>
       </div>
     )
   }
@@ -123,7 +158,9 @@ const AnswerCell = ({ answer }: { answer: PlayerAnswer }) => {
     return (
       <div className="flex flex-col gap-1">
         <Badge variant={BADGE_VARIANTS.RED}>Wrong</Badge>
-        <span className="text-xs text-neutral-400">{answer.answer || `Option ${answer.selectedOptionIndex}`}</span>
+        <span className="text-xs text-neutral-400">
+          {answer.answer || `Option ${answer.selectedOptionIndex}`}
+        </span>
         <span className="text-xs text-neutral-500">{answer.points} pts</span>
       </div>
     )
@@ -136,15 +173,29 @@ const AnswerCell = ({ answer }: { answer: PlayerAnswer }) => {
   return <span className="text-neutral-600">Pending</span>
 }
 
-const RoundSection = ({ round, isCurrent }: { round: RoundAnswerDocWithId, isCurrent: boolean }) => (
+const RoundSection = ({
+  round,
+  isCurrent,
+}: {
+  round: RoundAnswerDocWithId
+  isCurrent: boolean
+}) => (
   <section className="mb-6">
     <div className="flex items-center gap-3 mb-2">
       <h3 className="text-lg font-semibold">Round {round.roundIndex}</h3>
-      {round.isSpecial && <Badge variant={BADGE_VARIANTS.PURPLE}>Special</Badge>}
+      {round.isSpecial && (
+        <Badge variant={BADGE_VARIANTS.PURPLE}>Special</Badge>
+      )}
       {isCurrent && <Badge variant={BADGE_VARIANTS.ORANGE}>Current</Badge>}
-      {round.isComplete && <Badge variant={BADGE_VARIANTS.GREEN}>Complete</Badge>}
-      {round.type && <Badge variant={BADGE_VARIANTS.NEUTRAL}>{round.type}</Badge>}
-      {round.gameTitle && <span className="text-sm text-neutral-400">{round.gameTitle}</span>}
+      {round.isComplete && (
+        <Badge variant={BADGE_VARIANTS.GREEN}>Complete</Badge>
+      )}
+      {round.type && (
+        <Badge variant={BADGE_VARIANTS.NEUTRAL}>{round.type}</Badge>
+      )}
+      {round.gameTitle && (
+        <span className="text-sm text-neutral-400">{round.gameTitle}</span>
+      )}
     </div>
 
     <Table noWrapper={false}>
@@ -161,15 +212,24 @@ const RoundSection = ({ round, isCurrent }: { round: RoundAnswerDocWithId, isCur
         {round.answers.map((answer) => (
           <TableRow key={answer.uid}>
             <TableCell className="font-medium">{answer.playerName}</TableCell>
-            <TableCell><AnswerCell answer={answer} /></TableCell>
+            <TableCell>
+              <AnswerCell answer={answer} />
+            </TableCell>
             <TableCell className="text-neutral-400">
               {answer.timeMs > 0 && `${(answer.timeMs / 1000).toFixed(1)}s`}
               {answer.timeMs === 0 && "-"}
             </TableCell>
-            <TableCell>{answer.livesUsed > 0 && answer.livesUsed}{answer.livesUsed === 0 && "-"}</TableCell>
             <TableCell>
-              {answer.isReadyForNextRound && <Badge variant={BADGE_VARIANTS.GREEN}>Ready</Badge>}
-              {!answer.isReadyForNextRound && <span className="text-neutral-600">-</span>}
+              {answer.livesUsed > 0 && answer.livesUsed}
+              {answer.livesUsed === 0 && "-"}
+            </TableCell>
+            <TableCell>
+              {answer.isReadyForNextRound && (
+                <Badge variant={BADGE_VARIANTS.GREEN}>Ready</Badge>
+              )}
+              {!answer.isReadyForNextRound && (
+                <span className="text-neutral-600">-</span>
+              )}
             </TableCell>
           </TableRow>
         ))}
@@ -187,14 +247,25 @@ const Page = () => {
     { skip: !lobbyId },
   )
 
-  const { data: rounds, isLoading: roundsLoading } = useSubscribeAllRoundAnswersQuery(
-    { lobbyId, numberOfRounds: lobby?.config.numberOfRounds || 0 },
-    { skip: !lobby || lobby.status === LOBBY_STATUS.WAITING },
-  )
+  const { data: rounds, isLoading: roundsLoading } =
+    useSubscribeAllRoundAnswersQuery(
+      { lobbyId, numberOfRounds: lobby?.config.numberOfRounds || 0 },
+      { skip: !lobby || lobby.status === LOBBY_STATUS.WAITING },
+    )
 
-  if (lobbyLoading) return <main className="p-4"><p>Loading...</p></main>
+  if (lobbyLoading)
+    return (
+      <main className="p-4">
+        <p>Loading...</p>
+      </main>
+    )
 
-  if (!lobby) return <main className="p-4"><p>Lobby not found</p></main>
+  if (!lobby)
+    return (
+      <main className="p-4">
+        <p>Lobby not found</p>
+      </main>
+    )
 
   return (
     <main className="p-4 min-h-full-height-admin">
@@ -211,7 +282,9 @@ const Page = () => {
         <h1 className="text-2xl font-semibold">
           Lobby <span className="font-mono">{lobby.code}</span>
         </h1>
-        <Badge variant={getBadgeVariantLobbyStatus(lobby.status)}>{lobby.status}</Badge>
+        <Badge variant={getBadgeVariantLobbyStatus(lobby.status)}>
+          {lobby.status}
+        </Badge>
         {lobby.isDemo && <Badge variant={BADGE_VARIANTS.PURPLE}>Demo</Badge>}
       </div>
 
@@ -219,11 +292,15 @@ const Page = () => {
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-sm">
         <div>
           <p className="text-neutral-500">Players</p>
-          <p>{lobby.players.length} / {lobby.config.maxPlayers}</p>
+          <p>
+            {lobby.players.length} / {lobby.config.maxPlayers}
+          </p>
         </div>
         <div>
           <p className="text-neutral-500">Round</p>
-          <p>{lobby.currentRound} / {lobby.config.numberOfRounds}</p>
+          <p>
+            {lobby.currentRound} / {lobby.config.numberOfRounds}
+          </p>
         </div>
         <div>
           <p className="text-neutral-500">Duration</p>
@@ -239,7 +316,10 @@ const Page = () => {
         </div>
         <div>
           <p className="text-neutral-500">Special Rounds</p>
-          <p>{lobby.config.hasSpecialRounds && "Yes"}{!lobby.config.hasSpecialRounds && "No"}</p>
+          <p>
+            {lobby.config.hasSpecialRounds && "Yes"}
+            {!lobby.config.hasSpecialRounds && "No"}
+          </p>
         </div>
       </section>
 
@@ -260,14 +340,20 @@ const Page = () => {
             {lobby.players.map((player) => (
               <TableRow key={player.uid}>
                 <TableCell className="font-medium">{player.name}</TableCell>
-                <TableCell className="text-neutral-400">{player.avatar}</TableCell>
+                <TableCell className="text-neutral-400">
+                  {player.avatar}
+                </TableCell>
                 <TableCell>{player.score}</TableCell>
                 <TableCell>
-                  {player.isHost && <Badge variant={BADGE_VARIANTS.ORANGE}>Host</Badge>}
+                  {player.isHost && (
+                    <Badge variant={BADGE_VARIANTS.ORANGE}>Host</Badge>
+                  )}
                   {!player.isHost && "-"}
                 </TableCell>
                 <TableCell>
-                  {player.isReady && <Badge variant={BADGE_VARIANTS.GREEN}>Ready</Badge>}
+                  {player.isReady && (
+                    <Badge variant={BADGE_VARIANTS.GREEN}>Ready</Badge>
+                  )}
                   {!player.isReady && "-"}
                 </TableCell>
               </TableRow>

@@ -10,7 +10,10 @@ const generateCode = (): string =>
   Math.random().toString(36).substring(2, 6).toUpperCase() +
   Math.random().toString(36).substring(2, 6).toUpperCase()
 
-export const createCoupon = async (email: string, tier: ConstantValues<typeof DONOR_TIERS>) => {
+export const createCoupon = async (
+  email: string,
+  tier: ConstantValues<typeof DONOR_TIERS>,
+) => {
   const dateInMonth = new Date()
   dateInMonth.setDate(dateInMonth.getDate() + 30)
   const timestampInMonth = Timestamp.fromDate(dateInMonth)

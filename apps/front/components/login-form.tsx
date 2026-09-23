@@ -137,9 +137,16 @@ export const LoginForm = ({
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                {t("dontHaveAccount")}
-                {" "}
-                <Link href={redirect ? `${PAGES.SIGNUP}?${QUERY_PARAMS.REDIRECT}=${encodeURIComponent(redirect)}` : PAGES.SIGNUP}>{t("signupTitle")}</Link>
+                {t("dontHaveAccount")}{" "}
+                <Link
+                  href={
+                    redirect
+                      ? `${PAGES.SIGNUP}?${QUERY_PARAMS.REDIRECT}=${encodeURIComponent(redirect)}`
+                      : PAGES.SIGNUP
+                  }
+                >
+                  {t("signupTitle")}
+                </Link>
               </FieldDescription>
             </FieldGroup>
           </form>
@@ -153,14 +160,9 @@ export const LoginForm = ({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        {t("loginTermsAgreement")}
-        {" "}
-        <Link href={PAGES.TERMS}>{t("termsOfService")}</Link>
-        {" "}
-        {t("and")}
-        {" "}
-        <Link href={PAGES.PRIVACY}>{t("privacyPolicy")}</Link>
-        .
+        {t("loginTermsAgreement")}{" "}
+        <Link href={PAGES.TERMS}>{t("termsOfService")}</Link> {t("and")}{" "}
+        <Link href={PAGES.PRIVACY}>{t("privacyPolicy")}</Link>.
       </FieldDescription>
     </div>
   )

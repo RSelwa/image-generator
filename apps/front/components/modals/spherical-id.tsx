@@ -52,9 +52,10 @@ const KEY = MODAL_KEYS.EDIT_SPHERICAL_ID
 // Helper to parse combined param format: "gameId_sphericalId" or just "new"
 export const parseSphericalModalParam = (
   param: string | null,
-): { gameId: string, sphericalId: string } | null => {
+): { gameId: string; sphericalId: string } | null => {
   if (!param) return null
-  if (param === NEW_SEARCH_PARAM) return { gameId: "", sphericalId: NEW_SEARCH_PARAM }
+  if (param === NEW_SEARCH_PARAM)
+    return { gameId: "", sphericalId: NEW_SEARCH_PARAM }
   const separatorIndex = param.indexOf("_")
   if (separatorIndex === -1) return null
   const gameId = param.substring(0, separatorIndex)
@@ -101,7 +102,7 @@ const SphericalForm = ({
       difficulty: DIFFICULTIES.EASY,
       status: DOCUMENTS_STATUS.WAITING,
       thumbnail: "",
-      youtubeLink: ""
+      youtubeLink: "",
     },
   })
 
@@ -112,9 +113,15 @@ const SphericalForm = ({
   const thumbnail = watch("thumbnail")
   const youtubeLink = watch("youtubeLink")
 
-  const { openModal: openSphericalGallery } = useModal(MODAL_KEYS.SPHERICAL_GALLERY_ID, gameId)
+  const { openModal: openSphericalGallery } = useModal(
+    MODAL_KEYS.SPHERICAL_GALLERY_ID,
+    gameId,
+  )
   const { closeModal } = useModal(KEY, sphericalId)
-  const { openModal } = useModal(MODAL_KEYS.MAP_ID, `${gameId}_${NEW_SEARCH_PARAM}`)
+  const { openModal } = useModal(
+    MODAL_KEYS.MAP_ID,
+    `${gameId}_${NEW_SEARCH_PARAM}`,
+  )
 
   const { data: gamesData, isLoading: isGamesLoading } = useGetAllGamesQuery()
   const { data, isLoading } = useGetSphericalByIdQuery(
@@ -144,7 +151,8 @@ const SphericalForm = ({
   const selectedMap = maps.find((map) => map.id === selectedMapId)
 
   // Map position picker display conditions
-  const hasValidMapWithDimensions = !!selectedMap?.imageUrl && !!selectedMap.width && !!selectedMap.height
+  const hasValidMapWithDimensions =
+    !!selectedMap?.imageUrl && !!selectedMap.width && !!selectedMap.height
   const hasMapWithoutValidDimensions = hasMapId && !hasValidMapWithDimensions
   const shouldShowManualPositionInputs = !hasMapId
 
@@ -161,7 +169,9 @@ const SphericalForm = ({
     [setValue],
   )
 
-  const sortedGames = gamesData ? [...gamesData].sort((a, b) => a.title.localeCompare(b.title)) : []
+  const sortedGames = gamesData
+    ? [...gamesData].sort((a, b) => a.title.localeCompare(b.title))
+    : []
 
   useEffect(() => {
     if (data) {
@@ -297,14 +307,14 @@ const SphericalForm = ({
           <h2 className=" text-2xl font-bold">
             {isNew ? "Create Spherical" : "Edit Spherical"}
           </h2>
-          <Button onClick={() => {
-            openModal()
-            closeModal()
-          }}
+          <Button
+            onClick={() => {
+              openModal()
+              closeModal()
+            }}
           >
             New map
           </Button>
-
         </div>
         {isNew && (
           <Field className="mb-6">
@@ -335,7 +345,9 @@ const SphericalForm = ({
               <FieldDescription>Loading games...</FieldDescription>
             )}
             {!gameId && (
-              <FieldDescription>Select a game to create the spherical in</FieldDescription>
+              <FieldDescription>
+                Select a game to create the spherical in
+              </FieldDescription>
             )}
           </Field>
         )}
@@ -351,7 +363,8 @@ const SphericalForm = ({
                     <Select
                       value={field.value || NO_MAP_VALUE}
                       onValueChange={(value) =>
-                        field.onChange(value === NO_MAP_VALUE ? "" : value)}
+                        field.onChange(value === NO_MAP_VALUE ? "" : value)
+                      }
                       disabled={isMapsLoading}
                     >
                       <SelectTrigger className="w-full">
@@ -539,13 +552,11 @@ const SphericalForm = ({
                     <strong>Game ID:</strong> {data.gameId}
                   </p>
                   <p>
-                    <strong>Created:</strong>
-                    {" "}
+                    <strong>Created:</strong>{" "}
                     {data.createdAt?.toDate().toLocaleString()}
                   </p>
                   <p>
-                    <strong>Updated:</strong>
-                    {" "}
+                    <strong>Updated:</strong>{" "}
                     {data.updatedAt?.toDate().toLocaleString()}
                   </p>
                 </div>
@@ -558,7 +569,11 @@ const SphericalForm = ({
 
           <div className="flex flex-col gap-3">
             <Button variant="marathon-link" asChild>
-              <Link href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${sphericalId}`} target="_blank" className="flex gap-4 items-center cursor-pointer">
+              <Link
+                href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${sphericalId}`}
+                target="_blank"
+                className="flex gap-4 items-center cursor-pointer"
+              >
                 Spherical Image <SquareArrowOutUpRight className="size-4" />
               </Link>
             </Button>
@@ -593,8 +608,19 @@ const SphericalForm = ({
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="marathon-outline" onClick={handleCreateSocial} type="button">Create Social</Button>
-          <Button type="submit" disabled={isCreating || isUpdating || !isDirty || (isNew && !gameId)}>
+          <Button
+            variant="marathon-outline"
+            onClick={handleCreateSocial}
+            type="button"
+          >
+            Create Social
+          </Button>
+          <Button
+            type="submit"
+            disabled={
+              isCreating || isUpdating || !isDirty || (isNew && !gameId)
+            }
+          >
             {isCreating || isUpdating ? (
               <>
                 {isNew ? "Creating" : "Saving"} <Loader />

@@ -1,9 +1,7 @@
 "use client"
 
 import { useCallback, useRef, useState } from "react"
-import {
-  type ReactZoomPanPinchRef
-} from "react-zoom-pan-pinch"
+import { type ReactZoomPanPinchRef } from "react-zoom-pan-pinch"
 import {
   TransformComponent,
   TransformWrapper,
@@ -24,7 +22,7 @@ export type Position = {
 export type MapData = {
   mapImage: string
   correctPosition?: Position
-  size: { width: number, height: number }
+  size: { width: number; height: number }
 }
 
 // Mini map sizes
@@ -84,8 +82,12 @@ const MarkersLayer = ({
         }}
       >
         <div className="relative">
-          {color === "primary" && <MapPinVertical className={cn("h-16", `text-blue-accent`)} />}
-          {color === "blue-accent" && <MapPin className={cn("h-12", `text-primary`)} />}
+          {color === "primary" && (
+            <MapPinVertical className={cn("h-16", `text-blue-accent`)} />
+          )}
+          {color === "blue-accent" && (
+            <MapPin className={cn("h-12", `text-primary`)} />
+          )}
         </div>
       </div>
     )
@@ -119,7 +121,6 @@ const MarkersLayer = ({
 
       {/* Guess marker */}
       {guessPosition && renderMarker(guessPosition, "blue-accent")}
-
     </>
   )
 }
@@ -132,8 +133,8 @@ export type MiniMapProps = {
   showCorrectMarker?: boolean
   showLine?: boolean
   disabled?: boolean
-  collapsedSize?: { width: number, height: number }
-  expandedSize?: { width: number, height: number }
+  collapsedSize?: { width: number; height: number }
+  expandedSize?: { width: number; height: number }
   className?: string
   /** When true, the map is rendered inline (relative) instead of fixed positioned */
   inline?: boolean
@@ -165,18 +166,25 @@ export const MiniMap = ({
   const [isHovered, setIsHovered] = useState(false)
   const wrapperClickRef = useRef<HTMLDivElement>(null)
   const transformRef = useRef<ReactZoomPanPinchRef>(null)
-  const mouseDownPos = useRef<{ x: number, y: number } | null>(null)
-  const touchStartPos = useRef<{ x: number, y: number } | null>(null)
+  const mouseDownPos = useRef<{ x: number; y: number } | null>(null)
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null)
 
   const isHoveredOrParent = isHovered || isParentHover
 
   const isExpanded = alwaysExpanded || isHoveredOrParent
-  const currentSize = isMobile ? (isExpanded ? MINI_MAP_EXPANDED_MOBILE : MINI_MAP_COLLAPSED_MOBILE) : (isExpanded ? expandedSize : collapsedSize)
+  const currentSize = isMobile
+    ? isExpanded
+      ? MINI_MAP_EXPANDED_MOBILE
+      : MINI_MAP_COLLAPSED_MOBILE
+    : isExpanded
+      ? expandedSize
+      : collapsedSize
   const isMobileExpanded = isMobile && isExpanded
 
   // Calculate minimum scale so image always fills the container
   const minScale = Math.max(
-    (isMobileExpanded ? window.innerWidth * 0.8 : currentSize.width) / mapData.size.width,
+    (isMobileExpanded ? window.innerWidth * 0.8 : currentSize.width) /
+      mapData.size.width,
     currentSize.height / mapData.size.height,
   )
 
@@ -190,15 +198,27 @@ export const MiniMap = ({
     mouseDownPos.current = { x: e.clientX, y: e.clientY }
   }, [])
 
-  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches.length === 1) {
-      touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-    }
-  }, [])
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      if (e.touches.length === 1) {
+        touchStartPos.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+        }
+      }
+    },
+    [],
+  )
 
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent<HTMLDivElement>) => {
-      if (disabled || hasSubmitted || !wrapperClickRef.current || !transformRef.current) return
+      if (
+        disabled ||
+        hasSubmitted ||
+        !wrapperClickRef.current ||
+        !transformRef.current
+      )
+        return
       if (e.changedTouches.length !== 1) return
 
       const touch = e.changedTouches[0]
@@ -213,7 +233,8 @@ export const MiniMap = ({
       const clickX = touch.clientX - wrapperRect.left
       const clickY = touch.clientY - wrapperRect.top
 
-      const { scale, positionX, positionY } = transformRef.current.instance.state
+      const { scale, positionX, positionY } =
+        transformRef.current.instance.state
 
       const mapX = (clickX - positionX) / scale
       const mapY = (clickY - positionY) / scale
@@ -223,12 +244,24 @@ export const MiniMap = ({
 
       onMapClick({ x, y })
     },
-    [disabled, hasSubmitted, onMapClick, mapData.size.width, mapData.size.height],
+    [
+      disabled,
+      hasSubmitted,
+      onMapClick,
+      mapData.size.width,
+      mapData.size.height,
+    ],
   )
 
   const handleMapClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (disabled || hasSubmitted || !wrapperClickRef.current || !transformRef.current) return
+      if (
+        disabled ||
+        hasSubmitted ||
+        !wrapperClickRef.current ||
+        !transformRef.current
+      )
+        return
 
       if (mouseDownPos.current) {
         const dx = e.clientX - mouseDownPos.current.x
@@ -240,7 +273,8 @@ export const MiniMap = ({
       const clickX = e.clientX - wrapperRect.left
       const clickY = e.clientY - wrapperRect.top
 
-      const { scale, positionX, positionY } = transformRef.current.instance.state
+      const { scale, positionX, positionY } =
+        transformRef.current.instance.state
 
       const mapX = (clickX - positionX) / scale
       const mapY = (clickY - positionY) / scale
@@ -250,7 +284,13 @@ export const MiniMap = ({
 
       onMapClick({ x, y })
     },
-    [disabled, hasSubmitted, onMapClick, mapData.size.width, mapData.size.height],
+    [
+      disabled,
+      hasSubmitted,
+      onMapClick,
+      mapData.size.width,
+      mapData.size.height,
+    ],
   )
 
   return (

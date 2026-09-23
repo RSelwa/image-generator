@@ -24,7 +24,11 @@ import {
 import { toast } from "sonner"
 // Need to use the React-specific entry point to import createApi
 import { DEFAULT_SIZE_MAPS } from "@/constants/api"
-import { getMapRef, TABLES_GROUP_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
+import {
+  getMapRef,
+  TABLES_GROUP_REFS,
+  TABLES_SUB_REFS,
+} from "@/constants/db-refs"
 import { gameApi } from "@/redux/api/games"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
@@ -36,7 +40,7 @@ export const mapApi = createApi({
     getMaps: builder.infiniteQuery<
       MapDocWithId[],
       void,
-      { limit?: number, startAfter?: string }
+      { limit?: number; startAfter?: string }
     >({
       queryFn: async ({ pageParam }) => {
         try {
@@ -95,12 +99,14 @@ export const mapApi = createApi({
         },
       },
       providesTags: (result) =>
-        result ? [
-          ...result.pages
-            .flat()
-            .map(({ id }) => ({ type: "Map" as const, id })),
-          { type: "MapList" as const },
-        ] : [{ type: "MapList" as const }],
+        result
+          ? [
+              ...result.pages
+                .flat()
+                .map(({ id }) => ({ type: "Map" as const, id })),
+              { type: "MapList" as const },
+            ]
+          : [{ type: "MapList" as const }],
     }),
     getMapsByGameId: builder.query<MapDocWithId[], { gameId: string }>({
       queryFn: async ({ gameId }) => {
@@ -130,12 +136,14 @@ export const mapApi = createApi({
         }
       },
       providesTags: (result) =>
-        result ? [
-          ...result.map(({ id }) => ({ type: "Map" as const, id })),
-          { type: "MapList" as const },
-        ] : [{ type: "MapList" as const }],
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Map" as const, id })),
+              { type: "MapList" as const },
+            ]
+          : [{ type: "MapList" as const }],
     }),
-    getMapById: builder.query<MapDocWithId, { gameId: string, id: string }>({
+    getMapById: builder.query<MapDocWithId, { gameId: string; id: string }>({
       queryFn: async ({ id, gameId }) => {
         try {
           const docSnap = await getDoc(getMapRef(gameId, id))
@@ -181,7 +189,7 @@ export const mapApi = createApi({
       },
       providesTags: [{ type: "MapCount" }],
     }),
-    deleteMap: builder.mutation<null, { gameId: string, id: string }>({
+    deleteMap: builder.mutation<null, { gameId: string; id: string }>({
       queryFn: async ({ gameId, id }) => {
         try {
           await deleteDoc(getMapRef(gameId, id))
@@ -214,7 +222,7 @@ export const mapApi = createApi({
     }),
     createMap: builder.mutation<
       MapDocWithId,
-      { gameId: string, data: CreateMapInput }
+      { gameId: string; data: CreateMapInput }
     >({
       queryFn: async ({ gameId, data: input }) => {
         try {
@@ -265,7 +273,7 @@ export const mapApi = createApi({
     }),
     updateMapById: builder.mutation<
       MapDocWithId,
-      { gameId: string, id: string, data: UpdateMapInput }
+      { gameId: string; id: string; data: UpdateMapInput }
     >({
       queryFn: async ({ gameId, id, data: input }) => {
         try {

@@ -21,14 +21,17 @@ type ProxyImageResult = ArrayBuffer
 
 export const localApi = createApi({
   reducerPath: "localApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/", prepareHeaders: async (headers) => {
-    const token = await auth.currentUser?.getIdToken()
-    if (token) {
-      headers.set("Authorization", `Bearer ${token}`)
-    }
+  baseQuery: fetchBaseQuery({
+    baseUrl: "/",
+    prepareHeaders: async (headers) => {
+      const token = await auth.currentUser?.getIdToken()
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`)
+      }
 
-    return headers
-  } }),
+      return headers
+    },
+  }),
   endpoints: (builder) => ({
     uploadImage: builder.mutation<UploadImageResult, UploadImageInput>({
       queryFn: async ({ file, bucketPath, title }) => {
@@ -83,24 +86,31 @@ export const localApi = createApi({
             error: {
               status: 500,
               data:
-                error instanceof Error ? error.message : "Failed to fetch image",
+                error instanceof Error
+                  ? error.message
+                  : "Failed to fetch image",
             },
           }
         }
       },
     }),
-    applySeedToLobby: builder.mutation<null, { lobbyId: string, seedId: string }>({
+    applySeedToLobby: builder.mutation<
+      null,
+      { lobbyId: string; seedId: string }
+    >({
       queryFn: async (b, { dispatch }) => {
         try {
           const body = applySeedPayload.parse(b)
 
           if (!body.seedId && body.lobbyId) {
-            await dispatch(lobbyApi.endpoints.updateLobby.initiate({
-              id: body.lobbyId,
-              data: {
-                seedId: ""
-              }
-            }))
+            await dispatch(
+              lobbyApi.endpoints.updateLobby.initiate({
+                id: body.lobbyId,
+                data: {
+                  seedId: "",
+                },
+              }),
+            )
 
             return { data: null }
           }
@@ -130,9 +140,13 @@ export const localApi = createApi({
             },
           }
         }
-      }
-    })
+      },
+    }),
   }),
 })
 
-export const { useUploadImageMutation, useProxyImageQuery, useApplySeedToLobbyMutation } = localApi
+export const {
+  useUploadImageMutation,
+  useProxyImageQuery,
+  useApplySeedToLobbyMutation,
+} = localApi

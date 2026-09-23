@@ -19,7 +19,10 @@ export const raceRunDocSchema = z.object({
   finishedAt: timestampSchema.nullish().default(null),
 })
 
-export const raceRunDocWithIdSchema = z.object({ ...raceRunDocSchema.shape, ...WITH_ID.shape })
+export const raceRunDocWithIdSchema = z.object({
+  ...raceRunDocSchema.shape,
+  ...WITH_ID.shape,
+})
 
 export type RaceAnswer = z.infer<typeof raceAnswerSchema>
 export type RaceRunDoc = z.infer<typeof raceRunDocSchema>

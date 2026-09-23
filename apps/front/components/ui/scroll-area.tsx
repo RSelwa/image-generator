@@ -11,7 +11,11 @@ function ScrollArea({
   onScroll,
   horizontal = false,
   ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & { onScroll?: React.UIEventHandler<HTMLDivElement>, viewportClassName?: string, horizontal?: boolean }) {
+}: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
+  onScroll?: React.UIEventHandler<HTMLDivElement>
+  viewportClassName?: string
+  horizontal?: boolean
+}) {
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
@@ -20,7 +24,10 @@ function ScrollArea({
     >
       <ScrollAreaPrimitive.Viewport
         data-slot="scroll-area-viewport"
-        className={cn("focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1", viewportClassName)}
+        className={cn(
+          "focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
+          viewportClassName,
+        )}
         onScroll={onScroll}
       >
         {children}
@@ -44,10 +51,10 @@ function ScrollBar({
       className={cn(
         "flex touch-none p-px transition-colors select-none",
         orientation === "vertical" &&
-        "h-full w-2.5 border-l border-l-transparent",
+          "h-full w-2.5 border-l border-l-transparent",
         orientation === "horizontal" &&
-        "h-2.5 flex-col border-t border-t-transparent",
-        className
+          "h-2.5 flex-col border-t border-t-transparent",
+        className,
       )}
       {...props}
     >

@@ -1,5 +1,10 @@
 import z from "zod"
-import { type FlatDocWithId, flatDocWithIdSchema, type GameDocWithId, gameDocWithIdSchema } from "~/firestore"
+import {
+  type FlatDocWithId,
+  flatDocWithIdSchema,
+  type GameDocWithId,
+  gameDocWithIdSchema,
+} from "~/firestore"
 import { mapPositionSchema } from "~/firestore/spherical"
 
 const gameSchema = z.object({
@@ -33,9 +38,14 @@ export type FlatWithMapEntity = z.infer<typeof flatWithMapEntitySchema>
 export type FlatWithoutMapEntity = z.infer<typeof flatWithoutMapEntitySchema>
 export type FlatEntity = z.infer<typeof flatEntitySchema>
 
-export const toFlatEntity = (doc: FlatDocWithId, game: GameDocWithId): FlatEntity | null => {
+export const toFlatEntity = (
+  doc: FlatDocWithId,
+  game: GameDocWithId,
+): FlatEntity | null => {
   const raw = { ...doc, game, hasMap: !!doc.mapId }
-  const cleaned = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== null))
+  const cleaned = Object.fromEntries(
+    Object.entries(raw).filter(([, v]) => v !== null),
+  )
   const { data, error } = flatEntitySchema.safeParse(cleaned)
 
   if (error) {

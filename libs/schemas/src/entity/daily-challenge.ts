@@ -1,6 +1,9 @@
 import { DIFFICULTIES } from "@repo/common"
 import z from "zod"
-import { dailyChallengeDateSchema, type DailyChallengeDocWithId } from "~/firestore/daily-challenge"
+import {
+  dailyChallengeDateSchema,
+  type DailyChallengeDocWithId,
+} from "~/firestore/daily-challenge"
 import { mapPositionSchema } from "~/firestore/spherical"
 
 const dailyChallengeBaseSchema = z.object({
@@ -27,24 +30,50 @@ const withoutMapSchema = z.object({
   hasMap: z.literal(false),
 })
 
-const sphericalBaseSchema = z.object({ isSpherical: z.literal(true), sphericalId: z.string(), sphericalImageUrl: z.string() })
-const flatBaseSchema = z.object({ isSpherical: z.literal(false), flatId: z.string(), flatImageUrl: z.string() })
+const sphericalBaseSchema = z.object({
+  isSpherical: z.literal(true),
+  sphericalId: z.string(),
+  sphericalImageUrl: z.string(),
+})
+const flatBaseSchema = z.object({
+  isSpherical: z.literal(false),
+  flatId: z.string(),
+  flatImageUrl: z.string(),
+})
 
-const sphericalWithMapSchema = dailyChallengeBaseSchema.extend(sphericalBaseSchema.shape).extend(withMapSchema.shape)
-const sphericalWithoutMapSchema = dailyChallengeBaseSchema.extend(sphericalBaseSchema.shape).extend(withoutMapSchema.shape)
-const flatWithMapSchema = dailyChallengeBaseSchema.extend(flatBaseSchema.shape).extend(withMapSchema.shape)
-const flatWithoutMapSchema = dailyChallengeBaseSchema.extend(flatBaseSchema.shape).extend(withoutMapSchema.shape)
+const sphericalWithMapSchema = dailyChallengeBaseSchema
+  .extend(sphericalBaseSchema.shape)
+  .extend(withMapSchema.shape)
+const sphericalWithoutMapSchema = dailyChallengeBaseSchema
+  .extend(sphericalBaseSchema.shape)
+  .extend(withoutMapSchema.shape)
+const flatWithMapSchema = dailyChallengeBaseSchema
+  .extend(flatBaseSchema.shape)
+  .extend(withMapSchema.shape)
+const flatWithoutMapSchema = dailyChallengeBaseSchema
+  .extend(flatBaseSchema.shape)
+  .extend(withoutMapSchema.shape)
 
-const sphericalSchema = z.discriminatedUnion("hasMap", [sphericalWithMapSchema, sphericalWithoutMapSchema])
-const flatSchema = z.discriminatedUnion("hasMap", [flatWithMapSchema, flatWithoutMapSchema])
+const sphericalSchema = z.discriminatedUnion("hasMap", [
+  sphericalWithMapSchema,
+  sphericalWithoutMapSchema,
+])
+const flatSchema = z.discriminatedUnion("hasMap", [
+  flatWithMapSchema,
+  flatWithoutMapSchema,
+])
 
 export const dailyChallengeEntitySchema = z.union([sphericalSchema, flatSchema])
 
 export type DailyChallengeEntity = z.infer<typeof dailyChallengeEntitySchema>
 
-export const toDailyChallengeEntity = (doc: DailyChallengeDocWithId): DailyChallengeEntity | null => {
+export const toDailyChallengeEntity = (
+  doc: DailyChallengeDocWithId,
+): DailyChallengeEntity | null => {
   const raw = { ...doc, hasMap: !!doc.mapId }
-  const cleaned = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== null))
+  const cleaned = Object.fromEntries(
+    Object.entries(raw).filter(([, v]) => v !== null),
+  )
   const { data, error } = dailyChallengeEntitySchema.safeParse(cleaned)
 
   if (error) {

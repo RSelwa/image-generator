@@ -1,7 +1,18 @@
 import { getDoc } from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { flatDocWithIdSchema, mapDocWithIdSchema, type PublicPlayer, publicPlayerSchema, sphericalDocWithIdSchema } from "@repo/schemas"
-import { getFlatRef, getMapRef, getSphericalRef, getUserRef } from "@/constants/db-refs"
+import {
+  flatDocWithIdSchema,
+  mapDocWithIdSchema,
+  type PublicPlayer,
+  publicPlayerSchema,
+  sphericalDocWithIdSchema,
+} from "@repo/schemas"
+import {
+  getFlatRef,
+  getMapRef,
+  getSphericalRef,
+  getUserRef,
+} from "@/constants/db-refs"
 import { globalErrorHandler } from "@/utils/error"
 
 type GratitudeInput = {
@@ -23,7 +34,10 @@ export const gratitudeApi = createApi({
           if (sphericalId) {
             const snap = await getDoc(getSphericalRef(gameId, sphericalId))
             if (snap.exists()) {
-              const { data } = sphericalDocWithIdSchema.safeParse({ id: snap.id, ...snap.data() })
+              const { data } = sphericalDocWithIdSchema.safeParse({
+                id: snap.id,
+                ...snap.data(),
+              })
               data?.gratitude?.forEach((id) => userIds.add(id))
             }
           }
@@ -31,7 +45,10 @@ export const gratitudeApi = createApi({
           if (flatId) {
             const snap = await getDoc(getFlatRef(gameId, flatId))
             if (snap.exists()) {
-              const { data } = flatDocWithIdSchema.safeParse({ id: snap.id, ...snap.data() })
+              const { data } = flatDocWithIdSchema.safeParse({
+                id: snap.id,
+                ...snap.data(),
+              })
               data?.gratitude?.forEach((id) => userIds.add(id))
             }
           }
@@ -39,7 +56,10 @@ export const gratitudeApi = createApi({
           if (mapId) {
             const snap = await getDoc(getMapRef(gameId, mapId))
             if (snap.exists()) {
-              const { data } = mapDocWithIdSchema.safeParse({ id: snap.id, ...snap.data() })
+              const { data } = mapDocWithIdSchema.safeParse({
+                id: snap.id,
+                ...snap.data(),
+              })
               data?.gratitude?.forEach((id) => userIds.add(id))
             }
           }
@@ -52,7 +72,10 @@ export const gratitudeApi = createApi({
             Array.from(userIds).map(async (id) => {
               const snap = await getDoc(getUserRef(id))
               if (!snap.exists()) return
-              const { data } = publicPlayerSchema.safeParse({ id: snap.id, ...snap.data() })
+              const { data } = publicPlayerSchema.safeParse({
+                id: snap.id,
+                ...snap.data(),
+              })
               if (data) players.push(data)
             }),
           )

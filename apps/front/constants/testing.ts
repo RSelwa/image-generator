@@ -17,7 +17,8 @@ export const SELECTORS = {
   MAP_MARKER: (color?: MarkerColor) => `marker-${color}`,
   MAP_LINE: "marker-line",
   FINISHED_LOBBY_ANONYMOUS_MODAL: "finished-lobby-anonymous-modal",
-  DAILY_CHALLENGE_NODE: (date: string, variant: string) => `daily-challenge-node-${date}-${variant}`,
+  DAILY_CHALLENGE_NODE: (date: string, variant: string) =>
+    `daily-challenge-node-${date}-${variant}`,
   DAILY_CHALLENGE_BACK: "daily-challenge-back",
   DAILY_CHALLENGE_SPHERICAL: "daily-challenge-spherical",
   DAILY_CHALLENGE_FLAT: "daily-challenge-flat",
@@ -39,7 +40,8 @@ export const SELECTORS = {
   DEATH_RUN_GIVE_UP: "death-run-give-up",
   DEATH_RUN_FINISHED: "death-run-finished",
   DEATH_RUN_FINISHED_SCORE: (uid: string) => `death-run-finished-score-${uid}`,
-  DEATH_RUN_FINISHED_ROUNDS: (uid: string) => `death-run-finished-rounds-${uid}`,
+  DEATH_RUN_FINISHED_ROUNDS: (uid: string) =>
+    `death-run-finished-rounds-${uid}`,
   NAV_JOIN_LOBBY: "nav-join-lobby",
   HOME_JOIN_LOBBY: "home-join-lobby",
   JOIN_LOBBY_CODE_INPUT: "join-lobby-code-input",

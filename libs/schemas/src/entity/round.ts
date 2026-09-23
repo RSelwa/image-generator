@@ -1,4 +1,8 @@
-import { DIFFICULTIES, ROUND_TYPE, SPECIAL_ROUND_OPTIONS_COUNT } from "@repo/common"
+import {
+  DIFFICULTIES,
+  ROUND_TYPE,
+  SPECIAL_ROUND_OPTIONS_COUNT,
+} from "@repo/common"
 import z from "zod"
 import { specialRoundOptionSchema } from "~/firestore/seed.option"
 import { type Round } from "~/firestore/seed.round"
@@ -68,7 +72,9 @@ const flatGameOnlyRoundEntitySchema = normalRoundBaseSchema
 const specialRoundEntitySchema = z.object({
   isSpecial: z.literal(true),
   difficulty: z.enum(DIFFICULTIES),
-  options: z.array(specialRoundOptionSchema).length(SPECIAL_ROUND_OPTIONS_COUNT),
+  options: z
+    .array(specialRoundOptionSchema)
+    .length(SPECIAL_ROUND_OPTIONS_COUNT),
 })
 
 // ─── Combined schema ──────────────────────────────────────────────────────────
@@ -83,19 +89,35 @@ const flatRoundEntitySchema = z.discriminatedUnion("mode", [
   flatGameOnlyRoundEntitySchema,
 ])
 
-const normalRoundEntitySchema = z.union([sphericalRoundEntitySchema, flatRoundEntitySchema])
+const normalRoundEntitySchema = z.union([
+  sphericalRoundEntitySchema,
+  flatRoundEntitySchema,
+])
 
-export const roundEntitySchema = z.union([normalRoundEntitySchema, specialRoundEntitySchema])
+export const roundEntitySchema = z.union([
+  normalRoundEntitySchema,
+  specialRoundEntitySchema,
+])
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type SphericalFullRoundEntity = z.infer<typeof sphericalFullRoundEntitySchema>
-export type SphericalGameOnlyRoundEntity = z.infer<typeof sphericalGameOnlyRoundEntitySchema>
+export type SphericalFullRoundEntity = z.infer<
+  typeof sphericalFullRoundEntitySchema
+>
+export type SphericalGameOnlyRoundEntity = z.infer<
+  typeof sphericalGameOnlyRoundEntitySchema
+>
 export type FlatFullRoundEntity = z.infer<typeof flatFullRoundEntitySchema>
-export type FlatGameOnlyRoundEntity = z.infer<typeof flatGameOnlyRoundEntitySchema>
+export type FlatGameOnlyRoundEntity = z.infer<
+  typeof flatGameOnlyRoundEntitySchema
+>
 export type SpecialRoundEntity = z.infer<typeof specialRoundEntitySchema>
 export type RoundEntity = z.infer<typeof roundEntitySchema>
-export type NormalRoundEntity = SphericalFullRoundEntity | SphericalGameOnlyRoundEntity | FlatFullRoundEntity | FlatGameOnlyRoundEntity
+export type NormalRoundEntity =
+  | SphericalFullRoundEntity
+  | SphericalGameOnlyRoundEntity
+  | FlatFullRoundEntity
+  | FlatGameOnlyRoundEntity
 
 // ─── Transformation ───────────────────────────────────────────────────────────
 
@@ -116,7 +138,9 @@ export const toRoundEntity = (round: Round): RoundEntity | null => {
   const isSpherical = round.type === ROUND_TYPE.SPHERICAL
 
   const raw = { ...round, mode, isSpherical }
-  const cleaned = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== null))
+  const cleaned = Object.fromEntries(
+    Object.entries(raw).filter(([, v]) => v !== null),
+  )
   const { data, error } = roundEntitySchema.safeParse(cleaned)
 
   if (error) {

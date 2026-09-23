@@ -12,7 +12,10 @@ import { useAppSelector } from "@/redux/store"
 import { cn } from "@/utils"
 
 export const LogoHeader = ({ href, className }: ComponentProps<"a">) => (
-  <Link href={href || PAGES.HOME} className={cn("flex items-center gap-4", className)}>
+  <Link
+    href={href || PAGES.HOME}
+    className={cn("flex items-center gap-4", className)}
+  >
     <NewLogoIcon className="size-header-height bg-primary p-4 text-primary-foreground" />
     <Logo className="h-10 hidden lg:block text-primary" />
   </Link>
@@ -33,10 +36,22 @@ const Navbar = () => {
       {(!user || user.isAnonymous) && (
         <article className="flex items-center gap-3">
           <Button variant="marathon-outline" asChild>
-            <Link data-testid="login-button" data-umami-event="click-login" href={PAGES.LOGIN}>Login</Link>
+            <Link
+              data-testid="login-button"
+              data-umami-event="click-login"
+              href={PAGES.LOGIN}
+            >
+              Login
+            </Link>
           </Button>
           <Button variant="marathon" asChild>
-            <Link data-testid="signup-button" data-umami-event="click-signup" href={PAGES.SIGNUP}>Join</Link>
+            <Link
+              data-testid="signup-button"
+              data-umami-event="click-signup"
+              href={PAGES.SIGNUP}
+            >
+              Join
+            </Link>
           </Button>
         </article>
       )}

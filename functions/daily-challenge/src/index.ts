@@ -12,7 +12,7 @@ export const schedule_daily_challenge = onSchedule("0 0 * * *", async () => {
   await createDailyChallenge()
 })
 
-export const create_daily_challenge = https.onCall <
+export const create_daily_challenge = https.onCall<
   z.infer<typeof payloadCreateDailyChallengeSchema>
 >({ region: region as string, cors: "*" }, async ({ auth, data }) => {
   try {
@@ -23,7 +23,10 @@ export const create_daily_challenge = https.onCall <
     const rights = await refs[TABLES.RIGHTS].doc(auth.uid).get()
 
     if (!rights.exists || rights.data()?.right !== USER_RIGHT.ADMIN) {
-      throw new HttpsError("permission-denied", "User must be an admin to call this function")
+      throw new HttpsError(
+        "permission-denied",
+        "User must be an admin to call this function",
+      )
     }
 
     const parsedData = payloadCreateDailyChallengeSchema.safeParse(data)
@@ -36,7 +39,8 @@ export const create_daily_challenge = https.onCall <
 
     const challengeWithDate = await createDailyChallenge(date)
 
-    if (!challengeWithDate) throw new HttpsError("internal", "Failed to create daily challenge")
+    if (!challengeWithDate)
+      throw new HttpsError("internal", "Failed to create daily challenge")
 
     return { dailyChallenge: challengeWithDate }
   } catch (error) {

@@ -11,7 +11,11 @@ import { ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
 import { DialogClose, DialogFooter } from "@/components/ui/dialog"
 import { ImageDropzone } from "@/components/ui/image-dropzone"
-import { InputGroup, InputGroupInput, InputGroupTextarea } from "@/components/ui/input-group"
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupTextarea,
+} from "@/components/ui/input-group"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import { useCreateSuggestionMutation } from "@/redux/api/suggestions"
@@ -26,7 +30,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const formSchema = z.object({
   title: z.string().default(""),
   description: z.string().default(""),
-  imageUrls: z.array(z.string()).optional()
+  imageUrls: z.array(z.string()).optional(),
 })
 type FormSchema = z.infer<typeof formSchema>
 
@@ -59,7 +63,9 @@ export const MakeSuggestion = () => {
         bucketPath: STORAGE_PATHS.SUGGESTIONS,
         title: "bug-report",
       })
-      setValue("imageUrls", [...(watch("imageUrls") || []), url], { shouldDirty: true })
+      setValue("imageUrls", [...(watch("imageUrls") || []), url], {
+        shouldDirty: true,
+      })
     } catch (error) {
       console.error("Failed to upload image", error)
       toast.error("Failed to upload image")
@@ -81,7 +87,7 @@ export const MakeSuggestion = () => {
         type: SUGGESTIONS_TYPE.SUGGESTIONS,
         title: data.title,
         message: data.description,
-        createdBy: userId
+        createdBy: userId,
       })
 
       await createSuggestionDoc(suggestionDoc).unwrap()
@@ -100,19 +106,30 @@ export const MakeSuggestion = () => {
 
   return (
     <ModalBase title={t("title")} modalKey={key}>
-      <form autoComplete="off" onSubmit={handleSubmit(submitSuggestion)} className="space-y-4">
+      <form
+        autoComplete="off"
+        onSubmit={handleSubmit(submitSuggestion)}
+        className="space-y-4"
+      >
         <InputGroup>
-          <InputGroupInput placeholder={t("suggestionTitle")} {...register("title")} />
+          <InputGroupInput
+            placeholder={t("suggestionTitle")}
+            {...register("title")}
+          />
         </InputGroup>
         <InputGroup>
-          <InputGroupTextarea autoFocus placeholder={t("describeYourSuggestion")} {...register("description")} />
+          <InputGroupTextarea
+            autoFocus
+            placeholder={t("describeYourSuggestion")}
+            {...register("description")}
+          />
         </InputGroup>
         <div className="flex flex-col lg:flex-row flex-wrap gap-2">
           <ImageDropzone
             key={imageUrls.length}
             imageUrl={null}
             onFileSelect={handleFileSelect}
-            onRemove={() => { }}
+            onRemove={() => {}}
             isUploading={isUploading}
             className="size-32"
             alt="screenshot"
@@ -127,21 +144,16 @@ export const MakeSuggestion = () => {
               alt={`screenshot ${index + 1}`}
             />
           ))}
-
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="marathon-outline">
-              {tCommon("cancel")}
-            </Button>
+            <Button variant="marathon-outline">{tCommon("cancel")}</Button>
           </DialogClose>
           <Button type="submit" disabled={isLoading}>
             {tCommon("submit")} {isLoading && <Loader />}
           </Button>
         </DialogFooter>
-
       </form>
-
     </ModalBase>
   )
 }

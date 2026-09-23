@@ -34,8 +34,7 @@ export function isEqual(a: unknown, b: unknown): boolean {
 
   if (Array.isArray(a) && Array.isArray(b)) return isSameArray(a, b)
 
-  if (a instanceof Date && b instanceof Date)
-    return a.getTime() === b.getTime()
+  if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime()
 
   if (a instanceof RegExp && b instanceof RegExp)
     return a.toString() === b.toString()
@@ -46,20 +45,28 @@ export function isEqual(a: unknown, b: unknown): boolean {
 }
 
 export const normalizeString = (str: string) =>
-  str.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim()
+  str
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim()
 
 export const isSameNormalized = (a: string, b: string) =>
   normalizeString(a) === normalizeString(b)
 
-export type Point = { x: number, y: number }
+export type Point = { x: number; y: number }
 
 export const getDistance = (a: Point, b: Point) =>
   Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2)
 
-export const calculateDistancePoints = (distance: number, maxPoints: number, maxDistance: number, snapThreshold: number = ROUND_POINTS.DISTANCE_SNAP_THRESHOLD) => {
+export const calculateDistancePoints = (
+  distance: number,
+  maxPoints: number,
+  maxDistance: number,
+  snapThreshold: number = ROUND_POINTS.DISTANCE_SNAP_THRESHOLD,
+) => {
   const points = Math.round(maxPoints * Math.max(0, 1 - distance / maxDistance))
 
-  return (maxPoints - points <= snapThreshold) ? maxPoints : points
+  return maxPoints - points <= snapThreshold ? maxPoints : points
 }
 
 export function capitalizeFirstLetter(str?: string) {
@@ -80,7 +87,8 @@ export function getIdFromFirestoreRef(ref: string) {
   return parts[parts.length - 1] || ""
 }
 
-export const randomElement = <T>(array: T[]) => array[Math.floor(Math.random() * array.length)]
+export const randomElement = <T>(array: T[]) =>
+  array[Math.floor(Math.random() * array.length)]
 
 // Export Now at format dd-mm-yyyy-hh-mm-ss
 export function getNowString() {
@@ -123,6 +131,13 @@ export const getDateFromString = (date?: Date) => {
   return `${day.toString().padStart(2, "0")}/${month.toString().padStart(2, "0")}/${year}`
 }
 
-export const getRandomAvatar = () => Object.values(AVATARS_KEYS)[Math.floor(Math.random() * Object.values(ROUND_POINTS).length)] || AVATARS_KEYS.ASSASSIN
+export const getRandomAvatar = () =>
+  Object.values(AVATARS_KEYS)[
+    Math.floor(Math.random() * Object.values(ROUND_POINTS).length)
+  ] || AVATARS_KEYS.ASSASSIN
 
-export const shuffle = <T>(arr: T[]): T[] => arr.map((v) => ({ v, sort: Math.random() })).sort((a, b) => a.sort - b.sort).map(({ v }) => v)
+export const shuffle = <T>(arr: T[]): T[] =>
+  arr
+    .map((v) => ({ v, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ v }) => v)

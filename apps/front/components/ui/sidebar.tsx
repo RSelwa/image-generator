@@ -222,16 +222,22 @@ const Sidebar = ({
           "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
-          variant === "floating" || variant === "inset" ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]" : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
+          variant === "floating" || variant === "inset"
+            ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
+            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
         )}
       />
       <div
         data-slot="sidebar-container"
         className={cn(
           "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
-          side === "left" ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]" : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
+          side === "left"
+            ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
+            : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
           // Adjust the padding for floating and inset variants.
-          variant === "floating" || variant === "inset" ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]" : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+          variant === "floating" || variant === "inset"
+            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
+            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
           className,
         )}
         {...props}
@@ -274,7 +280,10 @@ const SidebarTrigger = ({
   )
 }
 
-const SidebarRail = ({ className, ...props }: React.ComponentProps<"button">) => {
+const SidebarRail = ({
+  className,
+  ...props
+}: React.ComponentProps<"button">) => {
   const { toggleSidebar } = useSidebar()
 
   return (
@@ -299,7 +308,10 @@ const SidebarRail = ({ className, ...props }: React.ComponentProps<"button">) =>
   )
 }
 
-const SidebarInset = ({ className, ...props }: React.ComponentProps<"main">) => (
+const SidebarInset = ({
+  className,
+  ...props
+}: React.ComponentProps<"main">) => (
   <main
     data-slot="sidebar-inset"
     className={cn(
@@ -323,7 +335,10 @@ const SidebarInput = ({
   />
 )
 
-const SidebarHeader = ({ className, ...props }: React.ComponentProps<"div">) => (
+const SidebarHeader = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => (
   <div
     data-slot="sidebar-header"
     data-sidebar="header"
@@ -332,7 +347,10 @@ const SidebarHeader = ({ className, ...props }: React.ComponentProps<"div">) => 
   />
 )
 
-const SidebarFooter = ({ className, ...props }: React.ComponentProps<"div">) => (
+const SidebarFooter = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => (
   <div
     data-slot="sidebar-footer"
     data-sidebar="footer"
@@ -353,7 +371,10 @@ const SidebarSeparator = ({
   />
 )
 
-const SidebarContent = ({ className, ...props }: React.ComponentProps<"div">) => (
+const SidebarContent = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => (
   <div
     data-slot="sidebar-content"
     data-sidebar="content"
@@ -439,7 +460,10 @@ const SidebarMenu = ({ className, ...props }: React.ComponentProps<"ul">) => (
   />
 )
 
-const SidebarMenuItem = ({ className, ...props }: React.ComponentProps<"li">) => (
+const SidebarMenuItem = ({
+  className,
+  ...props
+}: React.ComponentProps<"li">) => (
   <li
     data-slot="sidebar-menu-item"
     data-sidebar="menu-item"
@@ -544,7 +568,7 @@ const SidebarMenuAction = ({
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-        "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
+          "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
         className,
       )}
       {...props}
@@ -610,7 +634,10 @@ const SidebarMenuSkeleton = ({
   )
 }
 
-const SidebarMenuSub = ({ className, ...props }: React.ComponentProps<"ul">) => (
+const SidebarMenuSub = ({
+  className,
+  ...props
+}: React.ComponentProps<"ul">) => (
   <ul
     data-slot="sidebar-menu-sub"
     data-sidebar="menu-sub"

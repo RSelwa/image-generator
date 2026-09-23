@@ -67,9 +67,15 @@ export const Left: Story = {
           <SheetDescription>Browse the app sections.</SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-2 px-4">
-          <Button variant="ghost" className="justify-start">Home</Button>
-          <Button variant="ghost" className="justify-start">Profile</Button>
-          <Button variant="ghost" className="justify-start">Settings</Button>
+          <Button variant="ghost" className="justify-start">
+            Home
+          </Button>
+          <Button variant="ghost" className="justify-start">
+            Profile
+          </Button>
+          <Button variant="ghost" className="justify-start">
+            Settings
+          </Button>
         </div>
       </SheetContent>
     </Sheet>

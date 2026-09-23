@@ -4,81 +4,63 @@
       "source": "functions/http-base",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": [
-        "pnpm build:http"
-      ],
+      "predeploy": ["pnpm build:http"],
       "codebase": "http-base"
     },
     {
       "source": "functions/create-user-document",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": [
-        "pnpm build:create-user-document"
-      ],
+      "predeploy": ["pnpm build:create-user-document"],
       "codebase": "create-user-document"
     },
     {
       "source": "functions/create-party-doc",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": [
-        "pnpm build:create-party-doc"
-      ],
+      "predeploy": ["pnpm build:create-party-doc"],
       "codebase": "create-party-doc"
     },
     {
       "source": "functions/listen-docs",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": [
-        "pnpm build:listen-docs"
-      ],
+      "predeploy": ["pnpm build:listen-docs"],
       "codebase": "listen-docs"
     },
     {
       "source": "functions/lobby-presence",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": [
-        "pnpm build:lobby-presence"
-      ],
+      "predeploy": ["pnpm build:lobby-presence"],
       "codebase": "lobby-presence"
     },
     {
       "source": "functions/socials",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": [
-        "pnpm build:socials"
-      ],
+      "predeploy": ["pnpm build:socials"],
       "codebase": "socials"
     },
     {
       "source": "functions/lobby-cleanup",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": [
-        "pnpm build:lobby-cleanup"
-      ],
+      "predeploy": ["pnpm build:lobby-cleanup"],
       "codebase": "lobby-cleanup"
     },
     {
       "source": "functions/daily-challenge",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": [
-        "pnpm build:daily-challenge"
-      ],
+      "predeploy": ["pnpm build:daily-challenge"],
       "codebase": "daily-challenge"
     },
     {
       "source": "functions/race-seed-populate",
       "runtime": "nodejs22",
       "isolate": true,
-      "predeploy": [
-        "pnpm build:race-seed-populate"
-      ],
+      "predeploy": ["pnpm build:race-seed-populate"],
       "codebase": "race-seed-populate"
     }
   ],

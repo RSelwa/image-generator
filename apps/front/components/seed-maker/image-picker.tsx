@@ -2,7 +2,10 @@
 
 import { DEFAULT_MAX_DISTANCE_POINTS, ROUND_TYPE } from "@repo/common"
 import { ArrowLeft } from "lucide-react"
-import DraggableImageCard, { type DragData, DraggableSkeleton } from "@/components/seed-maker/draggable-image-card"
+import DraggableImageCard, {
+  type DragData,
+  DraggableSkeleton,
+} from "@/components/seed-maker/draggable-image-card"
 import { Button } from "@/components/ui/button"
 import { useGetGameReadyDataQuery } from "@/redux/api/seed-maker"
 
@@ -14,7 +17,13 @@ type ImagePickerProps = {
   onBack: () => void
 }
 
-const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack }: ImagePickerProps) => {
+const ImagePicker = ({
+  gameId,
+  gameTitle,
+  gameImage,
+  gameAlternateNames,
+  onBack,
+}: ImagePickerProps) => {
   const { data, isLoading } = useGetGameReadyDataQuery({ gameId })
 
   const sphericals = data?.sphericals || []
@@ -28,8 +37,14 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack 
   }
 
   const allImages = [
-    ...sphericals.map((s) => ({ ...s, type: ROUND_TYPE.SPHERICAL as typeof ROUND_TYPE.SPHERICAL })),
-    ...flats.map((f) => ({ ...f, type: ROUND_TYPE.FLAT as typeof ROUND_TYPE.FLAT })),
+    ...sphericals.map((s) => ({
+      ...s,
+      type: ROUND_TYPE.SPHERICAL as typeof ROUND_TYPE.SPHERICAL,
+    })),
+    ...flats.map((f) => ({
+      ...f,
+      type: ROUND_TYPE.FLAT as typeof ROUND_TYPE.FLAT,
+    })),
   ]
 
   const withMap = allImages.filter((img) => !!img.mapId)
@@ -38,7 +53,12 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack 
   return (
     <div className="flex flex-col gap-3 h-full">
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onBack}
+          className="shrink-0"
+        >
           <ArrowLeft className="size-4" />
         </Button>
         <h3 className="font-medium text-sm truncate">{gameTitle}</h3>
@@ -46,14 +66,16 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack 
 
       {isLoading && (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-1.5">
-          { Array.from({ length: 24 }).map((_, idx) => (
+          {Array.from({ length: 24 }).map((_, idx) => (
             <DraggableSkeleton key={idx} />
           ))}
         </div>
       )}
 
       {!isLoading && allImages.length === 0 && (
-        <p className="text-sm text-muted-foreground text-center">No ready images for this game</p>
+        <p className="text-sm text-muted-foreground text-center">
+          No ready images for this game
+        </p>
       )}
 
       {withMap.length > 0 && (
@@ -78,7 +100,8 @@ const ImagePicker = ({ gameId, gameTitle, gameImage, gameAlternateNames, onBack 
                 mapImage: map?.imageUrl || null,
                 mapWidth: map?.width || null,
                 mapHeight: map?.height || null,
-                maxDistancePoints: map?.maxDistancePoints || DEFAULT_MAX_DISTANCE_POINTS,
+                maxDistancePoints:
+                  map?.maxDistancePoints || DEFAULT_MAX_DISTANCE_POINTS,
               }
 
               return (

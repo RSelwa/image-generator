@@ -3,15 +3,10 @@ import FlatCard from "@/components/cards/flat-card"
 import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { Button } from "@/components/ui/button"
-import {
-  MODAL_KEYS,
-  NEW_SEARCH_PARAM,
-} from "@/constants/mapping"
+import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 import { useGetFlatsByGameIdQuery } from "@/redux/api/flat"
-import {
-  useGetGameByIdQuery,
-} from "@/redux/api/games"
+import { useGetGameByIdQuery } from "@/redux/api/games"
 
 const key = MODAL_KEYS.FLAT_GALLERY_ID
 
@@ -21,7 +16,10 @@ export const FlatsGallery = () => {
   const { closeModal } = useModal(key)
   const { openModal: openNewMapModal } = useModal(MODAL_KEYS.FLAT_ID)
 
-  const { data: game } = useGetGameByIdQuery({ id: gameId || "" }, { skip: !gameId })
+  const { data: game } = useGetGameByIdQuery(
+    { id: gameId || "" },
+    { skip: !gameId },
+  )
   const { data: flats } = useGetFlatsByGameIdQuery(
     { gameId: gameId || "" },
     { skip: !gameId },
@@ -57,7 +55,9 @@ export const FlatsGallery = () => {
           </p>
         )}
         {hasFlats &&
-          flats.map((flat) => <FlatCard key={flat.id} flat={flat} gameId={gameId} />)}
+          flats.map((flat) => (
+            <FlatCard key={flat.id} flat={flat} gameId={gameId} />
+          ))}
       </section>
     </ModalBase>
   )

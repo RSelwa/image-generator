@@ -39,12 +39,30 @@ const LobbyStarting = () => {
   }, [])
 
   return (
-    <main className="min-h-full-height relative flex flex-col items-center justify-center gap-6 bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
-      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute top-0 left-0 z-0 rotate-180" />
-      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0" />
+    <main
+      className="min-h-full-height relative flex flex-col items-center justify-center gap-6 bg-repeat bg-center bg-size-[25%]"
+      style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}
+    >
+      <Image
+        src={ASSET_URLS.BOTTOM_GB}
+        alt="Gradient br"
+        width={360}
+        height={203}
+        className="absolute top-0 left-0 z-0 rotate-180"
+      />
+      <Image
+        src={ASSET_URLS.BOTTOM_GB}
+        alt="Gradient br"
+        width={360}
+        height={203}
+        className="absolute bottom-0 right-0 z-0"
+      />
       <Progress className="w-1/2 h-15 z-10" value={progress} />
       {isStalled && (
-        <div data-testid={SELECTORS.LOBBY_STARTING_STALLED} className="z-10 flex flex-col items-center gap-4">
+        <div
+          data-testid={SELECTORS.LOBBY_STARTING_STALLED}
+          className="z-10 flex flex-col items-center gap-4"
+        >
           <p className="text-primary text-center">{t("startingStalled")}</p>
           <Button variant="marathon-outline" asChild>
             <Link href={PAGES.HOME}>{t("backToHome")}</Link>

@@ -10,7 +10,10 @@ const CLOUD_RUN_PROJECT_ID = process.env.CLOUD_RUN_PROJECT_ID || ""
 
 const jobsClient = new JobsClient()
 
-export const handleWaitingCapture = async (socialId: string, social: SocialDoc) => {
+export const handleWaitingCapture = async (
+  socialId: string,
+  social: SocialDoc,
+) => {
   const { gameId, sphericalId } = social
 
   if (!gameId || !sphericalId) {
@@ -30,11 +33,15 @@ export const handleWaitingCapture = async (socialId: string, social: SocialDoc) 
 
   try {
     // Fetch spherical doc to get image URL
-    const sphericalDoc = await subRefs[TABLES.SPHERICAL](gameId).doc(sphericalId).get()
+    const sphericalDoc = await subRefs[TABLES.SPHERICAL](gameId)
+      .doc(sphericalId)
+      .get()
     const sphericalData = sphericalDoc.data()
 
     if (!sphericalData?.image) {
-      throw new Error(`Spherical ${sphericalId} in game ${gameId} has no image URL`)
+      throw new Error(
+        `Spherical ${sphericalId} in game ${gameId} has no image URL`,
+      )
     }
 
     const jobName = `projects/${CLOUD_RUN_PROJECT_ID}/locations/${CLOUD_RUN_REGION}/jobs/${CLOUD_RUN_JOB_NAME}`
@@ -55,10 +62,14 @@ export const handleWaitingCapture = async (socialId: string, social: SocialDoc) 
       },
     })
 
-    logger.info(`Cloud Run Job execution started for social ${socialId}, operation: ${operation.name}`)
+    logger.info(
+      `Cloud Run Job execution started for social ${socialId}, operation: ${operation.name}`,
+    )
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
-    logger.error(`Failed to trigger capture for social ${socialId}: ${errorMessage}`)
+    logger.error(
+      `Failed to trigger capture for social ${socialId}: ${errorMessage}`,
+    )
 
     await refs[TABLES.SOCIALS].doc(socialId).update({
       status: SOCIALS_STATUS.ERROR,

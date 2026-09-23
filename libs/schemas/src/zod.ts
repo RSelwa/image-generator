@@ -19,4 +19,6 @@ const isTimestamp = (val: unknown): val is Timestamp =>
   "nanoseconds" in val &&
   typeof (val as Timestamp).toDate === "function"
 
-export const timestampSchema = z.custom<Timestamp>(isTimestamp, { message: "Invalid Timestamp" })
+export const timestampSchema = z.custom<Timestamp>(isTimestamp, {
+  message: "Invalid Timestamp",
+})

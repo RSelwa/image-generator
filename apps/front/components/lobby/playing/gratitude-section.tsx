@@ -13,7 +13,12 @@ const GratitudePlayer = ({ player }: { player: PublicPlayer }) => (
       donorTier={player.donorTier}
       size="sm"
     />
-    <span data-text-glow={isTextGlow(player.donorTier)} className="flex-1 truncate font-shapiro-wide text-sm">{player.pseudo || "—"}</span>
+    <span
+      data-text-glow={isTextGlow(player.donorTier)}
+      className="flex-1 truncate font-shapiro-wide text-sm"
+    >
+      {player.pseudo || "—"}
+    </span>
   </div>
 )
 
@@ -24,7 +29,12 @@ type GratitudeSectionProps = {
   mapId?: string | null
 }
 
-const GratitudeSection = ({ gameId, sphericalId, flatId, mapId }: GratitudeSectionProps) => {
+const GratitudeSection = ({
+  gameId,
+  sphericalId,
+  flatId,
+  mapId,
+}: GratitudeSectionProps) => {
   const { data: players } = useGetGratitudePlayersQuery(
     { gameId, sphericalId, flatId, mapId },
     { skip: !gameId },

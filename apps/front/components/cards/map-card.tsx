@@ -1,10 +1,7 @@
 import { type MapDocWithId } from "@repo/schemas"
 import Image from "next/image"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
-import {
-  FALL_BACK_IMAGE,
-  MODAL_KEYS,
-} from "@/constants/mapping"
+import { FALL_BACK_IMAGE, MODAL_KEYS } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 
 export const MapCard = ({
@@ -34,7 +31,9 @@ export const MapCard = ({
         className="object-cover transition-transform group-hover:scale-105"
       />
       <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent p-3">
-        <p className="text-foreground text-sm font-medium truncate">{map.name}</p>
+        <p className="text-foreground text-sm font-medium truncate">
+          {map.name}
+        </p>
       </div>
     </div>
   )

@@ -1,9 +1,22 @@
 import { faker } from "@faker-js/faker"
 import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
 import { expect, type Page } from "@playwright/test"
-import { generateUsername, getRandomAvatar, LOBBY_STATUS, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER, TABLES } from "@repo/common"
+import {
+  generateUsername,
+  getRandomAvatar,
+  LOBBY_STATUS,
+  PREFIX_ANONYMOUS_USER,
+  SUFFIX_ANONYMOUS_USER,
+  TABLES,
+} from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type LobbyDoc, type Round, type UserDoc, type userDocWithId, userDocWithIdSchema } from "@repo/schemas"
+import {
+  type LobbyDoc,
+  type Round,
+  type UserDoc,
+  type userDocWithId,
+  userDocWithIdSchema,
+} from "@repo/schemas"
 import { userDocSchema } from "@repo/schemas"
 import { createAuthUser, createFirestoreDoc } from "@repo/testing/emulator"
 import { lobbyFactory, seedFactory, userFactory } from "@repo/testing/factory"
@@ -14,10 +27,13 @@ import { createPlayerFromSessionUser } from "@/utils/player"
 
 export const PASSWORD = "cacayolo"
 
-export const setupUser = async (item: Partial<UserDoc> = {}, password?: string) => {
+export const setupUser = async (
+  item: Partial<UserDoc> = {},
+  password?: string,
+) => {
   const user = userFactory({
     email: faker.internet.email({ provider: "yopmail.com" }).toLowerCase(),
-    ...item
+    ...item,
   })
   const userEmail = user.email
   const userPassword = password || PASSWORD
@@ -73,13 +89,20 @@ export const startLobbyViaUI = async (page: Page) => {
 }
 
 export const waitForInputToBeVisible = async (page: Page) =>
-  await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10000 })
+  await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({
+    timeout: 10000,
+  })
 
-export const createPlayerFromUserDoc = (user: userDocWithId) => createPlayerFromSessionUser({ ...user, pseudo: user.pseudo || "", isAnonymous: false, avatar: user.avatar || getRandomAvatar() })
+export const createPlayerFromUserDoc = (user: userDocWithId) =>
+  createPlayerFromSessionUser({
+    ...user,
+    pseudo: user.pseudo || "",
+    isAnonymous: false,
+    avatar: user.avatar || getRandomAvatar(),
+  })
 
-export const createFirestoreLobbyDoc = async (
-  lobby: LobbyDoc,
-) => await createFirestoreDoc(refs[TABLES.LOBBIES], lobby)
+export const createFirestoreLobbyDoc = async (lobby: LobbyDoc) =>
+  await createFirestoreDoc(refs[TABLES.LOBBIES], lobby)
 
 export const retrieveGamesFromLobby = async (lobbyId: string) => {
   const lobby = await refs[TABLES.LOBBIES].doc(lobbyId).get()
@@ -101,7 +124,11 @@ export const retrieveGamesFromLobby = async (lobbyId: string) => {
   const allGamesIds = rounds.map((round) => {
     if (round.gameId) return { gameId: round.gameId, options: null }
 
-    if (round.options) return { gameId: null, options: round.options.map((option) => ({ gameId: option.gameId })) }
+    if (round.options)
+      return {
+        gameId: null,
+        options: round.options.map((option) => ({ gameId: option.gameId })),
+      }
 
     return { gameId: null, options: null }
   })
@@ -114,7 +141,10 @@ export const retrieveGamesFromLobby = async (lobbyId: string) => {
     if (gameId) {
       const gameDoc = await refs[TABLES.GAMES].doc(gameId).get()
 
-      allGames.push({ game: { id: gameDoc.id, ...gameDoc.data() }, options: null })
+      allGames.push({
+        game: { id: gameDoc.id, ...gameDoc.data() },
+        options: null,
+      })
     }
 
     if (options) {
@@ -134,7 +164,10 @@ export const retrieveGamesFromLobby = async (lobbyId: string) => {
 }
 
 const getAnonymousUid = async (page: Page) =>
-  page.evaluate(() => (window as any).__store__?.getState()?.session?.user?.id as string | null)
+  page.evaluate(
+    () =>
+      (window as any).__store__?.getState()?.session?.user?.id as string | null,
+  )
 
 export const createAnonymousUserDoc = async (uid: string) => {
   const now = Timestamp.now()
@@ -180,7 +213,13 @@ export const logoutViaUI = async (page: Page) => {
   await expect(page.getByTestId("nav-user-dropdown-trigger")).toHaveCount(0)
 }
 
-export const createFinishedLobbyWithSeed = async ({ userId, rounds }: { userId: string, rounds: Round[] }) => {
+export const createFinishedLobbyWithSeed = async ({
+  userId,
+  rounds,
+}: {
+  userId: string
+  rounds: Round[]
+}) => {
   const now = Timestamp.now() as unknown as ClientTimestamp
 
   const seed = seedFactory({

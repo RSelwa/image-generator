@@ -13,7 +13,7 @@ export const gameDocSchema = z.object({
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
 
-  youtubeLink: z.string().optional()
+  youtubeLink: z.string().optional(),
 })
 
 export const gameDocWithIdSchema = z.object({

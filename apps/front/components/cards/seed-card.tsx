@@ -5,7 +5,11 @@ import { Clock, Copy, Play, Star } from "lucide-react"
 import Image from "next/image"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
-import { DIFFICULTIES_TO_BADGE_VARIANT, FALL_BACK_IMAGE, MODAL_KEYS } from "@/constants/mapping"
+import {
+  DIFFICULTIES_TO_BADGE_VARIANT,
+  FALL_BACK_IMAGE,
+  MODAL_KEYS,
+} from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
 
 const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
@@ -36,9 +40,13 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
     toast.success("Seed ID copied!")
   }
 
-  const createdAt = seed.createdAt ? new Date(
-    "seconds" in seed.createdAt ? seed.createdAt.seconds * 1000 : seed.createdAt,
-  ).toLocaleDateString() : null
+  const createdAt = seed.createdAt
+    ? new Date(
+        "seconds" in seed.createdAt
+          ? seed.createdAt.seconds * 1000
+          : seed.createdAt,
+      ).toLocaleDateString()
+    : null
 
   return (
     <div
@@ -48,7 +56,9 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
       <div className="flex items-start justify-between gap-2">
         <h3 className="truncate text-lg font-semibold flex items-center gap-2">
           {seed.name || "Unnamed seed"}
-          {seed.featuredAt && <Star className="fill-primary text-primary size-5">Featured</Star>}
+          {seed.featuredAt && (
+            <Star className="fill-primary text-primary size-5">Featured</Star>
+          )}
         </h3>
         <button
           type="button"
@@ -63,7 +73,10 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
       {thumbnails.length > 0 && (
         <div className="mt-3 flex gap-2">
           {thumbnails.map((url) => (
-            <div key={url} className="relative size-16 overflow-hidden rounded-md">
+            <div
+              key={url}
+              className="relative size-16 overflow-hidden rounded-md"
+            >
               <Image
                 src={url || FALL_BACK_IMAGE}
                 alt="Game thumbnail"
@@ -89,7 +102,11 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
         {Object.entries(difficulties).map(([difficulty, count]) => (
           <Badge
             key={difficulty}
-            variant={DIFFICULTIES_TO_BADGE_VARIANT[difficulty as keyof typeof DIFFICULTIES_TO_BADGE_VARIANT]}
+            variant={
+              DIFFICULTIES_TO_BADGE_VARIANT[
+                difficulty as keyof typeof DIFFICULTIES_TO_BADGE_VARIANT
+              ]
+            }
           >
             {count} {difficulty}
           </Badge>
@@ -99,11 +116,7 @@ const SeedCard = ({ seed }: { seed: SeedDocWithId }) => {
       <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
           <Play className="size-3" />
-          Used
-          {" "}
-          {seed.timesUsed}
-          {" "}
-          times
+          Used {seed.timesUsed} times
         </span>
         {createdAt && (
           <span className="flex items-center gap-1">

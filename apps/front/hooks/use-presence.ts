@@ -3,13 +3,23 @@ import { onDisconnect, ref, remove, set } from "firebase/database"
 import { useEffect, useRef } from "react"
 import { rtdb } from "@/constants/db"
 
-export const usePresence = (lobbyId: string | null, userId: string | undefined, lobbyStatus: string | undefined) => {
+export const usePresence = (
+  lobbyId: string | null,
+  userId: string | undefined,
+  lobbyStatus: string | undefined,
+) => {
   const presenceSetRef = useRef(false)
   const presenceNodeRef = useRef<ReturnType<typeof ref> | null>(null)
   const cleanupTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    if (!lobbyId || !userId || lobbyStatus !== LOBBY_STATUS.WAITING || presenceSetRef.current) return
+    if (
+      !lobbyId ||
+      !userId ||
+      lobbyStatus !== LOBBY_STATUS.WAITING ||
+      presenceSetRef.current
+    )
+      return
 
     // Cancel any pending cleanup from strict mode's fake unmount
     if (cleanupTimeoutRef.current) {
@@ -28,7 +38,8 @@ export const usePresence = (lobbyId: string | null, userId: string | undefined, 
     console.info("[RTDB] Setting presence at path:", path)
     // Register onDisconnect BEFORE setting the value, so the server
     // knows to clean up even if the connection drops immediately after set
-    disconnectRefNode.remove()
+    disconnectRefNode
+      .remove()
       .then(() => {
         console.info("[RTDB] onDisconnect registered at", path)
 

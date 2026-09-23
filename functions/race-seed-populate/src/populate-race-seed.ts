@@ -1,10 +1,23 @@
-import { METADATA_DOCS, RACE_SEED_EXTENSION_THRESHOLD, RACE_SEED_ROUNDS_PER_EXTENSION, shuffle, TABLES } from "@repo/common"
+import {
+  METADATA_DOCS,
+  RACE_SEED_EXTENSION_THRESHOLD,
+  RACE_SEED_ROUNDS_PER_EXTENSION,
+  shuffle,
+  TABLES,
+} from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type MarathonSeedDoc, type MarathonSeedRound, type ReadyImagesDoc } from "@repo/schemas"
+import {
+  type MarathonSeedDoc,
+  type MarathonSeedRound,
+  type ReadyImagesDoc,
+} from "@repo/schemas"
 import { getFirestore } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 
-export const populateRaceSeed = async (seedId: string, playerCurrentIndex: number) => {
+export const populateRaceSeed = async (
+  seedId: string,
+  playerCurrentIndex: number,
+) => {
   const seedRef = refs[TABLES.MARATHON_SEEDS].doc(seedId)
   const seedSnap = await seedRef.get()
 
@@ -18,33 +31,57 @@ export const populateRaceSeed = async (seedId: string, playerCurrentIndex: numbe
 
   // Idempotency check: enough rounds already ahead of this player
   if (seed.rounds.length - playerCurrentIndex > RACE_SEED_EXTENSION_THRESHOLD) {
-    logger.info(`[race-seed-populate] Seed ${seedId} has enough rounds, skipping extension`)
+    logger.info(
+      `[race-seed-populate] Seed ${seedId} has enough rounds, skipping extension`,
+    )
 
     return seed
   }
 
   // Build exclude sets for deduplication
-  const sphericalIdsInSeed = new Set(seed.rounds.filter((r) => r.sphericalId).map((r) => r.sphericalId))
-  const flatIdsInSeed = new Set(seed.rounds.filter((r) => r.flatId).map((r) => r.flatId))
+  const sphericalIdsInSeed = new Set(
+    seed.rounds.filter((r) => r.sphericalId).map((r) => r.sphericalId),
+  )
+  const flatIdsInSeed = new Set(
+    seed.rounds.filter((r) => r.flatId).map((r) => r.flatId),
+  )
   const gameIdsInSeed = new Set(seed.rounds.map((r) => r.gameId))
 
   // Read ready images from the single metadata doc instead of querying all sphericals/flats
-  const readyImagesSnap = await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).get()
-  const readyImages = (readyImagesSnap.data() as ReadyImagesDoc | undefined) || { sphericals: [], flats: [] }
+  const readyImagesSnap = await refs[TABLES.METADATA]
+    .doc(METADATA_DOCS.READY_IMAGES)
+    .get()
+  const readyImages = (readyImagesSnap.data() as
+    | ReadyImagesDoc
+    | undefined) || { sphericals: [], flats: [] }
 
   const candidates: MarathonSeedRound[] = []
 
   for (const s of readyImages.sphericals) {
-    if (!s.image || sphericalIdsInSeed.has(s.id) || gameIdsInSeed.has(s.gameId)) continue
+    if (!s.image || sphericalIdsInSeed.has(s.id) || gameIdsInSeed.has(s.gameId))
+      continue
 
-    candidates.push({ gameId: s.gameId, sphericalId: s.id, sphericalImageUrl: s.image, flatId: null, flatImageUrl: null })
+    candidates.push({
+      gameId: s.gameId,
+      sphericalId: s.id,
+      sphericalImageUrl: s.image,
+      flatId: null,
+      flatImageUrl: null,
+    })
     gameIdsInSeed.add(s.gameId)
   }
 
   for (const f of readyImages.flats) {
-    if (!f.image || flatIdsInSeed.has(f.id) || gameIdsInSeed.has(f.gameId)) continue
+    if (!f.image || flatIdsInSeed.has(f.id) || gameIdsInSeed.has(f.gameId))
+      continue
 
-    candidates.push({ gameId: f.gameId, sphericalId: null, sphericalImageUrl: null, flatId: f.id, flatImageUrl: f.image })
+    candidates.push({
+      gameId: f.gameId,
+      sphericalId: null,
+      sphericalImageUrl: null,
+      flatId: f.id,
+      flatImageUrl: f.image,
+    })
     gameIdsInSeed.add(f.gameId)
   }
 
@@ -61,20 +98,30 @@ export const populateRaceSeed = async (seedId: string, playerCurrentIndex: numbe
     const freshSnap = await transaction.get(seedRef)
     const freshSeed = freshSnap.data() as MarathonSeedDoc
 
-    if (freshSeed.rounds.length - playerCurrentIndex > RACE_SEED_EXTENSION_THRESHOLD) {
-      logger.info(`[race-seed-populate] Seed ${seedId} was already extended by another player`)
+    if (
+      freshSeed.rounds.length - playerCurrentIndex >
+      RACE_SEED_EXTENSION_THRESHOLD
+    ) {
+      logger.info(
+        `[race-seed-populate] Seed ${seedId} was already extended by another player`,
+      )
 
       return
     }
 
-    const freshSphericalIds = new Set(freshSeed.rounds.map((r) => r.sphericalId).filter(Boolean))
-    const freshFlatIds = new Set(freshSeed.rounds.map((r) => r.flatId).filter(Boolean))
+    const freshSphericalIds = new Set(
+      freshSeed.rounds.map((r) => r.sphericalId).filter(Boolean),
+    )
+    const freshFlatIds = new Set(
+      freshSeed.rounds.map((r) => r.flatId).filter(Boolean),
+    )
     const freshGameIds = new Set(freshSeed.rounds.map((r) => r.gameId))
 
-    const deduplicatedRounds = newRounds.filter((r) =>
-      !freshGameIds.has(r.gameId) &&
-      ((r.sphericalId && !freshSphericalIds.has(r.sphericalId)) ||
-        (r.flatId && !freshFlatIds.has(r.flatId)))
+    const deduplicatedRounds = newRounds.filter(
+      (r) =>
+        !freshGameIds.has(r.gameId) &&
+        ((r.sphericalId && !freshSphericalIds.has(r.sphericalId)) ||
+          (r.flatId && !freshFlatIds.has(r.flatId))),
     )
 
     if (deduplicatedRounds.length === 0) return
@@ -85,7 +132,9 @@ export const populateRaceSeed = async (seedId: string, playerCurrentIndex: numbe
     })
   })
 
-  logger.info(`[race-seed-populate] Extended seed ${seedId} with ${newRounds.length} rounds`)
+  logger.info(
+    `[race-seed-populate] Extended seed ${seedId} with ${newRounds.length} rounds`,
+  )
 
   return { ...seed, rounds: [...seed.rounds, ...newRounds] }
 }

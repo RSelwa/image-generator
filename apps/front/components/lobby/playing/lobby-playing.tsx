@@ -11,8 +11,21 @@ import Timer from "@/components/lobby/playing/timer"
 import { useIsExpired } from "@/hooks/use-countdown"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { usePathname } from "@/i18n/routing"
-import { useListenRoundAnswerQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundEntity, selectCurrentRoundGameTitle, selectCurrentRoundIndex, selectHasSelectedOption, selectIsPlayerEliminated, selectLobbyConfig, selectMyLivesRemaining } from "@/redux/lobby/lobby.selectors"
+import {
+  useListenRoundAnswerQuery,
+  useSubscribeLobbyQuery,
+} from "@/redux/api/lobby"
+import {
+  selectCurrentPlayerRoundAnswer,
+  selectCurrentRoundData,
+  selectCurrentRoundEntity,
+  selectCurrentRoundGameTitle,
+  selectCurrentRoundIndex,
+  selectHasSelectedOption,
+  selectIsPlayerEliminated,
+  selectLobbyConfig,
+  selectMyLivesRemaining,
+} from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 import { clearPanoCache, preloadImage } from "@/utils/pano-cache"
@@ -21,23 +34,38 @@ const LobbyPlaying = () => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
-  const { data: lobby, isLoading: isLobbyLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {
-    skip: !lobbyId,
-  })
-  const { isLoading: isLoadingRoundAnswer } = useListenRoundAnswerQuery({ lobbyId, roundIndex: lobby?.currentRound || 0 }, {
-    skip: !lobbyId || !lobby || !lobby.currentRound || lobby.currentRound === 0,
-  })
+  const { data: lobby, isLoading: isLobbyLoading } = useSubscribeLobbyQuery(
+    { id: lobbyId },
+    {
+      skip: !lobbyId,
+    },
+  )
+  const { isLoading: isLoadingRoundAnswer } = useListenRoundAnswerQuery(
+    { lobbyId, roundIndex: lobby?.currentRound || 0 },
+    {
+      skip:
+        !lobbyId || !lobby || !lobby.currentRound || lobby.currentRound === 0,
+    },
+  )
 
   const nextRoundIndex = (lobby?.currentRound || 0) + 1
-  const skipNextRoundPrefetch = !lobbyId || !lobby || !lobby.currentRound || nextRoundIndex > (lobby?.config.numberOfRounds || 0)
-  const { data: nextRoundAnswer } = useListenRoundAnswerQuery({ lobbyId, roundIndex: nextRoundIndex }, {
-    skip: skipNextRoundPrefetch,
-  })
+  const skipNextRoundPrefetch =
+    !lobbyId ||
+    !lobby ||
+    !lobby.currentRound ||
+    nextRoundIndex > (lobby?.config.numberOfRounds || 0)
+  const { data: nextRoundAnswer } = useListenRoundAnswerQuery(
+    { lobbyId, roundIndex: nextRoundIndex },
+    {
+      skip: skipNextRoundPrefetch,
+    },
+  )
 
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
 
   useEffect(() => {
-    const { sphericalId, sphericalImageUrl, flatId, flatImageUrl } = nextRoundAnswer || {}
+    const { sphericalId, sphericalImageUrl, flatId, flatImageUrl } =
+      nextRoundAnswer || {}
 
     if (sphericalId && sphericalImageUrl)
       preloadImage(sphericalId, sphericalImageUrl).catch(console.error)
@@ -51,7 +79,9 @@ const LobbyPlaying = () => {
 
     currentRoundData.options.forEach((option) => {
       if (option.sphericalId && option.sphericalImage)
-        preloadImage(option.sphericalId, option.sphericalImage).catch(console.error)
+        preloadImage(option.sphericalId, option.sphericalImage).catch(
+          console.error,
+        )
 
       if (option.flatId && option.flatImage)
         preloadImage(option.flatId, option.flatImage).catch(console.error)
@@ -61,28 +91,60 @@ const LobbyPlaying = () => {
   useEffect(() => () => clearPanoCache(), [])
 
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
-  const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
-  const isEliminated = useAppSelector(selectIsPlayerEliminated(lobbyId, roundIndex))
-  const myAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
+  const livesRemaining = useAppSelector(
+    selectMyLivesRemaining(lobbyId, roundIndex),
+  )
+  const isEliminated = useAppSelector(
+    selectIsPlayerEliminated(lobbyId, roundIndex),
+  )
+  const myAnswer = useAppSelector(
+    selectCurrentPlayerRoundAnswer(lobbyId, roundIndex),
+  )
   const config = useAppSelector(selectLobbyConfig(lobbyId))
   const roundEntity = useAppSelector(selectCurrentRoundEntity(lobbyId))
-  const gameTitle = useAppSelector(selectCurrentRoundGameTitle(lobbyId, roundIndex))
+  const gameTitle = useAppSelector(
+    selectCurrentRoundGameTitle(lobbyId, roundIndex),
+  )
 
-  const hasSelectedOption = useAppSelector(selectHasSelectedOption(lobbyId, roundIndex))
+  const hasSelectedOption = useAppSelector(
+    selectHasSelectedOption(lobbyId, roundIndex),
+  )
   const isMapOnly = config?.mode === LOBBY_MODES.MAP_ONLY
-  const isNormalFullRound = roundEntity && !roundEntity.isSpecial && roundEntity.mode === "full"
+  const isNormalFullRound =
+    roundEntity && !roundEntity.isSpecial && roundEntity.mode === "full"
   const isMapPhase = (isMapOnly || myAnswer?.isCorrect) && isNormalFullRound
   const isWaitingForSelection = roundEntity?.isSpecial && !hasSelectedOption
-  const timerStart = isWaitingForSelection ? null : ((isMapPhase && !isMapOnly && myAnswer?.submittedAt) || myAnswer?.selectedOptionAt || lobby?.roundStartedAt)
+  const timerStart = isWaitingForSelection
+    ? null
+    : (isMapPhase && !isMapOnly && myAnswer?.submittedAt) ||
+      myAnswer?.selectedOptionAt ||
+      lobby?.roundStartedAt
 
-  const isExpired = useIsExpired(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
+  const isExpired = useIsExpired(
+    timerStart,
+    config?.roundDuration || DEFAULT_TIME_PER_ROUND,
+  )
   const isMobile = useIsMobile()
 
-  const hasSubmittedAnswer = isMapOnly || Boolean((gameTitle && myAnswer?.isCorrect))
-  const hasFinishedRound = (hasSubmittedAnswer && !isNormalFullRound) || (hasSubmittedAnswer && isNormalFullRound && myAnswer?.position)
-  const isDisplayGame = !isLoadingRoundAnswer && Boolean(hasFinishedRound || isExpired || (!livesRemaining && config?.playersLives))
+  const hasSubmittedAnswer =
+    isMapOnly || Boolean(gameTitle && myAnswer?.isCorrect)
+  const hasFinishedRound =
+    (hasSubmittedAnswer && !isNormalFullRound) ||
+    (hasSubmittedAnswer && isNormalFullRound && myAnswer?.position)
+  const isDisplayGame =
+    !isLoadingRoundAnswer &&
+    Boolean(
+      hasFinishedRound ||
+      isExpired ||
+      (!livesRemaining && config?.playersLives),
+    )
   const isDisplayTimer = !isDisplayGame && Boolean(timerStart)
-  const isDisplayInput = !isMapOnly && !myAnswer?.isCorrect && !isExpired && !isEliminated && !isWaitingForSelection
+  const isDisplayInput =
+    !isMapOnly &&
+    !myAnswer?.isCorrect &&
+    !isExpired &&
+    !isEliminated &&
+    !isWaitingForSelection
   const isDisplayMap = isMapPhase && !isDisplayGame && !isEliminated
   const isDisplayRoundInfos = !isMobile && !isDisplayGame
 
@@ -92,7 +154,6 @@ const LobbyPlaying = () => {
 
   return (
     <main className="min-h-full-height relative">
-
       {isDisplayTimer && <Timer />}
       {isDisplayGame && <DisplayGame />}
 

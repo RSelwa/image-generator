@@ -39,10 +39,15 @@ export const POST = async (request: Request) => {
     if (!parsedSeedData.success) {
       console.error("Invalid seed data in database:", parsedSeedData.error)
 
-      return new Response(`Invalid seed data in database: ${parsedSeedData.error}`, { status: 500 })
+      return new Response(
+        `Invalid seed data in database: ${parsedSeedData.error}`,
+        { status: 500 },
+      )
     }
 
-    const hasSpecialsRounds = parsedSeedData.data.rounds.some((round) => round.isSpecial)
+    const hasSpecialsRounds = parsedSeedData.data.rounds.some(
+      (round) => round.isSpecial,
+    )
 
     const seedUpdate: Record<string, unknown> = {
       seedId: parsed.data.seedId,

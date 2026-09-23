@@ -1,6 +1,17 @@
-import { DOCUMENTS_STATUS, METADATA_DOCS, ROUND_TYPE, TABLES } from "@repo/common"
+import {
+  DOCUMENTS_STATUS,
+  METADATA_DOCS,
+  ROUND_TYPE,
+  TABLES,
+} from "@repo/common"
 import { collectionGroupRefs, refs, subRefs } from "@repo/providers/db-refs"
-import { buildReadyImageItem, type GameDoc, type MapDoc, type ReadyImageItem, readyImagesDocSchema } from "@repo/schemas"
+import {
+  buildReadyImageItem,
+  type GameDoc,
+  type MapDoc,
+  type ReadyImageItem,
+  readyImagesDocSchema,
+} from "@repo/schemas"
 import { type QuerySnapshot } from "firebase-admin/firestore"
 
 // Rebuilds metadata/READY_IMAGES with the enriched (pre-joined) candidate pool used by
@@ -42,7 +53,8 @@ const buildEntries = async (
   for (const doc of snapshot.docs) {
     const data = doc.data()
 
-    if (data.status !== DOCUMENTS_STATUS.READY || !data.image || !data.gameId) continue
+    if (data.status !== DOCUMENTS_STATUS.READY || !data.image || !data.gameId)
+      continue
 
     const game = await getGame(data.gameId)
     const map = data.mapId ? await getMap(data.gameId, data.mapId) : null
@@ -67,11 +79,18 @@ const buildEntries = async (
 }
 
 const [sphericalSnap, flatSnap] = await Promise.all([
-  collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", DOCUMENTS_STATUS.READY).get(),
-  collectionGroupRefs[TABLES.FLAT].where("status", "==", DOCUMENTS_STATUS.READY).get(),
+  collectionGroupRefs[TABLES.SPHERICAL]
+    .where("status", "==", DOCUMENTS_STATUS.READY)
+    .get(),
+  collectionGroupRefs[TABLES.FLAT]
+    .where("status", "==", DOCUMENTS_STATUS.READY)
+    .get(),
 ])
 
-const sphericals = await buildEntries(sphericalSnap as QuerySnapshot, ROUND_TYPE.SPHERICAL)
+const sphericals = await buildEntries(
+  sphericalSnap as QuerySnapshot,
+  ROUND_TYPE.SPHERICAL,
+)
 const flats = await buildEntries(flatSnap as QuerySnapshot, ROUND_TYPE.FLAT)
 
 const data = readyImagesDocSchema.parse({ sphericals, flats })
@@ -79,7 +98,13 @@ const data = readyImagesDocSchema.parse({ sphericals, flats })
 await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set(data)
 
 console.log(`Backfilled metadata/${METADATA_DOCS.READY_IMAGES}:`)
-console.log(`  sphericals: ${sphericals.length} (of ${sphericalSnap.size} ready)`)
+console.log(
+  `  sphericals: ${sphericals.length} (of ${sphericalSnap.size} ready)`,
+)
 console.log(`  flats:      ${flats.length} (of ${flatSnap.size} ready)`)
-console.log(`  normal-eligible:  ${[...sphericals, ...flats].filter((i) => i.mapId && i.mapImage).length}`)
-console.log(`  special-eligible: ${[...sphericals, ...flats].filter((i) => i.thumbnail).length}`)
+console.log(
+  `  normal-eligible:  ${[...sphericals, ...flats].filter((i) => i.mapId && i.mapImage).length}`,
+)
+console.log(
+  `  special-eligible: ${[...sphericals, ...flats].filter((i) => i.thumbnail).length}`,
+)

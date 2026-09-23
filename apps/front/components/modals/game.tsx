@@ -38,7 +38,7 @@ type GameFormSchema = z.input<typeof createGameInputSchema>
 
 const KEY = MODAL_KEYS.GAME_ID
 
-const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
+const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
   const { data, isLoading } = useGetGameByIdQuery(
     { id: gameId },
     { skip: isNew },
@@ -169,7 +169,9 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="alternateNames">Alternate Names</FieldLabel>
+                <FieldLabel htmlFor="alternateNames">
+                  Alternate Names
+                </FieldLabel>
                 <Controller
                   name="alternateNames"
                   control={control}
@@ -182,15 +184,25 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
                       }
                     }
                     const removeName = (index: number) => {
-                      field.onChange((field.value || []).filter((_: string, i: number) => i !== index))
+                      field.onChange(
+                        (field.value || []).filter(
+                          (_: string, i: number) => i !== index,
+                        ),
+                      )
                     }
-                    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+                    const handleKeyDown = (
+                      e: KeyboardEvent<HTMLInputElement>,
+                    ) => {
                       if (e.key === "Enter") {
                         e.preventDefault()
                         addName(e.currentTarget.value)
                         e.currentTarget.value = ""
                       }
-                      if (e.key === "Backspace" && !e.currentTarget.value && (field.value || []).length > 0) {
+                      if (
+                        e.key === "Backspace" &&
+                        !e.currentTarget.value &&
+                        (field.value || []).length > 0
+                      ) {
                         removeName((field.value || []).length - 1)
                       }
                     }
@@ -200,18 +212,32 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
                         className="border-input dark:bg-input/30 flex min-h-9 w-full flex-wrap items-center gap-1 rounded-md border bg-transparent px-2 py-1 shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]"
                         onClick={() => inputRef.current?.focus()}
                       >
-                        {(field.value || []).map((name: string, index: number) => (
-                          <Badge key={index} variant="secondary" className="gap-1 pl-2 pr-1">
-                            {name}
-                            <button type="button" onClick={() => removeName(index)} className="hover:bg-muted rounded-full p-0.5">
-                              <X className="size-3" />
-                            </button>
-                          </Badge>
-                        ))}
+                        {(field.value || []).map(
+                          (name: string, index: number) => (
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="gap-1 pl-2 pr-1"
+                            >
+                              {name}
+                              <button
+                                type="button"
+                                onClick={() => removeName(index)}
+                                className="hover:bg-muted rounded-full p-0.5"
+                              >
+                                <X className="size-3" />
+                              </button>
+                            </Badge>
+                          ),
+                        )}
                         <input
                           ref={inputRef}
                           id="alternateNames"
-                          placeholder={(field.value || []).length === 0 ? "Type and press Enter" : ""}
+                          placeholder={
+                            (field.value || []).length === 0
+                              ? "Type and press Enter"
+                              : ""
+                          }
                           onKeyDown={handleKeyDown}
                           className="min-w-20 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                         />
@@ -249,12 +275,9 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
               </Field>
               <Field>
                 <FieldLabel htmlFor="youtubeLink">youtubeLink</FieldLabel>
-                <Input
-                  {...register("youtubeLink")}
-                />
+                <Input {...register("youtubeLink")} />
                 {youtubeLink && (
                   <YoutubeEmbed youtubeLink={youtubeLink || ""} />
-
                 )}
               </Field>
             </div>
@@ -268,17 +291,21 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
                   <strong>Firebase link:</strong> {data.id}
                 </Link>
                 <p>
-                  <strong>Created:</strong>
-                  {" "}
+                  <strong>Created:</strong>{" "}
                   {data.createdAt?.toDate().toLocaleString()}
                 </p>
                 <p>
-                  <strong>Updated:</strong>
-                  {" "}
+                  <strong>Updated:</strong>{" "}
                   {data.updatedAt?.toDate().toLocaleString()}
                 </p>
-                <p>Spherical images ready {data.hasSphericalImagesReady ? "✅" : "❌"}</p>
-                <p>Specials images ready {data.hasSpecialImagesReady ? "✅" : "❌"}</p>
+                <p>
+                  Spherical images ready{" "}
+                  {data.hasSphericalImagesReady ? "✅" : "❌"}
+                </p>
+                <p>
+                  Specials images ready{" "}
+                  {data.hasSpecialImagesReady ? "✅" : "❌"}
+                </p>
               </div>
             )}
           </FieldGroup>
@@ -302,7 +329,8 @@ const GameForm = ({ gameId, isNew }: { gameId: string, isNew: boolean }) => {
               <Checkbox
                 checked={createMultiple === "true"}
                 onCheckedChange={(checked) =>
-                  setCreateMultiple(checked ? "true" : null)}
+                  setCreateMultiple(checked ? "true" : null)
+                }
               />
               Create multiple
             </label>

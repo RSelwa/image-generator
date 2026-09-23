@@ -1,5 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { type FlatDocWithId, type MapDocWithId, type Round, type SphericalDocWithId } from "@repo/schemas"
+import {
+  type FlatDocWithId,
+  type MapDocWithId,
+  type Round,
+  type SphericalDocWithId,
+} from "@repo/schemas"
 import { auth } from "@/constants/db"
 
 type SeedMakerGame = {
@@ -37,12 +42,16 @@ export const seedMakerApi = createApi({
   endpoints: (builder) => ({
     getSeedMakerGames: builder.query<SeedMakerGame[], void>({
       query: () => "/games",
-      transformResponse: (response: { games: SeedMakerGame[] }) => response.games,
+      transformResponse: (response: { games: SeedMakerGame[] }) =>
+        response.games,
     }),
     getGameReadyData: builder.query<GameReadyData, { gameId: string }>({
       query: ({ gameId }) => `/games/${gameId}/ready-data`,
     }),
-    createManualSeed: builder.mutation<{ seedId: string }, CreateManualSeedInput>({
+    createManualSeed: builder.mutation<
+      { seedId: string },
+      CreateManualSeedInput
+    >({
       query: (body) => ({
         url: "/create",
         method: "POST",

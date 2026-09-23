@@ -1,8 +1,15 @@
-import { DEFAULT_MAX_DISTANCE_POINTS, DIFFICULTIES, ROUND_TYPE } from "@repo/common"
+import {
+  DEFAULT_MAX_DISTANCE_POINTS,
+  DIFFICULTIES,
+  ROUND_TYPE,
+} from "@repo/common"
 import z from "zod"
 import { type GameDoc } from "~/firestore/game"
 import { type MapDoc } from "~/firestore/map"
-import { type SpecialRoundOption, specialRoundOptionSchema } from "~/firestore/seed.option"
+import {
+  type SpecialRoundOption,
+  specialRoundOptionSchema,
+} from "~/firestore/seed.option"
 import { type Round, roundSchema } from "~/firestore/seed.round"
 import { type MapPosition, mapPositionSchema } from "~/firestore/spherical"
 
@@ -22,7 +29,9 @@ export const dailyChallengeHistoryDocSchema = z.object({
   usedImages: z.record(z.string(), z.string()),
 })
 
-export type DailyChallengeHistoryDoc = z.infer<typeof dailyChallengeHistoryDocSchema>
+export type DailyChallengeHistoryDoc = z.infer<
+  typeof dailyChallengeHistoryDocSchema
+>
 
 // A ready image, pre-joined with its game + map data so seed generation needs
 // no per-image reads. One entry can be eligible for normal rounds (has map data)
@@ -82,7 +91,10 @@ export const buildReadyImageItem = ({
   mapPosition?: MapPosition | null
   difficulty?: (typeof DIFFICULTIES)[keyof typeof DIFFICULTIES] | null
   game: Pick<GameDoc, "title" | "alternateNames" | "image"> | undefined
-  map: Pick<MapDoc, "imageUrl" | "width" | "height" | "maxDistancePoints"> | undefined | null
+  map:
+    | Pick<MapDoc, "imageUrl" | "width" | "height" | "maxDistancePoints">
+    | undefined
+    | null
 }): ReadyImageItem | null => {
   const parsed = readyImageItemSchema.safeParse({
     type,
@@ -137,7 +149,9 @@ export const readyImageItemToRound = (item: ReadyImageItem): Round | null => {
 }
 
 // Map a pool entry to a special-round option. Returns null without a thumbnail.
-export const readyImageItemToSpecialOption = (item: ReadyImageItem): SpecialRoundOption | null => {
+export const readyImageItemToSpecialOption = (
+  item: ReadyImageItem,
+): SpecialRoundOption | null => {
   if (!item.thumbnail || !item.gameTitle) return null
 
   const parsed = specialRoundOptionSchema.safeParse({

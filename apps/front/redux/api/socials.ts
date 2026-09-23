@@ -1,7 +1,26 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { DEFAULT_DURATION_SECONDS, getRandomHook, SOCIALS_STATUS, TABLES } from "@repo/common"
-import { type SocialDoc, socialDocSchema, type SocialDocWithId, socialDocWithIdSchema } from "@repo/schemas"
-import { addDoc, deleteDoc, getDoc, getDocs, orderBy, query, Timestamp, updateDoc } from "firebase/firestore"
+import {
+  DEFAULT_DURATION_SECONDS,
+  getRandomHook,
+  SOCIALS_STATUS,
+  TABLES,
+} from "@repo/common"
+import {
+  type SocialDoc,
+  socialDocSchema,
+  type SocialDocWithId,
+  socialDocWithIdSchema,
+} from "@repo/schemas"
+import {
+  addDoc,
+  deleteDoc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore"
 import { getSocialRef, TABLE_REFS } from "@/constants/db-refs"
 import { gameApi } from "@/redux/api/games"
 import { sphericalApi } from "@/redux/api/spherical"
@@ -44,10 +63,12 @@ export const socialsApi = createApi({
         }
       },
       providesTags: (result) =>
-        result ? [
-          ...result.map(({ id }) => ({ type: "Social" as const, id })),
-          "SocialList",
-        ] : ["SocialList"],
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Social" as const, id })),
+              "SocialList",
+            ]
+          : ["SocialList"],
     }),
     getSocialById: builder.query<SocialDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
@@ -78,7 +99,11 @@ export const socialsApi = createApi({
       queryFn: async (input) => {
         try {
           const now = Timestamp.now()
-          const { data: validatedInput, error: validationError } = socialDocSchema.safeParse({ ...input, status: SOCIALS_STATUS.WAITING_JOB_START })
+          const { data: validatedInput, error: validationError } =
+            socialDocSchema.safeParse({
+              ...input,
+              status: SOCIALS_STATUS.WAITING_JOB_START,
+            })
 
           if (validationError) {
             throw new Error(validationError.message || "Validation error")
@@ -108,7 +133,10 @@ export const socialsApi = createApi({
       },
       invalidatesTags: ["SocialList"],
     }),
-    updateSocialById: builder.mutation<SocialDocWithId, { id: string, data: Partial<SocialDoc> }>({
+    updateSocialById: builder.mutation<
+      SocialDocWithId,
+      { id: string; data: Partial<SocialDoc> }
+    >({
       queryFn: async ({ id, data: input }) => {
         try {
           const socialRef = getSocialRef(id)
@@ -186,7 +214,10 @@ export const socialsApi = createApi({
 
           return { data }
         } catch (error) {
-          console.error(`Error retriggering post production for social with ID: ${id}`, error)
+          console.error(
+            `Error retriggering post production for social with ID: ${id}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
@@ -196,14 +227,24 @@ export const socialsApi = createApi({
         "SocialList",
       ],
     }),
-    createSocialFromSphericalId: builder.mutation<SocialDocWithId, { sphericalId: string, gameId: string }>({
+    createSocialFromSphericalId: builder.mutation<
+      SocialDocWithId,
+      { sphericalId: string; gameId: string }
+    >({
       queryFn: async ({ sphericalId, gameId }, { dispatch }) => {
         try {
           const now = Timestamp.now()
 
-          const sphericalDoc = await dispatch(sphericalApi.endpoints.getSphericalById.initiate({ id: sphericalId, gameId })).unwrap()
+          const sphericalDoc = await dispatch(
+            sphericalApi.endpoints.getSphericalById.initiate({
+              id: sphericalId,
+              gameId,
+            }),
+          ).unwrap()
 
-          const gameDoc = await dispatch(gameApi.endpoints.getGameById.initiate({ id: gameId })).unwrap()
+          const gameDoc = await dispatch(
+            gameApi.endpoints.getGameById.initiate({ id: gameId }),
+          ).unwrap()
 
           const hook = getRandomHook()
           const parsed = socialDocSchema.safeParse({
@@ -213,7 +254,8 @@ export const socialsApi = createApi({
             gameId,
             duration: DEFAULT_DURATION_SECONDS,
             hook,
-            youtubeLink: sphericalDoc.youtubeLink || gameDoc.youtubeLink || null,
+            youtubeLink:
+              sphericalDoc.youtubeLink || gameDoc.youtubeLink || null,
             status: SOCIALS_STATUS.WAITING_JOB_START,
           })
 
@@ -238,8 +280,8 @@ export const socialsApi = createApi({
 
           return { error: globalErrorHandler(error) }
         }
-      }
-    })
+      },
+    }),
   }),
 })
 
@@ -250,5 +292,5 @@ export const {
   useUpdateSocialByIdMutation,
   useDeleteSocialByIdMutation,
   useRetriggerPostProductionMutation,
-  useCreateSocialFromSphericalIdMutation
+  useCreateSocialFromSphericalIdMutation,
 } = socialsApi

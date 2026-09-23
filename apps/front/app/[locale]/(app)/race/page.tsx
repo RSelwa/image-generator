@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ASSET_URLS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
-import { useCreateRaceMutation, useGetRaceByCodeQuery, useJoinRaceMutation } from "@/redux/api/race"
+import {
+  useCreateRaceMutation,
+  useGetRaceByCodeQuery,
+  useJoinRaceMutation,
+} from "@/redux/api/race"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
@@ -49,8 +53,17 @@ const Page = () => {
   }
 
   return (
-    <main className="h-full-height flex flex-col items-center justify-center gap-12 p-6 bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
-      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0" />
+    <main
+      className="h-full-height flex flex-col items-center justify-center gap-12 p-6 bg-repeat bg-center bg-size-[25%]"
+      style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}
+    >
+      <Image
+        src={ASSET_URLS.BOTTOM_GB}
+        alt="Gradient br"
+        width={360}
+        height={203}
+        className="absolute bottom-0 right-0 z-0"
+      />
       <h1 className="text-4xl font-bold bg-background px-4 py-2">Race Mode</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl bg-background px-4 py-2">
@@ -83,11 +96,14 @@ const Page = () => {
           />
           {raceByCode && (
             <p className="text-sm text-muted-foreground">
-              Found: race with {raceByCode.players.length} player{raceByCode.players.length !== 1 ? "s" : ""}
+              Found: race with {raceByCode.players.length} player
+              {raceByCode.players.length !== 1 ? "s" : ""}
             </p>
           )}
           {joinCodeSearch.length >= 4 && !raceByCode && (
-            <p className="text-sm text-destructive">No race found with this code.</p>
+            <p className="text-sm text-destructive">
+              No race found with this code.
+            </p>
           )}
           <Button
             className="w-full"

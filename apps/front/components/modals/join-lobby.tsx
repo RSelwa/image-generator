@@ -54,12 +54,20 @@ export const JoinLobbyModal = () => {
           </p>
         )}
         {!isSearching && lobby && (
-          <p data-testid={SELECTORS.JOIN_LOBBY_FOUND} className="text-muted-foreground text-sm">
+          <p
+            data-testid={SELECTORS.JOIN_LOBBY_FOUND}
+            className="text-muted-foreground text-sm"
+          >
             {t("found", { count: lobby.players.length })}
           </p>
         )}
         {notFound && (
-          <p data-testid={SELECTORS.JOIN_LOBBY_NOT_FOUND} className="text-destructive text-sm">{t("notFound")}</p>
+          <p
+            data-testid={SELECTORS.JOIN_LOBBY_NOT_FOUND}
+            className="text-destructive text-sm"
+          >
+            {t("notFound")}
+          </p>
         )}
         <Button
           data-testid={SELECTORS.JOIN_LOBBY_SUBMIT}

@@ -5,4 +5,6 @@ export const payloadCreateDailyChallengeSchema = z.object({
   date: dailyChallengeDateSchema.optional(),
 })
 
-export type PayloadCreateDailyChallenge = z.infer<typeof payloadCreateDailyChallengeSchema>
+export type PayloadCreateDailyChallenge = z.infer<
+  typeof payloadCreateDailyChallengeSchema
+>

@@ -11,7 +11,8 @@ export const generateMetadata = async ({
 
   return {
     title: "Privacy Policy — Geo Gamer",
-    description: "Read the Geo Gamer privacy policy to understand how we collect, use, and protect your personal information.",
+    description:
+      "Read the Geo Gamer privacy policy to understand how we collect, use, and protect your personal information.",
     alternates: {
       canonical: `${APP_BASE_URL}/${locale}/privacy`,
       languages: {
@@ -41,13 +42,12 @@ export default function PrivacyPolicy() {
               1. Introduction
             </h2>
             <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-              {APP_NAME}
-              {" "}
-              ("we", "our", or "us") is committed to protecting your privacy.
-              This Privacy Policy explains how we collect, use, disclose, and
-              safeguard your information when you play our game — a challenge
-              where players are dropped into a scene and must guess which video
-              game it comes from. Please read this privacy policy carefully.
+              {APP_NAME} ("we", "our", or "us") is committed to protecting your
+              privacy. This Privacy Policy explains how we collect, use,
+              disclose, and safeguard your information when you play our game —
+              a challenge where players are dropped into a scene and must guess
+              which video game it comes from. Please read this privacy policy
+              carefully.
             </p>
           </section>
 
@@ -65,7 +65,10 @@ export default function PrivacyPolicy() {
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300 mb-4">
               <li>Name and email address</li>
               <li>Account credentials (encrypted passwords)</li>
-              <li>Profile information you choose to provide (e.g., username, avatar)</li>
+              <li>
+                Profile information you choose to provide (e.g., username,
+                avatar)
+              </li>
             </ul>
 
             <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3 mt-6">
@@ -108,7 +111,10 @@ export default function PrivacyPolicy() {
               <li>Manage your account and sessions</li>
               <li>Send you technical notices, updates, and support messages</li>
               <li>Respond to your comments and questions</li>
-              <li>Detect, prevent, and address technical issues and security threats</li>
+              <li>
+                Detect, prevent, and address technical issues and security
+                threats
+              </li>
               <li>Comply with legal obligations</li>
               <li>Send marketing communications (with your consent)</li>
             </ul>
@@ -194,46 +200,33 @@ export default function PrivacyPolicy() {
             </p>
             <ul className="list-disc pl-6 space-y-2 text-zinc-700 dark:text-zinc-300">
               <li>
-                <strong>Access:</strong>
-                {" "}
-                Request a copy of your personal
+                <strong>Access:</strong> Request a copy of your personal
                 information
               </li>
               <li>
-                <strong>Correction:</strong>
-                {" "}
-                Request correction of inaccurate
+                <strong>Correction:</strong> Request correction of inaccurate
                 information
               </li>
               <li>
-                <strong>Deletion:</strong>
-                {" "}
-                Request deletion of your personal
+                <strong>Deletion:</strong> Request deletion of your personal
                 information
               </li>
               <li>
-                <strong>Data Portability:</strong>
-                {" "}
-                Request transfer of your data
+                <strong>Data Portability:</strong> Request transfer of your data
                 to another service
               </li>
               <li>
-                <strong>Opt-out:</strong>
-                {" "}
-                Unsubscribe from marketing
+                <strong>Opt-out:</strong> Unsubscribe from marketing
                 communications
               </li>
               <li>
-                <strong>Withdraw Consent:</strong>
-                {" "}
-                Withdraw consent for
+                <strong>Withdraw Consent:</strong> Withdraw consent for
                 processing where applicable
               </li>
             </ul>
             <p className="text-zinc-700 dark:text-zinc-300 mt-4">
               To exercise these rights, please contact us at
-              {CONTACT_EMAIL}
-              .
+              {CONTACT_EMAIL}.
             </p>
           </section>
 

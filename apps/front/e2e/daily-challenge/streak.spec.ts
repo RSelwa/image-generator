@@ -18,7 +18,9 @@ const getDateString = (daysOffset: number) => {
 }
 
 test.describe("daily challenge streak", () => {
-  test("should increment streak when answering today with yesterday's streak", async ({ page }) => {
+  test("should increment streak when answering today with yesterday's streak", async ({
+    page,
+  }) => {
     const user = await setupUser()
     const challenges = await setupDailyChallengesForPath()
     const todayChallenge = challenges.find((c) => c.date === today)
@@ -30,11 +32,17 @@ test.describe("daily challenge streak", () => {
     await loginViaUI(page, user.email)
     await page.goto(`/en/daily-challenge/${today}`)
 
-    await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(todayChallenge?.gameTitle || "")
+    await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({
+      timeout: 10_000,
+    })
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(todayChallenge?.gameTitle || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL)).toBeVisible({ timeout: 10_000 })
+    await expect(
+      page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL),
+    ).toBeVisible({ timeout: 10_000 })
 
     // Streak badge should show 4 in the modal
     await expect(page.getByTestId(SELECTORS.STREAK_BADGE)).toBeVisible()
@@ -47,7 +55,9 @@ test.describe("daily challenge streak", () => {
     expect(maxStreak).toBe(4)
   })
 
-  test("should reset streak to 1 when user has old streak from the past", async ({ page }) => {
+  test("should reset streak to 1 when user has old streak from the past", async ({
+    page,
+  }) => {
     const user = await setupUser()
     const challenges = await setupDailyChallengesForPath()
     const todayChallenge = challenges.find((c) => c.date === today)
@@ -59,11 +69,17 @@ test.describe("daily challenge streak", () => {
     await loginViaUI(page, user.email)
     await page.goto(`/en/daily-challenge/${today}`)
 
-    await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(todayChallenge?.gameTitle || "")
+    await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({
+      timeout: 10_000,
+    })
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(todayChallenge?.gameTitle || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL)).toBeVisible({ timeout: 10_000 })
+    await expect(
+      page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL),
+    ).toBeVisible({ timeout: 10_000 })
 
     // Streak badge should show 1 (reset)
     await expect(page.getByTestId(SELECTORS.STREAK_BADGE)).toBeVisible()
@@ -77,7 +93,9 @@ test.describe("daily challenge streak", () => {
     expect(maxStreak).toBe(5)
   })
 
-  test("should not update streak when answering a past challenge", async ({ page }) => {
+  test("should not update streak when answering a past challenge", async ({
+    page,
+  }) => {
     const user = await setupUser()
     const challenges = await setupDailyChallengesForPath()
     const yesterdayDate = getDateString(-1)
@@ -90,11 +108,17 @@ test.describe("daily challenge streak", () => {
     await loginViaUI(page, user.email)
     await page.goto(`/en/daily-challenge/${yesterdayDate}`)
 
-    await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).fill(yesterdayChallenge?.gameTitle || "")
+    await expect(page.getByTestId(SELECTORS.GAME_INPUT_GUESS)).toBeVisible({
+      timeout: 10_000,
+    })
+    await page
+      .getByTestId(SELECTORS.GAME_INPUT_GUESS)
+      .fill(yesterdayChallenge?.gameTitle || "")
     await page.getByTestId(SELECTORS.GAME_INPUT_GUESS).press("Enter")
 
-    await expect(page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL)).toBeVisible({ timeout: 10_000 })
+    await expect(
+      page.getByTestId(SELECTORS.DAILY_CHALLENGE_SHARE_MODAL),
+    ).toBeVisible({ timeout: 10_000 })
 
     // Streak should NOT have been updated — still 3 from two days ago
     const { streak, lastStreakDate } = await getUserStreak(user.id)
@@ -102,7 +126,9 @@ test.describe("daily challenge streak", () => {
     expect(lastStreakDate).toBe(twoDaysAgo)
   })
 
-  test("should not show streak badge on path page when streak is stale", async ({ page }) => {
+  test("should not show streak badge on path page when streak is stale", async ({
+    page,
+  }) => {
     const user = await setupUser()
     await setupDailyChallengesForPath()
 
@@ -117,7 +143,9 @@ test.describe("daily challenge streak", () => {
     await expect(page.getByTestId(SELECTORS.STREAK_BADGE)).toHaveCount(0)
   })
 
-  test("should show streak badge on path page when streak is active", async ({ page }) => {
+  test("should show streak badge on path page when streak is active", async ({
+    page,
+  }) => {
     const user = await setupUser()
     await setupDailyChallengesForPath()
 

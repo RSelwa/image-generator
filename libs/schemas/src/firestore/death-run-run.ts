@@ -20,7 +20,10 @@ export const deathRunRunDocSchema = z.object({
   finishedAt: timestampSchema.nullish().default(null),
 })
 
-export const deathRunRunDocWithIdSchema = z.object({ ...deathRunRunDocSchema.shape, ...WITH_ID.shape })
+export const deathRunRunDocWithIdSchema = z.object({
+  ...deathRunRunDocSchema.shape,
+  ...WITH_ID.shape,
+})
 
 export type DeathRunAnswer = z.infer<typeof deathRunAnswerSchema>
 export type DeathRunRunDoc = z.infer<typeof deathRunRunDocSchema>

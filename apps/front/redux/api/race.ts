@@ -1,10 +1,40 @@
 "use client"
 
-import { addDoc, arrayUnion, getDoc, getDocs, onSnapshot, orderBy, query, setDoc, Timestamp, type Unsubscribe, updateDoc, where } from "@firebase/firestore"
+import {
+  addDoc,
+  arrayUnion,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+  setDoc,
+  Timestamp,
+  type Unsubscribe,
+  updateDoc,
+  where,
+} from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { RACE_DURATION_SECONDS, RACE_POINTS_PER_ANSWER, RACE_POINTS_PER_WRONG_ANSWER, RACE_SEED_EXTENSION_THRESHOLD, RACE_STATUS, TABLES } from "@repo/common"
-import { type RaceDocWithId, raceDocWithIdSchema, type RaceRunDocWithId, raceRunDocWithIdSchema } from "@repo/schemas"
-import { getRaceRef, getRaceRunRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
+import {
+  RACE_DURATION_SECONDS,
+  RACE_POINTS_PER_ANSWER,
+  RACE_POINTS_PER_WRONG_ANSWER,
+  RACE_SEED_EXTENSION_THRESHOLD,
+  RACE_STATUS,
+  TABLES,
+} from "@repo/common"
+import {
+  type RaceDocWithId,
+  raceDocWithIdSchema,
+  type RaceRunDocWithId,
+  raceRunDocWithIdSchema,
+} from "@repo/schemas"
+import {
+  getRaceRef,
+  getRaceRunRef,
+  TABLE_REFS,
+  TABLES_SUB_REFS,
+} from "@/constants/db-refs"
 import { cloudFunctionsApi } from "@/redux/api/cloud-functions"
 import { userApi } from "@/redux/api/user"
 import { type SessionUser } from "@/schemas/session"
@@ -56,10 +86,16 @@ export const raceApi = createApi({
       },
     }),
 
-    prepareAndStartRace: builder.mutation<null, { raceId: string, playersIds: string[] }>({
+    prepareAndStartRace: builder.mutation<
+      null,
+      { raceId: string; playersIds: string[] }
+    >({
       queryFn: async ({ raceId, playersIds }, { dispatch }) => {
         try {
-          await updateDoc(getRaceRef(raceId), { status: RACE_STATUS.STARTING, updatedAt: Timestamp.now() })
+          await updateDoc(getRaceRef(raceId), {
+            status: RACE_STATUS.STARTING,
+            updatedAt: Timestamp.now(),
+          })
 
           const now = Timestamp.now()
           const seedDocRef = await addDoc(TABLE_REFS[TABLES.MARATHON_SEEDS], {
@@ -69,19 +105,26 @@ export const raceApi = createApi({
             updatedAt: now,
           })
 
-          await dispatch(cloudFunctionsApi.endpoints.populateRaceSeed.initiate({ seedId: seedDocRef.id, playerCurrentIndex: 0 }))
+          await dispatch(
+            cloudFunctionsApi.endpoints.populateRaceSeed.initiate({
+              seedId: seedDocRef.id,
+              playerCurrentIndex: 0,
+            }),
+          )
 
           const runNow = Timestamp.now()
-          await Promise.all(playersIds.map((uid) =>
-            setDoc(getRaceRunRef(raceId, uid), {
-              uid,
-              score: 0,
-              currentRoundIndex: 0,
-              answers: [],
-              startedAt: runNow,
-              finishedAt: null,
-            })
-          ))
+          await Promise.all(
+            playersIds.map((uid) =>
+              setDoc(getRaceRunRef(raceId, uid), {
+                uid,
+                score: 0,
+                currentRoundIndex: 0,
+                answers: [],
+                startedAt: runNow,
+                finishedAt: null,
+              }),
+            ),
+          )
 
           await updateDoc(getRaceRef(raceId), {
             seedId: seedDocRef.id,
@@ -101,7 +144,10 @@ export const raceApi = createApi({
       queryFn: async ({ code }) => {
         try {
           const snapshot = await getDocs(
-            query(TABLE_REFS[TABLES.RACES], where("code", "==", code.toUpperCase())),
+            query(
+              TABLE_REFS[TABLES.RACES],
+              where("code", "==", code.toUpperCase()),
+            ),
           )
           if (snapshot.empty) return { data: null }
           const docSnap = snapshot.docs[0]
@@ -125,7 +171,10 @@ export const raceApi = createApi({
           return { error: globalErrorHandler(error) }
         }
       },
-      onCacheEntryAdded: async ({ raceId }, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) => {
+      onCacheEntryAdded: async (
+        { raceId },
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) => {
         let unsubscribe: Unsubscribe | undefined
         try {
           await cacheDataLoaded
@@ -138,14 +187,18 @@ export const raceApi = createApi({
             const race = parseRace(snapshot.id, snapshot.data() as object)
             if (race) updateCachedData(() => race)
           })
-        } catch { /* cache already gone */ }
+        } catch {
+          /* cache already gone */
+        }
         await cacheEntryRemoved
         unsubscribe?.()
       },
-      providesTags: (_result, _error, { raceId }) => [{ type: "Race", id: raceId }],
+      providesTags: (_result, _error, { raceId }) => [
+        { type: "Race", id: raceId },
+      ],
     }),
 
-    joinRace: builder.mutation<null, { raceId: string, user: SessionUser }>({
+    joinRace: builder.mutation<null, { raceId: string; user: SessionUser }>({
       queryFn: async ({ raceId, user }) => {
         try {
           const player = createPlayerFromSessionUser(user)
@@ -193,7 +246,7 @@ export const raceApi = createApi({
       },
     }),
 
-    createRaceRun: builder.mutation<null, { raceId: string, uid: string }>({
+    createRaceRun: builder.mutation<null, { raceId: string; uid: string }>({
       queryFn: async ({ raceId, uid }) => {
         try {
           const now = Timestamp.now()
@@ -213,12 +266,18 @@ export const raceApi = createApi({
       },
     }),
 
-    subscribeRaceRun: builder.query<RaceRunDocWithId | null, { raceId: string, uid: string }>({
+    subscribeRaceRun: builder.query<
+      RaceRunDocWithId | null,
+      { raceId: string; uid: string }
+    >({
       queryFn: async ({ raceId, uid }) => {
         try {
           const docSnap = await getDoc(getRaceRunRef(raceId, uid))
           if (!docSnap.exists()) return { data: null }
-          const { data, error } = raceRunDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+          const { data, error } = raceRunDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
           if (error) throw new Error(error.message)
 
           return { data }
@@ -226,7 +285,10 @@ export const raceApi = createApi({
           return { error: globalErrorHandler(error) }
         }
       },
-      onCacheEntryAdded: async ({ raceId, uid }, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) => {
+      onCacheEntryAdded: async (
+        { raceId, uid },
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) => {
         let unsubscribe: Unsubscribe | undefined
         try {
           await cacheDataLoaded
@@ -236,23 +298,60 @@ export const raceApi = createApi({
 
               return
             }
-            const { data, error } = raceRunDocWithIdSchema.safeParse({ id: snapshot.id, ...snapshot.data() })
+            const { data, error } = raceRunDocWithIdSchema.safeParse({
+              id: snapshot.id,
+              ...snapshot.data(),
+            })
             if (!error) updateCachedData(() => data)
           })
-        } catch { /* cache already gone */ }
+        } catch {
+          /* cache already gone */
+        }
         await cacheEntryRemoved
         unsubscribe?.()
       },
-      providesTags: (_result, _error, { raceId, uid }) => [{ type: "RaceRun", id: `${raceId}_${uid}` }],
+      providesTags: (_result, _error, { raceId, uid }) => [
+        { type: "RaceRun", id: `${raceId}_${uid}` },
+      ],
     }),
 
-    submitRaceAnswer: builder.mutation<null, { raceId: string, uid: string, roundIndex: number, gameId: string, startedAt: number, seedId: string, currentRoundIndex: number, currentScore: number, seedRoundsCount: number, answer: string, isCorrect: boolean }>({
-      queryFn: async ({ raceId, uid, roundIndex, gameId, startedAt: raceStartMs, seedId, currentRoundIndex, currentScore, seedRoundsCount, isCorrect, answer: playerAnswer }, { dispatch }) => {
+    submitRaceAnswer: builder.mutation<
+      null,
+      {
+        raceId: string
+        uid: string
+        roundIndex: number
+        gameId: string
+        startedAt: number
+        seedId: string
+        currentRoundIndex: number
+        currentScore: number
+        seedRoundsCount: number
+        answer: string
+        isCorrect: boolean
+      }
+    >({
+      queryFn: async (
+        {
+          raceId,
+          uid,
+          roundIndex,
+          gameId,
+          startedAt: raceStartMs,
+          seedId,
+          currentRoundIndex,
+          currentScore,
+          seedRoundsCount,
+          isCorrect,
+          answer: playerAnswer,
+        },
+        { dispatch },
+      ) => {
         try {
           const now = Timestamp.now()
-          const newScore = currentScore + (
-            isCorrect ? RACE_POINTS_PER_ANSWER : RACE_POINTS_PER_WRONG_ANSWER
-          )
+          const newScore =
+            currentScore +
+            (isCorrect ? RACE_POINTS_PER_ANSWER : RACE_POINTS_PER_WRONG_ANSWER)
           const answer = {
             roundIndex,
             gameId,
@@ -271,7 +370,12 @@ export const raceApi = createApi({
 
           // Extend seed if player is within threshold of the end
           if (seedRoundsCount - newIndex <= RACE_SEED_EXTENSION_THRESHOLD) {
-            dispatch(cloudFunctionsApi.endpoints.populateRaceSeed.initiate({ seedId, playerCurrentIndex: newIndex }))
+            dispatch(
+              cloudFunctionsApi.endpoints.populateRaceSeed.initiate({
+                seedId,
+                playerCurrentIndex: newIndex,
+              }),
+            )
           }
 
           return { data: null }
@@ -281,22 +385,37 @@ export const raceApi = createApi({
       },
     }),
 
-    finishRaceRun: builder.mutation<null, { raceId: string, uid: string, isHost: boolean }>({
+    finishRaceRun: builder.mutation<
+      null,
+      { raceId: string; uid: string; isHost: boolean }
+    >({
       queryFn: async ({ raceId, uid, isHost }, { dispatch }) => {
         try {
-          await updateDoc(getRaceRunRef(raceId, uid), { finishedAt: Timestamp.now() })
+          await updateDoc(getRaceRunRef(raceId, uid), {
+            finishedAt: Timestamp.now(),
+          })
           if (isHost) {
-            await updateDoc(getRaceRef(raceId), { status: RACE_STATUS.FINISHED, updatedAt: Timestamp.now() })
+            await updateDoc(getRaceRef(raceId), {
+              status: RACE_STATUS.FINISHED,
+              updatedAt: Timestamp.now(),
+            })
           }
 
           const runSnap = await getDoc(getRaceRunRef(raceId, uid))
           const finalScore = runSnap.data()?.score || 0
 
-          const user = await dispatch(userApi.endpoints.getUserById.initiate({ id: uid })).unwrap()
+          const user = await dispatch(
+            userApi.endpoints.getUserById.initiate({ id: uid }),
+          ).unwrap()
           const currentBest = user?.bestRaceScore || 0
 
           if (finalScore > currentBest) {
-            await dispatch(userApi.endpoints.updateUserDoc.initiate({ id: uid, data: { bestRaceScore: finalScore } })).unwrap()
+            await dispatch(
+              userApi.endpoints.updateUserDoc.initiate({
+                id: uid,
+                data: { bestRaceScore: finalScore },
+              }),
+            ).unwrap()
           }
 
           return { data: null }
@@ -310,11 +429,17 @@ export const raceApi = createApi({
       queryFn: async ({ raceId }) => {
         try {
           const snapshot = await getDocs(
-            query(TABLES_SUB_REFS[TABLES.RACE_RUNS](raceId), orderBy("score", "desc")),
+            query(
+              TABLES_SUB_REFS[TABLES.RACE_RUNS](raceId),
+              orderBy("score", "desc"),
+            ),
           )
           const runs: RaceRunDocWithId[] = []
           for (const docSnap of snapshot.docs) {
-            const { data, error } = raceRunDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+            const { data, error } = raceRunDocWithIdSchema.safeParse({
+              id: docSnap.id,
+              ...docSnap.data(),
+            })
             if (!error) runs.push(data)
           }
 
@@ -323,7 +448,9 @@ export const raceApi = createApi({
           return { error: globalErrorHandler(error) }
         }
       },
-      providesTags: (_result, _error, { raceId }) => [{ type: "RaceRuns", id: raceId }],
+      providesTags: (_result, _error, { raceId }) => [
+        { type: "RaceRuns", id: raceId },
+      ],
     }),
   }),
 })

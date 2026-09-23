@@ -7,16 +7,30 @@ import { EmptySheet } from "@/components/sheet/empty"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { getSphericalRef } from "@/constants/db-refs"
-import { MODAL_KEYS, NEW_SEARCH_PARAM, QUERY_PARAMS, STATUS_TO_BADGE_VARIANT } from "@/constants/mapping"
+import {
+  MODAL_KEYS,
+  NEW_SEARCH_PARAM,
+  QUERY_PARAMS,
+  STATUS_TO_BADGE_VARIANT,
+} from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
 import { Link } from "@/i18n/routing"
 import { useGetSphericalByIdQuery } from "@/redux/api/spherical"
 
 const SphericalSheet = () => {
-  const [sphericalParam, setSphericalParam] = useQueryState(QUERY_PARAMS.SPHERICAL_ID)
+  const [sphericalParam, setSphericalParam] = useQueryState(
+    QUERY_PARAMS.SPHERICAL_ID,
+  )
   const open = Boolean(sphericalParam)
 
   const [gameId, sphericalId] = (sphericalParam || "").split("_")
@@ -27,11 +41,25 @@ const SphericalSheet = () => {
   )
 
   const editParam = buildSubcollectionParam(gameId || "", sphericalId || "")
-  const { openModal: openSphericalIdModal } = useModal(MODAL_KEYS.EDIT_SPHERICAL_ID, editParam)
-  const mapParam = buildSubcollectionParam(gameId || "", (spherical?.hasMap && spherical.mapId) || NEW_SEARCH_PARAM)
+  const { openModal: openSphericalIdModal } = useModal(
+    MODAL_KEYS.EDIT_SPHERICAL_ID,
+    editParam,
+  )
+  const mapParam = buildSubcollectionParam(
+    gameId || "",
+    (spherical?.hasMap && spherical.mapId) || NEW_SEARCH_PARAM,
+  )
   const { openModal: openMapIdModal } = useModal(MODAL_KEYS.MAP_ID, mapParam)
 
-  if (!spherical || !sphericalParam) return <Sheet open={open} onOpenChange={(open) => !open && setSphericalParam(null)}><EmptySheet /></Sheet>
+  if (!spherical || !sphericalParam)
+    return (
+      <Sheet
+        open={open}
+        onOpenChange={(open) => !open && setSphericalParam(null)}
+      >
+        <EmptySheet />
+      </Sheet>
+    )
 
   const close = async (open: boolean) => {
     if (open) return
@@ -42,13 +70,20 @@ const SphericalSheet = () => {
     <Sheet key={sphericalParam} open={open} onOpenChange={close}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>{spherical.id} <OpenFirestoreDoc docRef={getSphericalRef(gameId || "", sphericalId || "")} /></SheetTitle>
+          <SheetTitle>
+            {spherical.id}{" "}
+            <OpenFirestoreDoc
+              docRef={getSphericalRef(gameId || "", sphericalId || "")}
+            />
+          </SheetTitle>
           <SheetDescription asChild>
             <div className="flex items-center gap-2">
               <Badge variant={STATUS_TO_BADGE_VARIANT[spherical.status]}>
                 {spherical.status}
               </Badge>
-              {spherical.game && <Badge variant="blue">{spherical.game.title}</Badge>}
+              {spherical.game && (
+                <Badge variant="blue">{spherical.game.title}</Badge>
+              )}
             </div>
           </SheetDescription>
         </SheetHeader>
@@ -68,14 +103,30 @@ const SphericalSheet = () => {
               </div>
             )}
             <div className="flex items-center gap-2">
-              {!spherical.hasMap && <Badge variant="red">No map selected</Badge>}
+              {!spherical.hasMap && (
+                <Badge variant="red">No map selected</Badge>
+              )}
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="marathon-outline" onClick={() => openSphericalIdModal()}>Edit</Button>
-              <Button variant="marathon-outline" onClick={() => openMapIdModal()}>Map</Button>
+              <Button
+                variant="marathon-outline"
+                onClick={() => openSphericalIdModal()}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="marathon-outline"
+                onClick={() => openMapIdModal()}
+              >
+                Map
+              </Button>
               {spherical.image && (
                 <Button variant="marathon-link" asChild>
-                  <Link href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${sphericalId}`} target="_blank" className="flex gap-4 items-center cursor-pointer">
+                  <Link
+                    href={`${PAGES.ADMIN_SPHERICAL_FULLSCREEN}/${gameId}/${sphericalId}`}
+                    target="_blank"
+                    className="flex gap-4 items-center cursor-pointer"
+                  >
                     Spherical Image <SquareArrowOutUpRight className="size-4" />
                   </Link>
                 </Button>

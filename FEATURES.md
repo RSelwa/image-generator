@@ -61,7 +61,9 @@ This plan builds the structure, the following features come once everything is s
 
       // libs/schemas
       export const achievementDifficultySchema = z.enum(ACHIEVEMENT_DIFFICULTY)
-      export type AchievementDifficulty = z.infer<typeof achievementDifficultySchema>
+      export type AchievementDifficulty = z.infer<
+        typeof achievementDifficultySchema
+      >
       ```
   - [ ] Add rules + tests: anyone reads `achievements`, only admin writes them; a user reads only their own `unlockedAchievements`, nobody writes them from a client (admin SDK only)
   - [ ] Create one basic achievement: modify your userName (`change_username`)

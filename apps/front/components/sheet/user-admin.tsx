@@ -5,7 +5,13 @@ import { useEffect } from "react"
 import { toast } from "sonner"
 import { ConversationThread } from "@/components/conversations/conversation-thread"
 import { EmptySheet } from "@/components/sheet/empty"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { QUERY_PARAMS } from "@/constants/mapping"
@@ -18,8 +24,14 @@ const SheetAdminUser = () => {
   const [userId, setUserId] = useQueryState(QUERY_PARAMS.USER_ID)
   const adminId = useAppSelector(selectUserId)
 
-  const { data: user } = useGetUserByIdQuery({ id: userId || "" }, { skip: !userId })
-  const [findOrCreateConversation, { data: conversation, isLoading: isCreatingConversation }] = useFindOrCreateConversationMutation()
+  const { data: user } = useGetUserByIdQuery(
+    { id: userId || "" },
+    { skip: !userId },
+  )
+  const [
+    findOrCreateConversation,
+    { data: conversation, isLoading: isCreatingConversation },
+  ] = useFindOrCreateConversationMutation()
 
   const open = Boolean(userId)
 
@@ -31,7 +43,12 @@ const SheetAdminUser = () => {
     })
   }, [userId, adminId, open, findOrCreateConversation])
 
-  if (!user) return <Sheet open={open} onOpenChange={(open) => !open && setUserId(null)}><EmptySheet /></Sheet>
+  if (!user)
+    return (
+      <Sheet open={open} onOpenChange={(open) => !open && setUserId(null)}>
+        <EmptySheet />
+      </Sheet>
+    )
 
   return (
     <Sheet open={open} onOpenChange={(open) => !open && setUserId(null)}>
@@ -41,11 +58,14 @@ const SheetAdminUser = () => {
           <SheetDescription>Id of the user {user.id}</SheetDescription>
         </SheetHeader>
         <section className="flex flex-col auto-rows-min gap-6 px-4">
-          <UserAvatar avatar={user.avatar || undefined} name={user.email || user.id} donorTier={user.donorTier} className="size-20" />
+          <UserAvatar
+            avatar={user.avatar || undefined}
+            name={user.email || user.id}
+            donorTier={user.donorTier}
+            className="size-20"
+          />
           <article className="flex items-center gap-4">
-            <span>
-              Has newsletter: {user.newsletter ? "Yes" : "No"}
-            </span>
+            <span>Has newsletter: {user.newsletter ? "Yes" : "No"}</span>
             <Switch checked={user.newsletter || false} disabled />
           </article>
         </section>

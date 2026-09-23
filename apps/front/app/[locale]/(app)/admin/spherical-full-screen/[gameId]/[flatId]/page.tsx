@@ -1,15 +1,13 @@
 import { SphericalFullScreen } from "@/components/full-screen-spherical"
 
 const Page = async ({
-  params
+  params,
 }: {
-  params: Promise<{ gameId: string, flatId: string }>
+  params: Promise<{ gameId: string; flatId: string }>
 }) => {
   const { flatId: id, gameId } = await params
 
-  return (
-    <SphericalFullScreen {...{ id, gameId }} />
-  )
+  return <SphericalFullScreen {...{ id, gameId }} />
 }
 
 export default Page

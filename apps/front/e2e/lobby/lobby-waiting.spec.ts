@@ -18,7 +18,9 @@ import {
 
 test.describe("lobby Waiting", () => {
   test.describe("when leaving the lobby", () => {
-    test("should remove me from the players if lobby is in waiting", async ({ page }) => {
+    test("should remove me from the players if lobby is in waiting", async ({
+      page,
+    }) => {
       test.setTimeout(60000)
       const user = await setupUser()
       await loginViaUI(page, user.email)
@@ -28,31 +30,49 @@ test.describe("lobby Waiting", () => {
       const lobbyId = await createLobbyViaUI(page)
       const lobbyDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
 
-      expect(lobbyDoc.data()?.players.map((player) => player.uid)).toContain(user.id)
+      expect(lobbyDoc.data()?.players.map((player) => player.uid)).toContain(
+        user.id,
+      )
       expect(lobbyDoc.data()?.playersIds).toContain(user.id)
 
       // Wait for RTDB presence to be set before closing
-      await expect.poll(async () => {
-        const snap = await rtdb.ref(`lobbies/${lobbyId}/players/${user.id}`).get()
+      await expect
+        .poll(
+          async () => {
+            const snap = await rtdb
+              .ref(`lobbies/${lobbyId}/players/${user.id}`)
+              .get()
 
-        return snap.exists()
-      }, { timeout: 15000 }).toBe(true)
+            return snap.exists()
+          },
+          { timeout: 15000 },
+        )
+        .toBe(true)
 
       await page.close()
 
       // Wait for onDisconnect + Cloud Function to remove the player from Firestore
-      await expect.poll(async () => {
-        const doc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
+      await expect
+        .poll(
+          async () => {
+            const doc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
 
-        return doc.data()?.playersIds?.includes(user.id)
-      }, { timeout: 30000 }).toBe(false)
+            return doc.data()?.playersIds?.includes(user.id)
+          },
+          { timeout: 30000 },
+        )
+        .toBe(false)
 
       const removedDoc = await refs[TABLES.LOBBIES].doc(lobbyId).get()
-      expect(removedDoc.data()?.players.map((player) => player.uid)).not.toContain(user.id)
+      expect(
+        removedDoc.data()?.players.map((player) => player.uid),
+      ).not.toContain(user.id)
       expect(removedDoc.data()?.playersIds).not.toContain(user.id)
     })
 
-    test("should not remove me from the players if lobby is in progress", async ({ page }) => {
+    test("should not remove me from the players if lobby is in progress", async ({
+      page,
+    }) => {
       test.setTimeout(60000)
       const user = await setupUser()
       const player = createPlayerFromUserDoc(user)
@@ -73,7 +93,9 @@ test.describe("lobby Waiting", () => {
 
       // Wait for RTDB presence — should NOT be set since lobby is not WAITING
       await page.waitForTimeout(3000)
-      const snap = await rtdb.ref(`lobbies/${lobby.id}/players/${user.id}`).get()
+      const snap = await rtdb
+        .ref(`lobbies/${lobby.id}/players/${user.id}`)
+        .get()
       expect(snap.exists()).toBe(false)
 
       await page.close()
@@ -109,7 +131,9 @@ test.describe("lobby Waiting", () => {
       await page.getByTestId("select-number-rounds-trigger").click()
       await page.getByTestId("select-number-rounds-6-item").click()
 
-      await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText("6")
+      await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText(
+        "6",
+      )
 
       const specialRoundsSwitch = page.getByTestId("special-rounds")
       await specialRoundsSwitch.click()
@@ -129,7 +153,7 @@ test.describe("lobby Waiting", () => {
         players: [
           { ...playerHost, isReady: true },
           { ...player2Player, isReady: true },
-        ]
+        ],
       })
 
       await createFirestoreLobbyDoc(lobby)
@@ -153,7 +177,7 @@ test.describe("lobby Waiting", () => {
 
       const lobby = lobbyFactory({
         hostId: host.id,
-        players: [playerHost, player2Player]
+        players: [playerHost, player2Player],
       })
 
       await createFirestoreLobbyDoc(lobby)
@@ -172,7 +196,8 @@ test.describe("lobby Waiting", () => {
       const host = await setupUser()
 
       const rounds = Array.from({ length: 6 }, (_, i) =>
-        roundFactory({ isSpecial: i === 0 || i === 3 }))
+        roundFactory({ isSpecial: i === 0 || i === 3 }),
+      )
 
       const seed = seedFactory({ rounds })
       await createFirestoreDoc(refs[TABLES.SEEDS], seed)
@@ -191,12 +216,20 @@ test.describe("lobby Waiting", () => {
         input.dispatchEvent(event)
         const clipboardData = new DataTransfer()
         clipboardData.setData("text/plain", value)
-        const pasteEvent = new ClipboardEvent("paste", { bubbles: true, clipboardData })
+        const pasteEvent = new ClipboardEvent("paste", {
+          bubbles: true,
+          clipboardData,
+        })
         input.dispatchEvent(pasteEvent)
       }, seed.id)
 
-      await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText("6", { timeout: 10000 })
-      await expect(page.getByTestId("select-number-rounds-trigger")).toBeDisabled()
+      await expect(page.getByTestId("select-number-rounds-trigger")).toHaveText(
+        "6",
+        { timeout: 10000 },
+      )
+      await expect(
+        page.getByTestId("select-number-rounds-trigger"),
+      ).toBeDisabled()
 
       const specialRoundsSwitch = page.getByTestId("special-rounds")
       await expect(specialRoundsSwitch).toBeChecked()
@@ -216,7 +249,7 @@ test.describe("lobby Waiting", () => {
 
       const lobby = lobbyFactory({
         hostId: host.id,
-        players: [playerHost, player2Player]
+        players: [playerHost, player2Player],
       })
 
       await createFirestoreLobbyDoc(lobby)
@@ -246,7 +279,7 @@ test.describe("lobby Waiting", () => {
 
       const lobby = lobbyFactory({
         hostId: host.id,
-        players: [playerHost, player2Player]
+        players: [playerHost, player2Player],
       })
 
       await createFirestoreLobbyDoc(lobby)
@@ -263,12 +296,16 @@ test.describe("lobby Waiting", () => {
       await page.getByRole("button", { name: "I'm ready" }).click()
 
       await expect(page.getByText("Ready: 1/2")).toBeVisible()
-      await expect(page.getByRole("button", { name: "Cancel ready" })).toBeVisible()
+      await expect(
+        page.getByRole("button", { name: "Cancel ready" }),
+      ).toBeVisible()
 
       await context.close()
     })
 
-    test("have the config changes in UI when the lobbyDoc is changing", async ({ browser }) => {
+    test("have the config changes in UI when the lobbyDoc is changing", async ({
+      browser,
+    }) => {
       const host = await setupUser()
       const player2 = await setupUser()
 
@@ -277,7 +314,7 @@ test.describe("lobby Waiting", () => {
 
       const lobby = lobbyFactory({
         hostId: host.id,
-        players: [playerHost, player2Player]
+        players: [playerHost, player2Player],
       })
 
       await createFirestoreLobbyDoc(lobby)
@@ -309,7 +346,9 @@ test.describe("lobby Waiting", () => {
   })
 
   test.describe("When joining a lobby with the url", () => {
-    test("should populate playersIds when a new user joins via the join URL", async ({ browser }) => {
+    test("should populate playersIds when a new user joins via the join URL", async ({
+      browser,
+    }) => {
       const host = await setupUser()
       const joiner = await setupUser()
 
@@ -337,7 +376,9 @@ test.describe("lobby Waiting", () => {
       await context.close()
     })
 
-    test("Should be redirected to the lobby page if already connected", async ({ browser }) => {
+    test("Should be redirected to the lobby page if already connected", async ({
+      browser,
+    }) => {
       const host = await setupUser()
       const joiner = await setupUser()
 
@@ -346,7 +387,7 @@ test.describe("lobby Waiting", () => {
 
       const lobby = lobbyFactory({
         hostId: host.id,
-        players: [playerHost, player2Player]
+        players: [playerHost, player2Player],
       })
 
       await createFirestoreLobbyDoc(lobby)
@@ -364,24 +405,30 @@ test.describe("lobby Waiting", () => {
       await context.close()
     })
 
-    test("should be redirected to login page if not connected", async ({ page }) => {
+    test("should be redirected to login page if not connected", async ({
+      page,
+    }) => {
       const host = await setupUser()
 
       const playerHost = createPlayerFromUserDoc(host)
 
       const lobby = lobbyFactory({
         hostId: host.id,
-        players: [playerHost,
-        ]
+        players: [playerHost],
       })
 
       await createFirestoreLobbyDoc(lobby)
       await page.goto(`/en/join-lobby/${lobby.code}`)
 
-      await expect(page).toHaveURL(new RegExp(`/en/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
+      await expect(page).toHaveURL(
+        new RegExp(`/en/login.*redirect.*join-lobby.*${lobby.code}`),
+        { timeout: 10000 },
+      )
     })
 
-    test("after being redirected to login, login and should be redirected and visible in the lobby", async ({ page }) => {
+    test("after being redirected to login, login and should be redirected and visible in the lobby", async ({
+      page,
+    }) => {
       const host = await setupUser()
       const joiner = await setupUser()
 
@@ -390,17 +437,17 @@ test.describe("lobby Waiting", () => {
 
       const lobby = lobbyFactory({
         hostId: host.id,
-        players: [
-          playerHost,
-          joinerPlayer,
-        ]
+        players: [playerHost, joinerPlayer],
       })
 
       await createFirestoreLobbyDoc(lobby)
 
       await page.goto(`/en/join-lobby/${lobby.code}`)
 
-      await expect(page).toHaveURL(new RegExp(`/en/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
+      await expect(page).toHaveURL(
+        new RegExp(`/en/login.*redirect.*join-lobby.*${lobby.code}`),
+        { timeout: 10000 },
+      )
 
       await page.getByLabel("Email").fill(joiner.email)
       await page.getByLabel("Password").fill(PASSWORD)
@@ -410,14 +457,16 @@ test.describe("lobby Waiting", () => {
       await expect(page.getByText("Players in lobby: 2/8")).toBeVisible()
     })
 
-    test("after being redirected to login, click on signup, create an account and should be redirected and visible in the lobby", async ({ page }) => {
+    test("after being redirected to login, click on signup, create an account and should be redirected and visible in the lobby", async ({
+      page,
+    }) => {
       const host = await setupUser()
 
       const playerHost = createPlayerFromUserDoc(host)
 
       const lobby = lobbyFactory({
         hostId: host.id,
-        players: [playerHost]
+        players: [playerHost],
       })
 
       await createFirestoreLobbyDoc(lobby)
@@ -425,11 +474,16 @@ test.describe("lobby Waiting", () => {
 
       await page.goto(`/en/join-lobby/${lobby.code}`)
 
-      await expect(page).toHaveURL(new RegExp(`/en/login.*redirect.*join-lobby.*${lobby.code}`), { timeout: 10000 })
+      await expect(page).toHaveURL(
+        new RegExp(`/en/login.*redirect.*join-lobby.*${lobby.code}`),
+        { timeout: 10000 },
+      )
 
       await page.getByRole("link", { name: "Sign up" }).click()
 
-      await expect(page).toHaveURL(new RegExp(`/en/signup.*redirect.*join-lobby.*${lobby.code}`))
+      await expect(page).toHaveURL(
+        new RegExp(`/en/signup.*redirect.*join-lobby.*${lobby.code}`),
+      )
 
       const newEmail = faker.internet.email({ provider: "yopmail.com" })
       await page.getByLabel("Email").fill(newEmail)

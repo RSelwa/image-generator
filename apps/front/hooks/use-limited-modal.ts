@@ -15,7 +15,8 @@ export const useLimitedModal = (key: string, maxCount: number) => {
 
   // The stored count is only readable after hydration: the server snapshot is
   // always the default, so opening before then ignores the cap.
-  const isOpen = isHydrated && !isDismissed && !IS_PLAYWRIGHT_EMULATOR && count < maxCount
+  const isOpen =
+    isHydrated && !isDismissed && !IS_PLAYWRIGHT_EMULATOR && count < maxCount
 
   const close = () => {
     setIsDismissed(true)
@@ -38,7 +39,8 @@ export const useSessionLimitedModal = (key: string, maxCount: number) => {
 
   // The stored count is only readable after hydration: the server snapshot is
   // always the default, so opening before then ignores the cap.
-  const isOpen = isHydrated && !isDismissed && !IS_PLAYWRIGHT_EMULATOR && count < maxCount
+  const isOpen =
+    isHydrated && !isDismissed && !IS_PLAYWRIGHT_EMULATOR && count < maxCount
 
   const close = () => {
     setIsDismissed(true)

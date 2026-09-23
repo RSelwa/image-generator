@@ -20,7 +20,7 @@ const key = MODAL_KEYS.SUGGEST_GAME
 
 const formSchema = z.object({
   title: z.string().default(""),
-  description: z.string().default("")
+  description: z.string().default(""),
 })
 type FormSchema = z.infer<typeof formSchema>
 
@@ -44,7 +44,7 @@ export const SuggestGameModal = () => {
         type: SUGGESTIONS_TYPE.GAME_SUGGESTIONS,
         title: data.title,
         message: data.description,
-        createdBy: userId
+        createdBy: userId,
       })
 
       await createSuggestionDoc(suggestionDoc).unwrap()
@@ -61,26 +61,33 @@ export const SuggestGameModal = () => {
 
   return (
     <ModalBase title={t("title")} modalKey={key}>
-      <form autoComplete="off" onSubmit={handleSubmit(submitSuggestion)} className="space-y-4">
+      <form
+        autoComplete="off"
+        onSubmit={handleSubmit(submitSuggestion)}
+        className="space-y-4"
+      >
         <InputGroup>
-          <InputGroupInput placeholder={t("gameTitle")} {...register("title")} />
+          <InputGroupInput
+            placeholder={t("gameTitle")}
+            {...register("title")}
+          />
         </InputGroup>
         <InputGroup>
-          <InputGroupInput autoFocus placeholder={t("gameDescription")} {...register("description")} />
+          <InputGroupInput
+            autoFocus
+            placeholder={t("gameDescription")}
+            {...register("description")}
+          />
         </InputGroup>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="marathon-outline">
-              {tCommon("cancel")}
-            </Button>
+            <Button variant="marathon-outline">{tCommon("cancel")}</Button>
           </DialogClose>
           <Button type="submit" disabled={isLoading}>
             {tCommon("submit")} {isLoading && <Loader />}
           </Button>
         </DialogFooter>
-
       </form>
-
     </ModalBase>
   )
 }

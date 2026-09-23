@@ -2,7 +2,14 @@
 
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useModal } from "@/hooks/use-modal"
@@ -45,10 +52,11 @@ export const HelperMenu = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="fixed bottom-4 right-4 outline-none">
-        <Button variant="marathon-outline">
-          Need help
-        </Button>
+      <DropdownMenuTrigger
+        asChild
+        className="fixed bottom-4 right-4 outline-none"
+      >
+        <Button variant="marathon-outline">Need help</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end" side="top">
         <HelperMenuContent />

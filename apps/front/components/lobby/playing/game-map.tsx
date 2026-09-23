@@ -1,4 +1,9 @@
-import { calculateDistancePoints, getDistance, LOBBY_MODES, ROUND_POINTS } from "@repo/common"
+import {
+  calculateDistancePoints,
+  getDistance,
+  LOBBY_MODES,
+  ROUND_POINTS,
+} from "@repo/common"
 import { type FormEvent } from "react"
 import * as React from "react"
 import { useState } from "react"
@@ -7,7 +12,13 @@ import MiniMap from "@/components/mini-map"
 import { Button } from "@/components/ui/button"
 import { usePathname } from "@/i18n/routing"
 import { useSubmitRoundAnswerMutation } from "@/redux/api/lobby"
-import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundEntity, selectCurrentRoundIndex, selectLobbyConfig } from "@/redux/lobby/lobby.selectors"
+import {
+  selectCurrentPlayerRoundAnswer,
+  selectCurrentRoundData,
+  selectCurrentRoundEntity,
+  selectCurrentRoundIndex,
+  selectLobbyConfig,
+} from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -24,15 +35,18 @@ const GameMapGuess = () => {
   const user = useAppSelector(selectUser)
   const roundEntity = useAppSelector(selectCurrentRoundEntity(lobbyId))
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
-  const myAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
+  const myAnswer = useAppSelector(
+    selectCurrentPlayerRoundAnswer(lobbyId, roundIndex),
+  )
   const config = useAppSelector(selectLobbyConfig(lobbyId))
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
 
   const isMapOnly = config?.mode === LOBBY_MODES.MAP_ONLY
 
-  if (!roundEntity || roundEntity.isSpecial || roundEntity.mode !== "full") return null
+  if (!roundEntity || roundEntity.isSpecial || roundEntity.mode !== "full")
+    return null
 
-  const gamePoints = isMapOnly ? 0 : (myAnswer?.gamePoints || 0)
+  const gamePoints = isMapOnly ? 0 : myAnswer?.gamePoints || 0
   const maxPoints = currentRoundData?.pointsDistance || ROUND_POINTS.DISTANCE
 
   const submitDistance = async (e: FormEvent<HTMLFormElement>) => {
@@ -42,7 +56,11 @@ const GameMapGuess = () => {
 
     const distance = getDistance(roundEntity.mapPosition, playPosition)
 
-    const distancePoints = calculateDistancePoints(distance, maxPoints, roundEntity.maxDistancePoints || ROUND_POINTS.DISTANCE)
+    const distancePoints = calculateDistancePoints(
+      distance,
+      maxPoints,
+      roundEntity.maxDistancePoints || ROUND_POINTS.DISTANCE,
+    )
 
     await submitRoundAnswer({
       lobbyId,
@@ -67,9 +85,7 @@ const GameMapGuess = () => {
     >
       <p className="w-full bg-background font-mono text-foreground py-1 flex text-center items-center justify-around text-shadow font-semibold">
         <span className="text-primary">+</span>
-        <span>
-          {roundEntity.gameTitle}
-        </span>
+        <span>{roundEntity.gameTitle}</span>
         <span className="text-primary">+</span>
       </p>
 
@@ -89,7 +105,13 @@ const GameMapGuess = () => {
         isParentHover={isHovered}
       />
 
-      <Button disabled={!playPosition} variant={playPosition ? "marathon" : "marathon-outline"} data-testid="map-submit" type="submit" className="w-full">
+      <Button
+        disabled={!playPosition}
+        variant={playPosition ? "marathon" : "marathon-outline"}
+        data-testid="map-submit"
+        type="submit"
+        className="w-full"
+      >
         Guess
       </Button>
     </form>

@@ -1,7 +1,12 @@
 import { faker } from "@faker-js/faker"
 import { expect, test } from "@playwright/test"
 import { handleGoogleAuthEmulatorPopup } from "@/e2e/helpers/google-auth"
-import { closeModalChangePseudo, logoutViaUI, setupUser, waitForAnonymousAuth } from "@/e2e/helpers/lobby"
+import {
+  closeModalChangePseudo,
+  logoutViaUI,
+  setupUser,
+  waitForAnonymousAuth,
+} from "@/e2e/helpers/lobby"
 
 test("login with existing user and redirect to home", async ({ page }) => {
   const email = faker.internet.email({ provider: "yopmail.com" }).toLowerCase()
@@ -33,7 +38,9 @@ test("login with Google provider and redirect to home", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Join" })).toHaveCount(0)
 })
 
-test("login with google provider after signing up with email and password", async ({ page }) => {
+test("login with google provider after signing up with email and password", async ({
+  page,
+}) => {
   const email = faker.internet.email({
     provider: "yopmail.com",
   })

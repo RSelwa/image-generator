@@ -18,13 +18,19 @@ export const schedule_create_social = onSchedule("0 10 */2 * *", async () => {
 const UPLOAD_POST_API_KEY = defineSecret("UPLOAD_POST_API_KEY")
 
 export const listen_social_written = onDocumentWritten(
-  { document: `${TABLES.SOCIALS}/{socialId}`, timeoutSeconds: 120, secrets: [UPLOAD_POST_API_KEY] },
+  {
+    document: `${TABLES.SOCIALS}/{socialId}`,
+    timeoutSeconds: 120,
+    secrets: [UPLOAD_POST_API_KEY],
+  },
   async (event) => {
     try {
       const socialId = event.params.socialId
 
       if (!socialId) {
-        logger.error(`Social ID is undefined in document path: ${event.document}`)
+        logger.error(
+          `Social ID is undefined in document path: ${event.document}`,
+        )
 
         return
       }
@@ -41,7 +47,9 @@ export const listen_social_written = onDocumentWritten(
       const statusChanged = before?.status !== after.status
 
       if (!statusChanged) {
-        logger.info(`Social doc ${socialId} status unchanged (${after.status}) — skipping`)
+        logger.info(
+          `Social doc ${socialId} status unchanged (${after.status}) — skipping`,
+        )
 
         return
       }

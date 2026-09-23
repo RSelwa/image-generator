@@ -18,7 +18,7 @@ export type DragData = {
   gameAlternateNames: string[]
   gameImage: string
   mapId: string | null
-  mapPosition: { x: number, y: number } | null
+  mapPosition: { x: number; y: number } | null
   mapImage: string | null
   mapWidth: number | null
   mapHeight: number | null
@@ -30,15 +30,20 @@ type DraggableImageCardProps = {
   data: DragData
 }
 
-export const DraggableSkeleton = () => (<Skeleton className="h-28 rounded-md border border-border" />)
+export const DraggableSkeleton = () => (
+  <Skeleton className="h-28 rounded-md border border-border" />
+)
 
 const DraggableImageCard = ({ id, data }: DraggableImageCardProps) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id,
-    data,
-  })
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id,
+      data,
+    })
 
-  const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : undefined
+  const style = transform
+    ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
+    : undefined
 
   const isSpherical = data.type === ROUND_TYPE.SPHERICAL
   const hasMap = !!data.mapId

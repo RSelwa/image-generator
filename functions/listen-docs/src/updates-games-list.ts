@@ -1,6 +1,10 @@
 import { METADATA_DOCS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type GameDoc, type GamesListDoc, type GamesListItem } from "@repo/schemas"
+import {
+  type GameDoc,
+  type GamesListDoc,
+  type GamesListItem,
+} from "@repo/schemas"
 import { FieldValue } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 

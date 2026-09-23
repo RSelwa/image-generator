@@ -1,15 +1,38 @@
-import { DIFFICULTIES, DOCUMENTS_STATUS, METADATA_DOCS, mockedImageURL, mockedSphericalImageURL, ROUND_TYPE, TABLES } from "@repo/common"
+import {
+  DIFFICULTIES,
+  DOCUMENTS_STATUS,
+  METADATA_DOCS,
+  mockedImageURL,
+  mockedSphericalImageURL,
+  ROUND_TYPE,
+  TABLES,
+} from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
-import { buildReadyImageItem, type GameDoc, type ReadyImagesDoc, type SphericalDoc } from "@repo/schemas"
+import {
+  buildReadyImageItem,
+  type GameDoc,
+  type ReadyImagesDoc,
+  type SphericalDoc,
+} from "@repo/schemas"
 import { makeDocumentSnapshot } from "@repo/testing/document-snapshot"
-import { flatFactory, gameFactory, sphericalFactory } from "@repo/testing/factory"
+import {
+  flatFactory,
+  gameFactory,
+  sphericalFactory,
+} from "@repo/testing/factory"
 import firebaseFunctionsTest from "firebase-functions-test"
 import { beforeAll, describe, expect, it } from "vitest"
-import { listen_doc_flat_written, listen_doc_games_written, listen_doc_spherical_written } from "~/index"
+import {
+  listen_doc_flat_written,
+  listen_doc_games_written,
+  listen_doc_spherical_written,
+} from "~/index"
 
 beforeAll(() => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
-    throw new Error("FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.")
+    throw new Error(
+      "FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.",
+    )
   }
 })
 
@@ -24,7 +47,9 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const getMetadataFingerprint = async () => {
   const snapshot = await refs[TABLES.METADATA].get()
 
-  return snapshot.docs.map((doc) => `${doc.id}:${doc.updateTime.toMillis()}`).join("|")
+  return snapshot.docs
+    .map((doc) => `${doc.id}:${doc.updateTime.toMillis()}`)
+    .join("|")
 }
 
 const waitForTriggersToSettle = async () => {
@@ -57,13 +82,11 @@ describe("listen sphericals docs changes for status", () => {
   it("should not update status if new document has not mapId, mapPosition nor thumbnail", async () => {
     const cloudFnWrap = test.wrap(listen_doc_spherical_written)
 
-    const game = gameFactory({
-    })
+    const game = gameFactory({})
     const spherical = sphericalFactory({
       gameId: game.id,
       status: DOCUMENTS_STATUS.WAITING,
       difficulty: DIFFICULTIES.EASY,
-
     })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
@@ -71,15 +94,23 @@ describe("listen sphericals docs changes for status", () => {
 
     await waitForTriggersToSettle()
 
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({ ...spherical, difficulty: DIFFICULTIES.MEDIUM }, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical, difficulty: DIFFICULTIES.MEDIUM },
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
       params: { sphericalId: spherical.id, gameId: game.id },
     })
 
-    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).get()
+    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id)
+      .doc(spherical.id)
+      .get()
     expect(sphericalSnapshot.data()?.status).toBe("waiting")
   })
 
@@ -97,15 +128,23 @@ describe("listen sphericals docs changes for status", () => {
 
     await waitForTriggersToSettle()
 
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({ ...spherical, mapId: "map123", mapPosition: { x: 10, y: 20 } }, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical, mapId: "map123", mapPosition: { x: 10, y: 20 } },
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
       params: { sphericalId: spherical.id, gameId: game.id },
     })
 
-    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).get()
+    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id)
+      .doc(spherical.id)
+      .get()
     expect(sphericalSnapshot.data()?.status).toBe("ready")
   })
 
@@ -123,15 +162,23 @@ describe("listen sphericals docs changes for status", () => {
 
     await waitForTriggersToSettle()
 
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({ ...spherical, thumbnail: mockedImageURL }, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical, thumbnail: mockedImageURL },
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
       params: { sphericalId: spherical.id, gameId: game.id },
     })
 
-    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).get()
+    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id)
+      .doc(spherical.id)
+      .get()
     expect(sphericalSnapshot.data()?.status).toBe("ready")
   })
 
@@ -149,15 +196,23 @@ describe("listen sphericals docs changes for status", () => {
 
     await waitForTriggersToSettle()
 
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({ ...spherical, mapId: "map123", mapPosition: { x: 10, y: 20 } }, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical, mapId: "map123", mapPosition: { x: 10, y: 20 } },
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
       params: { sphericalId: spherical.id, gameId: game.id },
     })
 
-    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).get()
+    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id)
+      .doc(spherical.id)
+      .get()
     expect(sphericalSnapshot.data()?.status).toBe("need_verification")
   })
 
@@ -175,15 +230,23 @@ describe("listen sphericals docs changes for status", () => {
 
     await waitForTriggersToSettle()
 
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({ ...spherical, thumbnail: mockedImageURL }, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical, thumbnail: mockedImageURL },
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
       params: { sphericalId: spherical.id, gameId: game.id },
     })
 
-    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).get()
+    const sphericalSnapshot = await subRefs[TABLES.SPHERICAL](game.id)
+      .doc(spherical.id)
+      .get()
     expect(sphericalSnapshot.data()?.status).toBe("need_verification")
   })
 })
@@ -208,7 +271,10 @@ describe("listen flats docs changes for status", () => {
     await waitForTriggersToSettle()
 
     const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
-    const after = makeDocumentSnapshot({ ...flat, difficulty: DIFFICULTIES.MEDIUM }, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot(
+      { ...flat, difficulty: DIFFICULTIES.MEDIUM },
+      getFlatPath(game.id, flat.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -234,7 +300,10 @@ describe("listen flats docs changes for status", () => {
     await waitForTriggersToSettle()
 
     const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
-    const after = makeDocumentSnapshot({ ...flat, thumbnail: mockedImageURL }, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot(
+      { ...flat, thumbnail: mockedImageURL },
+      getFlatPath(game.id, flat.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -260,7 +329,10 @@ describe("listen flats docs changes for status", () => {
     await waitForTriggersToSettle()
 
     const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
-    const after = makeDocumentSnapshot({ ...flat, thumbnail: mockedImageURL }, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot(
+      { ...flat, thumbnail: mockedImageURL },
+      getFlatPath(game.id, flat.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -286,7 +358,10 @@ describe("listen flats docs changes for status", () => {
     await waitForTriggersToSettle()
 
     const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
-    const after = makeDocumentSnapshot({ ...flat, thumbnail: mockedImageURL }, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot(
+      { ...flat, thumbnail: mockedImageURL },
+      getFlatPath(game.id, flat.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -313,7 +388,10 @@ describe("listen flats docs changes for status", () => {
     await waitForTriggersToSettle()
 
     const before = makeDocumentSnapshot(flat, getFlatPath(game.id, flat.id))
-    const after = makeDocumentSnapshot({ ...flat, thumbnail: mockedImageURL }, getFlatPath(game.id, flat.id))
+    const after = makeDocumentSnapshot(
+      { ...flat, thumbnail: mockedImageURL },
+      getFlatPath(game.id, flat.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -500,7 +578,10 @@ const getReadyImagesData = async (): Promise<ReadyImagesDoc> => {
 // Mirrors updates-ready-images buildEntry: the enriched (pre-joined) pool entry
 // that the listener now stores. The sphericalFactory has no map/thumbnail, so the
 // map-derived fields resolve to null.
-const buildReadyEntry = (spherical: SphericalDoc & { id: string }, game: GameDoc & { id: string }) => {
+const buildReadyEntry = (
+  spherical: SphericalDoc & { id: string },
+  game: GameDoc & { id: string },
+) => {
   const entry = buildReadyImageItem({
     type: ROUND_TYPE.SPHERICAL,
     id: spherical.id,
@@ -524,16 +605,28 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     const cloudFnWrap = test.wrap(listen_doc_spherical_written)
 
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.WAITING })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+      status: DOCUMENTS_STATUS.WAITING,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
     await waitForTriggersToSettle()
 
-    await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({ sphericals: [], flats: [] })
+    await refs[TABLES.METADATA]
+      .doc(METADATA_DOCS.READY_IMAGES)
+      .set({ sphericals: [], flats: [] })
 
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({ ...spherical, status: DOCUMENTS_STATUS.READY }, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical, status: DOCUMENTS_STATUS.READY },
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -549,7 +642,11 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     const cloudFnWrap = test.wrap(listen_doc_spherical_written)
 
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
@@ -560,8 +657,14 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
       flats: [],
     })
 
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({ ...spherical, status: DOCUMENTS_STATUS.WAITING }, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical, status: DOCUMENTS_STATUS.WAITING },
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -577,7 +680,11 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     const cloudFnWrap = test.wrap(listen_doc_spherical_written)
 
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
@@ -589,8 +696,14 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     })
 
     const newImage = "https://example.com/new-image.jpg"
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({ ...spherical, image: newImage }, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical, image: newImage },
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -599,23 +712,37 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
 
     const data = await getReadyImagesData()
 
-    expect(data.sphericals).toEqual([buildReadyEntry({ ...spherical, image: newImage }, game)])
+    expect(data.sphericals).toEqual([
+      buildReadyEntry({ ...spherical, image: newImage }, game),
+    ])
   })
 
   it("should not modify readyImages when a non-ready spherical is updated without status change", async () => {
     const cloudFnWrap = test.wrap(listen_doc_spherical_written)
 
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.WAITING })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+      status: DOCUMENTS_STATUS.WAITING,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical.id).set(spherical)
     await waitForTriggersToSettle()
 
-    await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({ sphericals: [], flats: [] })
+    await refs[TABLES.METADATA]
+      .doc(METADATA_DOCS.READY_IMAGES)
+      .set({ sphericals: [], flats: [] })
 
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({ ...spherical, difficulty: DIFFICULTIES.MEDIUM }, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical, difficulty: DIFFICULTIES.MEDIUM },
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -631,8 +758,16 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     const cloudFnWrap = test.wrap(listen_doc_spherical_written)
 
     const game = gameFactory({})
-    const spherical1 = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
-    const spherical2 = sphericalFactory({ gameId: game.id, image: "https://example.com/2.jpg", status: DOCUMENTS_STATUS.READY })
+    const spherical1 = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+      status: DOCUMENTS_STATUS.READY,
+    })
+    const spherical2 = sphericalFactory({
+      gameId: game.id,
+      image: "https://example.com/2.jpg",
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await subRefs[TABLES.SPHERICAL](game.id).doc(spherical1.id).set(spherical1)
@@ -640,12 +775,21 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     await waitForTriggersToSettle()
 
     await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set({
-      sphericals: [buildReadyEntry(spherical1, game), buildReadyEntry(spherical2, game)],
+      sphericals: [
+        buildReadyEntry(spherical1, game),
+        buildReadyEntry(spherical2, game),
+      ],
       flats: [],
     })
 
-    const before = makeDocumentSnapshot(spherical1, getSphericalPath(game.id, spherical1.id))
-    const after = makeDocumentSnapshot({ ...spherical1, status: DOCUMENTS_STATUS.WAITING }, getSphericalPath(game.id, spherical1.id))
+    const before = makeDocumentSnapshot(
+      spherical1,
+      getSphericalPath(game.id, spherical1.id),
+    )
+    const after = makeDocumentSnapshot(
+      { ...spherical1, status: DOCUMENTS_STATUS.WAITING },
+      getSphericalPath(game.id, spherical1.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },
@@ -661,7 +805,11 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
     const cloudFnWrap = test.wrap(listen_doc_spherical_written)
 
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL, status: DOCUMENTS_STATUS.READY })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+      status: DOCUMENTS_STATUS.READY,
+    })
 
     await refs[TABLES.GAMES].doc(game.id).set(game)
     await waitForTriggersToSettle()
@@ -671,8 +819,14 @@ describe("listen sphericals docs changes for readyImages metadata", () => {
       flats: [],
     })
 
-    const before = makeDocumentSnapshot(spherical, getSphericalPath(game.id, spherical.id))
-    const after = makeDocumentSnapshot({}, getSphericalPath(game.id, spherical.id))
+    const before = makeDocumentSnapshot(
+      spherical,
+      getSphericalPath(game.id, spherical.id),
+    )
+    const after = makeDocumentSnapshot(
+      {},
+      getSphericalPath(game.id, spherical.id),
+    )
 
     await cloudFnWrap({
       data: { before, after },

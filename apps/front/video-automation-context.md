@@ -41,12 +41,14 @@ Automated video generation pipeline for TikTok/Instagram content. The system cap
 ### 1. Capture Page (`/capture`)
 
 A dedicated Next.js page that:
+
 - Accepts `?image=URL` query parameter
 - Renders 360° equirectangular image in fullscreen Three.js sphere
 - Exposes `window.setCamera(yaw, pitch)` for Playwright control
 - Sets `window.sceneReady = true` when texture loaded
 
 **Three.js setup:**
+
 - SphereGeometry with inverted normals (scale -1,1,1) for inside view
 - MeshBasicMaterial with equirectangular texture
 - PerspectiveCamera with exposed rotation control
@@ -54,6 +56,7 @@ A dedicated Next.js page that:
 ### 2. Capture Script
 
 Node.js script that:
+
 - Launches headless Chromium via Playwright
 - Sets viewport to 1080x1920 (vertical for TikTok/Reels)
 - Navigates to capture page with image URL
@@ -64,12 +67,14 @@ Node.js script that:
 - Outputs MP4 file
 
 **Camera animation ideas:**
+
 - Slow pan (90° rotation over 5 seconds)
 - Subtle vertical wave (sine function)
 - Keyframe-based movements
 - Random/organic motion
 
 **FFmpeg command (piped input):**
+
 ```bash
 ffmpeg -y -f image2pipe -framerate 30 -i - -c:v libx264 -pix_fmt yuv420p -preset fast output.mp4
 ```
@@ -79,6 +84,7 @@ ffmpeg -y -f image2pipe -framerate 30 -i - -c:v libx264 -pix_fmt yuv420p -preset
 Docker container that runs the capture script.
 
 **Dockerfile:**
+
 ```dockerfile
 FROM mcr.microsoft.com/playwright:v1.40.0-jammy
 RUN apt-get update && apt-get install -y ffmpeg
@@ -90,6 +96,7 @@ CMD ["node", "capture.js"]
 ```
 
 **Deploy command:**
+
 ```bash
 gcloud run jobs create video-capture \
   --image gcr.io/your-project/capture \
@@ -98,6 +105,7 @@ gcloud run jobs create video-capture \
 ```
 
 **Trigger options:**
+
 - Cloud Scheduler (cron)
 - HTTP trigger
 - Eventarc (Firestore trigger)
@@ -119,12 +127,14 @@ Collection: `videos/{id}`
 ### 5. Cloud Functions (downstream processing)
 
 **onVideoCreated** (Firestore trigger on `status === "raw"`):
+
 - Download raw video from Storage
 - Add effects, text overlays, audio
 - Upload final video to Storage
 - Update doc: `status = "ready"`, add `finalVideoUrl`
 
 **onVideoReady** (Firestore trigger on `status === "ready"`):
+
 - POST video to TikTok/Instagram APIs
 - Update doc: `status = "published"`
 

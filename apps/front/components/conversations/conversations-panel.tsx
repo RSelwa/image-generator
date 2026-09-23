@@ -9,7 +9,10 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { getLobbyConversationId } from "@/constants/db-refs"
 import { usePathname } from "@/i18n/routing"
-import { useSubscribeConversationQuery, useSubscribeConversationsQuery } from "@/redux/api/conversations"
+import {
+  useSubscribeConversationQuery,
+  useSubscribeConversationsQuery,
+} from "@/redux/api/conversations"
 import { useGetUserByIdQuery } from "@/redux/api/user"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -17,7 +20,8 @@ import { getLobbyIdFromPathname } from "@/utils"
 
 const LOBBY_CONVERSATION_NAME = "Salon"
 
-const toMillis = (timestamp: Timestamp | null | undefined) => timestamp ? timestamp.toMillis() : 0
+const toMillis = (timestamp: Timestamp | null | undefined) =>
+  timestamp ? timestamp.toMillis() : 0
 
 const hasUnread = (conversation: ConversationDocWithId, uid: string) =>
   toMillis(conversation.lastMessageAt) > toMillis(conversation.lastReadAt[uid])
@@ -28,12 +32,24 @@ type ConversationRowProps = {
   onSelect: () => void
 }
 
-const ConversationRow = ({ conversation, uid, onSelect }: ConversationRowProps) => {
-  const otherUid = conversation.lobbyId ? "" : conversation.participants.find((participant) => participant !== uid) || uid
+const ConversationRow = ({
+  conversation,
+  uid,
+  onSelect,
+}: ConversationRowProps) => {
+  const otherUid = conversation.lobbyId
+    ? ""
+    : conversation.participants.find((participant) => participant !== uid) ||
+      uid
 
-  const { data: user } = useGetUserByIdQuery({ id: otherUid }, { skip: !otherUid })
+  const { data: user } = useGetUserByIdQuery(
+    { id: otherUid },
+    { skip: !otherUid },
+  )
 
-  const name = conversation.lobbyId ? LOBBY_CONVERSATION_NAME : user?.pseudo || user?.email || ""
+  const name = conversation.lobbyId
+    ? LOBBY_CONVERSATION_NAME
+    : user?.pseudo || user?.email || ""
   const isUnread = hasUnread(conversation, uid)
 
   return (
@@ -41,14 +57,23 @@ const ConversationRow = ({ conversation, uid, onSelect }: ConversationRowProps) 
       onClick={onSelect}
       className="w-full text-left px-3 py-2.5 flex items-center gap-2 hover:bg-muted transition-colors"
     >
-      <UserAvatar avatar={user?.avatar || undefined} name={name} donorTier={user?.donorTier} size="sm" />
+      <UserAvatar
+        avatar={user?.avatar || undefined}
+        name={name}
+        donorTier={user?.donorTier}
+        size="sm"
+      />
       <div className="flex-1 min-w-0">
         <div className="text-sm truncate">{name}</div>
         {conversation.lastMessage && (
-          <div className="text-xs mt-0.5 truncate text-muted-foreground">{conversation.lastMessage}</div>
+          <div className="text-xs mt-0.5 truncate text-muted-foreground">
+            {conversation.lastMessage}
+          </div>
         )}
       </div>
-      {isUnread && <span className="size-2 rounded-full bg-destructive shrink-0" />}
+      {isUnread && (
+        <span className="size-2 rounded-full bg-destructive shrink-0" />
+      )}
     </button>
   )
 }
@@ -59,9 +84,14 @@ export const ConversationsPanel = () => {
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const [open, setOpen] = useState(false)
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    string | null
+  >(null)
 
-  const { data: conversations = [] } = useSubscribeConversationsQuery({ uid }, { skip: !uid })
+  const { data: conversations = [] } = useSubscribeConversationsQuery(
+    { uid },
+    { skip: !uid },
+  )
   const { data: lobbyConversation } = useSubscribeConversationQuery(
     { conversationId: getLobbyConversationId(lobbyId) },
     { skip: !lobbyId },
@@ -75,8 +105,12 @@ export const ConversationsPanel = () => {
     .filter((conversation) => !conversation.lobbyId)
     .sort((a, b) => toMillis(b.lastMessageAt) - toMillis(a.lastMessageAt))
 
-  const visibleConversations = lobbyConversation ? [lobbyConversation, ...directConversations] : directConversations
-  const unreadCount = visibleConversations.filter((conversation) => hasUnread(conversation, uid)).length
+  const visibleConversations = lobbyConversation
+    ? [lobbyConversation, ...directConversations]
+    : directConversations
+  const unreadCount = visibleConversations.filter((conversation) =>
+    hasUnread(conversation, uid),
+  ).length
 
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
@@ -96,7 +130,10 @@ export const ConversationsPanel = () => {
                 {selectedConversationId ? "Conversation" : "Messages"}
               </span>
             </div>
-            <button onClick={() => setOpen(false)} className="p-1 hover:bg-muted rounded">
+            <button
+              onClick={() => setOpen(false)}
+              className="p-1 hover:bg-muted rounded"
+            >
               <X className="size-4" />
             </button>
           </div>
@@ -105,7 +142,9 @@ export const ConversationsPanel = () => {
             {!selectedConversationId && (
               <ScrollArea className="h-full">
                 {visibleConversations.length === 0 && (
-                  <p className="text-muted-foreground text-xs text-center py-4">Aucune conversation</p>
+                  <p className="text-muted-foreground text-xs text-center py-4">
+                    Aucune conversation
+                  </p>
                 )}
                 <div className="divide-y">
                   {visibleConversations.map((conversation) => (
@@ -113,7 +152,9 @@ export const ConversationsPanel = () => {
                       key={conversation.id}
                       conversation={conversation}
                       uid={uid}
-                      onSelect={() => setSelectedConversationId(conversation.id)}
+                      onSelect={() =>
+                        setSelectedConversationId(conversation.id)
+                      }
                     />
                   ))}
                 </div>

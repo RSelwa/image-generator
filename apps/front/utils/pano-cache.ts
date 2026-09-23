@@ -9,7 +9,8 @@ const buildProxyUrl = (imageUrl: string) =>
   IS_PROD ? imageUrl : `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`
 
 const isMobileDevice = () =>
-  typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+  typeof window !== "undefined" &&
+  window.matchMedia("(pointer: coarse)").matches
 
 const downscaleBlob = (blob: Blob, maxWidth: number): Promise<Blob> =>
   new Promise((resolve, reject) => {
@@ -38,7 +39,8 @@ const downscaleBlob = (blob: Blob, maxWidth: number): Promise<Blob> =>
 
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
       canvas.toBlob(
-        (result) => (result ? resolve(result) : reject(new Error("toBlob failed"))),
+        (result) =>
+          result ? resolve(result) : reject(new Error("toBlob failed")),
         "image/jpeg",
         0.85,
       )
@@ -61,7 +63,9 @@ export const preloadImage = (id: string, imageUrl: string): Promise<string> => {
 
   const promise = fetch(buildProxyUrl(imageUrl))
     .then((res) => res.blob())
-    .then((blob) => isMobileDevice() ? downscaleBlob(blob, MOBILE_MAX_TEXTURE_WIDTH) : blob)
+    .then((blob) =>
+      isMobileDevice() ? downscaleBlob(blob, MOBILE_MAX_TEXTURE_WIDTH) : blob,
+    )
     .then((blob) => {
       const blobUrl = URL.createObjectURL(blob)
       panoCache.set(id, blobUrl)

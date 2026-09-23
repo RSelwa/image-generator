@@ -11,7 +11,9 @@ import {
 } from "../helpers/lobby"
 
 test.describe("Lobby History", () => {
-  test("should display the history page with finished lobbies", async ({ page }) => {
+  test("should display the history page with finished lobbies", async ({
+    page,
+  }) => {
     const user = await setupUser()
     const player = createPlayerFromUserDoc(user)
 
@@ -96,7 +98,9 @@ test.describe("Lobby History", () => {
     await expect(cards).toHaveCount(1)
   })
 
-  test("should navigate to history page from nav dropdown", async ({ page }) => {
+  test("should navigate to history page from nav dropdown", async ({
+    page,
+  }) => {
     const user = await setupUser()
 
     await loginViaUI(page, user.email)
@@ -134,6 +138,8 @@ test.describe("Lobby History", () => {
     await loginViaUI(page, user.email)
     await page.goto("/en/history")
 
-    await expect(page.getByTestId("lobby-status-badge")).toHaveText(LOBBY_STATUS.FINISHED)
+    await expect(page.getByTestId("lobby-status-badge")).toHaveText(
+      LOBBY_STATUS.FINISHED,
+    )
   })
 })

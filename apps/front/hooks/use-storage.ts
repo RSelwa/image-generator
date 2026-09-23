@@ -1,5 +1,10 @@
 import { useSyncExternalStore } from "react"
-import { getItemFromLocalStorage, getItemFromSessionStorage, setItemInLocalStorage, setItemInSessionStorage } from "@/utils/storage"
+import {
+  getItemFromLocalStorage,
+  getItemFromSessionStorage,
+  setItemInLocalStorage,
+  setItemInSessionStorage,
+} from "@/utils/storage"
 
 const subscribe = (callback: () => void) => {
   window.addEventListener("storage", callback)
@@ -11,12 +16,12 @@ const subscribe = (callback: () => void) => {
 
 export const useLocalStorage = <T>(
   key: string,
-  defaultValue?: T
+  defaultValue?: T,
 ): [T, (value: T) => void] => {
   const value = useSyncExternalStore(
     subscribe,
     () => getItemFromLocalStorage<T>(key),
-    () => defaultValue || null
+    () => defaultValue || null,
   )
 
   const setValue = (value: T) => {
@@ -29,12 +34,12 @@ export const useLocalStorage = <T>(
 
 export const useSessionStorage = <T>(
   key: string,
-  defaultValue?: T
+  defaultValue?: T,
 ): [T, (value: T) => void] => {
   const value = useSyncExternalStore(
     subscribe,
     () => getItemFromSessionStorage<T>(key),
-    () => defaultValue || null
+    () => defaultValue || null,
   )
 
   const setValue = (value: T) => {

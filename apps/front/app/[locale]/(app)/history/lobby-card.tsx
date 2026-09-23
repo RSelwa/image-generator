@@ -8,7 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PAGES } from "@/constants/pages"
 import { Link } from "@/i18n/routing"
 
-const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+const STATUS_VARIANT: Record<
+  string,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   [LOBBY_STATUS.FINISHED]: "default",
   [LOBBY_STATUS.PLAYING]: "secondary",
   [LOBBY_STATUS.WAITING]: "outline",
@@ -36,7 +39,10 @@ export const LobbyHistoryCard = ({ lobby }: { lobby: LobbyDocWithId }) => {
               {lobby.code}
             </div>
           </CardTitle>
-          <Badge variant={STATUS_VARIANT[lobby.status] || "outline"} data-testid="lobby-status-badge">
+          <Badge
+            variant={STATUS_VARIANT[lobby.status] || "outline"}
+            data-testid="lobby-status-badge"
+          >
             {lobby.status}
           </Badge>
         </CardHeader>
@@ -44,16 +50,12 @@ export const LobbyHistoryCard = ({ lobby }: { lobby: LobbyDocWithId }) => {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Users className="size-3.5" />
-              {lobby.players.length}
-              {" "}
-              player
+              {lobby.players.length} player
               {lobby.players.length !== 1 && "s"}
             </div>
             <div className="flex items-center gap-1">
               <Trophy className="size-3.5" />
-              {lobby.config.numberOfRounds}
-              {" "}
-              rounds
+              {lobby.config.numberOfRounds} rounds
             </div>
             {createdAt && (
               <div className="flex items-center gap-1">

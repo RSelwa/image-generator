@@ -11,7 +11,16 @@ const meta = {
   argTypes: {
     type: {
       control: "select",
-      options: ["text", "email", "password", "number", "search", "tel", "url", "file"],
+      options: [
+        "text",
+        "email",
+        "password",
+        "number",
+        "search",
+        "tel",
+        "url",
+        "file",
+      ],
     },
     disabled: { control: "boolean" },
     placeholder: { control: "text" },

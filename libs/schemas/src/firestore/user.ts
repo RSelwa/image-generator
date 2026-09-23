@@ -1,4 +1,9 @@
-import { AVATARS_KEYS, DONOR_TIERS, getRandomAvatar, USERS_FIELDS } from "@repo/common"
+import {
+  AVATARS_KEYS,
+  DONOR_TIERS,
+  getRandomAvatar,
+  USERS_FIELDS,
+} from "@repo/common"
 import z from "zod"
 import { dailyChallengeDateSchema } from "~/firestore/daily-challenge"
 import { timestampSchema, WITH_ID } from "~/zod"

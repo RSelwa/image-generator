@@ -16,7 +16,9 @@ const DRIVER_TITLE = ".driver-popover-title"
 
 test.describe("Driver.js tutorial", () => {
   test.describe("when lobby owner", () => {
-    test("should show the driver starting with the players step", async ({ page }) => {
+    test("should show the driver starting with the players step", async ({
+      page,
+    }) => {
       const user = await setupUser()
       await loginViaUI(page, user.email)
       await createLobbyViaUI(page)
@@ -86,7 +88,9 @@ test.describe("Driver.js tutorial", () => {
       await page.locator(DRIVER_NEXT_BTN).click()
 
       // The second step should be "Ready up", not "Lobby configuration"
-      await expect(page.locator(DRIVER_TITLE)).not.toHaveText("Lobby configuration")
+      await expect(page.locator(DRIVER_TITLE)).not.toHaveText(
+        "Lobby configuration",
+      )
     })
   })
 
@@ -117,7 +121,7 @@ test.describe("Driver.js tutorial", () => {
 
       const storageValue = await page.evaluate(
         (key) => localStorage.getItem(key),
-        STORAGE_KEYS.DRIVER_WAITING_ROOM
+        STORAGE_KEYS.DRIVER_WAITING_ROOM,
       )
       expect(JSON.parse(storageValue!)).toBe(true)
       await expect(page.locator(DRIVER_POPOVER)).not.toBeVisible()
@@ -132,7 +136,7 @@ test.describe("Driver.js tutorial", () => {
 
       await page.evaluate(
         (key) => localStorage.setItem(key, JSON.stringify(true)),
-        STORAGE_KEYS.DRIVER_WAITING_ROOM
+        STORAGE_KEYS.DRIVER_WAITING_ROOM,
       )
       await page.reload()
 

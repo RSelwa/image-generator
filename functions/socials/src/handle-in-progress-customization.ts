@@ -4,13 +4,17 @@ import { refs } from "@repo/providers/db-refs"
 import { type SocialDoc } from "@repo/schemas"
 import { logger } from "firebase-functions"
 
-const POST_PRODUCTION_JOB_NAME = process.env.POST_PRODUCTION_JOB_NAME || "video-post-production"
+const POST_PRODUCTION_JOB_NAME =
+  process.env.POST_PRODUCTION_JOB_NAME || "video-post-production"
 const CLOUD_RUN_REGION = process.env.CLOUD_RUN_REGION || "us-central1"
 const CLOUD_RUN_PROJECT_ID = process.env.CLOUD_RUN_PROJECT_ID || ""
 
 const jobsClient = new JobsClient()
 
-export const handleInProgressCustomization = async (socialId: string, social: SocialDoc) => {
+export const handleInProgressCustomization = async (
+  socialId: string,
+  social: SocialDoc,
+) => {
   const { urlSphericalVideoStorage } = social
 
   if (!urlSphericalVideoStorage) {
@@ -31,7 +35,9 @@ export const handleInProgressCustomization = async (socialId: string, social: So
   try {
     const jobName = `projects/${CLOUD_RUN_PROJECT_ID}/locations/${CLOUD_RUN_REGION}/jobs/${POST_PRODUCTION_JOB_NAME}`
 
-    logger.info(`Executing post-production Cloud Run Job: ${jobName} for social ${socialId}`)
+    logger.info(
+      `Executing post-production Cloud Run Job: ${jobName} for social ${socialId}`,
+    )
 
     const [operation] = await jobsClient.runJob({
       name: jobName,
@@ -44,10 +50,14 @@ export const handleInProgressCustomization = async (socialId: string, social: So
       },
     })
 
-    logger.info(`Post-production Cloud Run Job started for social ${socialId}, operation: ${operation.name}`)
+    logger.info(
+      `Post-production Cloud Run Job started for social ${socialId}, operation: ${operation.name}`,
+    )
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
-    logger.error(`Failed to trigger post-production for social ${socialId}: ${errorMessage}`)
+    logger.error(
+      `Failed to trigger post-production for social ${socialId}: ${errorMessage}`,
+    )
 
     await refs[TABLES.SOCIALS].doc(socialId).update({
       status: SOCIALS_STATUS.ERROR,

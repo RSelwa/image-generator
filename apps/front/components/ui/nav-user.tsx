@@ -33,13 +33,21 @@ import { Separator } from "@/components/ui/separator"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { MODAL_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
-import { BUY_ME_A_COFFEE_LINK, BUY_ME_A_COFFEE_LINK_MEMBERSHIPS, PORTFOLIO_LINK } from "@/constants/social"
+import {
+  BUY_ME_A_COFFEE_LINK,
+  BUY_ME_A_COFFEE_LINK_MEMBERSHIPS,
+  PORTFOLIO_LINK,
+} from "@/constants/social"
 import { SELECTORS } from "@/constants/testing"
 import { useModal } from "@/hooks/use-modal"
 import { Link, useRouter } from "@/i18n/routing"
 import { useLogoutMutation } from "@/redux/api/auth"
 import { useCreateAndJoinLobbyMutation } from "@/redux/api/lobby"
-import { selectIsAdmin, selectUser, selectUserSteak } from "@/redux/session/session.selectors"
+import {
+  selectIsAdmin,
+  selectUser,
+  selectUserSteak,
+} from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { isTextGlow } from "@/utils/user"
 
@@ -81,7 +89,6 @@ export const NavUser = () => {
       >
         Menu
         <MenuIcon className="size-5" />
-
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
@@ -92,21 +99,31 @@ export const NavUser = () => {
       >
         <hgroup className="flex items-center gap-4 px-4 py-2">
           <UserAvatar {...user} name={user.pseudo} className="size-9" />
-          <h3 data-text-glow={isTextGlow(user.donorTier)} className="grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight">
+          <h3
+            data-text-glow={isTextGlow(user.donorTier)}
+            className="grid text-left text-sm font-shapiro-wide truncate font-medium leading-tight"
+          >
             {user.pseudo}
           </h3>
         </hgroup>
         <Separator />
-        {isAdmin && (
-          <NavUserAdmin />
-        )}
+        {isAdmin && <NavUserAdmin />}
         <DropdownMenuGroup>
           <DropdownMenuLabel>Play</DropdownMenuLabel>
-          <DropdownMenuItem onClick={handleCreateLobby} disabled={isLoading} className="cursor-pointer">
+          <DropdownMenuItem
+            onClick={handleCreateLobby}
+            disabled={isLoading}
+            className="cursor-pointer"
+          >
             <Gamepad2Icon />
             {t("play")}
           </DropdownMenuItem>
-          <DropdownMenuItem data-testid={SELECTORS.NAV_JOIN_LOBBY} onClick={() => openModal()} disabled={isLoading} className="cursor-pointer">
+          <DropdownMenuItem
+            data-testid={SELECTORS.NAV_JOIN_LOBBY}
+            onClick={() => openModal()}
+            disabled={isLoading}
+            className="cursor-pointer"
+          >
             <Gamepad2Icon />
             {t("joinLobby")}
           </DropdownMenuItem>
@@ -136,7 +153,11 @@ export const NavUser = () => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={PAGES.HISTORY} className="cursor-pointer" data-testid="nav-history-link">
+            <Link
+              href={PAGES.HISTORY}
+              className="cursor-pointer"
+              data-testid="nav-history-link"
+            >
               <History />
               {t("history")}
             </Link>
@@ -149,25 +170,41 @@ export const NavUser = () => {
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("about")}</DropdownMenuLabel>
           <DropdownMenuItem asChild>
-            <Link href={BUY_ME_A_COFFEE_LINK} target="_blank" className="cursor-pointer bg-marathon-yellow text-marathon-yellow-foreground">
+            <Link
+              href={BUY_ME_A_COFFEE_LINK}
+              target="_blank"
+              className="cursor-pointer bg-marathon-yellow text-marathon-yellow-foreground"
+            >
               <Coffee />
               Buy me a coffee
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={BUY_ME_A_COFFEE_LINK_MEMBERSHIPS} target="_blank" className="cursor-pointer bg-blue-accent-foreground">
+            <Link
+              href={BUY_ME_A_COFFEE_LINK_MEMBERSHIPS}
+              target="_blank"
+              className="cursor-pointer bg-blue-accent-foreground"
+            >
               <Crown />
               Become a member
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={PORTFOLIO_LINK} target="_blank" className="cursor-pointer">
+            <Link
+              href={PORTFOLIO_LINK}
+              target="_blank"
+              className="cursor-pointer"
+            >
               <Wrench />
               Made by me
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={UMA_STUDIO_URL} target="_blank" className="cursor-pointer">
+            <Link
+              href={UMA_STUDIO_URL}
+              target="_blank"
+              className="cursor-pointer"
+            >
               <Brush />
               Interfaces by UMA Studio
             </Link>
