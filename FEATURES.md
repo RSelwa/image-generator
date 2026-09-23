@@ -33,9 +33,9 @@ This plan builds the structure, the following features come once everything is s
 
 ---
 
-- [ ] Clean codebase
+- [x] Clean codebase
   - [x] Change eslint for oxlint + oxfmt + clean (all current codebase), don't review files that will be formatted (you will lose tokens for nothing). Must be merged before any other branch starts, otherwise every branch conflicts on the reformat.
-  - [ ] Take the config of CI, CLI from flim-monorepo (we've made refacto to clean this system to not have bunch of CI files)
+  - [x] Take the config of CI, CLI from flim-monorepo (we've made refacto to clean this system to not have bunch of CI files)
 
 - [ ] Front Feature flags
   - [ ] Integrate dev tools from `flim-monorepo` -> `apps/web`, pick the FEATURE_FLAGS system, the url, localstorage, the hotkeys system
