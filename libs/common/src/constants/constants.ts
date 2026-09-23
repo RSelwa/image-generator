@@ -11,6 +11,10 @@ export const ACHIEVEMENT_DIFFICULTY = {
   LEGENDARY: "legendary",
 } as const
 
+export const ACHIEVEMENT_KEYS = {
+  CHANGE_USERNAME: "change_username",
+} as const
+
 export const DOCUMENTS_STATUS = {
   WAITING: "waiting",
   ERROR: "error",
