@@ -38,7 +38,7 @@ This plan builds the structure, the following features come once everything is s
   - [x] Take the config of CI, CLI from flim-monorepo (we've made refacto to clean this system to not have bunch of CI files)
 
 - [ ] Front Feature flags
-  - [ ] Integrate dev tools from `flim-monorepo` -> `apps/web`, pick the FEATURE_FLAGS system, the url, localstorage, the hotkeys system
+  - [x] Integrate dev tools from `flim-monorepo` -> `apps/web`, pick the FEATURE_FLAGS system, the url, localstorage, the hotkeys system
   - [ ] Add the Feature Flags: `Credits`, `Achievements`
 
 - [ ] Users schemas
