@@ -37,9 +37,9 @@ This plan builds the structure, the following features come once everything is s
   - [x] Change eslint for oxlint + oxfmt + clean (all current codebase), don't review files that will be formatted (you will lose tokens for nothing). Must be merged before any other branch starts, otherwise every branch conflicts on the reformat.
   - [x] Take the config of CI, CLI from flim-monorepo (we've made refacto to clean this system to not have bunch of CI files)
 
-- [ ] Front Feature flags
+- [x] Front Feature flags
   - [x] Integrate dev tools from `flim-monorepo` -> `apps/web`, pick the FEATURE_FLAGS system, the url, localstorage, the hotkeys system
-  - [ ] Add the Feature Flags: `Credits`, `Achievements`
+  - [x] Add the Feature Flags: `Credits`, `Achievements`
 
 - [ ] Users schemas
   - [ ] Add in user's schemas optional fields `credits` (default to 0 if not existing) and `referralCode`
