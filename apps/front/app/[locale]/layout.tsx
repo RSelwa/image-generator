@@ -9,6 +9,7 @@ import { notFound } from "next/navigation"
 import Script from "next/script"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { Suspense } from "react"
+import { DevTools } from "@/components/dev-tools"
 import { ModalProvider } from "@/components/modals"
 import StoreProvider from "@/components/providers/redux-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -106,6 +107,7 @@ export default async function LocaleLayout({
                 <Suspense>
                   <Toaster />
                   <ModalProvider />
+                  <DevTools />
                   {children}
                   <Analytics />
                 </Suspense>

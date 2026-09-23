@@ -25,6 +25,7 @@ export const QUERY_PARAMS = {
   USER_ID: "user-id",
   SPHERICAL_ID: "spherical-id",
   DAILY_CHALLENGE_DATE: "daily-challenge-date",
+  FEATURE_FLAG: "ff",
 } as const
 
 export const MODAL_KEYS = {
