@@ -19,6 +19,7 @@ import {
   type SocialDoc,
   type SoundDoc,
   type SphericalDoc,
+  type UnlockedAchievementDoc,
   type UserDoc,
 } from "@repo/schemas"
 import {
@@ -147,4 +148,8 @@ export const subRefs = {
     db.collection(
       `${TABLES.DEATH_RUNS}/${deathRunId}/${TABLES.DEATH_RUN_RUNS}`,
     ) as CollectionReference<DeathRunRunDoc, DeathRunRunDoc>,
+  [TABLES.UNLOCKED_ACHIEVEMENTS]: (uid: string) =>
+    db.collection(
+      `${TABLES.USERS}/${uid}/${TABLES.UNLOCKED_ACHIEVEMENTS}`,
+    ) as CollectionReference<UnlockedAchievementDoc, UnlockedAchievementDoc>,
 } as const

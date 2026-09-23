@@ -77,6 +77,8 @@ jobs:
             path: daily-challenge
           - suite: race
             path: race
+          - suite: achievements
+            path: achievements
       fail-fast: false
     steps:
       - name: ✨ Checkout
