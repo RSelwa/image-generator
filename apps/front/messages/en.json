@@ -279,5 +279,18 @@
     "found": "{count, plural, one {Lobby found with # player} other {Lobby found with # players}}",
     "notFound": "No lobby found with this code.",
     "join": "Join"
+  },
+  "achievementCard": {
+    "locked": "Locked",
+    "unlocked": "Unlocked",
+    "reward": "{reward, plural, one {# credit} other {# credits}}",
+    "goal": "Goal: {goal}",
+    "achievedAt": "Unlocked on {date}",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "legendary": "Legendary"
+    }
   }
 }
