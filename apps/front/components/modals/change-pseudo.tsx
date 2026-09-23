@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { AVATARS_KEYS } from "@repo/common"
+import { ACHIEVEMENT_KEYS, AVATARS_KEYS } from "@repo/common"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 import * as React from "react"
 import { type SubmitHandler } from "react-hook-form"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 import Loader from "@/components/icons/loader"
 import {
@@ -24,9 +25,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { FEATURE_FLAGS } from "@/constants/feature-flags"
 import { MODAL_KEYS } from "@/constants/mapping"
+import { SELECTORS } from "@/constants/testing"
+import { useFeatureFlag } from "@/hooks/use-feature-flag"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useModal } from "@/hooks/use-modal"
+import {
+  useGetUnlockedAchievementsQuery,
+  useSendAchievementEventMutation,
+} from "@/redux/api/achievements"
 import { useUpdateUserDocMutation } from "@/redux/api/user"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -52,6 +60,14 @@ const ChangePseudoModal = () => {
   const user = useAppSelector(selectUser)
 
   const [updateUserDoc, { isLoading }] = useUpdateUserDocMutation()
+  const [sendAchievementEvent] = useSendAchievementEventMutation()
+
+  const isAchievementsEnabled = useFeatureFlag(FEATURE_FLAGS.ACHIEVEMENTS)
+  const shouldSkipUnlockedAchievements = !isAchievementsEnabled || !user?.id
+  const { data: unlockedAchievements } = useGetUnlockedAchievementsQuery(
+    { uid: user?.id || "" },
+    { skip: shouldSkipUnlockedAchievements },
+  )
 
   const {
     handleSubmit,
@@ -68,6 +84,27 @@ const ChangePseudoModal = () => {
     },
   })
 
+  const sendChangeUsernameEvent = async (before: string, after: string) => {
+    const isPseudoChanged = before !== after
+    const isAlreadyUnlocked = Boolean(
+      unlockedAchievements?.[ACHIEVEMENT_KEYS.CHANGE_USERNAME],
+    )
+    const shouldSendEvent =
+      isAchievementsEnabled && isPseudoChanged && !isAlreadyUnlocked
+
+    if (!shouldSendEvent) return
+
+    const { data } = await sendAchievementEvent({
+      key: ACHIEVEMENT_KEYS.CHANGE_USERNAME,
+      before: { pseudo: before },
+      after: { pseudo: after },
+    })
+
+    if (!data?.unlocked) return
+
+    toast.success(t("achievementUnlocked", { reward: data.reward }))
+  }
+
   const onSubmit: SubmitHandler<FormSchema> = async (formData) => {
     try {
       if (!user?.id) return
@@ -75,6 +112,8 @@ const ChangePseudoModal = () => {
 
       reset()
       closeModal()
+
+      await sendChangeUsernameEvent(user.pseudo, formData.pseudo)
     } catch (error) {
       console.error("Error updating pseudo:", error)
     }
@@ -133,6 +172,7 @@ const ChangePseudoModal = () => {
             <Field>
               <FieldLabel htmlFor="pseudo">{t("pseudo")}</FieldLabel>
               <Input
+                data-testid={SELECTORS.CHANGE_PSEUDO_INPUT}
                 {...register("pseudo", {
                   required: true,
                 })}
@@ -155,6 +195,7 @@ const ChangePseudoModal = () => {
               {t("skipForNow")}
             </Button>
             <Button
+              data-testid={SELECTORS.CHANGE_PSEUDO_SUBMIT}
               type="submit"
               disabled={!isValid}
               variant={isDirty ? "marathon" : "marathon-outline"}

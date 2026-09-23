@@ -11,6 +11,8 @@ export const SELECTORS = {
   SPECIAL_ROUND: "special-round",
   LOBBY_FINISHED: "lobby-finished",
   CHANGE_PSEUDO_MODAL: "change-pseudo-modal",
+  CHANGE_PSEUDO_INPUT: "change-pseudo-input",
+  CHANGE_PSEUDO_SUBMIT: "change-pseudo-submit",
   GAME_THUMBNAIL_OPTION: (index?: string) => `game-thumbnail-option-${index}`,
   GAME_THUMBNAIL_TITLE: (gameTitle?: string) => `game-thumbnail-${gameTitle}`,
   GAME_MAP: (gameTitle?: string) => `game-map-${gameTitle}`,

@@ -172,7 +172,8 @@
     "title": "Personalize your account",
     "description": "Your pseudo and your avatar is what other users see when they interact with you. Choose something that represents you well!",
     "pseudo": "Pseudo",
-    "skipForNow": "Skip for now"
+    "skipForNow": "Skip for now",
+    "achievementUnlocked": "Achievement unlocked! +{reward, plural, one {# credit} other {# credits}}"
   },
   "reportBug": {
     "title": "Report a bug",
