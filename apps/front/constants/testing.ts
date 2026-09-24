@@ -69,5 +69,6 @@ export const SELECTORS = {
   ACHIEVEMENT_DELETE: "achievement-delete",
   ACHIEVEMENT_DELETE_CONFIRM: "achievement-delete-confirm",
   NAV_ACHIEVEMENTS: "nav-achievements",
+  NAV_HISTORY_LINK: "nav-history-link",
   ACHIEVEMENTS_ITEM: (key: string) => `achievements-item-${key}`,
 } as const

@@ -160,7 +160,7 @@ export const NavUser = () => {
             <Link
               href={PAGES.HISTORY}
               className="cursor-pointer"
-              data-testid="nav-history-link"
+              data-testid={SELECTORS.NAV_HISTORY_LINK}
             >
               <History />
               {t("history")}

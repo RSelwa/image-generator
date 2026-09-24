@@ -1,6 +1,5 @@
 "use client"
 
-import { type Achievement } from "@repo/schemas"
 import { PlusIcon, RefreshCcw, Search } from "lucide-react"
 import { useQueryState } from "nuqs"
 import { useState } from "react"
@@ -31,37 +30,6 @@ import { SELECTORS } from "@/constants/testing"
 import { useModal } from "@/hooks/use-modal"
 import { useGetAllAchievementsQuery } from "@/redux/api/achievements"
 
-const AchievementRow = ({ achievement }: { achievement: Achievement }) => {
-  const [, setAchievementKey] = useQueryState(QUERY_PARAMS.ACHIEVEMENT_KEY)
-
-  return (
-    <TableRow
-      onClick={() => setAchievementKey(achievement.key)}
-      className="cursor-pointer"
-      data-testid={SELECTORS.ADMIN_ACHIEVEMENT_ROW(achievement.key)}
-    >
-      <TableCell className="font-mono">{achievement.key}</TableCell>
-      <TableCell className="font-medium">{achievement.name}</TableCell>
-      <TableCell className="max-w-80 truncate text-muted-foreground">
-        {achievement.description}
-      </TableCell>
-      <TableCell className="font-mono">{achievement.reward}</TableCell>
-      <TableCell>
-        {achievement.difficulty && (
-          <Badge
-            variant={
-              ACHIEVEMENT_DIFFICULTY_TO_BADGE_VARIANT[achievement.difficulty]
-            }
-          >
-            {achievement.difficulty}
-          </Badge>
-        )}
-      </TableCell>
-      <TableCell className="font-mono">{achievement.goalToAchieve}</TableCell>
-    </TableRow>
-  )
-}
-
 const Page = () => {
   const { openModal } = useModal(MODAL_KEYS.NEW_ACHIEVEMENT, "new")
   const {
@@ -70,6 +38,7 @@ const Page = () => {
     refetch,
   } = useGetAllAchievementsQuery()
 
+  const [, setAchievementKey] = useQueryState(QUERY_PARAMS.ACHIEVEMENT_KEY)
   const [input, setInput] = useState("")
 
   const search = input.toLowerCase()
@@ -129,7 +98,39 @@ const Page = () => {
           </TableHeader>
           <TableBody>
             {filtered.map((achievement) => (
-              <AchievementRow key={achievement.key} achievement={achievement} />
+              <TableRow
+                key={achievement.key}
+                onClick={() => setAchievementKey(achievement.key)}
+                className="cursor-pointer"
+                data-testid={SELECTORS.ADMIN_ACHIEVEMENT_ROW(achievement.key)}
+              >
+                <TableCell className="font-mono">{achievement.key}</TableCell>
+                <TableCell className="font-medium">
+                  {achievement.name}
+                </TableCell>
+                <TableCell className="max-w-80 truncate text-muted-foreground">
+                  {achievement.description}
+                </TableCell>
+                <TableCell className="font-mono">
+                  {achievement.reward}
+                </TableCell>
+                <TableCell>
+                  {achievement.difficulty && (
+                    <Badge
+                      variant={
+                        ACHIEVEMENT_DIFFICULTY_TO_BADGE_VARIANT[
+                          achievement.difficulty
+                        ]
+                      }
+                    >
+                      {achievement.difficulty}
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell className="font-mono">
+                  {achievement.goalToAchieve}
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>

@@ -5,6 +5,7 @@ import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { connection } from "next/server"
 import { PAGES } from "@/constants/pages"
+import { routing } from "@/i18n/routing"
 import { AchievementsContent } from "@/app/[locale]/(app)/achievements/achievements-content"
 
 export const generateMetadata = async ({
@@ -22,9 +23,13 @@ export const generateMetadata = async ({
     alternates: {
       canonical: `${APP_BASE_URL}/${locale}${PAGES.ACHIEVEMENTS}`,
       languages: {
-        en: `${APP_BASE_URL}/en${PAGES.ACHIEVEMENTS}`,
-        fr: `${APP_BASE_URL}/fr${PAGES.ACHIEVEMENTS}`,
-        "x-default": `${APP_BASE_URL}/en${PAGES.ACHIEVEMENTS}`,
+        ...Object.fromEntries(
+          routing.locales.map((routingLocale) => [
+            routingLocale,
+            `${APP_BASE_URL}/${routingLocale}${PAGES.ACHIEVEMENTS}`,
+          ]),
+        ),
+        "x-default": `${APP_BASE_URL}/${routing.defaultLocale}${PAGES.ACHIEVEMENTS}`,
       },
     },
     openGraph: {

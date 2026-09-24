@@ -15,6 +15,5 @@ export const achievementSchema = achievementDocSchema.extend({
   key: z.string().min(1),
 })
 
-export type AchievementDifficulty = z.infer<typeof achievementDifficultySchema>
 export type AchievementDoc = z.infer<typeof achievementDocSchema>
 export type Achievement = z.infer<typeof achievementSchema>
