@@ -187,3 +187,10 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **`buildCollectionGroups` → `buildCollectionBinder`**, replacing the rarest-first order of the first collection page: every card sorted by `number`, games ordered by their first number (numbers are contiguous per game, so the binder reads `#001, #002…` across sections), cards by number inside a game. Returns `{ ownedCount, total, groups }`.
 - **Overall progress on top** (`owned/total cards collected`), each game's `owned/total` kept as the secondary count. Owned cards in full with `×n`, missing ones as numbered ghosts (previous sub-bullets).
 - Kept as one commit although the reviewer flagged `SCOPE: SPLIT` (order vs overall counter).
+
+## TCG collection v1 › E2E
+
+- **Binder order**: the owned card is legendary `#043`, the ghost common `#042`, so number order (ghost first) differs from the old rarest-first order; the test reads the game section's card testids in DOM order.
+- **Overall progress**: the expected total is computed from Firestore with the admin SDK (pools → map docs that are still cards), since the emulator DB is shared by every spec; asserts `1/<total>`.
+- The admin number field's e2e (filled per rarity, prefill stored as shown, duplicate flagged) shipped with the two admin sub-bullets.
+- Not run locally (CI-only).

@@ -155,9 +155,9 @@ Goal: players aim to **complete the collection**, not only to pull rare cards. E
 - `cardProperties.number`: required positive int, unique across cards, shown as `#042`. Numbered **by game** (each game a contiguous block), **never renumbered** once given: a new map takes the next free number.
 - **No draw bias toward missing cards**: draws stay fully random inside a rarity, duplicates are part of the loop (pushes to open more packs).
 
-- [ ] Collection v1
+- [x] Collection v1
   - [x] Add `number` (int ≥ 1) to `cardPropertiesSchema` + schema tests; update the fixtures / tests that build `cardProperties`
   - [x] Admin: a required `number` field in the map form's card section, prefilled with the next free number (max used + 1); the admin maps page flags duplicate numbers and gaps. Tests
   - [x] Show `#number` on `MapTradingCard` and on the collection's ghost cards (stories updated)
   - [x] Collection page as a numbered binder: every card sorted by `number`, owned ones in full with their count, missing ones as ghosts with number + rarity frame, overall progress `owned/total` at the top (per-game count kept as secondary). Unit tests
-  - [ ] Update the e2e specs (collection binder order + progress, admin number field)
+  - [x] Update the e2e specs (collection binder order + progress, admin number field)
