@@ -14,3 +14,12 @@ export const filterMapsByCardRarity = (
 
   return maps.filter(({ cardProperties }) => cardProperties?.rarity === filter)
 }
+
+export const countMapsByCardRarity = (
+  maps: MapDocWithId[],
+  options: { value: CardRarityFilter; label: string }[],
+) =>
+  options.map((option) => ({
+    ...option,
+    count: filterMapsByCardRarity(maps, option.value).length,
+  }))

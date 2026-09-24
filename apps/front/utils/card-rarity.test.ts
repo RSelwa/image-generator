@@ -2,7 +2,10 @@ import { CARD_RARITY } from "@repo/common"
 import { type MapDocWithId } from "@repo/schemas"
 import { describe, expect, it } from "vitest"
 import { CARD_RARITY_FILTER } from "@/constants/mapping"
-import { filterMapsByCardRarity } from "@/utils/card-rarity"
+import {
+  countMapsByCardRarity,
+  filterMapsByCardRarity,
+} from "@/utils/card-rarity"
 
 const buildMap = (
   id: string,
@@ -50,5 +53,23 @@ describe("when a rarity is requested", () => {
 
   it("should return nothing when no map has it", () => {
     expect(filterMapsByCardRarity(MAPS, CARD_RARITY.RARE)).toEqual([])
+  })
+})
+
+describe("when the maps are counted by rarity", () => {
+  it("should count each option", () => {
+    expect(
+      countMapsByCardRarity(MAPS, [
+        { value: CARD_RARITY_FILTER.ALL, label: "All maps" },
+        { value: CARD_RARITY_FILTER.NOT_RATED, label: "Not rated" },
+        { value: CARD_RARITY.LEGENDARY, label: CARD_RARITY.LEGENDARY },
+        { value: CARD_RARITY.RARE, label: CARD_RARITY.RARE },
+      ]),
+    ).toEqual([
+      { value: CARD_RARITY_FILTER.ALL, label: "All maps", count: 3 },
+      { value: CARD_RARITY_FILTER.NOT_RATED, label: "Not rated", count: 1 },
+      { value: CARD_RARITY.LEGENDARY, label: CARD_RARITY.LEGENDARY, count: 1 },
+      { value: CARD_RARITY.RARE, label: CARD_RARITY.RARE, count: 0 },
+    ])
   })
 })

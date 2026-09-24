@@ -4,6 +4,7 @@ import { CARD_RARITY } from "@repo/common"
 import { useState } from "react"
 import AdminHeader from "@/components/admin-header"
 import { MapCard } from "@/components/cards/map-card"
+import { Badge } from "@/components/ui/badge"
 import {
   Select,
   SelectContent,
@@ -18,7 +19,10 @@ import {
   type CardRarityFilter,
   cardRarityFilterSchema,
 } from "@/schemas/card-rarity-filter"
-import { filterMapsByCardRarity } from "@/utils/card-rarity"
+import {
+  countMapsByCardRarity,
+  filterMapsByCardRarity,
+} from "@/utils/card-rarity"
 
 const RARITY_FILTER_OPTIONS = [
   { value: CARD_RARITY_FILTER.ALL, label: "All maps" },
@@ -35,11 +39,24 @@ const Page = () => {
     CARD_RARITY_FILTER.ALL,
   )
 
-  const maps = filterMapsByCardRarity(data || [], rarityFilter)
+  const allMaps = data || []
+  const maps = filterMapsByCardRarity(allMaps, rarityFilter)
 
   return (
     <main className="p-2 h-full-height-admin">
       <AdminHeader title="Maps" />
+
+      <ul className="mb-4 flex flex-wrap gap-2">
+        {countMapsByCardRarity(allMaps, RARITY_FILTER_OPTIONS).map(
+          ({ value, label, count }) => (
+            <li key={value}>
+              <Badge variant="outline">
+                {label}: {count}
+              </Badge>
+            </li>
+          ),
+        )}
+      </ul>
 
       <div className="mb-4 w-56">
         <Select

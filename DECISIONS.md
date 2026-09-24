@@ -48,3 +48,9 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **Commits stay local on `develop`, not pushed**: pushing the shared branch is outward-facing and wasn't asked. Consequence: CI doesn't run, so the e2e specs written here are unverified until the next push.
 - **E2E not run locally** (CI-only per the working rules). Unit, rules (emulator) and function (emulator) tests are run locally on every sub-bullet.
 - **`DECISIONS.md` is committed with each sub-bullet** from here on. It had been emptied before the TCG phase started; that emptying is committed with it (the old decisions remain in git history).
+
+## Admin map rarity › Count per rarity
+
+- **Counts computed client side** from the maps the page already loads (every map), with `countMapsByCardRarity` reusing `filterMapsByCardRarity` over the same options as the filter select, so the badges read "All maps / Not rated / <rarity>: n" with the select's labels.
+- **The util stays although it has one caller**: inlining it (tried after review round 1) left the feature without any test; `workflow.md` ("tests ship with the change") outranks the one-call-site rule. Concrete param type, no generic.
+- **No e2e for the counts**: the emulator DB is shared by every spec, so absolute counts aren't stable to assert.

@@ -122,10 +122,10 @@ Cards are **maps only** for now: a card is a view of a map doc, so no dedicated 
   - [x] Rules + tests: only admin writes `cardProperties` on a map (rule on the top-level key, `affectedKeys().hasAny(["cardProperties"])`, so future sub-fields are covered without touching the rule) (user denied on create and update, admin allowed); anyone reads `cardPools`, nobody writes them from a client; a user reads only their own `cards` (owner allowed, another signed-in user denied, anonymous denied), nobody writes them from a client (owner and admin client denied); the owner reads their own `packsStored` / `packsRefillAnchor` (needed by the packs page), users can't write them on create nor update (owner denied, admin allowed)
   - [x] Modify the create user CF (`functions/create-user-document`) to set `packsStored = PACKS_MAX` and `packsRefillAnchor = now`, + test
 
-- [ ] Admin map rarity
+- [x] Admin map rarity
   - [x] Add a "Card" section in the map form (`components/modals/map-id.tsx`) bound to `cardProperties`, with a `rarity` select and a "not a card" option that removes the whole `cardProperties` object; wire it through the maps redux endpoint (update mutation). Story for the form with each rarity
   - [x] In the admin maps page, show the rarity on each `MapCard` (badge) and add a filter by rarity (including "not rated"), so admins can see which maps are left to rate. Story + play test of the filter
-  - [ ] Add a count per rarity at the top of the admin maps page, to balance pools by hand
+  - [x] Add a count per rarity at the top of the admin maps page, to balance pools by hand
 
 - [ ] Card pools
   - [ ] Add a Firestore trigger in `functions/listen-docs` on `games/{gameId}/maps/{mapId}` writes: when `cardProperties.rarity` changes (`cardProperties` added, rarity updated, `cardProperties` removed, or map deleted), remove the map from its old pool and add it to the new one (`arrayRemove` / `arrayUnion` in one batch). Unit tests for each transition
