@@ -61,3 +61,12 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **`updateCardPools`** (`update-card-pools.ts`): compares `before?.cardProperties?.rarity` and `after?.…`; equal → no write (any other map edit costs nothing). Otherwise one batch: `arrayRemove({ mapId, gameId })` on the old pool, `arrayUnion` on the new one, both `set(…, { merge: true })` so a pool doc is created on its first card.
 - Deleting a card map is the same "rarity → none" transition: it leaves its pool.
 - Tests on the emulator through `firebase-functions-test` (file precedent): added, created as a card, rarity changed, removed, deleted, unchanged rarity.
+
+## Card pools › Rebuild script
+
+- **`scripts/src/scripts/rebuild-card-pools.ts`, not run.** Run it once after deploying the trigger (maps rated before the deploy never fired it), or to repair drift:
+  `GOOGLE_APPLICATION_CREDENTIALS=/Users/raphael/image-generator/service-account.json pnpm --filter @repo/scripts run src/scripts/rebuild-card-pools.ts`
+- **Overwrites all 5 pool docs**, empty ones included, so a drifted pool is cleared rather than merged.
+- **`gameId` from the doc path** (`map.ref.parent.parent.id`), the same source as the trigger's `event.params.gameId`, so `arrayRemove` always matches what the rebuild wrote. A doc without a parent game is skipped.
+- **Grouping is a pure `buildCardPools`** in `libs/schemas` `card-pool.ts` (precedent: `buildReadyImageItem`), unit tested. `refs[TABLES.CARD_POOLS]` added to `libs/providers`.
+- No header comment in the script (no-comments rule); the run command lives here.

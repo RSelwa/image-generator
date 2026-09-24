@@ -127,9 +127,9 @@ Cards are **maps only** for now: a card is a view of a map doc, so no dedicated 
   - [x] In the admin maps page, show the rarity on each `MapCard` (badge) and add a filter by rarity (including "not rated"), so admins can see which maps are left to rate. Story + play test of the filter
   - [x] Add a count per rarity at the top of the admin maps page, to balance pools by hand
 
-- [ ] Card pools
+- [x] Card pools
   - [x] Add a Firestore trigger in `functions/listen-docs` on `games/{gameId}/maps/{mapId}` writes: when `cardProperties.rarity` changes (`cardProperties` added, rarity updated, `cardProperties` removed, or map deleted), remove the map from its old pool and add it to the new one (`arrayRemove` / `arrayUnion` in one batch). Unit tests for each transition
-  - [ ] Create a script that rebuilds every `cardPools` doc from the maps (for the first run and to repair drift). Do not run it yet
+  - [x] Create a script that rebuilds every `cardPools` doc from the maps (for the first run and to repair drift). Do not run it yet
 
 - [ ] Packs API
   - [ ] Create a pure util in `libs/common` `getAvailablePacks(packsStored, anchor, now)` + `getNextPackAt(...)` + `consumePack(...)` returning the new `packsStored` / anchor. Shared by the endpoint and the front countdown, so both compute the same count. Unit tests: empty, partial refill, capped at `PACKS_MAX` (no next pack date when full), anchor advanced by consumed periods only

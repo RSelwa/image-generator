@@ -1,6 +1,7 @@
 import { TABLES } from "@repo/common"
 import {
   type AchievementDoc,
+  type CardPoolDoc,
   type CouponDoc,
   type DailyChallengeDoc,
   type DeathRunDoc,
@@ -106,6 +107,10 @@ export const refs = {
   [TABLES.ACHIEVEMENTS]: db.collection(
     TABLES.ACHIEVEMENTS,
   ) as CollectionReference<AchievementDoc, AchievementDoc>,
+  [TABLES.CARD_POOLS]: db.collection(TABLES.CARD_POOLS) as CollectionReference<
+    CardPoolDoc,
+    CardPoolDoc
+  >,
 }
 
 export const collectionGroupRefs = {
