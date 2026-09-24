@@ -338,12 +338,29 @@ describe("firebase Security Rules", () => {
       )
     })
 
+    it("should let a user read their own pack stock", async () => {
+      const uid = "uid"
+
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          uid,
+          packsStored: 7,
+          packsRefillAnchor: new Date(),
+        })
+      })
+      const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+      await assertSucceeds(getDoc(doc(authedUserDb, `users/${uid}`)))
+    })
+
     describe("when a client writes a server-only field", () => {
       const uid = "uid"
       const adminUid = "admin"
       const SERVER_ONLY_FIELDS = [
         { credits: 1_000 },
         { referralCode: "042137" },
+        { packsStored: 10 },
+        { packsRefillAnchor: new Date() },
       ]
 
       const setupAdmin = async () => {
@@ -976,6 +993,100 @@ describe("firebase Security Rules", () => {
       const iconoDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertFails(deleteDoc(doc(iconoDb, mapPath)))
+    })
+
+    describe("when a client writes the card properties", () => {
+      const uid = "user1"
+      const iconographUid = "iconograph1"
+      const adminUid = "admin"
+      const cardProperties = { rarity: "legendary" }
+
+      const setupRight = async (rightUid: string, right: string) => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `rights/${rightUid}`), {
+            uid: rightUid,
+            right,
+          })
+        })
+      }
+
+      const setupMap = async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), mapPath), { name: "Test Map" })
+        })
+      }
+
+      it("should deny a user creating a map with them", async () => {
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(
+          setDoc(doc(authedDb, mapPath), { name: "Test Map", cardProperties }),
+        )
+      })
+
+      it("should deny a user updating them", async () => {
+        await setupMap()
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(updateDoc(doc(authedDb, mapPath), { cardProperties }))
+      })
+
+      it("should deny an iconograph creating a map with them", async () => {
+        await setupRight(iconographUid, "iconograph")
+        const iconographDb = testEnv
+          .authenticatedContext(iconographUid)
+          .firestore()
+
+        await assertFails(
+          setDoc(doc(iconographDb, mapPath), {
+            name: "Test Map",
+            cardProperties,
+          }),
+        )
+      })
+
+      it("should deny an iconograph updating them", async () => {
+        await setupRight(iconographUid, "iconograph")
+        await setupMap()
+        const iconographDb = testEnv
+          .authenticatedContext(iconographUid)
+          .firestore()
+
+        await assertFails(
+          updateDoc(doc(iconographDb, mapPath), { cardProperties }),
+        )
+      })
+
+      it("should let an iconograph update the other fields", async () => {
+        await setupRight(iconographUid, "iconograph")
+        await setupMap()
+        const iconographDb = testEnv
+          .authenticatedContext(iconographUid)
+          .firestore()
+
+        await assertSucceeds(
+          updateDoc(doc(iconographDb, mapPath), { name: "Renamed Map" }),
+        )
+      })
+
+      it("should let an admin create a map with them", async () => {
+        await setupRight(adminUid, "admin")
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(
+          setDoc(doc(adminDb, mapPath), { name: "Test Map", cardProperties }),
+        )
+      })
+
+      it("should let an admin update them", async () => {
+        await setupRight(adminUid, "admin")
+        await setupMap()
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(
+          updateDoc(doc(adminDb, mapPath), { cardProperties }),
+        )
+      })
     })
   })
 
@@ -2880,6 +2991,143 @@ describe("firebase Security Rules", () => {
         const authedDb = testEnv.authenticatedContext(uid).firestore()
 
         await assertFails(deleteDoc(doc(authedDb, unlockedPath(uid))))
+      })
+    })
+  })
+
+  describe("when a client accesses a user's cards", () => {
+    const uid = "user1"
+    const otherUid = "user2"
+    const adminUid = "admin"
+    const cardPath = (userId: string) => `users/${userId}/cards/map1`
+    const card = {
+      mapId: "map1",
+      gameId: "game1",
+      count: 1,
+      cardPropertiesAtPull: { rarity: "rare" },
+      firstPulledAt: new Date(),
+      lastPulledAt: new Date(),
+    }
+
+    const setupCard = async (userId: string) => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), cardPath(userId)), card)
+      })
+    }
+
+    describe("when a user reads their own card", () => {
+      it("should allow it", async () => {
+        await setupCard(uid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(getDoc(doc(authedDb, cardPath(uid))))
+      })
+    })
+
+    describe("when a user reads another user's card", () => {
+      it("should deny it", async () => {
+        await setupCard(otherUid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(getDoc(doc(authedDb, cardPath(otherUid))))
+      })
+    })
+
+    describe("when a signed-out visitor reads a card", () => {
+      it("should deny it", async () => {
+        await setupCard(uid)
+        const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+        await assertFails(getDoc(doc(unauthedDb, cardPath(uid))))
+      })
+    })
+
+    describe("when a user writes their own card", () => {
+      it("should deny creating it", async () => {
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(setDoc(doc(authedDb, cardPath(uid)), card))
+      })
+
+      it("should deny updating it", async () => {
+        await setupCard(uid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(
+          updateDoc(doc(authedDb, cardPath(uid)), { count: 99 }),
+        )
+      })
+
+      it("should deny deleting it", async () => {
+        await setupCard(uid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(deleteDoc(doc(authedDb, cardPath(uid))))
+      })
+    })
+
+    describe("when an admin writes a user's card", () => {
+      it("should allow it", async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+            uid: adminUid,
+            right: "admin",
+          })
+        })
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(setDoc(doc(adminDb, cardPath(uid)), card))
+      })
+    })
+  })
+
+  describe("when a client accesses a card pool", () => {
+    const uid = "user1"
+    const adminUid = "admin"
+    const poolPath = "cardPools/legendary"
+    const pool = { maps: [{ mapId: "map1", gameId: "game1" }] }
+
+    const setupPool = async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), poolPath), pool)
+      })
+    }
+
+    describe("when a signed-out visitor reads a pool", () => {
+      it("should allow it", async () => {
+        await setupPool()
+        const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+        await assertSucceeds(getDoc(doc(unauthedDb, poolPath)))
+      })
+    })
+
+    describe("when a user writes a pool", () => {
+      it("should deny creating it", async () => {
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(setDoc(doc(authedDb, poolPath), pool))
+      })
+
+      it("should deny updating it", async () => {
+        await setupPool()
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(updateDoc(doc(authedDb, poolPath), { maps: [] }))
+      })
+    })
+
+    describe("when an admin writes a pool", () => {
+      it("should allow it", async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+            uid: adminUid,
+            right: "admin",
+          })
+        })
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(setDoc(doc(adminDb, poolPath), pool))
       })
     })
   })

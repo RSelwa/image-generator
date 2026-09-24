@@ -44,7 +44,11 @@ service cloud.firestore {
     } 
 
     function serverOnlyUserFields() {
-      return ['credits', 'referralCode'];
+      return ['credits', 'referralCode', 'packsStored', 'packsRefillAnchor'];
+    }
+
+    function adminOnlyMapFields() {
+      return ['cardProperties'];
     }
 
     match /users/{user} {
@@ -64,11 +68,19 @@ service cloud.firestore {
       match /unlockedAchievements/{achievement} {
         allow read: if isSignedIn() && request.auth.uid == user;
       }
+
+      match /cards/{card} {
+        allow read: if isSignedIn() && request.auth.uid == user;
+      }
     } 
 
     match /achievements/{achievement} {
       allow read: if true;
       allow write: if signedInAdmin();
+    }
+
+    match /cardPools/{rarity} {
+      allow read: if true;
     }
 
     match /games/{game} {
@@ -93,7 +105,8 @@ service cloud.firestore {
 
       match /maps/{map} {
         allow write: if signedInAdmin();
-        allow create, update: if signedInIconograph();
+        allow create: if signedInIconograph() && !request.resource.data.keys().hasAny(adminOnlyMapFields());
+        allow update: if signedInIconograph() && noUpdatesOnFields(adminOnlyMapFields());
 
         allow read: if true;
       }
@@ -289,7 +302,8 @@ service cloud.firestore {
 
     match /{path=**}/maps/{map} {
       allow write: if signedInAdmin();
-      allow create, update: if signedInIconograph();
+      allow create: if signedInIconograph() && !request.resource.data.keys().hasAny(adminOnlyMapFields());
+      allow update: if signedInIconograph() && noUpdatesOnFields(adminOnlyMapFields());
 
       allow read: if true;
     }
