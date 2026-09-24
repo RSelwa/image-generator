@@ -64,8 +64,12 @@ const Page = () => {
           <TableBody>
             {lobbies.map((lobby) => (
               <TableRow key={lobby.id}>
-                <TableCell className="font-mono font-bold">{lobby.code}</TableCell>
-                <TableCell className="text-neutral-400 text-xs font-mono">{lobby.hostId}</TableCell>
+                <TableCell className="font-mono font-bold">
+                  {lobby.code}
+                </TableCell>
+                <TableCell className="text-neutral-400 text-xs font-mono">
+                  {lobby.hostId}
+                </TableCell>
                 <TableCell>
                   <Badge variant={getBadgeVariantLobbyStatus(lobby.status)}>
                     {lobby.status}
@@ -78,12 +82,18 @@ const Page = () => {
                   {lobby.currentRound} / {lobby.config.numberOfRounds}
                 </TableCell>
                 <TableCell>{lobby.config.roundDuration}s</TableCell>
-                <TableCell>{lobby.config.playersLives || "Unlimited"}</TableCell>
                 <TableCell>
-                  {lobby.isDemo && <Badge variant={BADGE_VARIANTS.PURPLE}>Demo</Badge>}
+                  {lobby.config.playersLives || "Unlimited"}
+                </TableCell>
+                <TableCell>
+                  {lobby.isDemo && (
+                    <Badge variant={BADGE_VARIANTS.PURPLE}>Demo</Badge>
+                  )}
                   {!lobby.isDemo && <span className="text-neutral-500">-</span>}
                 </TableCell>
-                <TableCell className="text-neutral-400">{formatDate(lobby.createdAt)}</TableCell>
+                <TableCell className="text-neutral-400">
+                  {formatDate(lobby.createdAt)}
+                </TableCell>
                 <TableCell>
                   <Link
                     href={`${PAGES.ADMIN_LOBBIES}/${lobby.id}`}

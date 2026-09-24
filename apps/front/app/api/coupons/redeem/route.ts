@@ -11,8 +11,10 @@ const TIER_RANK: Record<DonorTier, number> = {
   [DONOR_TIERS.GOLD]: 3,
 }
 
-const getHigherTier = (a: DonorTier | null | undefined, b: DonorTier): DonorTier =>
-  !a || TIER_RANK[b] > TIER_RANK[a] ? b : a
+const getHigherTier = (
+  a: DonorTier | null | undefined,
+  b: DonorTier,
+): DonorTier => (!a || TIER_RANK[b] > TIER_RANK[a] ? b : a)
 
 export const POST = async (request: Request) => {
   try {
@@ -40,9 +42,13 @@ export const POST = async (request: Request) => {
     const couponDoc = snapshot.docs[0]
     const coupon = couponDoc.data()
 
-    if (coupon.claimedBy) return new Response("Coupon already claimed", { status: 409 })
+    if (coupon.claimedBy)
+      return new Response("Coupon already claimed", { status: 409 })
 
-    if (coupon.expiresAt && coupon.expiresAt.toMillis() < Timestamp.now().toMillis()) {
+    if (
+      coupon.expiresAt &&
+      coupon.expiresAt.toMillis() < Timestamp.now().toMillis()
+    ) {
       return new Response("Coupon has expired", { status: 410 })
     }
 
@@ -52,11 +58,17 @@ export const POST = async (request: Request) => {
     if (!userDoc.exists) return new Response("User not found", { status: 404 })
 
     const currentTier = userDoc.data()?.donorTier as DonorTier | null
-    const newTier = getHigherTier(currentTier, coupon.tier as DonorTier)
+    const newTier = getHigherTier(currentTier, coupon.tier)
 
     await Promise.all([
-      userRef.update({ donorTier: newTier, updatedAt: FieldValue.serverTimestamp() }),
-      couponDoc.ref.update({ claimedBy: decoded.uid, claimedAt: FieldValue.serverTimestamp() }),
+      userRef.update({
+        donorTier: newTier,
+        updatedAt: FieldValue.serverTimestamp(),
+      }),
+      couponDoc.ref.update({
+        claimedBy: decoded.uid,
+        claimedAt: FieldValue.serverTimestamp(),
+      }),
     ])
 
     return Response.json({ tier: newTier })

@@ -1,17 +1,51 @@
-import { deleteDoc, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, setDoc, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
+import {
+  deleteDoc,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  type QueryConstraint,
+  setDoc,
+  startAfter,
+  Timestamp,
+  updateDoc,
+  where,
+} from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { dateToString, getYesterday, TABLES } from "@repo/common"
-import { type CreateDailyChallengeInput, type DailyChallengeDocWithId, type DailyChallengeEntity, type DailyChallengeResultDocWithId, type UpdateDailyChallengeInput, type UserDoc } from "@repo/schemas"
-import { dailyChallengeDocWithIdSchema, dailyChallengeResultDocWithIdSchema, toDailyChallengeEntity } from "@repo/schemas"
+import {
+  type CreateDailyChallengeInput,
+  type DailyChallengeDocWithId,
+  type DailyChallengeEntity,
+  type DailyChallengeResultDocWithId,
+  type UpdateDailyChallengeInput,
+  type UserDoc,
+} from "@repo/schemas"
+import {
+  dailyChallengeDocWithIdSchema,
+  dailyChallengeResultDocWithIdSchema,
+  toDailyChallengeEntity,
+} from "@repo/schemas"
 import { DEFAULT_SIZE_DAILY_CHALLENGES } from "@/constants/api"
-import { getDailyChallengeRef, getDailyChallengeResultRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
+import {
+  getDailyChallengeRef,
+  getDailyChallengeResultRef,
+  TABLE_REFS,
+  TABLES_SUB_REFS,
+} from "@/constants/db-refs"
 import { userApi } from "@/redux/api/user"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
-const parseChallenges = (snapshot: Awaited<ReturnType<typeof getDocs>>): DailyChallengeDocWithId[] => {
+const parseChallenges = (
+  snapshot: Awaited<ReturnType<typeof getDocs>>,
+): DailyChallengeDocWithId[] => {
   const challenges: DailyChallengeDocWithId[] = []
   for (const docSnap of snapshot.docs) {
-    const { data, error } = dailyChallengeDocWithIdSchema.safeParse({ id: docSnap.id, ...(docSnap.data() as object) })
+    const { data, error } = dailyChallengeDocWithIdSchema.safeParse({
+      id: docSnap.id,
+      ...(docSnap.data() as object),
+    })
     if (error) {
       console.error(`Error parsing daily challenge ${docSnap.id}:`, error)
       continue
@@ -29,7 +63,10 @@ const getWeekEnd = (weekStart: string): string => {
   return `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, "0")}-${String(end.getDate()).padStart(2, "0")}`
 }
 
-const getMonthBounds = (year: number, month: number): { start: string, end: string } => {
+const getMonthBounds = (
+  year: number,
+  month: number,
+): { start: string; end: string } => {
   const start = `${year}-${String(month).padStart(2, "0")}-01`
   const lastDay = new Date(year, month, 0).getDate()
   const end = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`
@@ -50,7 +87,10 @@ export const dailyChallengeApi = createApi({
   ],
   endpoints: (builder) => ({
     // User-facing: parses to strict entity schema, fails if doc is incomplete
-    getDailyChallengeEntityByDate: builder.query<DailyChallengeEntity | null, { date: string }>({
+    getDailyChallengeEntityByDate: builder.query<
+      DailyChallengeEntity | null,
+      { date: string }
+    >({
       queryFn: async ({ date }) => {
         try {
           const docSnap = await getDoc(getDailyChallengeRef(date))
@@ -61,55 +101,79 @@ export const dailyChallengeApi = createApi({
             return { data: null }
           }
 
-          const { data, error } = dailyChallengeDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+          const { data, error } = dailyChallengeDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
 
           if (error) throw new Error(error.message || "Data parsing error")
 
           return { data: toDailyChallengeEntity(data) }
         } catch (error) {
-          console.error(`Error fetching daily challenge entity for date: ${date}`, error)
+          console.error(
+            `Error fetching daily challenge entity for date: ${date}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
       },
-      providesTags: (_result, _error, { date }) => [{ type: "DailyChallenge", id: date }],
+      providesTags: (_result, _error, { date }) => [
+        { type: "DailyChallenge", id: date },
+      ],
     }),
 
-    getDailyChallengeByDate: builder.query<DailyChallengeDocWithId, { date: string }>({
+    getDailyChallengeByDate: builder.query<
+      DailyChallengeDocWithId,
+      { date: string }
+    >({
       queryFn: async ({ date }) => {
         try {
           const docSnap = await getDoc(getDailyChallengeRef(date))
 
           if (!docSnap.exists()) throw new Error("Daily challenge not found")
 
-          const { data, error } = dailyChallengeDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+          const { data, error } = dailyChallengeDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
 
           if (error) throw new Error(error.message || "Data parsing error")
 
           return { data }
         } catch (error) {
-          console.error(`Error fetching daily challenge for date: ${date}`, error)
+          console.error(
+            `Error fetching daily challenge for date: ${date}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
       },
-      providesTags: (_result, _error, { date }) => [{ type: "DailyChallenge", id: date }],
+      providesTags: (_result, _error, { date }) => [
+        { type: "DailyChallenge", id: date },
+      ],
     }),
 
     // Admin: infinite query ordered by date desc, cursor-based pagination
     getDailyChallenges: builder.infiniteQuery<
       DailyChallengeDocWithId[],
       void,
-      { startAfter?: string, limit?: number }
+      { startAfter?: string; limit?: number }
     >({
       queryFn: async ({ pageParam }) => {
         try {
           const constraints: QueryConstraint[] = [orderBy("date", "desc")]
 
-          if (pageParam.startAfter) constraints.push(startAfter(pageParam.startAfter))
-          constraints.push(limit(pageParam.limit || DEFAULT_SIZE_DAILY_CHALLENGES))
+          if (pageParam.startAfter)
+            constraints.push(startAfter(pageParam.startAfter))
+          constraints.push(
+            limit(pageParam.limit || DEFAULT_SIZE_DAILY_CHALLENGES),
+          )
 
-          const snapshot = await getDocs(query(TABLE_REFS[TABLES.DAILY_CHALLENGES], ...constraints))
+          const snapshot = await getDocs(
+            query(TABLE_REFS[TABLES.DAILY_CHALLENGES], ...constraints),
+          )
 
           return { data: parseChallenges(snapshot) }
         } catch (error) {
@@ -119,11 +183,15 @@ export const dailyChallengeApi = createApi({
         }
       },
       infiniteQueryOptions: {
-        initialPageParam: { limit: DEFAULT_SIZE_DAILY_CHALLENGES, startAfter: undefined },
+        initialPageParam: {
+          limit: DEFAULT_SIZE_DAILY_CHALLENGES,
+          startAfter: undefined,
+        },
         getNextPageParam: (_, allPages, lastPageParams) => {
           const lastPage = allPages.at(-1)
           const lastItem = lastPage?.at(-1)
-          const pageLimit = lastPageParams?.limit || DEFAULT_SIZE_DAILY_CHALLENGES
+          const pageLimit =
+            lastPageParams?.limit || DEFAULT_SIZE_DAILY_CHALLENGES
 
           if (!lastPage || lastPage.length < pageLimit) return undefined
 
@@ -131,14 +199,22 @@ export const dailyChallengeApi = createApi({
         },
       },
       providesTags: (result) =>
-        result ? [
-          ...result.pages.flat().map(({ date }) => ({ type: "DailyChallenge" as const, id: date })),
-          { type: "DailyChallengesAdmin" },
-        ] : [{ type: "DailyChallengesAdmin" }],
+        result
+          ? [
+              ...result.pages.flat().map(({ date }) => ({
+                type: "DailyChallenge" as const,
+                id: date,
+              })),
+              { type: "DailyChallengesAdmin" },
+            ]
+          : [{ type: "DailyChallengesAdmin" }],
     }),
 
     // Client: fetch a 7-day window (weekStart = Monday YYYY-MM-DD), includes future challenges
-    getDailyChallengesByWeek: builder.query<DailyChallengeDocWithId[], { weekStart: string }>({
+    getDailyChallengesByWeek: builder.query<
+      DailyChallengeDocWithId[],
+      { weekStart: string }
+    >({
       queryFn: async ({ weekStart }) => {
         try {
           const weekEnd = getWeekEnd(weekStart)
@@ -154,16 +230,24 @@ export const dailyChallengeApi = createApi({
 
           return { data: parseChallenges(snapshot) }
         } catch (error) {
-          console.error(`Error fetching daily challenges for week: ${weekStart}`, error)
+          console.error(
+            `Error fetching daily challenges for week: ${weekStart}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
       },
-      providesTags: (_result, _error, { weekStart }) => [{ type: "DailyChallengeWeek", id: weekStart }],
+      providesTags: (_result, _error, { weekStart }) => [
+        { type: "DailyChallengeWeek", id: weekStart },
+      ],
     }),
 
     // Client: fetch a full calendar month ordered asc (path/calendar overview)
-    getDailyChallengesByMonth: builder.query<DailyChallengeDocWithId[], { year: number, month: number }>({
+    getDailyChallengesByMonth: builder.query<
+      DailyChallengeDocWithId[],
+      { year: number; month: number }
+    >({
       queryFn: async ({ year, month }) => {
         try {
           const { start, end } = getMonthBounds(year, month)
@@ -179,15 +263,23 @@ export const dailyChallengeApi = createApi({
 
           return { data: parseChallenges(snapshot) }
         } catch (error) {
-          console.error(`Error fetching daily challenges for month: ${year}-${month}`, error)
+          console.error(
+            `Error fetching daily challenges for month: ${year}-${month}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
       },
-      providesTags: (_result, _error, { year, month }) => [{ type: "DailyChallengeMonth", id: `${year}-${month}` }],
+      providesTags: (_result, _error, { year, month }) => [
+        { type: "DailyChallengeMonth", id: `${year}-${month}` },
+      ],
     }),
 
-    createDailyChallenge: builder.mutation<DailyChallengeDocWithId, CreateDailyChallengeInput>({
+    createDailyChallenge: builder.mutation<
+      DailyChallengeDocWithId,
+      CreateDailyChallengeInput
+    >({
       queryFn: async (input) => {
         try {
           const ref = getDailyChallengeRef(input.date)
@@ -196,7 +288,10 @@ export const dailyChallengeApi = createApi({
 
           const docSnap = await getDoc(ref)
 
-          const { data, error } = dailyChallengeDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+          const { data, error } = dailyChallengeDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
 
           if (error) throw new Error(error.message || "Data parsing error")
 
@@ -210,7 +305,10 @@ export const dailyChallengeApi = createApi({
       invalidatesTags: [{ type: "DailyChallengesAdmin" }],
     }),
 
-    updateDailyChallenge: builder.mutation<DailyChallengeDocWithId, { date: string, data: UpdateDailyChallengeInput }>({
+    updateDailyChallenge: builder.mutation<
+      DailyChallengeDocWithId,
+      { date: string; data: UpdateDailyChallengeInput }
+    >({
       queryFn: async ({ date, data: input }) => {
         try {
           const ref = getDailyChallengeRef(date)
@@ -221,13 +319,19 @@ export const dailyChallengeApi = createApi({
 
           if (!docSnap.exists()) throw new Error("Daily challenge not found")
 
-          const { data, error } = dailyChallengeDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+          const { data, error } = dailyChallengeDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
 
           if (error) throw new Error(error.message || "Data parsing error")
 
           return { data }
         } catch (error) {
-          console.error(`Error updating daily challenge for date: ${date}`, error)
+          console.error(
+            `Error updating daily challenge for date: ${date}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
@@ -245,7 +349,10 @@ export const dailyChallengeApi = createApi({
 
           return { data: null }
         } catch (error) {
-          console.error(`Error deleting daily challenge for date: ${date}`, error)
+          console.error(
+            `Error deleting daily challenge for date: ${date}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
@@ -256,19 +363,32 @@ export const dailyChallengeApi = createApi({
       ],
     }),
 
-    getMyDailyChallengeResults: builder.query<DailyChallengeResultDocWithId[], { uid: string }>({
+    getMyDailyChallengeResults: builder.query<
+      DailyChallengeResultDocWithId[],
+      { uid: string }
+    >({
       queryFn: async ({ uid }) => {
         try {
           const snapshot = await getDocs(
-            query(TABLES_SUB_REFS[TABLES.DAILY_CHALLENGE_RESULTS](uid), orderBy("date", "desc")),
+            query(
+              TABLES_SUB_REFS[TABLES.DAILY_CHALLENGE_RESULTS](uid),
+              orderBy("date", "desc"),
+            ),
           )
 
           const results = snapshot.docs
             .map((docSnap) => {
-              const { data, error } = dailyChallengeResultDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+              const { data, error } =
+                dailyChallengeResultDocWithIdSchema.safeParse({
+                  id: docSnap.id,
+                  ...docSnap.data(),
+                })
 
               if (error) {
-                console.error(`Error parsing daily challenge result ${docSnap.id}:`, error)
+                console.error(
+                  `Error parsing daily challenge result ${docSnap.id}:`,
+                  error,
+                )
 
                 return null
               }
@@ -279,41 +399,70 @@ export const dailyChallengeApi = createApi({
 
           return { data: results }
         } catch (error) {
-          console.error(`Error fetching daily challenge results for user: ${uid}`, error)
+          console.error(
+            `Error fetching daily challenge results for user: ${uid}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
       },
-      providesTags: (_result, _error, { uid }) => [{ type: "DailyChallengeResults", id: uid }],
+      providesTags: (_result, _error, { uid }) => [
+        { type: "DailyChallengeResults", id: uid },
+      ],
     }),
 
-    getMyDailyChallengeResultByDate: builder.query<DailyChallengeResultDocWithId | null, { uid: string, date: string }>({
+    getMyDailyChallengeResultByDate: builder.query<
+      DailyChallengeResultDocWithId | null,
+      { uid: string; date: string }
+    >({
       queryFn: async ({ uid, date }) => {
         try {
           const docSnap = await getDoc(getDailyChallengeResultRef(uid, date))
 
           if (!docSnap.exists()) return { data: null }
 
-          const { data, error } = dailyChallengeResultDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+          const { data, error } = dailyChallengeResultDocWithIdSchema.safeParse(
+            { id: docSnap.id, ...docSnap.data() },
+          )
 
           if (error) throw new Error(error.message || "Data parsing error")
 
           return { data }
         } catch (error) {
-          console.error(`Error fetching daily challenge result for user: ${uid}, date: ${date}`, error)
+          console.error(
+            `Error fetching daily challenge result for user: ${uid}, date: ${date}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
       },
-      providesTags: (_result, _error, { uid, date }) => [{ type: "DailyChallengeResult", id: `${uid}_${date}` }],
+      providesTags: (_result, _error, { uid, date }) => [
+        { type: "DailyChallengeResult", id: `${uid}_${date}` },
+      ],
     }),
 
-    submitDailyChallengeResult: builder.mutation<DailyChallengeResultDocWithId, { uid: string, date: string, answer: string, isCorrect: boolean, position?: { x: number, y: number } }>({
-      queryFn: async ({ uid, date, answer, isCorrect, position }, { dispatch }) => {
+    submitDailyChallengeResult: builder.mutation<
+      DailyChallengeResultDocWithId,
+      {
+        uid: string
+        date: string
+        answer: string
+        isCorrect: boolean
+        position?: { x: number; y: number }
+      }
+    >({
+      queryFn: async (
+        { uid, date, answer, isCorrect, position },
+        { dispatch },
+      ) => {
         try {
           const ref = getDailyChallengeResultRef(uid, date)
 
-          const user = await dispatch(userApi.endpoints.getUserById.initiate({ id: uid })).unwrap()
+          const user = await dispatch(
+            userApi.endpoints.getUserById.initiate({ id: uid }),
+          ).unwrap()
 
           await setDoc(ref, {
             date,
@@ -335,7 +484,6 @@ export const dailyChallengeApi = createApi({
               streak: 1,
               lastStreakDate: date,
               updatedAt: Timestamp.now(),
-
             }
 
             if (lastStreakDate === yesterday) {
@@ -348,18 +496,28 @@ export const dailyChallengeApi = createApi({
               updatedData.maxStreak = updatedData.streak
             }
 
-            await dispatch(userApi.endpoints.updateUserDoc.initiate({ id: uid, data: updatedData })).unwrap()
+            await dispatch(
+              userApi.endpoints.updateUserDoc.initiate({
+                id: uid,
+                data: updatedData,
+              }),
+            ).unwrap()
           }
 
           const docSnap = await getDoc(ref)
 
-          const { data, error } = dailyChallengeResultDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+          const { data, error } = dailyChallengeResultDocWithIdSchema.safeParse(
+            { id: docSnap.id, ...docSnap.data() },
+          )
 
           if (error) throw new Error(error.message || "Data parsing error")
 
           return { data }
         } catch (error) {
-          console.error(`Error submitting daily challenge result for user: ${uid}, date: ${date}`, error)
+          console.error(
+            `Error submitting daily challenge result for user: ${uid}, date: ${date}`,
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }

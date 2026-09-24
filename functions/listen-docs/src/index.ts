@@ -1,12 +1,33 @@
-import { AUDIO_EXTRACT_ENDPOINT, extractYoutubeId, SOUND_STATUS, TABLES } from "@repo/common"
+import {
+  AUDIO_EXTRACT_ENDPOINT,
+  extractYoutubeId,
+  SOUND_STATUS,
+  TABLES,
+} from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type DailyChallengeDoc, type FlatDoc, type GameDoc, type MapDoc, type SoundDoc, type SphericalDoc } from "@repo/schemas"
+import {
+  type DailyChallengeDoc,
+  type FlatDoc,
+  type GameDoc,
+  type MapDoc,
+  type SoundDoc,
+  type SphericalDoc,
+} from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
 import { updateDailyChallengesMetadata } from "~/update-daily-challenges-metadata"
 import { updateGamesList } from "~/updates-games-list"
-import { refreshReadyImagesForGame, refreshReadyImagesForMap, updateReadyFlats, updateReadySphericals } from "~/updates-ready-images"
-import { updateFlatStatus, updateGameStatus, updateSphericalStatus } from "~/updates-status"
+import {
+  refreshReadyImagesForGame,
+  refreshReadyImagesForMap,
+  updateReadyFlats,
+  updateReadySphericals,
+} from "~/updates-ready-images"
+import {
+  updateFlatStatus,
+  updateGameStatus,
+  updateSphericalStatus,
+} from "~/updates-status"
 
 export const listen_doc_spherical_written = onDocumentWritten(
   `${TABLES.GAMES}/{gameId}/${TABLES.SPHERICAL}/{sphericalId}`,
@@ -79,7 +100,10 @@ export const listen_doc_games_written = onDocumentWritten(
         refreshReadyImagesForGame(gameId, before, after),
       ])
     } catch (error) {
-      console.error(`Error in listen_doc_games_written for document ${event.document}:`, error)
+      console.error(
+        `Error in listen_doc_games_written for document ${event.document}:`,
+        error,
+      )
     }
   },
 )
@@ -101,7 +125,10 @@ export const listen_doc_maps_written = onDocumentWritten(
 
       await refreshReadyImagesForMap(mapId, before, after)
     } catch (error) {
-      console.error(`Error in listen_doc_maps_written for document ${event.document}:`, error)
+      console.error(
+        `Error in listen_doc_maps_written for document ${event.document}:`,
+        error,
+      )
     }
   },
 )
@@ -113,7 +140,9 @@ export const listen_sounds_written = onDocumentWritten(
       const soundId = event.params.soundId
 
       if (!soundId) {
-        logger.error(`Sound ID is undefined in document path: ${event.document}`)
+        logger.error(
+          `Sound ID is undefined in document path: ${event.document}`,
+        )
 
         return
       }
@@ -128,11 +157,14 @@ export const listen_sounds_written = onDocumentWritten(
       }
 
       const hasYoutubeLinkChanged = before?.youtubeLink !== after?.youtubeLink
-      const isWaitingForExtraction = after.status === SOUND_STATUS.WAITING_FOR_EXTRACTION
+      const isWaitingForExtraction =
+        after.status === SOUND_STATUS.WAITING_FOR_EXTRACTION
 
       if (hasYoutubeLinkChanged || isWaitingForExtraction) {
         if (!after.youtubeLink) {
-          logger.warn(`Sound ${soundId} triggered extraction but has no youtubeLink, skipping`)
+          logger.warn(
+            `Sound ${soundId} triggered extraction but has no youtubeLink, skipping`,
+          )
 
           return
         }
@@ -140,12 +172,19 @@ export const listen_sounds_written = onDocumentWritten(
         const youtubeId = extractYoutubeId(after.youtubeLink)
 
         if (youtubeId) {
-          const existingSoundsSnapshot = await refs[TABLES.SOUNDS].where("youtubeId", "==", youtubeId).limit(2).get()
-          const existingSound = existingSoundsSnapshot.docs.find((doc) => doc.id !== soundId)
+          const existingSoundsSnapshot = await refs[TABLES.SOUNDS]
+            .where("youtubeId", "==", youtubeId)
+            .limit(2)
+            .get()
+          const existingSound = existingSoundsSnapshot.docs.find(
+            (doc) => doc.id !== soundId,
+          )
           const existingSoundData = existingSound?.data()
 
           if (existingSoundData?.storagePath) {
-            logger.info(`Sound ${soundId} is a duplicate of ${existingSound!.id} (youtubeId ${youtubeId}), deleting duplicate`)
+            logger.info(
+              `Sound ${soundId} is a duplicate of ${existingSound!.id} (youtubeId ${youtubeId}), deleting duplicate`,
+            )
 
             await refs[TABLES.SOUNDS].doc(soundId).delete()
 
@@ -153,7 +192,9 @@ export const listen_sounds_written = onDocumentWritten(
           }
 
           if (!after.youtubeId) {
-            logger.info(`Sound ${soundId} — pre-populating youtubeId ${youtubeId} so the extraction script can find this doc`)
+            logger.info(
+              `Sound ${soundId} — pre-populating youtubeId ${youtubeId} so the extraction script can find this doc`,
+            )
 
             await refs[TABLES.SOUNDS].doc(soundId).update({
               youtubeId,
@@ -162,7 +203,9 @@ export const listen_sounds_written = onDocumentWritten(
           }
         }
 
-        logger.info(`Sound ${soundId} has changed and is waiting for extraction, triggering audio extraction`)
+        logger.info(
+          `Sound ${soundId} has changed and is waiting for extraction, triggering audio extraction`,
+        )
 
         const controller = new AbortController()
         const timeout = setTimeout(() => controller.abort(), 90_000)
@@ -182,11 +225,16 @@ export const listen_sounds_written = onDocumentWritten(
 
         if (!res.ok) {
           const errorText = await res.text()
-          logger.error(`Audio extraction failed for sound ${soundId} with status ${res.status}: ${errorText}`)
+          logger.error(
+            `Audio extraction failed for sound ${soundId} with status ${res.status}: ${errorText}`,
+          )
         }
       }
     } catch (error) {
-      console.error(`Error in listen_doc_games_written for document ${event.document}:`, error)
+      console.error(
+        `Error in listen_doc_games_written for document ${event.document}:`,
+        error,
+      )
     }
   },
 )
@@ -198,7 +246,9 @@ export const listen_daily_challenges_written = onDocumentWritten(
       const date = event.params.date
 
       if (!date) {
-        logger.error(`daily challenge is undefined in document path: ${event.document}`)
+        logger.error(
+          `daily challenge is undefined in document path: ${event.document}`,
+        )
 
         return
       }
@@ -208,7 +258,10 @@ export const listen_daily_challenges_written = onDocumentWritten(
 
       await updateDailyChallengesMetadata(date, before, after)
     } catch (error) {
-      console.error(`Error in listen_doc_games_written for document ${event.document}:`, error)
+      console.error(
+        `Error in listen_doc_games_written for document ${event.document}:`,
+        error,
+      )
     }
   },
 )

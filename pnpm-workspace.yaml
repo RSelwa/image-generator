@@ -20,6 +20,7 @@ overrides:
 onlyBuiltDependencies:
   - "@firebase/util"
   - esbuild
+  - lefthook
   - msw
   - protobufjs
   - re2

@@ -14,7 +14,10 @@ import { useLobbyMessagesListener } from "@/hooks/use-lobby-messages-listener"
 import { usePresence } from "@/hooks/use-presence"
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { useJoinLobbyMutation, useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { selectSessionIsReady, selectUser } from "@/redux/session/session.selectors"
+import {
+  selectSessionIsReady,
+  selectUser,
+} from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 import { createPlayerFromSessionUser } from "@/utils/player"
@@ -30,9 +33,7 @@ const NoUserInLobby = () => {
     <main className="min-h-full-height flex items-center justify-center text-primary bg-background">
       <p className="text-lg">You're not allowed in this lobby</p>
       <Link href={PAGES.HOME} className="ml-4">
-        <Button variant="marathon-outline">
-          Go back home
-        </Button>
+        <Button variant="marathon-outline">Go back home</Button>
       </Link>
     </main>
   )
@@ -43,9 +44,7 @@ const NoLobby = () => {
     <main className="min-h-full-height flex items-center justify-center text-primary bg-background">
       <p className="text-lg">Lobby not found</p>
       <Link href={PAGES.HOME} className="ml-4">
-        <Button variant="marathon-outline">
-          Go back home
-        </Button>
+        <Button variant="marathon-outline">Go back home</Button>
       </Link>
     </main>
   )
@@ -62,9 +61,12 @@ const LobbyMain = () => {
   const [joinLobby] = useJoinLobbyMutation()
   const hasJoinedRef = useRef(false)
 
-  const { data: lobby, isLoading } = useSubscribeLobbyQuery({ id: lobbyId }, {
-    skip: !lobbyId,
-  })
+  const { data: lobby, isLoading } = useSubscribeLobbyQuery(
+    { id: lobbyId },
+    {
+      skip: !lobbyId,
+    },
+  )
 
   usePresence(lobbyId, user?.id, lobby?.status)
   useLobbyMessagesListener(lobbyId)
@@ -81,8 +83,13 @@ const LobbyMain = () => {
     if (user.isAnonymous) {
       toast.error("You need to be logged to join the lobby")
 
-      const searchParams = new URLSearchParams({ [QUERY_PARAMS.REDIRECT]: `${PAGES.JOIN_LOBBY}/${lobby.code}` })
-      const url = new URL(`${PAGES.LOGIN}?${searchParams.toString()}`, window.location.origin)
+      const searchParams = new URLSearchParams({
+        [QUERY_PARAMS.REDIRECT]: `${PAGES.JOIN_LOBBY}/${lobby.code}`,
+      })
+      const url = new URL(
+        `${PAGES.LOGIN}?${searchParams.toString()}`,
+        window.location.origin,
+      )
 
       router.replace(url.href)
 
@@ -108,14 +115,22 @@ const LobbyMain = () => {
 
     const player = createPlayerFromSessionUser(user)
     joinLobby({ lobbyId: lobby.id, player }).unwrap()
-  }, [isLoading, lobby, isSessionReady, user, user?.isAnonymous, router, joinLobby])
+  }, [
+    isLoading,
+    lobby,
+    isSessionReady,
+    user,
+    user?.isAnonymous,
+    router,
+    joinLobby,
+  ])
 
   const isUserInLobby = lobby?.players.some((p) => p.uid === user?.id)
 
   if (isLoading) return <LoadingLobby />
 
-  if ((!lobby)) return <NoLobby />
-  if ((!isUserInLobby)) return <NoUserInLobby />
+  if (!lobby) return <NoLobby />
+  if (!isUserInLobby) return <NoUserInLobby />
 
   if (lobby.status === LOBBY_STATUS.WAITING) return <LobbyWaiting />
   if (lobby.status === LOBBY_STATUS.STARTING) return <LobbyStarting />
@@ -124,7 +139,9 @@ const LobbyMain = () => {
 
   return (
     <main className="min-h-full-height flex items-center justify-center">
-      <p className="text-lg text-muted-primary-foreground">Game in progress...</p>
+      <p className="text-lg text-muted-primary-foreground">
+        Game in progress...
+      </p>
     </main>
   )
 }

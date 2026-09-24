@@ -42,9 +42,7 @@ export class FirestoreORM<T extends string, M extends DocumentData> {
     this.isSubCollection = collectionName.includes("/")
 
     if (!this.isSubCollection) {
-      this.collection = this.firestore.collection(
-        this.collectionName,
-      ) as CollectionReference<M[T], M[T]>
+      this.collection = this.firestore.collection(this.collectionName)
     }
   }
 
@@ -74,7 +72,7 @@ export class FirestoreORM<T extends string, M extends DocumentData> {
   async createManyUsers(data: ORMDataOptionalId<M[T]>[]) {
     const users = []
 
-    for await (const item of data) {
+    for (const item of data) {
       const user = await this.createUser(item)
 
       users.push(user)

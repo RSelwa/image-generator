@@ -41,7 +41,8 @@
     "play": "Jouer",
     "joinLobby": "Rejoindre un lobby",
     "about": "À propos",
-    "deathRun": "Death Run"
+    "deathRun": "Death Run",
+    "achievements": "Succès"
   },
   "auth": {
     "loginTitle": "Connexion",
@@ -171,7 +172,8 @@
     "title": "Personnalisez votre compte",
     "description": "Votre pseudo et votre avatar sont ce que les autres utilisateurs voient lorsqu'ils interagissent avec vous. Choisissez quelque chose qui vous représente bien !",
     "pseudo": "Pseudo",
-    "skipForNow": "Passer pour l'instant"
+    "skipForNow": "Passer pour l'instant",
+    "achievementUnlocked": "Succès débloqué ! +{reward, plural, one {# crédit} other {# crédits}}"
   },
   "reportBug": {
     "title": "Signaler un bug",
@@ -279,5 +281,26 @@
     "found": "{count, plural, one {Lobby trouvé avec # joueur} other {Lobby trouvé avec # joueurs}}",
     "notFound": "Aucun lobby trouvé avec ce code.",
     "join": "Rejoindre"
+  },
+  "achievementCard": {
+    "locked": "Verrouillé",
+    "unlocked": "Débloqué",
+    "reward": "{reward, plural, one {# crédit} other {# crédits}}",
+    "goal": "Objectif : {goal}",
+    "achievedAt": "Débloqué le {date}",
+    "difficulty": {
+      "easy": "Facile",
+      "medium": "Moyen",
+      "hard": "Difficile",
+      "legendary": "Légendaire"
+    }
+  },
+  "achievements": {
+    "metaTitle": "Succès — Geo Gamer",
+    "metaDescription": "Débloquez des succès en jouant à Geo Gamer et gagnez des crédits.",
+    "title": "Succès",
+    "description": "Débloquez des succès pour gagner des crédits",
+    "empty": "Aucun succès pour le moment.",
+    "error": "Impossible de charger vos succès."
   }
 }

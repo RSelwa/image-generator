@@ -1,6 +1,12 @@
 import { type Action } from "@reduxjs/toolkit"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { generateUsername, getRandomAvatar, isEqual, PREFIX_ANONYMOUS_USER, SUFFIX_ANONYMOUS_USER } from "@repo/common"
+import {
+  generateUsername,
+  getRandomAvatar,
+  isEqual,
+  PREFIX_ANONYMOUS_USER,
+  SUFFIX_ANONYMOUS_USER,
+} from "@repo/common"
 import { type UserDoc, userDocSchema } from "@repo/schemas"
 import {
   createUserWithEmailAndPassword,
@@ -16,7 +22,14 @@ import {
   signInWithPopup,
   type Unsubscribe,
 } from "firebase/auth"
-import { type DocumentReference, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
+import {
+  type DocumentReference,
+  getDoc,
+  onSnapshot,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore"
 import { REHYDRATE } from "redux-persist"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -30,14 +43,19 @@ import {
   updateSessionStatus,
 } from "@/redux/session/session.actions"
 import { type RootState } from "@/redux/store"
-import { formatSessionFromAnonymousUser, formatSessionFromFirebaseUser } from "@/utils/user"
+import {
+  formatSessionFromAnonymousUser,
+  formatSessionFromFirebaseUser,
+} from "@/utils/user"
 
 const sendPasswordResetEmailSchema = z.email()
 
 const googleProvider = new GoogleAuthProvider()
 googleProvider.addScope("https://www.googleapis.com/auth/userinfo.profile")
 
-const isHydrateAction = (action: Action): action is Action<typeof REHYDRATE> & {
+const isHydrateAction = (
+  action: Action,
+): action is Action<typeof REHYDRATE> & {
   key: string
   payload: RootState
   err: unknown
@@ -69,17 +87,30 @@ export const authApi = createApi({
 
           if (auth.currentUser?.isAnonymous) {
             try {
-              const credential = EmailAuthProvider.credential(email, data.password)
+              const credential = EmailAuthProvider.credential(
+                email,
+                data.password,
+              )
               await linkWithCredential(auth.currentUser, credential)
-              await updateDoc(getUserRef(auth.currentUser.uid), { email, isAnonymousUser: false, newsletter: true }).catch((error) => {
-                console.error("Error updating user", auth.currentUser?.uid, error)
+              await updateDoc(getUserRef(auth.currentUser.uid), {
+                email,
+                isAnonymousUser: false,
+                newsletter: true,
+              }).catch((error) => {
+                console.error(
+                  "Error updating user",
+                  auth.currentUser?.uid,
+                  error,
+                )
               })
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
             } catch (linkError: unknown) {
               console.error("Error creating user auth", linkError)
               const firebaseError = linkError as { code?: string }
               if (firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED) {
-                toast.error("An account with this email already exists. Please log in instead.")
+                toast.error(
+                  "An account with this email already exists. Please log in instead.",
+                )
 
                 return { data: null }
               }
@@ -95,7 +126,7 @@ export const authApi = createApi({
           console.error(error)
           toast.error("Failed to Signup. Please check your credentials.")
 
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),
@@ -104,22 +135,46 @@ export const authApi = createApi({
         try {
           if (auth.currentUser?.isAnonymous) {
             try {
-              const result = await linkWithPopup(auth.currentUser, googleProvider)
+              const result = await linkWithPopup(
+                auth.currentUser,
+                googleProvider,
+              )
               const email = result.user.email
               const pseudo = result.user.displayName || generateUsername()
               if (email) {
-                await updateDoc(getUserRef(auth.currentUser.uid), { email, pseudo, isAnonymousUser: false, avatar: getRandomAvatar(), newsletter: true }).catch((error) => {
-                  console.error("Error updating user", auth.currentUser?.uid, error)
+                await updateDoc(getUserRef(auth.currentUser.uid), {
+                  email,
+                  pseudo,
+                  isAnonymousUser: false,
+                  avatar: getRandomAvatar(),
+                  newsletter: true,
+                }).catch((error) => {
+                  console.error(
+                    "Error updating user",
+                    auth.currentUser?.uid,
+                    error,
+                  )
                 })
               }
               await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
             } catch (linkError: unknown) {
-              const firebaseError = linkError as { code?: string, customData?: unknown }
-              if (firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED || firebaseError?.code === FIREBASE_ERRORS.CREDENTIAL_ALREADY_IN_USE) {
-                const credential = GoogleAuthProvider.credentialFromError(firebaseError as any)
+              const firebaseError = linkError as {
+                code?: string
+                customData?: unknown
+              }
+              if (
+                firebaseError?.code === FIREBASE_ERRORS.EMAIL_ALREADY_USED ||
+                firebaseError?.code ===
+                  FIREBASE_ERRORS.CREDENTIAL_ALREADY_IN_USE
+              ) {
+                const credential = GoogleAuthProvider.credentialFromError(
+                  firebaseError as any,
+                )
                 if (credential) {
                   await signInWithCredential(auth, credential)
-                  await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+                  await dispatch(
+                    authApi.endpoints.updateAuth.initiate(),
+                  ).unwrap()
 
                   return { data: null }
                 }
@@ -136,7 +191,7 @@ export const authApi = createApi({
           console.error(error)
           toast.error("Failed to login with Google.")
 
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),
@@ -154,58 +209,75 @@ export const authApi = createApi({
           await cacheDataLoaded
           dispatch(updateSessionStatus(SESSION_STATUS.LOADING))
 
-          unsubscribe = onAuthStateChanged(auth, async (user) => {
-            const isSignedIn = !!user && !user.isAnonymous
+          unsubscribe = onAuthStateChanged(auth, (user) => {
+            void (async () => {
+              const isSignedIn = !!user && !user.isAnonymous
 
-            if (!user) {
-              signInAnonymously(auth)
+              if (!user) {
+                signInAnonymously(auth)
 
-              return
-            }
-
-            if (user.isAnonymous) {
-              // beforeUserCreated blocking function doesn't trigger for anonymous sign-ins,
-              // so we create the user doc client-side if it doesn't exist
-              const userRef = getUserRef(user.uid)
-              const userDoc = await getDoc(userRef)
-              const pseudo = generateUsername()
-
-              if (!userDoc.exists()) {
-                const parsingData: Partial<UserDoc> = {
-                  email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
-                  pseudo,
-                  isAnonymousUser: true,
-                  avatar: getRandomAvatar(),
-                  streak: 0,
-                  lastStreakDate: null,
-                  newsletter: true,
-                }
-
-                await setDoc(userRef, {
-                  ...userDocSchema.parse(parsingData),
-                  createdAt: serverTimestamp(),
-                  updatedAt: serverTimestamp(),
-                })
+                return
               }
 
-              const sessionUser = formatSessionFromAnonymousUser({ authUser: user, pseudo: userDoc.data()?.pseudo || pseudo })
+              if (user.isAnonymous) {
+                // beforeUserCreated blocking function doesn't trigger for anonymous sign-ins,
+                // so we create the user doc client-side if it doesn't exist
+                const userRef = getUserRef(user.uid)
+                const userDoc = await getDoc(userRef)
+                const pseudo = generateUsername()
 
-              dispatch(updateSession({
-                authUser: user,
-                user: sessionUser,
-                status: SESSION_STATUS.SUCCESS,
-              }))
+                if (!userDoc.exists()) {
+                  const parsingData: Partial<UserDoc> = {
+                    email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
+                    pseudo,
+                    isAnonymousUser: true,
+                    avatar: getRandomAvatar(),
+                    streak: 0,
+                    lastStreakDate: null,
+                    newsletter: true,
+                  }
 
-              return
-            }
+                  const { credits: _, ...newUserDoc } =
+                    userDocSchema.parse(parsingData)
 
-            if (isSignedIn) await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+                  await setDoc(
+                    userRef,
+                    {
+                      ...newUserDoc,
+                      createdAt: serverTimestamp(),
+                      updatedAt: serverTimestamp(),
+                    },
+                    { merge: true },
+                  )
+                }
+
+                const sessionUser = formatSessionFromAnonymousUser({
+                  authUser: user,
+                  pseudo: userDoc.data()?.pseudo || pseudo,
+                })
+
+                dispatch(
+                  updateSession({
+                    authUser: user,
+                    user: sessionUser,
+                    status: SESSION_STATUS.SUCCESS,
+                  }),
+                )
+
+                return
+              }
+
+              if (isSignedIn)
+                await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+            })()
           })
         } catch (error) {
           dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
           console.error(error)
 
-          throw new Error("Something went wrong with auth listener")
+          throw new Error("Something went wrong with auth listener", {
+            cause: error,
+          })
         }
 
         await cacheEntryRemoved
@@ -213,7 +285,7 @@ export const authApi = createApi({
         unsubscribe?.()
       },
     }),
-    login: builder.mutation<null, { email: string, password: string }>({
+    login: builder.mutation<null, { email: string; password: string }>({
       queryFn: async (data) => {
         try {
           await signInWithEmailAndPassword(auth, data.email, data.password)
@@ -222,7 +294,7 @@ export const authApi = createApi({
         } catch (error) {
           toast.error("Failed to login. Please check your credentials.")
 
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),
@@ -233,7 +305,7 @@ export const authApi = createApi({
 
           return { data: null }
         } catch (error) {
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),
@@ -247,7 +319,11 @@ export const authApi = createApi({
 
           const payload = { ref: getUserRef(user.uid) }
 
-          await dispatch(authApi.endpoints.listenToUserDoc.initiate(payload, { forceRefetch: true })).unwrap()
+          await dispatch(
+            authApi.endpoints.listenToUserDoc.initiate(payload, {
+              forceRefetch: true,
+            }),
+          ).unwrap()
 
           return { data: null }
         } catch (error) {
@@ -276,7 +352,7 @@ export const authApi = createApi({
           const user = formatSessionFromFirebaseUser({
             user: userDocument,
             authUser,
-            rightsDoc
+            rightsDoc,
           })
 
           dispatch(updateSession({ user, status: SESSION_STATUS.SUCCESS }))
@@ -315,7 +391,7 @@ export const authApi = createApi({
 
           unsubscribe = onSnapshot(
             ref,
-            async (snapshot) => {
+            (snapshot) => {
               if (!snapshot.exists()) return unsubscribe?.()
 
               try {
@@ -326,10 +402,12 @@ export const authApi = createApi({
                 const user = formatSessionFromFirebaseUser({
                   user: userDocument,
                   authUser,
-                  rightsDoc
+                  rightsDoc,
                 })
 
-                dispatch(updateSession({ user, status: SESSION_STATUS.SUCCESS }))
+                dispatch(
+                  updateSession({ user, status: SESSION_STATUS.SUCCESS }),
+                )
 
                 updateCachedData((draft) => {
                   const isSame = isEqual(draft, data)
@@ -340,7 +418,7 @@ export const authApi = createApi({
               } catch (error) {
                 console.error("Error parsing user document:", error)
                 dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
-                await auth.signOut()
+                auth.signOut()
               }
             },
             (error) => {
@@ -355,7 +433,9 @@ export const authApi = createApi({
         } catch (error) {
           console.error("Error in user document listener:", error)
 
-          throw new Error(`Something went wrong with ${ref.path}`)
+          throw new Error(`Something went wrong with ${ref.path}`, {
+            cause: error,
+          })
         }
         await cacheEntryRemoved
         unsubscribe?.()
@@ -371,7 +451,7 @@ export const authApi = createApi({
           console.error(error)
           toast.error("Failed to sign in anonymously.")
 
-          return { error: error as unknown }
+          return { error: error }
         }
       },
     }),

@@ -6,12 +6,28 @@ const DEFAULT_TEXT = "The quick brown fox jumps over the lazy dog"
 
 const FONTS = [
   { name: "Fraktion", className: "font-fraktion", variable: "--font-fraktion" },
-  { name: "Fraktion Mono", className: "font-fraktion-mono", variable: "--font-fraktion-mono" },
-  { name: "Interference", className: "font-interference", variable: "--font-interference" },
+  {
+    name: "Fraktion Mono",
+    className: "font-fraktion-mono",
+    variable: "--font-fraktion-mono",
+  },
+  {
+    name: "Interference",
+    className: "font-interference",
+    variable: "--font-interference",
+  },
   { name: "Shapiro", className: "font-shapiro", variable: "--font-shapiro" },
 ] as const
 
-const FontCard = ({ name, className, variable }: { name: string; className: string; variable: string }) => {
+const FontCard = ({
+  name,
+  className,
+  variable,
+}: {
+  name: string
+  className: string
+  variable: string
+}) => {
   const [text, setText] = useState(DEFAULT_TEXT)
 
   return (
@@ -23,7 +39,9 @@ const FontCard = ({ name, className, variable }: { name: string; className: stri
           <code className="text-xs text-muted-foreground">.{className}</code>
         </div>
       </div>
-      <p className={`text-4xl leading-tight ${className}`}>{text || DEFAULT_TEXT}</p>
+      <p className={`text-4xl leading-tight ${className}`}>
+        {text || DEFAULT_TEXT}
+      </p>
       <p className={`text-base text-muted-foreground ${className}`}>
         ABCDEFGHIJKLMNOPQRSTUVWXYZ
       </p>
@@ -62,21 +80,45 @@ type Story = StoryObj<typeof meta>
 export const All: Story = {}
 
 export const Fraktion: Story = {
-  render: () => <FontCard name="Fraktion" className="font-fraktion" variable="--font-fraktion" />,
+  render: () => (
+    <FontCard
+      name="Fraktion"
+      className="font-fraktion"
+      variable="--font-fraktion"
+    />
+  ),
   parameters: { layout: "centered" },
 }
 
 export const FraktionMono: Story = {
-  render: () => <FontCard name="Fraktion Mono" className="font-fraktion-mono" variable="--font-fraktion-mono" />,
+  render: () => (
+    <FontCard
+      name="Fraktion Mono"
+      className="font-fraktion-mono"
+      variable="--font-fraktion-mono"
+    />
+  ),
   parameters: { layout: "centered" },
 }
 
 export const Interference: Story = {
-  render: () => <FontCard name="Interference" className="font-interference" variable="--font-interference" />,
+  render: () => (
+    <FontCard
+      name="Interference"
+      className="font-interference"
+      variable="--font-interference"
+    />
+  ),
   parameters: { layout: "centered" },
 }
 
 export const Shapiro: Story = {
-  render: () => <FontCard name="Shapiro" className="font-shapiro" variable="--font-shapiro" />,
+  render: () => (
+    <FontCard
+      name="Shapiro"
+      className="font-shapiro"
+      variable="--font-shapiro"
+    />
+  ),
   parameters: { layout: "centered" },
 }

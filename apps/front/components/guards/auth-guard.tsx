@@ -4,7 +4,10 @@ import { type ReactNode, useEffect } from "react"
 import { SESSION_STATUS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useRouter } from "@/i18n/routing"
-import { selectSessionStatus, selectUser } from "@/redux/session/session.selectors"
+import {
+  selectSessionStatus,
+  selectUser,
+} from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
 type AuthGuardProps = {

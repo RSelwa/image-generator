@@ -2,7 +2,13 @@ import { expect, type Page, test } from "@playwright/test"
 import { LOBBY_STATUS } from "@repo/common"
 import { lobbyFactory } from "@repo/testing/factory"
 import { SELECTORS } from "@/constants/testing"
-import { createFirestoreLobbyDoc, createPlayerFromUserDoc, hideDriverTutorial, loginViaUI, setupUser } from "@/e2e/helpers/lobby"
+import {
+  createFirestoreLobbyDoc,
+  createPlayerFromUserDoc,
+  hideDriverTutorial,
+  loginViaUI,
+  setupUser,
+} from "@/e2e/helpers/lobby"
 
 const openJoinModalFromNav = async (page: Page) => {
   await page.getByTestId("nav-user-dropdown-trigger").click()
@@ -11,7 +17,9 @@ const openJoinModalFromNav = async (page: Page) => {
 
 test.describe("join a lobby by code", () => {
   test.describe("when opening the modal from the nav dropdown", () => {
-    test("should accept every typed character and join the lobby", async ({ page }) => {
+    test("should accept every typed character and join the lobby", async ({
+      page,
+    }) => {
       const host = await setupUser()
       const joiner = await setupUser()
 
@@ -43,7 +51,9 @@ test.describe("join a lobby by code", () => {
   })
 
   test.describe("when opening the modal from the home page", () => {
-    test("should accept every typed character and join the lobby", async ({ page }) => {
+    test("should accept every typed character and join the lobby", async ({
+      page,
+    }) => {
       const host = await setupUser()
       const joiner = await setupUser()
 
@@ -96,7 +106,9 @@ test.describe("join a lobby by code", () => {
 
       await input.pressSequentially(lobby.code.slice(0, 4), { delay: 100 })
 
-      await expect(page.getByTestId(SELECTORS.JOIN_LOBBY_NOT_FOUND)).toHaveCount(0)
+      await expect(
+        page.getByTestId(SELECTORS.JOIN_LOBBY_NOT_FOUND),
+      ).toHaveCount(0)
     })
   })
 
@@ -109,9 +121,13 @@ test.describe("join a lobby by code", () => {
 
       await openJoinModalFromNav(page)
 
-      await page.getByTestId(SELECTORS.JOIN_LOBBY_CODE_INPUT).pressSequentially("ZZZZZZ", { delay: 100 })
+      await page
+        .getByTestId(SELECTORS.JOIN_LOBBY_CODE_INPUT)
+        .pressSequentially("ZZZZZZ", { delay: 100 })
 
-      await expect(page.getByTestId(SELECTORS.JOIN_LOBBY_NOT_FOUND)).toBeVisible()
+      await expect(
+        page.getByTestId(SELECTORS.JOIN_LOBBY_NOT_FOUND),
+      ).toBeVisible()
       await expect(page.getByTestId(SELECTORS.JOIN_LOBBY_SUBMIT)).toBeDisabled()
     })
   })

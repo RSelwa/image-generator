@@ -1,4 +1,12 @@
-import { getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "@firebase/firestore"
+import {
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
+} from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES } from "@repo/common"
 import { type SeedDocWithId, seedDocWithIdSchema } from "@repo/schemas"
@@ -71,19 +79,22 @@ export const seedApi = createApi({
           }
         }
       },
-      providesTags: () =>
-        [{ type: "Seeds" }],
+      providesTags: () => [{ type: "Seeds" }],
     }),
     toggleFeaturedSeed: builder.mutation({
       queryFn: async ({ id, featured }, { dispatch }) => {
         try {
-          const seedData = await dispatch(seedApi.endpoints.getSeedById.initiate({ id })).unwrap()
+          const seedData = await dispatch(
+            seedApi.endpoints.getSeedById.initiate({ id }),
+          ).unwrap()
 
           if (!seedData) {
             throw new Error("Seed not found")
           }
 
-          const updatedFeaturedAt = (seedData.featuredAt) ? null : serverTimestamp()
+          const updatedFeaturedAt = seedData.featuredAt
+            ? null
+            : serverTimestamp()
 
           await updateDoc(getSeedRef(id), {
             featuredAt: updatedFeaturedAt,
@@ -98,12 +109,17 @@ export const seedApi = createApi({
           }
         }
       },
-      invalidatesTags: (result, error, arg) => [{ type: "Seed", id: arg.id }, { type: "Seeds" }],
+      invalidatesTags: (result, error, arg) => [
+        { type: "Seed", id: arg.id },
+        { type: "Seeds" },
+      ],
     }),
     changeSeedName: builder.mutation({
       queryFn: async ({ id, name }, { dispatch }) => {
         try {
-          const seedData = await dispatch(seedApi.endpoints.getSeedById.initiate({ id })).unwrap()
+          const seedData = await dispatch(
+            seedApi.endpoints.getSeedById.initiate({ id }),
+          ).unwrap()
 
           if (!seedData) {
             throw new Error("Seed not found")
@@ -122,7 +138,10 @@ export const seedApi = createApi({
           }
         }
       },
-      invalidatesTags: (result, error, arg) => [{ type: "Seed", id: arg.id }, { type: "Seeds" }],
+      invalidatesTags: (result, error, arg) => [
+        { type: "Seed", id: arg.id },
+        { type: "Seeds" },
+      ],
     }),
     getFeaturedSeeds: builder.query<SeedDocWithId[], void>({
       queryFn: async () => {
@@ -135,20 +154,25 @@ export const seedApi = createApi({
 
           const snapshot = await getDocs(q)
 
-          const seeds = snapshot.docs.map((docSnap) => {
-            const { data, error } = seedDocWithIdSchema.safeParse({
-              id: docSnap.id,
-              ...docSnap.data(),
+          const seeds = snapshot.docs
+            .map((docSnap) => {
+              const { data, error } = seedDocWithIdSchema.safeParse({
+                id: docSnap.id,
+                ...docSnap.data(),
+              })
+
+              if (error) {
+                console.error(
+                  `Error parsing featured seed ${docSnap.id}:`,
+                  error,
+                )
+
+                return null
+              }
+
+              return data
             })
-
-            if (error) {
-              console.error(`Error parsing featured seed ${docSnap.id}:`, error)
-
-              return null
-            }
-
-            return data
-          }).filter((seed) => seed !== null)
+            .filter((seed) => seed !== null)
 
           return { data: seeds }
         } catch (error) {
@@ -159,10 +183,15 @@ export const seedApi = createApi({
           }
         }
       },
-      providesTags: () =>
-        [{ type: "Seeds" }],
-    })
+      providesTags: () => [{ type: "Seeds" }],
+    }),
   }),
 })
 
-export const { useGetSeedByIdQuery, useGetMySeedsQuery, useToggleFeaturedSeedMutation, useChangeSeedNameMutation, useGetFeaturedSeedsQuery } = seedApi
+export const {
+  useGetSeedByIdQuery,
+  useGetMySeedsQuery,
+  useToggleFeaturedSeedMutation,
+  useChangeSeedNameMutation,
+  useGetFeaturedSeedsQuery,
+} = seedApi

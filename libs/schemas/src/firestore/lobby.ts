@@ -1,5 +1,13 @@
-import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_LOBBY_MODE, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, LOBBY_STATUS, MAX_PLAYERS } from "@repo/common"
-import z from "zod"
+import {
+  DEFAULT_HAS_SPECIAL_ROUNDS,
+  DEFAULT_LIVES,
+  DEFAULT_LOBBY_MODE,
+  DEFAULT_NUMBERS_ROUNDS,
+  DEFAULT_TIME_PER_ROUND,
+  LOBBY_STATUS,
+  MAX_PLAYERS,
+} from "@repo/common"
+import { z } from "zod"
 import { lobbyConfigSchema } from "~/firestore/lobby.config"
 
 import { playerSchema } from "~/firestore/players"
@@ -19,7 +27,7 @@ export const lobbyDocSchema = z.object({
     maxPlayers: MAX_PLAYERS,
     roundDuration: DEFAULT_TIME_PER_ROUND,
     numberOfRounds: DEFAULT_NUMBERS_ROUNDS,
-    mode: DEFAULT_LOBBY_MODE
+    mode: DEFAULT_LOBBY_MODE,
   }),
   isDemo: z.boolean().default(false), // Demo lobby: 1 player, forced seed, auto-start
   seedId: z.string().nullish().default(null), // Reference to seed document (backend only)
@@ -49,8 +57,10 @@ export const createLobbyInputSchema = lobbyDocSchema.omit({
 export type CreateLobbyInput = z.infer<typeof createLobbyInputSchema>
 
 // Update lobby input
-export const updateLobbyInputSchema = createLobbyInputSchema.omit({
-  players: true, // Players are managed separately
-  playersIds: true, // Players are managed separately
-}).partial()
+export const updateLobbyInputSchema = createLobbyInputSchema
+  .omit({
+    players: true, // Players are managed separately
+    playersIds: true, // Players are managed separately
+  })
+  .partial()
 export type UpdateLobbyInput = z.infer<typeof updateLobbyInputSchema>

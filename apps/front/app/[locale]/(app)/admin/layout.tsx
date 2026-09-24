@@ -8,9 +8,5 @@ type AdminLayoutProps = {
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  return (
-    <AdminGuard>
-      {children}
-    </AdminGuard>
-  )
+  return <AdminGuard>{children}</AdminGuard>
 }

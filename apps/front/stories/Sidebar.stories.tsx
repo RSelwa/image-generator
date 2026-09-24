@@ -118,7 +118,9 @@ export const WithSubMenu: Story = {
                       <SidebarMenuSubButton>General</SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
-                      <SidebarMenuSubButton isActive>Account</SidebarMenuSubButton>
+                      <SidebarMenuSubButton isActive>
+                        Account
+                      </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton>Privacy</SidebarMenuSubButton>
@@ -193,7 +195,9 @@ export const Collapsed: Story = {
       </Sidebar>
       <main className="flex-1 p-6">
         <SidebarTrigger />
-        <p className="text-muted-foreground mt-4">Sidebar is collapsed with icon mode.</p>
+        <p className="text-muted-foreground mt-4">
+          Sidebar is collapsed with icon mode.
+        </p>
       </main>
     </SidebarProvider>
   ),

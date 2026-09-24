@@ -15,7 +15,9 @@ import {
 
 test.describe("Test seed generation", () => {
   test.describe("When clicking on play in lobby", () => {
-    test("Should create seed based on config of the lobby", async ({ page }) => {
+    test("Should create seed based on config of the lobby", async ({
+      page,
+    }) => {
       const host = await setupUser()
 
       const playerHost = createPlayerFromUserDoc(host)
@@ -30,8 +32,7 @@ test.describe("Test seed generation", () => {
           roundDuration: 30,
           mode: DEFAULT_LOBBY_MODE,
         },
-        players: [playerHost,
-        ]
+        players: [playerHost],
       })
 
       await createFirestoreLobbyDoc(lobby)
@@ -75,8 +76,7 @@ test.describe("Test seed generation", () => {
           roundDuration: 30,
           mode: DEFAULT_LOBBY_MODE,
         },
-        players: [playerHost,
-        ]
+        players: [playerHost],
       })
 
       await createFirestoreLobbyDoc(lobby)
@@ -89,7 +89,9 @@ test.describe("Test seed generation", () => {
 
       await page.waitForTimeout(7000)
 
-      const roundAnswersCollection = await subRefs[TABLES.ROUND_ANSWERS](lobby.id).get()
+      const roundAnswersCollection = await subRefs[TABLES.ROUND_ANSWERS](
+        lobby.id,
+      ).get()
       const lobbyUpdated = await refs[TABLES.LOBBIES].doc(lobby.id).get()
 
       expect(lobbyUpdated?.data()?.maximumPossiblePoints).toBe(1500)
@@ -112,8 +114,14 @@ test.describe("Test seed generation", () => {
   test.describe("When user has recently played games", () => {
     const getAllAvailableGameIds = async () => {
       const [sphericals, flats] = await Promise.all([
-        collectionGroupRefs[TABLES.SPHERICAL].where("status", "==", "ready").where("mapId", ">", "").get(),
-        collectionGroupRefs[TABLES.FLAT].where("status", "==", "ready").where("mapId", ">", "").get(),
+        collectionGroupRefs[TABLES.SPHERICAL]
+          .where("status", "==", "ready")
+          .where("mapId", ">", "")
+          .get(),
+        collectionGroupRefs[TABLES.FLAT]
+          .where("status", "==", "ready")
+          .where("mapId", ">", "")
+          .get(),
       ])
 
       const gameIds = new Set<string>()
@@ -131,7 +139,9 @@ test.describe("Test seed generation", () => {
       return [...gameIds]
     }
 
-    test("should avoid games from user's recent lobbies when generating seed", async ({ page }) => {
+    test("should avoid games from user's recent lobbies when generating seed", async ({
+      page,
+    }) => {
       const host = await setupUser()
       const playerHost = createPlayerFromUserDoc(host)
 
@@ -140,7 +150,9 @@ test.describe("Test seed generation", () => {
 
       // Use only 6 game IDs as recently played — pool has ~48 games so there's plenty left
       const recentlyPlayedGameIds = allGameIds.slice(0, 6)
-      const rounds: Round[] = recentlyPlayedGameIds.map((gameId) => roundFactory({ gameId }))
+      const rounds: Round[] = recentlyPlayedGameIds.map((gameId) =>
+        roundFactory({ gameId }),
+      )
 
       await createFinishedLobbyWithSeed({ userId: host.id, rounds })
 
@@ -182,14 +194,17 @@ test.describe("Test seed generation", () => {
       expect(newRounds?.length).toBe(6)
 
       // Verify NONE of the recently played gameIds appear in the new seed
-      const newSeedGameIds = newRounds?.map((r) => r.gameId).filter(Boolean) || []
+      const newSeedGameIds =
+        newRounds?.map((r) => r.gameId).filter(Boolean) || []
 
       for (const gameId of newSeedGameIds) {
         expect(recentlyPlayedGameIds).not.toContain(gameId)
       }
     })
 
-    test("should fallback to full pool when all games have been played recently", async ({ page }) => {
+    test("should fallback to full pool when all games have been played recently", async ({
+      page,
+    }) => {
       const host = await setupUser()
       const playerHost = createPlayerFromUserDoc(host)
 

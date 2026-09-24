@@ -1,9 +1,13 @@
 {
   "name": "@repo/providers",
-  "type": "module",
   "version": "0.0.0",
   "description": "Providers of services for the monorepo",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
   "exports": {
     "./db-refs": {
       "types": "./dist/db-refs.js",
@@ -18,13 +22,8 @@
       "default": "./dist/upload-post.js"
     }
   },
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "compile": "tsc --noEmit",
-    "lint": "biome check",
     "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
     "build": "tsdown",
     "coverage": "vitest run --coverage",

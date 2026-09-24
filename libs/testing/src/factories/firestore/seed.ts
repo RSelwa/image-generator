@@ -11,10 +11,14 @@ export const seedFactory: FactoryDoc<SeedDocWithId> = (item = {}) => ({
   createdBy: null,
   timesUsed: 0,
   featuredAt: null,
-  createdAt: Timestamp.fromDate(faker.date.past()) as unknown as ClientTimestamp,
-  updatedAt: Timestamp.fromDate(faker.date.recent()) as unknown as ClientTimestamp,
+  createdAt: Timestamp.fromDate(
+    faker.date.past(),
+  ) as unknown as ClientTimestamp,
+  updatedAt: Timestamp.fromDate(
+    faker.date.recent(),
+  ) as unknown as ClientTimestamp,
   rounds: [],
-  ...item
+  ...item,
 })
 
 export const roundFactory: FactoryDoc<Round> = (item = {}) => ({
@@ -46,5 +50,5 @@ export const roundFactory: FactoryDoc<Round> = (item = {}) => ({
 
   difficulty: DIFFICULTIES.EASY,
 
-  ...item
+  ...item,
 })

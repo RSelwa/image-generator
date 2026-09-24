@@ -52,7 +52,12 @@ const TooltipContent = ({
     >
       {children}
       {!hideArrow && (
-        <TooltipPrimitive.Arrow className={cn("bg-foreground fill-foreground z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px]", "bg-primary fill-primary font-interference")} />
+        <TooltipPrimitive.Arrow
+          className={cn(
+            "bg-foreground fill-foreground z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px]",
+            "bg-primary fill-primary font-interference",
+          )}
+        />
       )}
     </TooltipPrimitive.Content>
   </TooltipPrimitive.Portal>

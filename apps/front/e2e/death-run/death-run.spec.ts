@@ -3,7 +3,14 @@ import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
 import { type Page } from "@playwright/test"
 import { expect, test } from "@playwright/test"
 import { type AVATARS_KEYS, type ConstantValues } from "@repo/common"
-import { DEATH_RUN_LIVES, DEATH_RUN_STATUS, METADATA_DOCS, mockedGameImageURL, mockedSphericalImageURL, TABLES } from "@repo/common"
+import {
+  DEATH_RUN_LIVES,
+  DEATH_RUN_STATUS,
+  METADATA_DOCS,
+  mockedGameImageURL,
+  mockedSphericalImageURL,
+  TABLES,
+} from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { type MarathonSeedRound } from "@repo/schemas"
 import { createFirestoreDoc } from "@repo/testing/emulator"
@@ -14,7 +21,8 @@ import { hideDriverTutorial, loginViaUI, setupUser } from "../helpers/lobby"
 
 const createGamesAndSeed = async (count: number) => {
   const games = Array.from({ length: count }, () =>
-    gameFactory({ image: mockedGameImageURL }))
+    gameFactory({ image: mockedGameImageURL }),
+  )
 
   await Promise.all(
     games.map((game) => createFirestoreDoc(refs[TABLES.GAMES], game)),
@@ -106,7 +114,9 @@ const typeAndSelectGame = async (page: Page, gameTitle: string) => {
 }
 
 test.describe("Death run playing", () => {
-  test("should play a death run with correct and wrong answers", async ({ page }) => {
+  test("should play a death run with correct and wrong answers", async ({
+    page,
+  }) => {
     test.setTimeout(60_000)
 
     const { games, seed } = await createGamesAndSeed(4)
@@ -127,39 +137,58 @@ test.describe("Death run playing", () => {
 
     // -- Round 1: correct answer → score +1 --
     await typeAndSelectGame(page, games[0].title)
-    await expect(page.getByTestId(SELECTORS.DEATH_RUN_SCORE)).toHaveText("1 pts", { timeout: 10_000 })
+    await expect(page.getByTestId(SELECTORS.DEATH_RUN_SCORE)).toHaveText(
+      "1 pts",
+      { timeout: 10_000 },
+    )
 
     // -- Round 2: wrong answer → loses a life, score unchanged --
     await typeAndSelectGame(page, games[2].title) // wrong game for round index 1
-    await expect(page.getByTestId(SELECTORS.DEATH_RUN_SCORE)).toHaveText("1 pts", { timeout: 10_000 })
+    await expect(page.getByTestId(SELECTORS.DEATH_RUN_SCORE)).toHaveText(
+      "1 pts",
+      { timeout: 10_000 },
+    )
 
     // -- Round 3: correct answer → score +1 --
     await typeAndSelectGame(page, games[2].title)
-    await expect(page.getByTestId(SELECTORS.DEATH_RUN_SCORE)).toHaveText("2 pts", { timeout: 10_000 })
+    await expect(page.getByTestId(SELECTORS.DEATH_RUN_SCORE)).toHaveText(
+      "2 pts",
+      { timeout: 10_000 },
+    )
 
     // -- Exhaust remaining lives with wrong answers → game over overlay --
     await typeAndSelectGame(page, games[0].title) // wrong
     await typeAndSelectGame(page, games[0].title) // wrong — last life
 
     // Game over overlay should appear
-    await expect(page.getByTestId(SELECTORS.DEATH_RUN_LIVES)).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId(SELECTORS.DEATH_RUN_LIVES)).toBeVisible({
+      timeout: 10_000,
+    })
 
     // -- Decline the revive offer --
     await page.getByTestId(SELECTORS.DEATH_RUN_GIVE_UP).click()
 
     // -- Wait for finished screen --
-    await expect(page.getByTestId(SELECTORS.DEATH_RUN_FINISHED)).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId(SELECTORS.DEATH_RUN_FINISHED)).toBeVisible({
+      timeout: 15_000,
+    })
 
     // -- Verify the finished screen shows score and correct count --
-    await expect(page.getByTestId(SELECTORS.DEATH_RUN_FINISHED_SCORE(user.id))).toHaveText("2 pts")
-    await expect(page.getByTestId(SELECTORS.DEATH_RUN_FINISHED_ROUNDS(user.id))).toHaveText("2 correct")
+    await expect(
+      page.getByTestId(SELECTORS.DEATH_RUN_FINISHED_SCORE(user.id)),
+    ).toHaveText("2 pts")
+    await expect(
+      page.getByTestId(SELECTORS.DEATH_RUN_FINISHED_ROUNDS(user.id)),
+    ).toHaveText("2 correct")
 
     // -- Verify Firestore death run status is FINISHED --
     const deathRunDoc = await refs[TABLES.DEATH_RUNS].doc(deathRunId).get()
     expect(deathRunDoc.data()?.status).toBe(DEATH_RUN_STATUS.FINISHED)
 
     // -- Verify the run in Firestore --
-    const runDoc = await subRefs[TABLES.DEATH_RUN_RUNS](deathRunId).doc(user.id).get()
+    const runDoc = await subRefs[TABLES.DEATH_RUN_RUNS](deathRunId)
+      .doc(user.id)
+      .get()
     const runData = runDoc.data()
     expect(runData?.score).toBe(2)
     expect(runData?.livesRemaining).toBe(0)

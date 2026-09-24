@@ -1,6 +1,9 @@
 import { expect, type Page } from "@playwright/test"
 
-export const handleGoogleAuthEmulatorPopup = async (page: Page, email: string) => {
+export const handleGoogleAuthEmulatorPopup = async (
+  page: Page,
+  email: string,
+) => {
   const popupPromise = page.waitForEvent("popup")
 
   await page.getByRole("button", { name: "Sign up with Google" }).click()

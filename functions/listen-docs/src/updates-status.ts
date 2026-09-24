@@ -34,20 +34,32 @@ export const updateSphericalStatus = async (
     return
   }
 
-  const isOldDocNeedVerification = data.status === DOCUMENTS_STATUS.NEED_VERIFICATION
+  const isOldDocNeedVerification =
+    data.status === DOCUMENTS_STATUS.NEED_VERIFICATION
   const isOldDocReady = data.status === DOCUMENTS_STATUS.READY
 
   if (isOldDocNeedVerification || isOldDocReady) {
-    logger.info(`Spherical ${sphericalId} in game ${gameId} is already in status ${data.status}`)
+    logger.info(
+      `Spherical ${sphericalId} in game ${gameId} is already in status ${data.status}`,
+    )
 
     return
   }
 
   const hasSphericalImage = Boolean(data.image && data.image !== "")
-  const isSphericalThumbnailReady = Boolean(data.thumbnail && data.thumbnail !== "")
-  const isSPhericalMapIdReady = Boolean(data.mapId && data.mapId !== "" && data.mapPosition && data.mapPosition.x !== undefined && data.mapPosition.y !== undefined)
+  const isSphericalThumbnailReady = Boolean(
+    data.thumbnail && data.thumbnail !== "",
+  )
+  const isSPhericalMapIdReady = Boolean(
+    data.mapId &&
+    data.mapId !== "" &&
+    data.mapPosition &&
+    data.mapPosition.x !== undefined &&
+    data.mapPosition.y !== undefined,
+  )
 
-  const isReady = hasSphericalImage && (isSphericalThumbnailReady || isSPhericalMapIdReady)
+  const isReady =
+    hasSphericalImage && (isSphericalThumbnailReady || isSPhericalMapIdReady)
 
   if (!isReady) {
     logger.info(`No need to update spherical ${sphericalId} in game ${gameId}`)
@@ -55,9 +67,13 @@ export const updateSphericalStatus = async (
     return
   }
 
-  await subRefs[TABLES.SPHERICAL](gameId).doc(sphericalId).update({ status: DOCUMENTS_STATUS.NEED_VERIFICATION })
+  await subRefs[TABLES.SPHERICAL](gameId)
+    .doc(sphericalId)
+    .update({ status: DOCUMENTS_STATUS.NEED_VERIFICATION })
 
-  logger.info(`Spherical ${sphericalId} in game ${gameId} status updated to NEED_VERIFICATION`)
+  logger.info(
+    `Spherical ${sphericalId} in game ${gameId} status updated to NEED_VERIFICATION`,
+  )
 }
 
 export const updateFlatStatus = async (
@@ -71,18 +87,27 @@ export const updateFlatStatus = async (
     return
   }
 
-  const isOldDocNeedVerification = data.status === DOCUMENTS_STATUS.NEED_VERIFICATION
+  const isOldDocNeedVerification =
+    data.status === DOCUMENTS_STATUS.NEED_VERIFICATION
   const isOldDocReady = data.status === DOCUMENTS_STATUS.READY
 
   if (isOldDocNeedVerification || isOldDocReady) {
-    logger.info(`Flat ${flatId} in game ${gameId} is already in status ${data.status}`)
+    logger.info(
+      `Flat ${flatId} in game ${gameId} is already in status ${data.status}`,
+    )
 
     return
   }
 
   const hasFlatImage = Boolean(data.image && data.image !== "")
   const isFlatThumbnailReady = Boolean(data.thumbnail && data.thumbnail !== "")
-  const isFlatMapIdReady = Boolean(data.mapId && data.mapId !== "" && data.mapPosition && data.mapPosition.x !== undefined && data.mapPosition.y !== undefined)
+  const isFlatMapIdReady = Boolean(
+    data.mapId &&
+    data.mapId !== "" &&
+    data.mapPosition &&
+    data.mapPosition.x !== undefined &&
+    data.mapPosition.y !== undefined,
+  )
 
   const isReady = hasFlatImage && (isFlatThumbnailReady || isFlatMapIdReady)
 
@@ -92,7 +117,11 @@ export const updateFlatStatus = async (
     return
   }
 
-  await subRefs[TABLES.FLAT](gameId).doc(flatId).update({ status: DOCUMENTS_STATUS.NEED_VERIFICATION })
+  await subRefs[TABLES.FLAT](gameId)
+    .doc(flatId)
+    .update({ status: DOCUMENTS_STATUS.NEED_VERIFICATION })
 
-  logger.info(`Flat ${flatId} in game ${gameId} status updated to NEED_VERIFICATION`)
+  logger.info(
+    `Flat ${flatId} in game ${gameId} status updated to NEED_VERIFICATION`,
+  )
 }

@@ -1,13 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite"
-import DailyChallengePub from "@/components/modals/daily-challenge-pub"
+import type { Meta } from "@storybook/nextjs-vite"
 
 const meta = {
-    title: "Modals/Pub",
-    parameters: {
-        layout: "centered",
-    },
+  title: "Modals/Pub",
+  parameters: {
+    layout: "centered",
+  },
 } satisfies Meta
 
 export default meta
-type Story = StoryObj<typeof meta>
-

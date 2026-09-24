@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 
 import { playerAnswerSchema } from "~/firestore/players.answers"
 import { roundSchema } from "~/firestore/seed.round"

@@ -12,8 +12,14 @@ import { Progress } from "@/components/ui/progress"
 import { ASSET_URLS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { Link, usePathname } from "@/i18n/routing"
-import { useGetNumberGameFoundByPlayerQuery, useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { selectLobbyConfig, selectPlayerMyself } from "@/redux/lobby/lobby.selectors"
+import {
+  useGetNumberGameFoundByPlayerQuery,
+  useSubscribeLobbyQuery,
+} from "@/redux/api/lobby"
+import {
+  selectLobbyConfig,
+  selectPlayerMyself,
+} from "@/redux/lobby/lobby.selectors"
 import { selectUser, selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { copy, getLobbyIdFromPathname } from "@/utils"
@@ -28,21 +34,34 @@ const LobbyFinished = () => {
   const player = useAppSelector(selectPlayerMyself(lobbyId))
   const config = useAppSelector(selectLobbyConfig(lobbyId))
 
-  const { data: lobby } = useSubscribeLobbyQuery({ id: lobbyId }, {
-    skip: !lobbyId,
-  })
-  const { data: numberGameFound } = useGetNumberGameFoundByPlayerQuery({ lobbyId, playerId: userId }, {
-    skip: !lobbyId || !userId,
-  })
+  const { data: lobby } = useSubscribeLobbyQuery(
+    { id: lobbyId },
+    {
+      skip: !lobbyId,
+    },
+  )
+  const { data: numberGameFound } = useGetNumberGameFoundByPlayerQuery(
+    { lobbyId, playerId: userId },
+    {
+      skip: !lobbyId || !userId,
+    },
+  )
 
   const players = lobby?.players || []
   const hasMultiplePlayers = players.length > 1
 
   const isUserAnonymous = !user || user.isAnonymous
 
-  const percentageValuePoints = player && lobby ? (player.score / (lobby?.maximumPossiblePoints || 1)) * 100 : 0
-  const percentageValueGamesFound = numberGameFound && config ? (numberGameFound.numberGameFound / config.numberOfRounds) * 100 : 0
-  const displayGamesFound = config?.mode === LOBBY_MODES.FULL || config?.mode === LOBBY_MODES.GAME_ONLY
+  const percentageValuePoints =
+    player && lobby
+      ? (player.score / (lobby?.maximumPossiblePoints || 1)) * 100
+      : 0
+  const percentageValueGamesFound =
+    numberGameFound && config
+      ? (numberGameFound.numberGameFound / config.numberOfRounds) * 100
+      : 0
+  const displayGamesFound =
+    config?.mode === LOBBY_MODES.FULL || config?.mode === LOBBY_MODES.GAME_ONLY
 
   const copySeedIdToClipboard = () => {
     if (!lobby?.seedId) return
@@ -51,7 +70,11 @@ const LobbyFinished = () => {
   }
 
   return (
-    <main data-testid="lobby-finished" className="min-h-full-height flex items-center justify-center bg-background text-foreground bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
+    <main
+      data-testid="lobby-finished"
+      className="min-h-full-height flex items-center justify-center bg-background text-foreground bg-repeat bg-center bg-size-[25%]"
+      style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}
+    >
       <section className="w-1/2 flex flex-col items-center justify-center gap-8 bg-background/80">
         <LogoWithIcon className="text-primary h-52 mb-12" />
         {hasMultiplePlayers && <LobbyScoreboard />}
@@ -59,7 +82,9 @@ const LobbyFinished = () => {
         <Field className="w-full max-w-sm">
           <FieldLabel htmlFor="progress-points">
             <span>{t("finalScore")} </span>
-            <span className="ml-auto text-lg font-semibold">{player?.score}</span>
+            <span className="ml-auto text-lg font-semibold">
+              {player?.score}
+            </span>
           </FieldLabel>
           <FieldLabel className="relative flex items-center gap-3 text-foreground/50">
             <span>0</span>
@@ -74,11 +99,16 @@ const LobbyFinished = () => {
           <Field className="w-full max-w-sm">
             <FieldLabel htmlFor="progress-rounds">
               <span>{t("numberGameFound")}</span>
-              <span className="ml-auto text-lg font-semibold">{numberGameFound?.numberGameFound.toString()}</span>
+              <span className="ml-auto text-lg font-semibold">
+                {numberGameFound?.numberGameFound.toString()}
+              </span>
             </FieldLabel>
             <FieldLabel className="flex items-center gap-3 text-foreground/50">
               <span>0</span>
-              <Progress value={percentageValueGamesFound} id="progress-rounds" />
+              <Progress
+                value={percentageValueGamesFound}
+                id="progress-rounds"
+              />
               <span>{config?.numberOfRounds}</span>
             </FieldLabel>
           </Field>
@@ -93,7 +123,6 @@ const LobbyFinished = () => {
           <CreateLobbyButton>{t("playAgain")}</CreateLobbyButton>
         </article>
       </section>
-
     </main>
   )
 }

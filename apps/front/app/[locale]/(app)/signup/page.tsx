@@ -11,7 +11,8 @@ export const generateMetadata = async ({
 
   return {
     title: "Sign Up — Geo Gamer",
-    description: "Create your free Geo Gamer account. Track your daily challenge streak, compete on the global leaderboard, and challenge up to 7 friends.",
+    description:
+      "Create your free Geo Gamer account. Track your daily challenge streak, compete on the global leaderboard, and challenge up to 7 friends.",
     alternates: {
       canonical: `${APP_BASE_URL}/${locale}/signup`,
       languages: {

@@ -2,7 +2,7 @@
 
 import { type ComponentProps, useEffect, useState } from "react"
 import { type BrailleSpinnerName } from "unicode-animations"
-import spinners from "unicode-animations"
+import { spinners } from "unicode-animations"
 import { cn } from "@/utils"
 
 const Loader = (props: ComponentProps<"svg">) => (
@@ -51,20 +51,32 @@ const Loader = (props: ComponentProps<"svg">) => (
   </svg>
 )
 
-export const Spinner = ({ name = "braille", className, ...props }: { name: BrailleSpinnerName } & ComponentProps<"span">) => {
+export const Spinner = ({
+  name = "braille",
+  className,
+  ...props
+}: { name: BrailleSpinnerName } & ComponentProps<"span">) => {
   const [frame, setFrame] = useState(0)
   const s = spinners[name]
 
   useEffect(() => {
     const timer = setInterval(
       () => setFrame((f) => (f + 1) % s.frames.length),
-      s.interval
+      s.interval,
     )
 
     return () => clearInterval(timer)
   }, [name])
 
-  return <span className={cn("font-normal", className)} style={{ fontFamily: "monospace" }} {...props}>{s.frames[frame]}</span>
+  return (
+    <span
+      className={cn("font-normal", className)}
+      style={{ fontFamily: "monospace" }}
+      {...props}
+    >
+      {s.frames[frame]}
+    </span>
+  )
 }
 
 export default Loader

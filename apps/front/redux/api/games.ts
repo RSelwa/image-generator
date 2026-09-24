@@ -13,7 +13,7 @@ import {
   type SphericalDocWithId,
   sphericalDocWithIdSchema,
   type UpdateGameInput,
-  updateGameInputSchema
+  updateGameInputSchema,
 } from "@repo/schemas"
 import {
   addDoc,
@@ -35,7 +35,12 @@ import { toast } from "sonner"
 // Need to use the React-specific entry point to import createApi
 import { DEFAULT_SIZE_GAMES } from "@/constants/api"
 import { db } from "@/constants/db"
-import { getGameRef, getMetadataGameListRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
+import {
+  getGameRef,
+  getMetadataGameListRef,
+  TABLE_REFS,
+  TABLES_SUB_REFS,
+} from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
 export const gameApi = createApi({
@@ -55,7 +60,7 @@ export const gameApi = createApi({
     getGamesEntity: builder.infiniteQuery<
       GameEntity[],
       void,
-      { limit?: number, startAfter?: string }
+      { limit?: number; startAfter?: string }
     >({
       queryFn: async ({ pageParam }, { dispatch }) => {
         try {
@@ -70,10 +75,7 @@ export const gameApi = createApi({
           if (pageParam.limit)
             definedFieldsConstraints.push(limit(pageParam.limit))
 
-          const q = query(
-            TABLE_REFS[TABLES.GAMES],
-            ...definedFieldsConstraints,
-          )
+          const q = query(TABLE_REFS[TABLES.GAMES], ...definedFieldsConstraints)
 
           const snapshot = await getDocs(q)
 
@@ -102,7 +104,7 @@ export const gameApi = createApi({
                 ...doc.data(),
                 sphericalsCount,
                 mapsCount,
-                flatsCount
+                flatsCount,
               })
 
               if (error) throw new Error("Data parsing error")
@@ -143,12 +145,14 @@ export const gameApi = createApi({
         },
       },
       providesTags: (result) =>
-        result ? [
-          ...result.pages
-            .flat()
-            .map(({ id }) => ({ type: "Game" as const, id })),
-          { type: "GameList" as const },
-        ] : [{ type: "GameList" as const }],
+        result
+          ? [
+              ...result.pages
+                .flat()
+                .map(({ id }) => ({ type: "Game" as const, id })),
+              { type: "GameList" as const },
+            ]
+          : [{ type: "GameList" as const }],
     }),
     getGameById: builder.query<GameDocWithId, { id: string }>({
       queryFn: async ({ id }) => {
@@ -209,7 +213,7 @@ export const gameApi = createApi({
             error: globalErrorHandler(error),
           }
         }
-      }
+      },
     }),
     getTotalGamesCount: builder.query<number, void>({
       queryFn: async () => {
@@ -401,7 +405,7 @@ export const gameApi = createApi({
     }),
     updateGameById: builder.mutation<
       GameDocWithId,
-      { id: string, data: UpdateGameInput }
+      { id: string; data: UpdateGameInput }
     >({
       queryFn: async ({ id, data: input }) => {
         try {
@@ -472,8 +476,7 @@ export const gameApi = createApi({
     getAllGamesNames: builder.query<GamesListDoc["games"], void>({
       queryFn: async () => {
         try {
-          const snapshot = await getDoc(getMetadataGameListRef()
-          )
+          const snapshot = await getDoc(getMetadataGameListRef())
 
           if (!snapshot.exists()) {
             throw new Error("Games list not found")
@@ -493,8 +496,8 @@ export const gameApi = createApi({
             error: globalErrorHandler(error),
           }
         }
-      }
-    })
+      },
+    }),
   }),
 })
 
@@ -510,5 +513,5 @@ export const {
   useUpdateGameByIdMutation,
   useDeleteGameByIdMutation,
   useGetAllGamesQuery,
-  useGetAllGamesNamesQuery
+  useGetAllGamesNamesQuery,
 } = gameApi

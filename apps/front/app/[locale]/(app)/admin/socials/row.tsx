@@ -1,20 +1,48 @@
-import { getDateString, SOCIALS_STATUS, SOCIALS_STATUS_WORDING } from "@repo/common"
+import {
+  getDateString,
+  SOCIALS_STATUS,
+  SOCIALS_STATUS_WORDING,
+} from "@repo/common"
 import { type SocialDocWithId } from "@repo/schemas"
 import { useQueryState } from "nuqs"
 import { type Dispatch, type SetStateAction } from "react"
 import OpenFirestoreDoc from "@/components/open-firestore"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuLabel, ContextMenuTrigger } from "@/components/ui/context-menu"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { getSocialRef } from "@/constants/db-refs"
 import { QUERY_PARAMS } from "@/constants/mapping"
-import { useRetriggerPostProductionMutation, useUpdateSocialByIdMutation } from "@/redux/api/socials"
+import {
+  useRetriggerPostProductionMutation,
+  useUpdateSocialByIdMutation,
+} from "@/redux/api/socials"
 import { getBadgeVariantSocials } from "@/utils/badge"
 
-export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
+export const SocialRow = ({
+  social,
+  checkedIds,
+  setCheckedIds,
+}: {
   social: SocialDocWithId
   checkedIds: string[]
   setCheckedIds: Dispatch<SetStateAction<string[]>>
@@ -26,7 +54,9 @@ export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
 
   const checked = checkedIds.includes(social.id)
   const onCheckedChange = (value: boolean) =>
-    setCheckedIds((prev) => value ? [...prev, social.id] : prev.filter((id) => id !== social.id))
+    setCheckedIds((prev) =>
+      value ? [...prev, social.id] : prev.filter((id) => id !== social.id),
+    )
 
   const reloadCapture = async () => {
     try {
@@ -48,12 +78,14 @@ export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
     <AlertDialog>
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <TableRow key={social.id} onClick={() => setSocialId(social.id)} data-viewed={Boolean(social.createdAt)} className="data-[viewed=false]:bg-muted/50 cursor-pointer">
+          <TableRow
+            key={social.id}
+            onClick={() => setSocialId(social.id)}
+            data-viewed={Boolean(social.createdAt)}
+            className="data-[viewed=false]:bg-muted/50 cursor-pointer"
+          >
             <TableCell onClick={(e) => e.stopPropagation()}>
-              <Checkbox
-                checked={checked}
-                onCheckedChange={onCheckedChange}
-              />
+              <Checkbox checked={checked} onCheckedChange={onCheckedChange} />
             </TableCell>
             <TableCell className="max-w-20 truncate">
               <OpenFirestoreDoc docRef={getSocialRef(social.id)} />
@@ -66,7 +98,9 @@ export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
                 </Badge>
               )}
             </TableCell>
-            <TableCell className="font-medium">{getDateString(social.createdAt?.toDate())}</TableCell>
+            <TableCell className="font-medium">
+              {getDateString(social.createdAt?.toDate())}
+            </TableCell>
           </TableRow>
         </ContextMenuTrigger>
         <ContextMenuContent>
@@ -80,13 +114,18 @@ export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
           )}
           <ContextMenuGroup>
             <ContextMenuLabel>Actions</ContextMenuLabel>
-            <ContextMenuItem onClick={() => retriggerPostProduction({ id: social.id })}>
+            <ContextMenuItem
+              onClick={() => retriggerPostProduction({ id: social.id })}
+            >
               Redo Post production
             </ContextMenuItem>
             {social.status === SOCIALS_STATUS.READY_TO_POST && (
               <AlertDialogTrigger asChild>
                 <ContextMenuItem asChild>
-                  <Button variant="marathon" className="rounded-none cursor-pointer w-full justify-start">
+                  <Button
+                    variant="marathon"
+                    className="rounded-none cursor-pointer w-full justify-start"
+                  >
                     Publish
                   </Button>
                 </ContextMenuItem>
@@ -99,7 +138,8 @@ export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
         <AlertDialogHeader>
           <AlertDialogTitle>View details</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to view the details of this social? It will mark the social as viewed.
+            Are you sure you want to view the details of this social? It will
+            mark the social as viewed.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <section className="flex justify-center">
@@ -118,12 +158,14 @@ export const SocialRow = ({ social, checkedIds, setCheckedIds }: {
           </AlertDialogCancel>
           <AlertDialogAction variant="marathon" asChild>
             <Button
-              onClick={() => updateSocialDoc({
-                id: social.id,
-                data: {
-                  status: SOCIALS_STATUS.WAITING_FOR_POST,
-                },
-              })}
+              onClick={() =>
+                updateSocialDoc({
+                  id: social.id,
+                  data: {
+                    status: SOCIALS_STATUS.WAITING_FOR_POST,
+                  },
+                })
+              }
             >
               Yes, Publish
             </Button>

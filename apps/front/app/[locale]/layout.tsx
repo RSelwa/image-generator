@@ -9,6 +9,7 @@ import { notFound } from "next/navigation"
 import Script from "next/script"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { Suspense } from "react"
+import { DevTools } from "@/components/dev-tools"
 import { ModalProvider } from "@/components/modals"
 import StoreProvider from "@/components/providers/redux-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -51,17 +52,19 @@ export const generateMetadata = async (): Promise<Metadata> => {
   return {
     metadataBase: new URL(APP_BASE_URL),
     other: {
-      "google-adsense-account": "ca-pub-6845308230917889"
+      "google-adsense-account": "ca-pub-6845308230917889",
     },
     verification: {
       google: "zJZ1-ScEmmCJFO6rZ5SVawDF1gnNNePjN7uoB9YgFSg",
     },
     title: APP_NAME,
-    description: "Guess iconic video game locations solo or with friends. 300+ scenes, real-time multiplayer, free to play.",
+    description:
+      "Guess iconic video game locations solo or with friends. 300+ scenes, real-time multiplayer, free to play.",
     twitter: {
       card: "summary_large_image",
       title: APP_NAME,
-      description: "Guess iconic video game locations solo or with friends. 300+ scenes, real-time multiplayer, free to play.",
+      description:
+        "Guess iconic video game locations solo or with friends. 300+ scenes, real-time multiplayer, free to play.",
       images: [{ url: "/opengraph-image.jpg" }],
     },
   }
@@ -104,13 +107,17 @@ export default async function LocaleLayout({
                 <Suspense>
                   <Toaster />
                   <ModalProvider />
+                  <DevTools />
                   {children}
                   <Analytics />
                 </Suspense>
               </StoreProvider>
             </NuqsAdapter>
           </Suspense>
-          <Script src="https://cloud.umami.is/script.js" data-website-id="c5427705-3677-4189-8fbb-73c4e7510760" />
+          <Script
+            src="https://cloud.umami.is/script.js"
+            data-website-id="c5427705-3677-4189-8fbb-73c4e7510760"
+          />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -13,15 +13,17 @@ export const GET = async (
       return new Response("Missing gameId", { status: 400 })
     }
 
-    const [sphericalsSnapshot, flatsSnapshot, mapsSnapshot] = await Promise.all([
-      subRefs[TABLES.SPHERICAL](gameId)
-        .where("status", "==", DOCUMENTS_STATUS.READY)
-        .get(),
-      subRefs[TABLES.FLAT](gameId)
-        .where("status", "==", DOCUMENTS_STATUS.READY)
-        .get(),
-      subRefs[TABLES.MAPS](gameId).get(),
-    ])
+    const [sphericalsSnapshot, flatsSnapshot, mapsSnapshot] = await Promise.all(
+      [
+        subRefs[TABLES.SPHERICAL](gameId)
+          .where("status", "==", DOCUMENTS_STATUS.READY)
+          .get(),
+        subRefs[TABLES.FLAT](gameId)
+          .where("status", "==", DOCUMENTS_STATUS.READY)
+          .get(),
+        subRefs[TABLES.MAPS](gameId).get(),
+      ],
+    )
 
     const sphericals = sphericalsSnapshot.docs.map((doc) => ({
       id: doc.id,

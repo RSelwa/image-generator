@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 import { gratitudeSchema } from "~/firestore/gratitude"
 import { timestampSchema, WITH_ID } from "~/zod"
 

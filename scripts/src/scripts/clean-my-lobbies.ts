@@ -12,7 +12,11 @@ const lobbiesToDelete = myLobbies.docs.filter((doc) => {
   const invalidLobby = lobbyDocSchema.safeParse(lobbyData)
 
   if (!invalidLobby.success) {
-    console.info(`🗑️ incorrect lobby`, doc.id, z.treeifyError(invalidLobby.error).properties)
+    console.info(
+      `🗑️ incorrect lobby`,
+      doc.id,
+      z.treeifyError(invalidLobby.error).properties,
+    )
 
     return true
   }
@@ -21,7 +25,7 @@ const lobbiesToDelete = myLobbies.docs.filter((doc) => {
 })
 
 for (const lobbyDoc of lobbiesToDelete) {
-//   await refs.lobbies.doc(lobbyDoc.id).delete()
+  //   await refs.lobbies.doc(lobbyDoc.id).delete()
   console.info(`🗑️ lobby ${lobbyDoc.id} deleted`)
 }
 

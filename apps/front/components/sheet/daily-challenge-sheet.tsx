@@ -1,8 +1,16 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { dateToString, DIFFICULTIES, DOCUMENTS_STATUS, stringToDate } from "@repo/common"
-import { type DailyChallengeDocWithId, updateDailyChallengeInputSchema } from "@repo/schemas"
+import {
+  dateToString,
+  DIFFICULTIES,
+  DOCUMENTS_STATUS,
+  stringToDate,
+} from "@repo/common"
+import {
+  type DailyChallengeDocWithId,
+  updateDailyChallengeInputSchema,
+} from "@repo/schemas"
 import Image from "next/image"
 import { useQueryState } from "nuqs"
 import { useEffect } from "react"
@@ -23,10 +31,28 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { QUERY_PARAMS } from "@/constants/mapping"
 import {
@@ -35,17 +61,32 @@ import {
   useUpdateDailyChallengeMutation,
 } from "@/redux/api/daily-challenge"
 import { useGetFlatsByGameIdQuery } from "@/redux/api/flat"
-import { useGetAllGamesQuery, useGetSphericalsByGameIdQuery } from "@/redux/api/games"
+import {
+  useGetAllGamesQuery,
+  useGetSphericalsByGameIdQuery,
+} from "@/redux/api/games"
 import { useGetMapsByGameIdQuery } from "@/redux/api/maps"
 
 type FormValues = z.infer<typeof updateDailyChallengeInputSchema>
 
-const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId }) => {
+const DailyChallengeForm = ({
+  challenge,
+}: {
+  challenge: DailyChallengeDocWithId
+}) => {
   const [, setDate] = useQueryState(QUERY_PARAMS.DAILY_CHALLENGE_DATE)
-  const [updateDailyChallenge, { isLoading }] = useUpdateDailyChallengeMutation()
+  const [updateDailyChallenge, { isLoading }] =
+    useUpdateDailyChallengeMutation()
   const [deleteDailyChallenge] = useDeleteDailyChallengeMutation()
 
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>({
     resolver: zodResolver(updateDailyChallengeInputSchema),
     defaultValues: {
       date: challenge.date,
@@ -96,12 +137,23 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
   const flatId = watch("flatId")
 
   const { data: allGames } = useGetAllGamesQuery()
-  const { data: sphericals } = useGetSphericalsByGameIdQuery({ gameId: gameId || "" }, { skip: !gameId || !isSpherical })
-  const { data: flats } = useGetFlatsByGameIdQuery({ gameId: gameId || "" }, { skip: !gameId || isSpherical })
-  const { data: maps } = useGetMapsByGameIdQuery({ gameId: gameId || "" }, { skip: !gameId })
+  const { data: sphericals } = useGetSphericalsByGameIdQuery(
+    { gameId: gameId || "" },
+    { skip: !gameId || !isSpherical },
+  )
+  const { data: flats } = useGetFlatsByGameIdQuery(
+    { gameId: gameId || "" },
+    { skip: !gameId || isSpherical },
+  )
+  const { data: maps } = useGetMapsByGameIdQuery(
+    { gameId: gameId || "" },
+    { skip: !gameId },
+  )
 
-  const readySphericals = sphericals?.filter((s) => s.status === DOCUMENTS_STATUS.READY) || []
-  const readyFlats = flats?.filter((f) => f.status === DOCUMENTS_STATUS.READY) || []
+  const readySphericals =
+    sphericals?.filter((s) => s.status === DOCUMENTS_STATUS.READY) || []
+  const readyFlats =
+    flats?.filter((f) => f.status === DOCUMENTS_STATUS.READY) || []
 
   const clearImageFields = () => {
     setValue("sphericalId", undefined)
@@ -179,18 +231,23 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
           <Field>
             <FieldLabel className="flex items-center gap-2">
               Date
-              {watch("date") && <span className="text-xs text-muted-foreground font-mono">{watch("date")}</span>}
+              {watch("date") && (
+                <span className="text-xs text-muted-foreground font-mono">
+                  {watch("date")}
+                </span>
+              )}
             </FieldLabel>
             <Calendar
               mode="single"
-              selected={watch("date") ? stringToDate(watch("date") || "") : undefined}
+              selected={
+                watch("date") ? stringToDate(watch("date") || "") : undefined
+              }
               onSelect={(day) => day && setValue("date", dateToString(day))}
             />
             <FieldError errors={[errors.date]} />
           </Field>
 
           <div className="flex justify-between items-start gap-8">
-
             <Field>
               <FieldLabel>Game</FieldLabel>
 
@@ -200,13 +257,23 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
                 </SelectTrigger>
                 <SelectContent>
                   {allGames?.map((game) => (
-                    <SelectItem key={game.id} value={game.id}>{game.title}</SelectItem>
+                    <SelectItem key={game.id} value={game.id}>
+                      {game.title}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <FieldError errors={[errors.gameId, errors.gameTitle]} />
             </Field>
-            {gameThumbnailUrl && <Image src={gameThumbnailUrl} alt="Game thumbnail" width={100} height={56} className="mb-2 max-h-24 object-cover rounded" />}
+            {gameThumbnailUrl && (
+              <Image
+                src={gameThumbnailUrl}
+                alt="Game thumbnail"
+                width={100}
+                height={56}
+                className="mb-2 max-h-24 object-cover rounded"
+              />
+            )}
           </div>
 
           <Field orientation="horizontal">
@@ -221,14 +288,18 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
             <FieldLabel>Difficulty</FieldLabel>
             <Select
               value={difficulty}
-              onValueChange={(val) => setValue("difficulty", val as FormValues["difficulty"])}
+              onValueChange={(val) =>
+                setValue("difficulty", val as FormValues["difficulty"])
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select difficulty" />
               </SelectTrigger>
               <SelectContent>
                 {Object.values(DIFFICULTIES).map((d) => (
-                  <SelectItem key={d} value={d}>{d}</SelectItem>
+                  <SelectItem key={d} value={d}>
+                    {d}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -237,60 +308,84 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
 
           {isSpherical && (
             <Field>
-              <FieldLabel>
-                Spherical image
-              </FieldLabel>
+              <FieldLabel>Spherical image</FieldLabel>
               <Select
                 value={sphericalId || ""}
                 onValueChange={handleSphericalSelect}
                 disabled={!gameId || readySphericals.length === 0}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={!gameId ? "Select a game first" : "Select a spherical"} />
+                  <SelectValue
+                    placeholder={
+                      !gameId ? "Select a game first" : "Select a spherical"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {readySphericals.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>{s.id}</SelectItem>
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.id}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <FieldError errors={[errors.sphericalId, errors.sphericalImageUrl]} />
+              <FieldError
+                errors={[errors.sphericalId, errors.sphericalImageUrl]}
+              />
               <div className="h-24 aspect-video">
-                {sphericalId && <ReactSphere src={readySphericals.find((s) => s.id === sphericalId)?.image || ""} />}
+                {sphericalId && (
+                  <ReactSphere
+                    src={
+                      readySphericals.find((s) => s.id === sphericalId)
+                        ?.image || ""
+                    }
+                  />
+                )}
               </div>
             </Field>
           )}
 
           {!isSpherical && (
             <Field>
-              <FieldLabel>
-                Flat image
-
-              </FieldLabel>
+              <FieldLabel>Flat image</FieldLabel>
               <Select
                 value={flatId || ""}
                 onValueChange={handleFlatSelect}
                 disabled={!gameId || readyFlats.length === 0}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={!gameId ? "Select a game first" : "Select a flat"} />
+                  <SelectValue
+                    placeholder={
+                      !gameId ? "Select a game first" : "Select a flat"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {readyFlats.map((f) => (
-                    <SelectItem key={f.id} value={f.id}>{f.id}</SelectItem>
+                    <SelectItem key={f.id} value={f.id}>
+                      {f.id}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <FieldError errors={[errors.flatId, errors.flatImageUrl]} />
               <div className="w-full h-24">
-                {flatId && <img src={readyFlats.find((f) => f.id === flatId)?.image} alt="Flat preview" className="h-full w-full object-cover" />}
+                {flatId && (
+                  <img
+                    src={readyFlats.find((f) => f.id === flatId)?.image}
+                    alt="Flat preview"
+                    className="h-full w-full object-cover"
+                  />
+                )}
               </div>
             </Field>
           )}
 
           {watch("mapId") && (
             <>
-              <p className="text-sm font-semibold text-muted-foreground pt-2">Map</p>
+              <p className="text-sm font-semibold text-muted-foreground pt-2">
+                Map
+              </p>
               <Field>
                 <FieldLabel>Map ID</FieldLabel>
                 <Input {...register("mapId")} />
@@ -304,28 +399,45 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
               <div className="grid grid-cols-2 gap-4">
                 <Field>
                   <FieldLabel>Width</FieldLabel>
-                  <Input type="number" {...register("mapWidth", { valueAsNumber: true })} />
+                  <Input
+                    type="number"
+                    {...register("mapWidth", { valueAsNumber: true })}
+                  />
                   <FieldError errors={[errors.mapWidth]} />
                 </Field>
                 <Field>
                   <FieldLabel>Height</FieldLabel>
-                  <Input type="number" {...register("mapHeight", { valueAsNumber: true })} />
+                  <Input
+                    type="number"
+                    {...register("mapHeight", { valueAsNumber: true })}
+                  />
                   <FieldError errors={[errors.mapHeight]} />
                 </Field>
               </div>
               <Field>
                 <FieldLabel>Max Distance Points (%)</FieldLabel>
-                <Input type="number" {...register("maxDistancePoints", { valueAsNumber: true })} />
+                <Input
+                  type="number"
+                  {...register("maxDistancePoints", { valueAsNumber: true })}
+                />
                 <FieldError errors={[errors.maxDistancePoints]} />
               </Field>
               <div className="grid grid-cols-2 gap-4">
                 <Field>
                   <FieldLabel>Position X</FieldLabel>
-                  <Input type="number" step="any" {...register("mapPosition.x", { valueAsNumber: true })} />
+                  <Input
+                    type="number"
+                    step="any"
+                    {...register("mapPosition.x", { valueAsNumber: true })}
+                  />
                 </Field>
                 <Field>
                   <FieldLabel>Position Y</FieldLabel>
-                  <Input type="number" step="any" {...register("mapPosition.y", { valueAsNumber: true })} />
+                  <Input
+                    type="number"
+                    step="any"
+                    {...register("mapPosition.y", { valueAsNumber: true })}
+                  />
                 </Field>
               </div>
             </>
@@ -339,18 +451,26 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
         </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button type="button" variant="marathon-destructive">Delete</Button>
+            <Button type="button" variant="marathon-destructive">
+              Delete
+            </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete this daily challenge?</AlertDialogTitle>
-              <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+              <AlertDialogDescription>
+                This action cannot be undone.
+              </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel variant="marathon-outline" asChild>
                 <Button>No, keep it</Button>
               </AlertDialogCancel>
-              <AlertDialogAction variant="marathon-destructive" asChild onClick={handleDelete}>
+              <AlertDialogAction
+                variant="marathon-destructive"
+                asChild
+                onClick={handleDelete}
+              >
                 <Button>Yes, delete</Button>
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -363,15 +483,19 @@ const DailyChallengeForm = ({ challenge }: { challenge: DailyChallengeDocWithId 
 
 export const DailyChallengeSheet = () => {
   const [date, setDate] = useQueryState(QUERY_PARAMS.DAILY_CHALLENGE_DATE)
-  const { data: challenge } = useGetDailyChallengeByDateQuery({ date: date || "" }, { skip: !date })
+  const { data: challenge } = useGetDailyChallengeByDateQuery(
+    { date: date || "" },
+    { skip: !date },
+  )
 
   const open = Boolean(date)
 
-  if (!challenge) return (
-    <Sheet open={open} onOpenChange={(open) => !open && setDate(null)}>
-      <EmptySheet />
-    </Sheet>
-  )
+  if (!challenge)
+    return (
+      <Sheet open={open} onOpenChange={(open) => !open && setDate(null)}>
+        <EmptySheet />
+      </Sheet>
+    )
 
   return (
     <Sheet open={open} onOpenChange={(open) => !open && setDate(null)}>

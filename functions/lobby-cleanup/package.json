@@ -1,15 +1,15 @@
 {
   "name": "@repo/lobby-cleanup",
-  "type": "module",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "files": [
     ".env.*",
     "dist"
   ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "scripts": {
     "build": "tsdown",
     "compile": "tsc --noEmit",

@@ -1,5 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { LOBBY_MODES, OPTIONS_NUMBER_OF_ROUNDS, OPTIONS_PLAYERS_LIVES, OPTIONS_ROUND_DURATIONS } from "@repo/common"
+import {
+  LOBBY_MODES,
+  OPTIONS_NUMBER_OF_ROUNDS,
+  OPTIONS_PLAYERS_LIVES,
+  OPTIONS_ROUND_DURATIONS,
+} from "@repo/common"
 import { type LobbyDoc } from "@repo/schemas"
 import { type DriveStep } from "driver.js"
 import { driver } from "driver.js"
@@ -9,15 +14,30 @@ import Image from "next/image"
 import { useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import z from "zod"
+import { z } from "zod"
 import { LobbyAvatars } from "@/components/lobby/avatars"
 import { Button } from "@/components/ui/button"
 import { Field, FieldDescription } from "@/components/ui/field"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { DRIVER_IDS, STEPS } from "@/constants/driver"
@@ -25,7 +45,12 @@ import { ASSET_URLS, FALL_BACK_IMAGE, STORAGE_KEYS } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { useLocalStorage } from "@/hooks/use-storage"
 import { usePathname } from "@/i18n/routing"
-import { useStartLobbyMutation, useSubscribeLobbyQuery, useUpdateLobbyConfigMutation, useUpdatePlayerReadyMutation } from "@/redux/api/lobby"
+import {
+  useStartLobbyMutation,
+  useSubscribeLobbyQuery,
+  useUpdateLobbyConfigMutation,
+  useUpdatePlayerReadyMutation,
+} from "@/redux/api/lobby"
 import { useApplySeedToLobbyMutation } from "@/redux/api/local"
 import { useGetFeaturedSeedsQuery } from "@/redux/api/seed"
 import { selectIsLobbyHost } from "@/redux/lobby/lobby.selectors"
@@ -46,15 +71,22 @@ const LobbyWaiting = () => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
-  const [, setIsSkipDriver] = useLocalStorage(STORAGE_KEYS.DRIVER_WAITING_ROOM, false)
+  const [, setIsSkipDriver] = useLocalStorage(
+    STORAGE_KEYS.DRIVER_WAITING_ROOM,
+    false,
+  )
   const hasDrivenRef = useRef(false)
 
   const { data: featuredSeeds } = useGetFeaturedSeedsQuery()
-  const { data: lobby } = useSubscribeLobbyQuery({ id: lobbyId }, {
-    skip: !lobbyId,
-  })
+  const { data: lobby } = useSubscribeLobbyQuery(
+    { id: lobbyId },
+    {
+      skip: !lobbyId,
+    },
+  )
 
-  const [updateLobbyConfig, { isLoading: isLoadingUpdate }] = useUpdateLobbyConfigMutation()
+  const [updateLobbyConfig, { isLoading: isLoadingUpdate }] =
+    useUpdateLobbyConfigMutation()
   const [startLobby] = useStartLobbyMutation()
   const [updatePlayerReady] = useUpdatePlayerReadyMutation()
   const [applySeed, { isLoading }] = useApplySeedToLobbyMutation()
@@ -63,11 +95,7 @@ const LobbyWaiting = () => {
   const isOwner = useAppSelector(selectIsLobbyHost(lobbyId))
   const isOnlyPlayer = lobby?.players.length === 1
 
-  const {
-    handleSubmit,
-    register,
-    reset
-  } = useForm<SeedForm>({
+  const { handleSubmit, register, reset } = useForm<SeedForm>({
     resolver: zodResolver(seedForm),
     defaultValues: {
       seed: lobby?.seedId || "",
@@ -79,25 +107,20 @@ const LobbyWaiting = () => {
   }, [lobby?.seedId])
 
   const initDriver = () => {
-    const steps: DriveStep[] = [
-      STEPS.LOBBY_PLAYERS,
-    ]
+    const steps: DriveStep[] = [STEPS.LOBBY_PLAYERS]
 
     if (isOwner) {
       steps.push(STEPS.LOBBY_CONFIG, STEPS.LOBBY_SEED, STEPS.JOIN_LOBBY_LINK)
 
-      if (isOnlyPlayer)
-        steps.push(STEPS.START_BUTTON_SOLO)
-      else
-        steps.push(STEPS.READY_BUTTON, STEPS.START_BUTTON)
-    } else
-      steps.push(STEPS.READY_BUTTON)
+      if (isOnlyPlayer) steps.push(STEPS.START_BUTTON_SOLO)
+      else steps.push(STEPS.READY_BUTTON, STEPS.START_BUTTON)
+    } else steps.push(STEPS.READY_BUTTON)
 
     const driverObj = driver({
       showProgress: true,
       steps,
       allowKeyboardControl: true,
-      onDestroyed: () => setIsSkipDriver(true)
+      onDestroyed: () => setIsSkipDriver(true),
     })
 
     driverObj.drive()
@@ -105,7 +128,8 @@ const LobbyWaiting = () => {
 
   useEffect(() => {
     if (!lobby || hasDrivenRef.current) return
-    if (getItemFromLocalStorage<boolean>(STORAGE_KEYS.DRIVER_WAITING_ROOM)) return
+    if (getItemFromLocalStorage<boolean>(STORAGE_KEYS.DRIVER_WAITING_ROOM))
+      return
 
     hasDrivenRef.current = true
     initDriver()
@@ -132,12 +156,14 @@ const LobbyWaiting = () => {
 
     updateLobbyConfig({
       lobbyId: lobby.id,
-      config: newConfig
+      config: newConfig,
     })
   }
 
   const copyUrl = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/${locale}${PAGES.JOIN_LOBBY}/${lobby.code}`)
+    navigator.clipboard.writeText(
+      `${window.location.origin}/${locale}${PAGES.JOIN_LOBBY}/${lobby.code}`,
+    )
     toast.success(t("lobbyUrlCopied"))
   }
 
@@ -159,31 +185,54 @@ const LobbyWaiting = () => {
   }
 
   return (
-    <main className="min-h-full-height flex items-center justify-center relative bg-repeat bg-center bg-size-[25%]" style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}>
-      <Image src={ASSET_URLS.BOTTOM_GB} alt="Gradient br" width={360} height={203} className="absolute bottom-0 right-0 z-0" />
+    <main
+      className="min-h-full-height flex items-center justify-center relative bg-repeat bg-center bg-size-[25%]"
+      style={{ backgroundImage: `url(${ASSET_URLS.CREATOR_BACKGROUND})` }}
+    >
+      <Image
+        src={ASSET_URLS.BOTTOM_GB}
+        alt="Gradient br"
+        width={360}
+        height={203}
+        className="absolute bottom-0 right-0 z-0"
+      />
       <div className="bg-background/80 space-y-8 lg:w-3/4 w-5/6 z-10 lg:my-0 my-4">
-        <section id={DRIVER_IDS.LOBBY_PLAYERS} className="w-full flex flex-col border border-dashed items-center gap-4 p-6  text-muted-primary-foreground">
-          <p className="text-lg ">{t("playersInLobby", { count: lobby.players.length, max: lobby.config.maxPlayers })}</p>
+        <section
+          id={DRIVER_IDS.LOBBY_PLAYERS}
+          className="w-full flex flex-col border border-dashed items-center gap-4 p-6  text-muted-primary-foreground"
+        >
+          <p className="text-lg ">
+            {t("playersInLobby", {
+              count: lobby.players.length,
+              max: lobby.config.maxPlayers,
+            })}
+          </p>
           <LobbyAvatars />
           {!isOnlyPlayer && (
             <p>
-              {t("readyCount", { count: lobby.players.filter((p) => p.isReady).length, total: lobby.players.length })}
+              {t("readyCount", {
+                count: lobby.players.filter((p) => p.isReady).length,
+                total: lobby.players.length,
+              })}
             </p>
           )}
         </section>
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <article id={DRIVER_IDS.LOBBY_CONFIG} className="w-full flex flex-col border border-dashed items-center justify-between p-6">
+          <article
+            id={DRIVER_IDS.LOBBY_CONFIG}
+            className="w-full flex flex-col border border-dashed items-center justify-between p-6"
+          >
             <h2 className="mb-8">{t("config")}</h2>
             <div className="flex flex-col items-center gap-4">
               <Separator orientation="horizontal" />
               <Field orientation="horizontal" className="justify-between">
-                <FieldDescription>
-                  {t("numberOfRounds")}
-                </FieldDescription>
+                <FieldDescription>{t("numberOfRounds")}</FieldDescription>
 
                 <Select
                   value={lobby.config.numberOfRounds.toString()}
-                  onValueChange={(value) => changeConfig({ numberOfRounds: Number.parseInt(value) })}
+                  onValueChange={(value) =>
+                    changeConfig({ numberOfRounds: Number.parseInt(value) })
+                  }
                   disabled={disabled || hasLobbySeed}
                 >
                   <SelectTrigger
@@ -207,25 +256,28 @@ const LobbyWaiting = () => {
                     ))}
                   </SelectContent>
                 </Select>
-
               </Field>
               <Separator orientation="horizontal" />
 
               <Field orientation="horizontal" className="justify-between">
-                <FieldDescription>
-                  {t("playersLives")}
-                </FieldDescription>
+                <FieldDescription>{t("playersLives")}</FieldDescription>
                 <Select
                   value={lobby.config.playersLives?.toString()}
-                  onValueChange={(value) => changeConfig({ playersLives: value !== "null" ? Number.parseInt(value) : null })}
+                  onValueChange={(value) =>
+                    changeConfig({
+                      playersLives:
+                        value !== "null" ? Number.parseInt(value) : null,
+                    })
+                  }
                   disabled={disabled}
-
                 >
                   <SelectTrigger
                     data-testid="select-player-live-trigger"
                     className="w-20"
                   >
-                    <SelectValue placeholder={`${t("playersLives")} ${lobby.config.playersLives || t("unlimited")}`} />
+                    <SelectValue
+                      placeholder={`${t("playersLives")} ${lobby.config.playersLives || t("unlimited")}`}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {OPTIONS_PLAYERS_LIVES.map((playerLive) => (
@@ -242,19 +294,21 @@ const LobbyWaiting = () => {
               </Field>
               <Separator orientation="horizontal" />
               <Field orientation="horizontal" className="justify-between">
-                <FieldDescription>
-                  {t("roundDuration")}
-                </FieldDescription>
+                <FieldDescription>{t("roundDuration")}</FieldDescription>
                 <Select
                   value={lobby.config.roundDuration?.toString()}
-                  onValueChange={(value) => changeConfig({ roundDuration: Number.parseInt(value) })}
+                  onValueChange={(value) =>
+                    changeConfig({ roundDuration: Number.parseInt(value) })
+                  }
                   disabled={disabled}
                 >
                   <SelectTrigger
                     data-testid="select-round-duration-trigger"
                     className="w-20"
                   >
-                    <SelectValue placeholder={`${t("roundDuration")} ${lobby.config.roundDuration}`} />
+                    <SelectValue
+                      placeholder={`${t("roundDuration")} ${lobby.config.roundDuration}`}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {OPTIONS_ROUND_DURATIONS.map((roundDuration) => (
@@ -271,12 +325,12 @@ const LobbyWaiting = () => {
               </Field>
               <Separator orientation="horizontal" />
               <Field orientation="horizontal" className="justify-between">
-                <FieldDescription>
-                  {t("gameMode")}
-                </FieldDescription>
+                <FieldDescription>{t("gameMode")}</FieldDescription>
                 <Select
                   value={lobby.config.mode}
-                  onValueChange={(value) => changeConfig({ mode: value as LobbyDoc["config"]["mode"] })}
+                  onValueChange={(value) =>
+                    changeConfig({ mode: value as LobbyDoc["config"]["mode"] })
+                  }
                   disabled={disabled}
                 >
                   <SelectTrigger
@@ -286,23 +340,45 @@ const LobbyWaiting = () => {
                     <SelectValue placeholder={t("gameMode")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem data-testid="select-game-mode-full-item" value={LOBBY_MODES.FULL}>{t("modeFull")}</SelectItem>
-                    <SelectItem data-testid="select-game-mode-game-only-item" value={LOBBY_MODES.GAME_ONLY}>{t("modeGameOnly")}</SelectItem>
-                    <SelectItem data-testid="select-game-mode-map-only-item" value={LOBBY_MODES.MAP_ONLY}>{t("modeMapOnly")}</SelectItem>
+                    <SelectItem
+                      data-testid="select-game-mode-full-item"
+                      value={LOBBY_MODES.FULL}
+                    >
+                      {t("modeFull")}
+                    </SelectItem>
+                    <SelectItem
+                      data-testid="select-game-mode-game-only-item"
+                      value={LOBBY_MODES.GAME_ONLY}
+                    >
+                      {t("modeGameOnly")}
+                    </SelectItem>
+                    <SelectItem
+                      data-testid="select-game-mode-map-only-item"
+                      value={LOBBY_MODES.MAP_ONLY}
+                    >
+                      {t("modeMapOnly")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
               <Separator orientation="horizontal" />
-              <Field id={DRIVER_IDS.LOBBY_SPECIAL_ROUNDS} orientation="horizontal" className="justify-between">
+              <Field
+                id={DRIVER_IDS.LOBBY_SPECIAL_ROUNDS}
+                orientation="horizontal"
+                className="justify-between"
+              >
                 <FieldDescription>
-                  <Label htmlFor="special-rounds">{t("enableSpecialRounds")} </Label>
+                  <Label htmlFor="special-rounds">
+                    {t("enableSpecialRounds")}{" "}
+                  </Label>
                 </FieldDescription>
                 <Switch
                   id="special-rounds"
                   data-testid="special-rounds"
                   checked={isMapOnly ? false : lobby.config.hasSpecialRounds}
                   onCheckedChange={(checked) =>
-                    changeConfig({ hasSpecialRounds: checked })}
+                    changeConfig({ hasSpecialRounds: checked })
+                  }
                   disabled={disabled || hasLobbySeed || isMapOnly}
                 />
               </Field>
@@ -319,7 +395,8 @@ const LobbyWaiting = () => {
                     disabled={isLoading || disabled}
                     {...register("seed")}
                     onPaste={(e) => {
-                      if (e.clipboardData.getData("text")) setTimeout(handleSubmit(onSubmitSeed), 0)
+                      if (e.clipboardData.getData("text"))
+                        setTimeout(() => void handleSubmit(onSubmitSeed)(), 0)
                     }}
                   />
                   <InputGroupAddon>
@@ -335,7 +412,9 @@ const LobbyWaiting = () => {
                     {hasLobbySeed && (
                       <InputGroupButton
                         data-testid="clear-seed-button"
-                        onClick={async () => applySeed({ lobbyId: lobby.id, seedId: "" })}
+                        onClick={async () =>
+                          applySeed({ lobbyId: lobby.id, seedId: "" })
+                        }
                       >
                         <Trash className="size-4" />
                       </InputGroupButton>
@@ -348,9 +427,24 @@ const LobbyWaiting = () => {
             <ScrollArea className="h-64 relative w-full">
               <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-2">
                 {featuredSeeds?.map((seed) => (
-                  <button disabled={isLoading || disabled} key={seed.id} className="cursor-pointer hover:bg-primary/50 relative" onClick={() => applySeed({ lobbyId: lobby.id, seedId: seed.id })}>
-                    <Image src={seed.rounds[0]?.gameThumbnailUrl || FALL_BACK_IMAGE} alt={seed.name} width={100} height={100} className="object-cover object-center size-full max-h-28" />
-                    <p className="bg-background text-primary font-mono absolute bottom-0 left-0 w-full">{seed.name}</p>
+                  <button
+                    disabled={isLoading || disabled}
+                    key={seed.id}
+                    className="cursor-pointer hover:bg-primary/50 relative"
+                    onClick={() =>
+                      applySeed({ lobbyId: lobby.id, seedId: seed.id })
+                    }
+                  >
+                    <Image
+                      src={seed.rounds[0]?.gameThumbnailUrl || FALL_BACK_IMAGE}
+                      alt={seed.name}
+                      width={100}
+                      height={100}
+                      className="object-cover object-center size-full max-h-28"
+                    />
+                    <p className="bg-background text-primary font-mono absolute bottom-0 left-0 w-full">
+                      {seed.name}
+                    </p>
                   </button>
                 ))}
               </div>
@@ -359,8 +453,13 @@ const LobbyWaiting = () => {
           </article>
         </section>
         <section className="w-full flex flex-col lg:flex-row justify-center border border-dashed items-center gap-4 p-6 ">
-          <Button id={DRIVER_IDS.JOIN_LOBBY_LINK} variant="marathon-white" onClick={copyUrl}>
-            {t("joinThisLobby", { code: lobby.code })} <ArrowUpRightFromSquareIcon className="size-4" />
+          <Button
+            id={DRIVER_IDS.JOIN_LOBBY_LINK}
+            variant="marathon-white"
+            onClick={copyUrl}
+          >
+            {t("joinThisLobby", { code: lobby.code })}{" "}
+            <ArrowUpRightFromSquareIcon className="size-4" />
           </Button>
 
           {isOnlyPlayer && (
@@ -371,7 +470,7 @@ const LobbyWaiting = () => {
                 updatePlayerReady({
                   lobbyId,
                   playerId: userId,
-                  isReady: !isMeReady
+                  isReady: !isMeReady,
                 })
                 await startLobby({ lobbyId })
               }}
@@ -386,11 +485,13 @@ const LobbyWaiting = () => {
                 id={DRIVER_IDS.READY_BUTTON}
                 data-testid="ready-button"
                 variant={isMeReady ? "marathon-outline" : "marathon"}
-                onClick={() => updatePlayerReady({
-                  lobbyId,
-                  playerId: userId,
-                  isReady: !isMeReady
-                })}
+                onClick={() =>
+                  updatePlayerReady({
+                    lobbyId,
+                    playerId: userId,
+                    isReady: !isMeReady,
+                  })
+                }
               >
                 {isMeReady ? t("cancelReady") : t("imReady")}
               </Button>
@@ -399,7 +500,9 @@ const LobbyWaiting = () => {
                   <Button
                     id={DRIVER_IDS.START_BUTTON}
                     data-testid="start-lobby-button"
-                    variant={areAllPlayersReady ? "marathon" : "marathon-outline"}
+                    variant={
+                      areAllPlayersReady ? "marathon" : "marathon-outline"
+                    }
                     disabled={disabled || !areAllPlayersReady}
                     onClick={async () => await startLobby({ lobbyId })}
                   >
@@ -414,7 +517,6 @@ const LobbyWaiting = () => {
           )}
         </section>
       </div>
-
     </main>
   )
 }

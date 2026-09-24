@@ -3,15 +3,30 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { isSameNormalized, ROUND_POINTS } from "@repo/common"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import useSound from "use-sound"
-import z from "zod"
-import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import { useSound } from "use-sound"
+import { z } from "zod"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
 import { SOUNDS } from "@/constants/sound"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { usePathname } from "@/i18n/routing"
 import { useGetAllGamesNamesQuery } from "@/redux/api/games"
-import { useIncrementPlayerLivesUsedMutation, useSubmitRoundAnswerMutation } from "@/redux/api/lobby"
-import { selectCurrentRoundData, selectCurrentRoundIndex, selectLobbyConfig, selectMyLivesRemaining, selectSelectedOption } from "@/redux/lobby/lobby.selectors"
+import {
+  useIncrementPlayerLivesUsedMutation,
+  useSubmitRoundAnswerMutation,
+} from "@/redux/api/lobby"
+import {
+  selectCurrentRoundData,
+  selectCurrentRoundIndex,
+  selectLobbyConfig,
+  selectMyLivesRemaining,
+  selectSelectedOption,
+} from "@/redux/lobby/lobby.selectors"
 import { selectUser } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
@@ -36,40 +51,51 @@ const GameInputGuess = () => {
   const user = useAppSelector(selectUser)
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
-  const selectedOption = useAppSelector(selectSelectedOption(lobbyId, roundIndex))
+  const selectedOption = useAppSelector(
+    selectSelectedOption(lobbyId, roundIndex),
+  )
   const config = useAppSelector(selectLobbyConfig(lobbyId))
-  const livesRemaining = useAppSelector(selectMyLivesRemaining(lobbyId, roundIndex))
+  const livesRemaining = useAppSelector(
+    selectMyLivesRemaining(lobbyId, roundIndex),
+  )
 
   const [comboboxKey, setComboboxKey] = useState(0)
   const [playCorrect] = useSound(SOUNDS.CORRECT_GAME, { volume: 0.5 })
   const [playWrong] = useSound(SOUNDS.WRONG, { volume: 0.5 })
 
-  const {
-    handleSubmit,
-    register,
-    watch,
-    setValue,
-    reset,
-  } = useForm<Schema>({
+  const { handleSubmit, register, watch, setValue, reset } = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: { input: "" },
   })
 
   const lowerCaseInput = (watch("input") || "").toLocaleLowerCase().trim()
 
-  const gameList = allGamesNames?.filter(({ title }) => title.trim().toLocaleLowerCase().includes(lowerCaseInput)) || []
+  const gameList =
+    allGamesNames?.filter(({ title }) =>
+      title.trim().toLocaleLowerCase().includes(lowerCaseInput),
+    ) || []
 
   const verifyGameName = async (data: Schema) => {
     const input = data.input.trim()
 
     if (!currentRoundData) return
 
-    const playerAnswerValue = input?.toString() || ""
+    const playerAnswerValue = input || ""
 
-    const correctGameName = selectedOption?.gameTitle || currentRoundData.gameTitle || ""
-    const alternateNames = selectedOption?.gameAlternateNames || currentRoundData.gameAlternateNames || []
+    const correctGameName =
+      selectedOption?.gameTitle || currentRoundData.gameTitle || ""
+    const alternateNames =
+      selectedOption?.gameAlternateNames ||
+      currentRoundData.gameAlternateNames ||
+      []
 
-    const isCorrect = Boolean(correctGameName && (isSameNormalized(correctGameName, playerAnswerValue) || alternateNames.some((name) => isSameNormalized(name, playerAnswerValue))))
+    const isCorrect = Boolean(
+      correctGameName &&
+      (isSameNormalized(correctGameName, playerAnswerValue) ||
+        alternateNames.some((name) =>
+          isSameNormalized(name, playerAnswerValue),
+        )),
+    )
 
     if (isCorrect) {
       playCorrect()
@@ -87,7 +113,11 @@ const GameInputGuess = () => {
       })
     } else {
       playWrong()
-      await incrementLivesUsed({ lobbyId, playerId: user?.id || "", roundIndex })
+      await incrementLivesUsed({
+        lobbyId,
+        playerId: user?.id || "",
+        roundIndex,
+      })
       reset()
       setComboboxKey((k) => k + 1)
     }
@@ -99,18 +129,23 @@ const GameInputGuess = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(verifyGameName)} autoComplete="off" className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-0 flex flex-col items-center gap-4">
+    <form
+      onSubmit={handleSubmit(verifyGameName)}
+      autoComplete="off"
+      className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-0 flex flex-col items-center gap-4"
+    >
       {config?.playersLives && (
-        <div data-testid="lives-container" className="w-full flex justify-center items-center gap-8">
-          {
-            Array.from({ length: config.playersLives }, (_, i) => (
-              <div
-                key={i}
-                data-is-filled={i < livesRemaining}
-                className="size-6 transition-colors data-[is-filled=false]:shadow-glow-xs data-[is-filled=false]:shadow-destructive/70 data-[is-filled=true]:bg-primary data-[is-filled=true]:shadow-primary/70 border border-secondary data-[is-filled=false]:bg-destructive/30"
-              />
-            ))
-          }
+        <div
+          data-testid="lives-container"
+          className="w-full flex justify-center items-center gap-8"
+        >
+          {Array.from({ length: config.playersLives }, (_, i) => (
+            <div
+              key={i}
+              data-is-filled={i < livesRemaining}
+              className="size-6 transition-colors data-[is-filled=false]:shadow-glow-xs data-[is-filled=false]:shadow-destructive/70 data-[is-filled=true]:bg-primary data-[is-filled=true]:shadow-primary/70 border border-secondary data-[is-filled=false]:bg-destructive/30"
+            />
+          ))}
         </div>
       )}
       <Combobox key={comboboxKey}>
@@ -128,7 +163,12 @@ const GameInputGuess = () => {
           <ComboboxContent sideOffset={8} side="top" align="center">
             <ComboboxList>
               {gameList?.map((game) => (
-                <ComboboxItem key={game.id} value={game.title} className="font-mono" onClick={() => handleClickItem(game.title)}>
+                <ComboboxItem
+                  key={game.id}
+                  value={game.title}
+                  className="font-mono"
+                  onClick={() => handleClickItem(game.title)}
+                >
                   {game.title}
                 </ComboboxItem>
               ))}

@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "zod"
 import { MEMBERSHIPS_EVENTS } from "@/constants/mapping"
 
 const membershipData = z.object({
@@ -64,5 +64,7 @@ export const payloadSchema = z.discriminatedUnion("type", [
 
 export type PayloadMembershipStarted = z.infer<typeof payloadMembershipStarted>
 export type PayloadMembershipUpdated = z.infer<typeof payloadMembershipUpdated>
-export type PayloadMembershipCancelled = z.infer<typeof payloadMembershipCancelled>
+export type PayloadMembershipCancelled = z.infer<
+  typeof payloadMembershipCancelled
+>
 export type Payload = z.infer<typeof payloadSchema>

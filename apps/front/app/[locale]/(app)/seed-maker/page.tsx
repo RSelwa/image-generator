@@ -29,7 +29,7 @@ import {
 import { type Round, roundSchema, type SpecialRoundOption } from "@repo/schemas"
 import { memo, useCallback, useMemo, useState } from "react"
 import { toast } from "sonner"
-import z from "zod"
+import { z } from "zod"
 import { type DragData } from "@/components/seed-maker/draggable-image-card"
 import GameGallery from "@/components/seed-maker/game-gallery"
 import ImagePicker from "@/components/seed-maker/image-picker"
@@ -56,65 +56,76 @@ type SortableRoundProps = {
   onToggleSpecial: (index: number) => void
 }
 
-const SortableRound = memo(({
-  id,
-  index,
-  round,
-  isSpecial,
-  onClear,
-  onClearOption,
-  onDifficultyChange,
-  onToggleSpecial,
-}: SortableRoundProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id })
+const SortableRound = memo(
+  ({
+    id,
+    index,
+    round,
+    isSpecial,
+    onClear,
+    onClearOption,
+    onDifficultyChange,
+    onToggleSpecial,
+  }: SortableRoundProps) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({ id })
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  }
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+    }
 
-  const dragHandleProps = { ...attributes, ...listeners }
+    const dragHandleProps = { ...attributes, ...listeners }
 
-  const boundClear = useCallback(() => onClear(index), [onClear, index])
-  const boundClearOption = useCallback((optionIndex: number) => onClearOption(index, optionIndex), [onClearOption, index])
-  const boundDifficultyChange = useCallback((d: string) => onDifficultyChange(index, d), [onDifficultyChange, index])
-  const boundToggleSpecial = useCallback(() => onToggleSpecial(index), [onToggleSpecial, index])
+    const boundClear = useCallback(() => onClear(index), [onClear, index])
+    const boundClearOption = useCallback(
+      (optionIndex: number) => onClearOption(index, optionIndex),
+      [onClearOption, index],
+    )
+    const boundDifficultyChange = useCallback(
+      (d: string) => onDifficultyChange(index, d),
+      [onDifficultyChange, index],
+    )
+    const boundToggleSpecial = useCallback(
+      () => onToggleSpecial(index),
+      [onToggleSpecial, index],
+    )
 
-  return (
-    <div ref={setNodeRef} style={style}>
-      {isSpecial && (
-        <RoundSlotSpecial
-          index={index}
-          round={round}
-          onClearOption={boundClearOption}
-          onClearAll={boundClear}
-          onDifficultyChange={boundDifficultyChange}
-          onToggleSpecial={boundToggleSpecial}
-          dragHandleProps={dragHandleProps}
-        />
-      )}
-      {!isSpecial && (
-        <RoundSlot
-          index={index}
-          round={round}
-          onClear={boundClear}
-          onDifficultyChange={boundDifficultyChange}
-          onToggleSpecial={boundToggleSpecial}
-          isSpecial={isSpecial}
-          dragHandleProps={dragHandleProps}
-        />
-      )}
-    </div>
-  )
-})
+    return (
+      <div ref={setNodeRef} style={style}>
+        {isSpecial && (
+          <RoundSlotSpecial
+            index={index}
+            round={round}
+            onClearOption={boundClearOption}
+            onClearAll={boundClear}
+            onDifficultyChange={boundDifficultyChange}
+            onToggleSpecial={boundToggleSpecial}
+            dragHandleProps={dragHandleProps}
+          />
+        )}
+        {!isSpecial && (
+          <RoundSlot
+            index={index}
+            round={round}
+            onClear={boundClear}
+            onDifficultyChange={boundDifficultyChange}
+            onToggleSpecial={boundToggleSpecial}
+            isSpecial={isSpecial}
+            dragHandleProps={dragHandleProps}
+          />
+        )}
+      </div>
+    )
+  },
+)
 
 const buildNormalRound = (data: DragData): Round => ({
   isSpecial: false,
@@ -168,23 +179,34 @@ const Page = () => {
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 5 },
+    }),
   )
 
-  const roundIds = useMemo(() => rounds.map((_, i) => `sortable-round-${i}`), [rounds.length])
+  const roundIds = useMemo(
+    () => rounds.map((_, i) => `sortable-round-${i}`),
+    [rounds.length],
+  )
 
   const handleRoundCountChange = (count: number) => {
     setRoundCount(count)
     setRounds((prev) => {
       if (count > prev.length) {
-        return [...prev, ...Array.from({ length: count - prev.length }, () => null)]
+        return [
+          ...prev,
+          ...Array.from({ length: count - prev.length }, () => null),
+        ]
       }
 
       return prev.slice(0, count)
     })
     setSpecialFlags((prev) => {
       if (count > prev.length) {
-        return [...prev, ...Array.from({ length: count - prev.length }, () => false)]
+        return [
+          ...prev,
+          ...Array.from({ length: count - prev.length }, () => false),
+        ]
       }
 
       return prev.slice(0, count)
@@ -200,7 +222,9 @@ const Page = () => {
       setRounds((prev) =>
         prev.map((round, i) => {
           if ((i + 1) % NUMBER_OF_ROUNDS_PER_STAGE === 0) {
-            return round ? { ...round, isSpecial: true, options: round.options || null } : null
+            return round
+              ? { ...round, isSpecial: true, options: round.options || null }
+              : null
           }
 
           return round ? { ...round, isSpecial: false } : null
@@ -209,7 +233,9 @@ const Page = () => {
     } else {
       setSpecialFlags((prev) => prev.map(() => false))
       setRounds((prev) =>
-        prev.map((round) => (round ? { ...round, isSpecial: false, options: null } : null)),
+        prev.map((round) =>
+          round ? { ...round, isSpecial: false, options: null } : null,
+        ),
       )
     }
   }
@@ -225,7 +251,11 @@ const Page = () => {
       const next = [...prev]
       const round = next[index]
       if (round) {
-        next[index] = { ...round, isSpecial: !round.isSpecial, options: !round.isSpecial ? (round.options || null) : null }
+        next[index] = {
+          ...round,
+          isSpecial: !round.isSpecial,
+          options: !round.isSpecial ? round.options || null : null,
+        }
       }
 
       return next
@@ -241,96 +271,113 @@ const Page = () => {
     })
   }, [])
 
-  const handleClearOption = useCallback((roundIndex: number, optionIndex: number) => {
-    setRounds((prev) => {
-      const next = [...prev]
-      const round = next[roundIndex]
-      if (round?.options) {
-        const newOptions = [...round.options]
-        newOptions[optionIndex] = null as unknown as SpecialRoundOption
+  const handleClearOption = useCallback(
+    (roundIndex: number, optionIndex: number) => {
+      setRounds((prev) => {
+        const next = [...prev]
+        const round = next[roundIndex]
+        if (round?.options) {
+          const newOptions = [...round.options]
+          newOptions[optionIndex] = null as unknown as SpecialRoundOption
 
-        next[roundIndex] = { ...round, options: newOptions }
-      }
+          next[roundIndex] = { ...round, options: newOptions }
+        }
 
-      return next
-    })
-  }, [])
+        return next
+      })
+    },
+    [],
+  )
 
-  const handleDifficultyChange = useCallback((index: number, difficulty: string) => {
-    setRounds((prev) => {
-      const next = [...prev]
-      const round = next[index]
-      if (round) {
-        next[index] = { ...round, difficulty: difficulty as Round["difficulty"] }
-      }
+  const handleDifficultyChange = useCallback(
+    (index: number, difficulty: string) => {
+      setRounds((prev) => {
+        const next = [...prev]
+        const round = next[index]
+        if (round) {
+          next[index] = {
+            ...round,
+            difficulty: difficulty as Round["difficulty"],
+          }
+        }
 
-      return next
-    })
-  }, [])
+        return next
+      })
+    },
+    [],
+  )
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveDragId(String(event.active.id))
   }, [])
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    setActiveDragId(null)
-    const { active, over } = event
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      setActiveDragId(null)
+      const { active, over } = event
 
-    if (!over) return
+      if (!over) return
 
-    const overId = String(over.id)
+      const overId = String(over.id)
 
-    // Handle sortable round reordering
-    if (overId.startsWith("sortable-round-") && String(active.id).startsWith("sortable-round-")) {
-      const oldIndex = roundIds.indexOf(String(active.id))
-      const newIndex = roundIds.indexOf(overId)
-      if (oldIndex !== newIndex) {
-        setRounds((prev) => arrayMove(prev, oldIndex, newIndex))
-        setSpecialFlags((prev) => arrayMove(prev, oldIndex, newIndex))
+      // Handle sortable round reordering
+      if (
+        overId.startsWith("sortable-round-") &&
+        String(active.id).startsWith("sortable-round-")
+      ) {
+        const oldIndex = roundIds.indexOf(String(active.id))
+        const newIndex = roundIds.indexOf(overId)
+        if (oldIndex !== newIndex) {
+          setRounds((prev) => arrayMove(prev, oldIndex, newIndex))
+          setSpecialFlags((prev) => arrayMove(prev, oldIndex, newIndex))
+        }
+
+        return
       }
 
-      return
-    }
+      // Handle image drop onto round slot
+      const dragData = active.data.current as DragData | undefined
+      if (!dragData) return
 
-    // Handle image drop onto round slot
-    const dragData = active.data.current as DragData | undefined
-    if (!dragData) return
+      const dropData = over.data.current as
+        | { index: number; optionIndex?: number; isSpecial?: boolean }
+        | undefined
+      if (!dropData) return
 
-    const dropData = over.data.current as { index: number, optionIndex?: number, isSpecial?: boolean } | undefined
-    if (!dropData) return
+      const { index: roundIndex, optionIndex, isSpecial } = dropData
 
-    const { index: roundIndex, optionIndex, isSpecial } = dropData
+      if (isSpecial && optionIndex !== undefined) {
+        // Drop onto special round option
+        const option = buildSpecialOption(dragData)
+        setRounds((prev) => {
+          const next = [...prev]
+          const round = next[roundIndex]
+          const currentOptions = round?.options || [null, null, null, null]
+          const newOptions = [...currentOptions]
+          newOptions[optionIndex] = option
 
-    if (isSpecial && optionIndex !== undefined) {
-      // Drop onto special round option
-      const option = buildSpecialOption(dragData)
-      setRounds((prev) => {
-        const next = [...prev]
-        const round = next[roundIndex]
-        const currentOptions = round?.options || [null, null, null, null]
-        const newOptions = [...currentOptions]
-        newOptions[optionIndex] = option
+          next[roundIndex] = {
+            ...round,
+            isSpecial: true,
+            options: newOptions as Round["options"],
+            difficulty: round?.difficulty || DIFFICULTIES.EASY,
+          } as Round
 
-        next[roundIndex] = {
-          ...(round || {}),
-          isSpecial: true,
-          options: newOptions as Round["options"],
-          difficulty: round?.difficulty || DIFFICULTIES.EASY,
-        } as Round
+          return next
+        })
+      } else {
+        // Drop onto normal round slot
+        const newRound = buildNormalRound(dragData)
+        setRounds((prev) => {
+          const next = [...prev]
+          next[roundIndex] = newRound
 
-        return next
-      })
-    } else {
-      // Drop onto normal round slot
-      const newRound = buildNormalRound(dragData)
-      setRounds((prev) => {
-        const next = [...prev]
-        next[roundIndex] = newRound
-
-        return next
-      })
-    }
-  }, [roundIds])
+          return next
+        })
+      }
+    },
+    [roundIds],
+  )
 
   const handleSave = async () => {
     const validRounds = rounds.filter((r) => {
@@ -399,7 +446,8 @@ const Page = () => {
             {!selectedGame && (
               <GameGallery
                 onSelectGame={(id, title, image, alternateNames) =>
-                  setSelectedGame({ id, title, image, alternateNames })}
+                  setSelectedGame({ id, title, image, alternateNames })
+                }
               />
             )}
             {selectedGame && (
@@ -421,7 +469,10 @@ const Page = () => {
               </p>
             </div>
 
-            <SortableContext items={roundIds} strategy={verticalListSortingStrategy}>
+            <SortableContext
+              items={roundIds}
+              strategy={verticalListSortingStrategy}
+            >
               <div className="flex flex-col gap-2">
                 {rounds.map((round, index) => (
                   <SortableRound

@@ -4,11 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import z from "zod"
+import { z } from "zod"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
 import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group"
-import { useMarkConversationReadMutation, useSendConversationMessageMutation, useSubscribeConversationMessagesQuery, useSubscribeConversationQuery } from "@/redux/api/conversations"
+import {
+  useMarkConversationReadMutation,
+  useSendConversationMessageMutation,
+  useSubscribeConversationMessagesQuery,
+  useSubscribeConversationQuery,
+} from "@/redux/api/conversations"
 import { useGetUserByIdQuery } from "@/redux/api/user"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -22,9 +27,16 @@ type SenderNameProps = {
 }
 
 const SenderName = ({ senderId }: SenderNameProps) => {
-  const { data: user } = useGetUserByIdQuery({ id: senderId }, { skip: !senderId })
+  const { data: user } = useGetUserByIdQuery(
+    { id: senderId },
+    { skip: !senderId },
+  )
 
-  return <p className="text-xs text-muted-foreground mb-0.5 truncate">{user?.pseudo || user?.email || ""}</p>
+  return (
+    <p className="text-xs text-muted-foreground mb-0.5 truncate">
+      {user?.pseudo || user?.email || ""}
+    </p>
+  )
 }
 
 type Props = {
@@ -35,8 +47,14 @@ export const ConversationThread = ({ conversationId }: Props) => {
   const uid = useAppSelector(selectUserId)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const { data: conversation } = useSubscribeConversationQuery({ conversationId }, { skip: !conversationId })
-  const { data: messages = [] } = useSubscribeConversationMessagesQuery({ conversationId }, { skip: !conversationId })
+  const { data: conversation } = useSubscribeConversationQuery(
+    { conversationId },
+    { skip: !conversationId },
+  )
+  const { data: messages = [] } = useSubscribeConversationMessagesQuery(
+    { conversationId },
+    { skip: !conversationId },
+  )
   const [sendMessage, { isLoading }] = useSendConversationMessageMutation()
   const [markConversationRead] = useMarkConversationReadMutation()
 
@@ -72,23 +90,32 @@ export const ConversationThread = ({ conversationId }: Props) => {
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto space-y-2 p-2 min-h-0">
         {messages.length === 0 && (
-          <p className="text-muted-foreground text-sm text-center py-4">Aucun message pour le moment</p>
+          <p className="text-muted-foreground text-sm text-center py-4">
+            Aucun message pour le moment
+          </p>
         )}
         {messages.map((message) => (
           <div
             key={message.id}
             className={cn(
               "max-w-[80%] rounded-lg px-3 py-2 text-sm",
-              message.senderId === uid ? "ml-auto bg-primary text-primary-foreground" : "bg-muted text-foreground",
+              message.senderId === uid
+                ? "ml-auto bg-primary text-primary-foreground"
+                : "bg-muted text-foreground",
             )}
           >
-            {showsSenders && message.senderId !== uid && <SenderName senderId={message.senderId} />}
+            {showsSenders && message.senderId !== uid && (
+              <SenderName senderId={message.senderId} />
+            )}
             {message.content}
           </div>
         ))}
         <div ref={bottomRef} />
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2 p-2 border-t">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex gap-2 p-2 border-t"
+      >
         <InputGroup className="flex-1">
           <InputGroupTextarea
             placeholder="Écrire un message..."
@@ -96,7 +123,12 @@ export const ConversationThread = ({ conversationId }: Props) => {
             {...register("content")}
           />
         </InputGroup>
-        <Button type="submit" disabled={isLoading || !uid} size="sm" className="self-end">
+        <Button
+          type="submit"
+          disabled={isLoading || !uid}
+          size="sm"
+          className="self-end"
+        >
           {isLoading ? <Loader /> : "Envoyer"}
         </Button>
       </form>

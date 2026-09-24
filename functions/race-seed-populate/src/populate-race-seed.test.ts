@@ -1,8 +1,24 @@
-import { METADATA_DOCS, mockedSphericalImageURL, RACE_SEED_EXTENSION_THRESHOLD, ROUND_TYPE, TABLES } from "@repo/common"
+import {
+  METADATA_DOCS,
+  mockedSphericalImageURL,
+  RACE_SEED_EXTENSION_THRESHOLD,
+  ROUND_TYPE,
+  TABLES,
+} from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { type DecodedIdToken } from "@repo/providers/firebase"
-import { type MarathonSeedDoc, type MarathonSeedDocWithId, type ReadyImageItem, readyImageItemSchema, type ReadyImagesDoc } from "@repo/schemas"
-import { gameFactory, marathonSeedFactory, sphericalFactory } from "@repo/testing/factory"
+import {
+  type MarathonSeedDoc,
+  type MarathonSeedDocWithId,
+  type ReadyImageItem,
+  readyImageItemSchema,
+  type ReadyImagesDoc,
+} from "@repo/schemas"
+import {
+  gameFactory,
+  marathonSeedFactory,
+  sphericalFactory,
+} from "@repo/testing/factory"
 import { getFirestore } from "firebase-admin/firestore"
 import firebaseFunctionsTest from "firebase-functions-test"
 import { type Request } from "firebase-functions/https"
@@ -14,7 +30,9 @@ const test = firebaseFunctionsTest()
 
 beforeAll(() => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
-    throw new Error("FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.")
+    throw new Error(
+      "FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.",
+    )
   }
 })
 
@@ -25,7 +43,9 @@ const cleanupCollection = async (collectionRef: FirebaseFirestore.Query) => {
   await batch.commit()
 }
 
-const createSeed = async (overrides: Partial<MarathonSeedDocWithId> = {}): Promise<MarathonSeedDocWithId> => {
+const createSeed = async (
+  overrides: Partial<MarathonSeedDocWithId> = {},
+): Promise<MarathonSeedDocWithId> => {
   const seedData = marathonSeedFactory(overrides)
   await refs[TABLES.MARATHON_SEEDS].doc(seedData.id).set(seedData)
 
@@ -36,8 +56,9 @@ const setReadyImages = async (readyImages: ReadyImagesDoc) => {
   await refs[TABLES.METADATA].doc(METADATA_DOCS.READY_IMAGES).set(readyImages)
 }
 
-const buildReadySpherical = (item: Pick<ReadyImageItem, "id" | "gameId" | "image">) =>
-  readyImageItemSchema.parse({ type: ROUND_TYPE.SPHERICAL, ...item })
+const buildReadySpherical = (
+  item: Pick<ReadyImageItem, "id" | "gameId" | "image">,
+) => readyImageItemSchema.parse({ type: ROUND_TYPE.SPHERICAL, ...item })
 
 const seedRound = (gameId: string, sphericalId: string) => ({
   gameId,
@@ -61,12 +82,26 @@ describe("populateRaceSeed", () => {
 
   it("should not extend the seed when the player still has enough rounds ahead", async () => {
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+    })
 
-    await setReadyImages({ sphericals: [buildReadySpherical({ id: spherical.id, gameId: game.id, image: spherical.image })], flats: [] })
+    await setReadyImages({
+      sphericals: [
+        buildReadySpherical({
+          id: spherical.id,
+          gameId: game.id,
+          image: spherical.image,
+        }),
+      ],
+      flats: [],
+    })
 
-    const existingRounds = Array.from({ length: RACE_SEED_EXTENSION_THRESHOLD + 1 }, (_, i) =>
-      seedRound(game.id, `sph-${i}`))
+    const existingRounds = Array.from(
+      { length: RACE_SEED_EXTENSION_THRESHOLD + 1 },
+      (_, i) => seedRound(game.id, `sph-${i}`),
+    )
 
     const seed = await createSeed({ rounds: existingRounds })
 
@@ -78,13 +113,27 @@ describe("populateRaceSeed", () => {
   it("should extend the seed with new sphericals when player is close to the end", async () => {
     const game1 = gameFactory({})
     const game2 = gameFactory({})
-    const spherical1 = sphericalFactory({ gameId: game1.id, image: "https://example.com/1.jpg" })
-    const spherical2 = sphericalFactory({ gameId: game2.id, image: "https://example.com/2.jpg" })
+    const spherical1 = sphericalFactory({
+      gameId: game1.id,
+      image: "https://example.com/1.jpg",
+    })
+    const spherical2 = sphericalFactory({
+      gameId: game2.id,
+      image: "https://example.com/2.jpg",
+    })
 
     await setReadyImages({
       sphericals: [
-        buildReadySpherical({ id: spherical1.id, gameId: game1.id, image: spherical1.image }),
-        buildReadySpherical({ id: spherical2.id, gameId: game2.id, image: spherical2.image }),
+        buildReadySpherical({
+          id: spherical1.id,
+          gameId: game1.id,
+          image: spherical1.image,
+        }),
+        buildReadySpherical({
+          id: spherical2.id,
+          gameId: game2.id,
+          image: spherical2.image,
+        }),
       ],
       flats: [],
     })
@@ -96,40 +145,71 @@ describe("populateRaceSeed", () => {
     expect(result).not.toBeNull()
     expect(result?.rounds.length).toBeGreaterThan(0)
     const addedIds = result?.rounds.map((r) => r.sphericalId)
-    expect(addedIds).toEqual(expect.arrayContaining([spherical1.id, spherical2.id]))
+    expect(addedIds).toEqual(
+      expect.arrayContaining([spherical1.id, spherical2.id]),
+    )
   })
 
   it("should skip sphericals already present in the seed", async () => {
     const game1 = gameFactory({})
     const game2 = gameFactory({})
-    const usedSpherical = sphericalFactory({ gameId: game1.id, image: mockedSphericalImageURL })
-    const freshSpherical = sphericalFactory({ gameId: game2.id, image: "https://example.com/fresh.jpg" })
+    const usedSpherical = sphericalFactory({
+      gameId: game1.id,
+      image: mockedSphericalImageURL,
+    })
+    const freshSpherical = sphericalFactory({
+      gameId: game2.id,
+      image: "https://example.com/fresh.jpg",
+    })
 
     await setReadyImages({
       sphericals: [
-        buildReadySpherical({ id: usedSpherical.id, gameId: game1.id, image: usedSpherical.image }),
-        buildReadySpherical({ id: freshSpherical.id, gameId: game2.id, image: freshSpherical.image }),
+        buildReadySpherical({
+          id: usedSpherical.id,
+          gameId: game1.id,
+          image: usedSpherical.image,
+        }),
+        buildReadySpherical({
+          id: freshSpherical.id,
+          gameId: game2.id,
+          image: freshSpherical.image,
+        }),
       ],
       flats: [],
     })
 
-    const seed = await createSeed({ rounds: [seedRound(game1.id, usedSpherical.id)] })
+    const seed = await createSeed({
+      rounds: [seedRound(game1.id, usedSpherical.id)],
+    })
 
     const result = await populateRaceSeed(seed.id, 0)
 
     const allSphericalIds = result?.rounds.map((r) => r.sphericalId) || []
-    expect(allSphericalIds.filter((id) => id === usedSpherical.id)).toHaveLength(1) // still there from existing rounds
+    expect(
+      allSphericalIds.filter((id) => id === usedSpherical.id),
+    ).toHaveLength(1) // still there from existing rounds
     expect(allSphericalIds).toContain(freshSpherical.id)
-    expect(allSphericalIds.filter((id) => id === freshSpherical.id)).toHaveLength(1) // not duplicated
+    expect(
+      allSphericalIds.filter((id) => id === freshSpherical.id),
+    ).toHaveLength(1) // not duplicated
   })
 
   it("should only include images from the metadata doc", async () => {
     const game = gameFactory({})
-    const readySpherical = sphericalFactory({ gameId: game.id, image: "https://example.com/ready.jpg" })
+    const readySpherical = sphericalFactory({
+      gameId: game.id,
+      image: "https://example.com/ready.jpg",
+    })
 
     // Only the ready one is in the metadata doc
     await setReadyImages({
-      sphericals: [buildReadySpherical({ id: readySpherical.id, gameId: game.id, image: readySpherical.image })],
+      sphericals: [
+        buildReadySpherical({
+          id: readySpherical.id,
+          gameId: game.id,
+          image: readySpherical.image,
+        }),
+      ],
       flats: [],
     })
 
@@ -143,11 +223,18 @@ describe("populateRaceSeed", () => {
 
   it("should skip sphericals with no image", async () => {
     const game = gameFactory({})
-    const withImage = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
+    const withImage = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+    })
 
     await setReadyImages({
       sphericals: [
-        buildReadySpherical({ id: withImage.id, gameId: game.id, image: withImage.image }),
+        buildReadySpherical({
+          id: withImage.id,
+          gameId: game.id,
+          image: withImage.image,
+        }),
         buildReadySpherical({ id: "no-image-id", gameId: game.id, image: "" }),
       ],
       flats: [],
@@ -163,15 +250,26 @@ describe("populateRaceSeed", () => {
 
   it("should not extend if no new images are available", async () => {
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+    })
 
     await setReadyImages({
-      sphericals: [buildReadySpherical({ id: spherical.id, gameId: game.id, image: spherical.image })],
+      sphericals: [
+        buildReadySpherical({
+          id: spherical.id,
+          gameId: game.id,
+          image: spherical.image,
+        }),
+      ],
       flats: [],
     })
 
     // Seed already contains the only available spherical
-    const seed = await createSeed({ rounds: [seedRound(game.id, spherical.id)] })
+    const seed = await createSeed({
+      rounds: [seedRound(game.id, spherical.id)],
+    })
 
     const result = await populateRaceSeed(seed.id, 0)
 
@@ -180,10 +278,19 @@ describe("populateRaceSeed", () => {
 
   it("should be idempotent when called concurrently", async () => {
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+    })
 
     await setReadyImages({
-      sphericals: [buildReadySpherical({ id: spherical.id, gameId: game.id, image: spherical.image })],
+      sphericals: [
+        buildReadySpherical({
+          id: spherical.id,
+          gameId: game.id,
+          image: spherical.image,
+        }),
+      ],
       flats: [],
     })
 
@@ -198,7 +305,9 @@ describe("populateRaceSeed", () => {
     const updatedSeed = updatedSnap.data() as MarathonSeedDoc
 
     // Spherical should only appear once despite concurrent calls
-    const occurrences = updatedSeed.rounds.filter((r) => r.sphericalId === spherical.id).length
+    const occurrences = updatedSeed.rounds.filter(
+      (r) => r.sphericalId === spherical.id,
+    ).length
     expect(occurrences).toBe(1)
   })
 })
@@ -209,35 +318,55 @@ describe("populate_race_seed cloud function", () => {
   const callAs = (uid: string | undefined, data: unknown) =>
     cloudFnWrap({
       data,
-      auth: uid ? { uid, token: {} as DecodedIdToken, rawToken: "" } : undefined,
+      auth: uid
+        ? { uid, token: {} as DecodedIdToken, rawToken: "" }
+        : undefined,
       rawRequest: {} as unknown as Request,
       acceptsStreaming: false,
     })
 
   it("should throw unauthenticated when no auth", async () => {
-    await expect(callAs(undefined, {})).rejects.toMatchObject({ code: "unauthenticated" })
+    await expect(callAs(undefined, {})).rejects.toMatchObject({
+      code: "unauthenticated",
+    })
   })
 
   it("should throw invalid-argument when payload is missing seedId", async () => {
-    await expect(callAs("user1", { playerCurrentIndex: 0 })).rejects.toMatchObject({ code: "invalid-argument" })
+    await expect(
+      callAs("user1", { playerCurrentIndex: 0 }),
+    ).rejects.toMatchObject({ code: "invalid-argument" })
   })
 
   it("should throw not-found when seed does not exist", async () => {
-    await expect(callAs("user1", { seedId: "non-existent", playerCurrentIndex: 0 })).rejects.toMatchObject({ code: "not-found" })
+    await expect(
+      callAs("user1", { seedId: "non-existent", playerCurrentIndex: 0 }),
+    ).rejects.toMatchObject({ code: "not-found" })
   })
 
   it("should return the total round count on success", async () => {
     const game = gameFactory({})
-    const spherical = sphericalFactory({ gameId: game.id, image: mockedSphericalImageURL })
+    const spherical = sphericalFactory({
+      gameId: game.id,
+      image: mockedSphericalImageURL,
+    })
 
     await setReadyImages({
-      sphericals: [buildReadySpherical({ id: spherical.id, gameId: game.id, image: spherical.image })],
+      sphericals: [
+        buildReadySpherical({
+          id: spherical.id,
+          gameId: game.id,
+          image: spherical.image,
+        }),
+      ],
       flats: [],
     })
 
     const seed = await createSeed()
 
-    const result = await callAs("user1", { seedId: seed.id, playerCurrentIndex: 0 })
+    const result = await callAs("user1", {
+      seedId: seed.id,
+      playerCurrentIndex: 0,
+    })
 
     expect(result.rounds).toBeGreaterThan(0)
   })

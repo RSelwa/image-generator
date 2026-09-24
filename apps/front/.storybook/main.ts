@@ -12,13 +12,9 @@ function getAbsolutePath(value: string) {
   return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)))
 }
 const config: StorybookConfig = {
-  stories: [
-    "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"
-  ],
+  stories: ["../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [],
   framework: getAbsolutePath("@storybook/nextjs-vite"),
-  staticDirs: [
-    "../public"
-  ]
+  staticDirs: ["../public"],
 }
 export default config

@@ -46,7 +46,7 @@ const KEY = MODAL_KEYS.FLAT_ID
 
 export const parseFlatModalParam = (
   param: string | null,
-): { gameId: string, flatId: string } | null => {
+): { gameId: string; flatId: string } | null => {
   if (!param) return null
   const separatorIndex = param.indexOf("_")
   if (separatorIndex === -1) return null
@@ -57,10 +57,8 @@ export const parseFlatModalParam = (
   return { gameId, flatId }
 }
 
-export const buildFlatModalParam = (
-  gameId: string,
-  flatId: string,
-): string => `${gameId}_${flatId}`
+export const buildFlatModalParam = (gameId: string, flatId: string): string =>
+  `${gameId}_${flatId}`
 
 const DIFFICULTY_OPTIONS = Object.values(DIFFICULTIES)
 const STATUS_OPTIONS = Object.values(DOCUMENTS_STATUS)
@@ -102,9 +100,15 @@ const FlatForm = ({
   const mapPosition = watch("mapPosition")
   const thumbnail = watch("thumbnail")
 
-  const { openModal: openFlatGallery } = useModal(MODAL_KEYS.FLAT_GALLERY_ID, gameId)
+  const { openModal: openFlatGallery } = useModal(
+    MODAL_KEYS.FLAT_GALLERY_ID,
+    gameId,
+  )
   const { closeModal } = useModal(MODAL_KEYS.FLAT_ID, flatId)
-  const { openModal: openMapModal } = useModal(MODAL_KEYS.MAP_ID, `${gameId}_${NEW_SEARCH_PARAM}`)
+  const { openModal: openMapModal } = useModal(
+    MODAL_KEYS.MAP_ID,
+    `${gameId}_${NEW_SEARCH_PARAM}`,
+  )
 
   const { data: gamesData, isLoading: isGamesLoading } = useGetAllGamesQuery()
   const { data, isLoading } = useGetFlatByIdQuery(
@@ -130,7 +134,8 @@ const FlatForm = ({
   const selectedMap = maps.find((map) => map.id === selectedMapId)
 
   // Map position picker display conditions
-  const hasValidMapWithDimensions = !!selectedMap?.imageUrl && !!selectedMap.width && !!selectedMap.height
+  const hasValidMapWithDimensions =
+    !!selectedMap?.imageUrl && !!selectedMap.width && !!selectedMap.height
   const hasMapWithoutValidDimensions = hasMapId && !hasValidMapWithDimensions
   const shouldShowManualPositionInputs = !hasMapId
 
@@ -265,10 +270,11 @@ const FlatForm = ({
           <h2 className="text-2xl font-bold">
             {isNew ? "Create Flat" : "Edit Flat"}
           </h2>
-          <Button onClick={() => {
-            openMapModal()
-            closeModal()
-          }}
+          <Button
+            onClick={() => {
+              openMapModal()
+              closeModal()
+            }}
           >
             New map
           </Button>
@@ -302,7 +308,9 @@ const FlatForm = ({
               <FieldDescription>Loading games...</FieldDescription>
             )}
             {!gameId && (
-              <FieldDescription>Select a game to create the flat in</FieldDescription>
+              <FieldDescription>
+                Select a game to create the flat in
+              </FieldDescription>
             )}
           </Field>
         )}
@@ -319,7 +327,8 @@ const FlatForm = ({
                     <Select
                       value={field.value || NO_MAP_VALUE}
                       onValueChange={(value) =>
-                        field.onChange(value === NO_MAP_VALUE ? "" : value)}
+                        field.onChange(value === NO_MAP_VALUE ? "" : value)
+                      }
                       disabled={isMapsLoading}
                     >
                       <SelectTrigger className="w-full">
@@ -498,13 +507,11 @@ const FlatForm = ({
                   <strong>Game ID:</strong> {data.gameId}
                 </p>
                 <p>
-                  <strong>Created:</strong>
-                  {" "}
+                  <strong>Created:</strong>{" "}
                   {data.createdAt?.toDate().toLocaleString()}
                 </p>
                 <p>
-                  <strong>Updated:</strong>
-                  {" "}
+                  <strong>Updated:</strong>{" "}
                   {data.updatedAt?.toDate().toLocaleString()}
                 </p>
               </div>
@@ -541,7 +548,12 @@ const FlatForm = ({
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button type="submit" disabled={isCreating || isUpdating || !isDirty || (isNew && !gameId)}>
+          <Button
+            type="submit"
+            disabled={
+              isCreating || isUpdating || !isDirty || (isNew && !gameId)
+            }
+          >
             {isCreating || isUpdating ? (
               <>
                 {isNew ? "Creating" : "Saving"} <Loader />

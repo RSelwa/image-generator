@@ -1,13 +1,43 @@
-import { collectionGroup, getCountFromServer, getDoc, getDocs, limit, orderBy, query, type QueryConstraint, startAfter, Timestamp, updateDoc, where } from "@firebase/firestore"
+import {
+  collectionGroup,
+  getCountFromServer,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  type QueryConstraint,
+  startAfter,
+  Timestamp,
+  updateDoc,
+  where,
+} from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES, USERS_FIELDS } from "@repo/common"
-import { type DeathRunLeaderboardPlayer, deathRunLeaderboardPlayerSchema, type RaceLeaderboardPlayer, raceLeaderboardPlayerSchema, raceRunDocSchema, type StreakLeaderboardPlayer, streakLeaderboardPlayerSchema, type UserDoc, type userDocWithId, userDocWithIdSchema, type WeeklyRaceLeaderboardPlayer, weeklyRaceLeaderboardPlayerSchema } from "@repo/schemas"
+import {
+  type DeathRunLeaderboardPlayer,
+  deathRunLeaderboardPlayerSchema,
+  type RaceLeaderboardPlayer,
+  raceLeaderboardPlayerSchema,
+  raceRunDocSchema,
+  type StreakLeaderboardPlayer,
+  streakLeaderboardPlayerSchema,
+  type UserDoc,
+  type userDocWithId,
+  userDocWithIdSchema,
+  type WeeklyRaceLeaderboardPlayer,
+  weeklyRaceLeaderboardPlayerSchema,
+} from "@repo/schemas"
 import { DEFAULT_SIZE_USERS } from "@/constants/api"
 import { db } from "@/constants/db"
 import { getUserRef, TABLE_REFS } from "@/constants/db-refs"
 import { globalErrorHandler } from "@/utils/error"
 
-const ignoreAnonymousUsersConstraint: QueryConstraint = where(USERS_FIELDS.IS_ANONYMOUS_USER, "==", false)
+const ignoreAnonymousUsersConstraint: QueryConstraint = where(
+  USERS_FIELDS.IS_ANONYMOUS_USER,
+  "==",
+  false,
+)
 
 export const userApi = createApi({
   reducerPath: "userApi",
@@ -17,7 +47,7 @@ export const userApi = createApi({
     getUsers: builder.infiniteQuery<
       userDocWithId[],
       void,
-      { limit?: number, startAfter?: number }
+      { limit?: number; startAfter?: number }
     >({
       queryFn: async ({ pageParam }) => {
         try {
@@ -27,15 +57,13 @@ export const userApi = createApi({
           ]
 
           if (pageParam.startAfter)
-            constraints.push(startAfter(Timestamp.fromMillis(pageParam.startAfter)))
+            constraints.push(
+              startAfter(Timestamp.fromMillis(pageParam.startAfter)),
+            )
 
-          if (pageParam.limit)
-            constraints.push(limit(pageParam.limit))
+          if (pageParam.limit) constraints.push(limit(pageParam.limit))
 
-          const q = query(
-            TABLE_REFS[TABLES.USERS],
-            ...constraints,
-          )
+          const q = query(TABLE_REFS[TABLES.USERS], ...constraints)
           const snapshot = await getDocs(q)
 
           const users: userDocWithId[] = []
@@ -82,17 +110,22 @@ export const userApi = createApi({
         },
       },
       providesTags: (result) =>
-        result ? [
-          ...result.pages
-            .flat()
-            .map(({ id }) => ({ type: "User" as const, id })),
-          "UserList",
-        ] : ["UserList"],
+        result
+          ? [
+              ...result.pages
+                .flat()
+                .map(({ id }) => ({ type: "User" as const, id })),
+              "UserList",
+            ]
+          : ["UserList"],
     }),
     getUsersCount: builder.query<number, void>({
       queryFn: async () => {
         try {
-          const q = query(TABLE_REFS[TABLES.USERS], ignoreAnonymousUsersConstraint)
+          const q = query(
+            TABLE_REFS[TABLES.USERS],
+            ignoreAnonymousUsersConstraint,
+          )
           const usersCount = await getCountFromServer(q)
 
           return { data: usersCount.data().count }
@@ -103,9 +136,12 @@ export const userApi = createApi({
             error: globalErrorHandler(error),
           }
         }
-      }
+      },
     }),
-    updateUserDoc: builder.mutation<null, { id: string, data: Partial<UserDoc> }>({
+    updateUserDoc: builder.mutation<
+      null,
+      { id: string; data: Partial<UserDoc> }
+    >({
       queryFn: async ({ id, data }) => {
         try {
           const userRef = getUserRef(id)
@@ -140,7 +176,10 @@ export const userApi = createApi({
 
           const players: StreakLeaderboardPlayer[] = []
           for (const docSnap of snapshot.docs) {
-            const { data, error } = streakLeaderboardPlayerSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+            const { data, error } = streakLeaderboardPlayerSchema.safeParse({
+              id: docSnap.id,
+              ...docSnap.data(),
+            })
             if (error) continue
             players.push(data)
           }
@@ -167,7 +206,10 @@ export const userApi = createApi({
 
           const players: RaceLeaderboardPlayer[] = []
           for (const docSnap of snapshot.docs) {
-            const { data, error } = raceLeaderboardPlayerSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+            const { data, error } = raceLeaderboardPlayerSchema.safeParse({
+              id: docSnap.id,
+              ...docSnap.data(),
+            })
             if (error) continue
             players.push(data)
           }
@@ -180,7 +222,10 @@ export const userApi = createApi({
         }
       },
     }),
-    getTopPlayersByBestDeathRunScore: builder.query<DeathRunLeaderboardPlayer[], void>({
+    getTopPlayersByBestDeathRunScore: builder.query<
+      DeathRunLeaderboardPlayer[],
+      void
+    >({
       queryFn: async () => {
         try {
           const q = query(
@@ -194,14 +239,20 @@ export const userApi = createApi({
 
           const players: DeathRunLeaderboardPlayer[] = []
           for (const docSnap of snapshot.docs) {
-            const { data, error } = deathRunLeaderboardPlayerSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+            const { data, error } = deathRunLeaderboardPlayerSchema.safeParse({
+              id: docSnap.id,
+              ...docSnap.data(),
+            })
             if (error) continue
             players.push(data)
           }
 
           return { data: players }
         } catch (error) {
-          console.error("Error fetching top players by best death run score", error)
+          console.error(
+            "Error fetching top players by best death run score",
+            error,
+          )
 
           return { error: globalErrorHandler(error) }
         }
@@ -224,7 +275,7 @@ export const userApi = createApi({
           const snapshot = await getDocs(q)
 
           const seenUids = new Set<string>()
-          const topRuns: Array<{ uid: string, score: number }> = []
+          const topRuns: Array<{ uid: string; score: number }> = []
 
           for (const docSnap of snapshot.docs) {
             const { data, error } = raceRunDocSchema.safeParse(docSnap.data())
@@ -234,16 +285,23 @@ export const userApi = createApi({
             if (topRuns.length === 10) break
           }
 
-          const players = (await Promise.all(
-            topRuns.map(async (run) => {
-              const userDoc = await getDoc(getUserRef(run.uid))
-              if (!userDoc.exists()) return null
-              const { data, error } = weeklyRaceLeaderboardPlayerSchema.safeParse({ id: userDoc.id, ...userDoc.data(), score: run.score })
-              if (error) return null
+          const players = (
+            await Promise.all(
+              topRuns.map(async (run) => {
+                const userDoc = await getDoc(getUserRef(run.uid))
+                if (!userDoc.exists()) return null
+                const { data, error } =
+                  weeklyRaceLeaderboardPlayerSchema.safeParse({
+                    id: userDoc.id,
+                    ...userDoc.data(),
+                    score: run.score,
+                  })
+                if (error) return null
 
-              return data
-            })
-          )).filter((p): p is WeeklyRaceLeaderboardPlayer => p !== null)
+                return data
+              }),
+            )
+          ).filter((p): p is WeeklyRaceLeaderboardPlayer => p !== null)
 
           return { data: players }
         } catch (error) {
@@ -281,9 +339,18 @@ export const userApi = createApi({
             error: globalErrorHandler(error),
           }
         }
-      }
-    })
+      },
+    }),
   }),
 })
 
-export const { useGetUsersInfiniteQuery, useUpdateUserDocMutation, useGetUsersCountQuery, useGetUserByIdQuery, useGetTopPlayersByMaxStreakQuery, useGetTopPlayersByBestRaceScoreQuery, useGetTopPlayersByBestDeathRunScoreQuery, useGetTopRaceRunsByWeekQuery } = userApi
+export const {
+  useGetUsersInfiniteQuery,
+  useUpdateUserDocMutation,
+  useGetUsersCountQuery,
+  useGetUserByIdQuery,
+  useGetTopPlayersByMaxStreakQuery,
+  useGetTopPlayersByBestRaceScoreQuery,
+  useGetTopPlayersByBestDeathRunScoreQuery,
+  useGetTopRaceRunsByWeekQuery,
+} = userApi

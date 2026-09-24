@@ -1,5 +1,5 @@
 import { type Timestamp } from "@firebase/firestore"
-import z from "zod"
+import { z } from "zod"
 
 export const WITH_ID = z.object({
   id: z.string().min(1),
@@ -19,4 +19,6 @@ const isTimestamp = (val: unknown): val is Timestamp =>
   "nanoseconds" in val &&
   typeof (val as Timestamp).toDate === "function"
 
-export const timestampSchema = z.custom<Timestamp>(isTimestamp, { message: "Invalid Timestamp" })
+export const timestampSchema = z.custom<Timestamp>(isTimestamp, {
+  message: "Invalid Timestamp",
+})

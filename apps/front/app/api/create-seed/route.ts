@@ -1,9 +1,14 @@
-import { DEFAULT_NUMBERS_ROUNDS, LOBBY_STATUS, MAX_RECENT_LOBBIES_TO_EXCLUDE, TABLES } from "@repo/common"
+import {
+  DEFAULT_NUMBERS_ROUNDS,
+  LOBBY_STATUS,
+  MAX_RECENT_LOBBIES_TO_EXCLUDE,
+  TABLES,
+} from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import { auth } from "@repo/providers/firebase"
 import { seedDocSchema } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
-import z from "zod"
+import { z } from "zod"
 import { generateSeedRounds } from "@/libs/seed"
 
 export const createSeedPayload = z.object({
@@ -33,7 +38,7 @@ const getRecentlyPlayedGameIds = async (userId: string): Promise<string[]> => {
   if (seedIds.length === 0) return []
 
   const seedDocs = await Promise.all(
-    seedIds.map((seedId) => refs[TABLES.SEEDS].doc(seedId).get())
+    seedIds.map((seedId) => refs[TABLES.SEEDS].doc(seedId).get()),
   )
 
   const gameIds: string[] = []
@@ -94,7 +99,7 @@ export const POST = async (request: Request) => {
       createdBy: userId,
       timesUsed: 0,
       createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now()
+      updatedAt: Timestamp.now(),
     }
 
     const newSeedDoc = seedDocSchema.safeParse(data)
@@ -102,7 +107,9 @@ export const POST = async (request: Request) => {
     if (!newSeedDoc.success) {
       console.error("Failed to create seed doc:", newSeedDoc.error)
 
-      return new Response(`Failed to create seed ${newSeedDoc.error}`, { status: 500 })
+      return new Response(`Failed to create seed ${newSeedDoc.error}`, {
+        status: 500,
+      })
     }
 
     const seedWithId = await refs[TABLES.SEEDS].add(newSeedDoc.data)

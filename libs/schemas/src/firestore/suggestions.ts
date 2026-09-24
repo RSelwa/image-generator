@@ -1,5 +1,5 @@
 import { SUGGESTIONS_TYPE } from "@repo/common"
-import z from "zod"
+import { z } from "zod"
 import { timestampSchema, WITH_ID } from "~/zod"
 
 export const suggestionsDocSchema = z.object({
@@ -18,7 +18,7 @@ export const suggestionsDocSchema = z.object({
 
 export const suggestionsDocWithIdSchema = z.object({
   ...suggestionsDocSchema.shape,
-  ...WITH_ID.shape
+  ...WITH_ID.shape,
 })
 
 export type SuggestionDoc = z.infer<typeof suggestionsDocSchema>

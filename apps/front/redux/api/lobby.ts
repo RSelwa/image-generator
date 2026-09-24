@@ -1,5 +1,18 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { DEFAULT_HAS_SPECIAL_ROUNDS, DEFAULT_LIVES, DEFAULT_LOBBY_MODE, DEFAULT_NUMBERS_ROUNDS, DEFAULT_TIME_PER_ROUND, DEMO_SEED_ID, isEqual, LOBBY_STATUS, MAX_PLAYERS, NUMBER_OF_ROUNDS_PER_STAGE, ROUND_POINTS, TABLES } from "@repo/common"
+import {
+  DEFAULT_HAS_SPECIAL_ROUNDS,
+  DEFAULT_LIVES,
+  DEFAULT_LOBBY_MODE,
+  DEFAULT_NUMBERS_ROUNDS,
+  DEFAULT_TIME_PER_ROUND,
+  DEMO_SEED_ID,
+  isEqual,
+  LOBBY_STATUS,
+  MAX_PLAYERS,
+  NUMBER_OF_ROUNDS_PER_STAGE,
+  ROUND_POINTS,
+  TABLES,
+} from "@repo/common"
 import {
   type CreateLobbyInput,
   createLobbyInputSchema,
@@ -15,7 +28,7 @@ import {
   type RoundAnswerDocWithId,
   roundAnswerDocWithIdSchema,
   type UpdateLobbyInput,
-  updateLobbyInputSchema
+  updateLobbyInputSchema,
 } from "@repo/schemas"
 import {
   addDoc,
@@ -34,7 +47,7 @@ import {
   where,
 } from "firebase/firestore"
 import { toast } from "sonner"
-import z from "zod"
+import { z } from "zod"
 import { DEFAULT_SIZE_LOBBY_HISTORY } from "@/constants/api"
 import { auth } from "@/constants/db"
 import { getLobbyRef, getRoundAnswerRef, TABLE_REFS } from "@/constants/db-refs"
@@ -115,7 +128,9 @@ export const lobbyApi = createApi({
     subscribeLobby: builder.query<LobbyDocWithId | null, { id: string }>({
       queryFn: async ({ id }, { dispatch }) => {
         try {
-          const docSnap = await dispatch(lobbyApi.endpoints.getLobbyById.initiate({ id })).unwrap()
+          const docSnap = await dispatch(
+            lobbyApi.endpoints.getLobbyById.initiate({ id }),
+          ).unwrap()
 
           const { data, error } = lobbyDocWithIdSchema.safeParse(docSnap)
 
@@ -224,7 +239,7 @@ export const lobbyApi = createApi({
     }),
     updateLobby: builder.mutation<
       LobbyDocWithId,
-      { id: string, data: UpdateLobbyInput }
+      { id: string; data: UpdateLobbyInput }
     >({
       queryFn: async ({ id, data: input }) => {
         try {
@@ -267,65 +282,63 @@ export const lobbyApi = createApi({
       },
       invalidatesTags: (_result, _error, { id }) => [{ type: "Lobby", id }],
     }),
-    createAndJoinLobby: builder.mutation<
-      LobbyDocWithId,
-      { user: SessionUser }
-    >({
-      queryFn: async (
-        { user },
-        { dispatch },
-      ) => {
-        try {
-          const code = generateRandomCode()
+    createAndJoinLobby: builder.mutation<LobbyDocWithId, { user: SessionUser }>(
+      {
+        queryFn: async ({ user }, { dispatch }) => {
+          try {
+            const code = generateRandomCode()
 
-          const player = createPlayerFromSessionUser(user)
+            const player = createPlayerFromSessionUser(user)
 
-          const createdLobby = await dispatch(
-            lobbyApi.endpoints.createLobby.initiate({
-              code,
-              hostId: player.uid,
-              status: LOBBY_STATUS.WAITING,
-              isDemo: false,
-              seedId: "",
-              players: [],
-              playersIds: [],
-              maximumPossiblePoints: 0,
-              config: {
-                hasSpecialRounds: DEFAULT_HAS_SPECIAL_ROUNDS,
-                playersLives: DEFAULT_LIVES,
-                maxPlayers: MAX_PLAYERS,
-                roundDuration: DEFAULT_TIME_PER_ROUND,
-                numberOfRounds: DEFAULT_NUMBERS_ROUNDS,
-                mode: DEFAULT_LOBBY_MODE,
-              },
-            }),
-          ).unwrap()
+            const createdLobby = await dispatch(
+              lobbyApi.endpoints.createLobby.initiate({
+                code,
+                hostId: player.uid,
+                status: LOBBY_STATUS.WAITING,
+                isDemo: false,
+                seedId: "",
+                players: [],
+                playersIds: [],
+                maximumPossiblePoints: 0,
+                config: {
+                  hasSpecialRounds: DEFAULT_HAS_SPECIAL_ROUNDS,
+                  playersLives: DEFAULT_LIVES,
+                  maxPlayers: MAX_PLAYERS,
+                  roundDuration: DEFAULT_TIME_PER_ROUND,
+                  numberOfRounds: DEFAULT_NUMBERS_ROUNDS,
+                  mode: DEFAULT_LOBBY_MODE,
+                },
+              }),
+            ).unwrap()
 
-          const joinedLobby: LobbyDocWithId = await dispatch(
-            lobbyApi.endpoints.joinLobby.initiate({
-              lobbyId: createdLobby.id,
-              player,
-            }),
-          ).unwrap()
+            const joinedLobby: LobbyDocWithId = await dispatch(
+              lobbyApi.endpoints.joinLobby.initiate({
+                lobbyId: createdLobby.id,
+                player,
+              }),
+            ).unwrap()
 
-          dispatch(
-            lobbyApi.endpoints.subscribeLobby.initiate({ id: createdLobby.id }),
-          )
+            dispatch(
+              lobbyApi.endpoints.subscribeLobby.initiate({
+                id: createdLobby.id,
+              }),
+            )
 
-          return { data: joinedLobby }
-        } catch (error) {
-          console.error("Error creating and joining lobby:", error)
-          toast.error("Error creating lobby")
+            return { data: joinedLobby }
+          } catch (error) {
+            console.error("Error creating and joining lobby:", error)
+            toast.error("Error creating lobby")
 
-          return {
-            error: globalErrorHandler(error),
+            return {
+              error: globalErrorHandler(error),
+            }
           }
-        }
+        },
       },
-    }),
+    ),
     joinLobby: builder.mutation<
       LobbyDocWithId,
-      { lobbyId: string, player: Player }
+      { lobbyId: string; player: Player }
     >({
       queryFn: async ({ lobbyId, player }) => {
         try {
@@ -361,7 +374,10 @@ export const lobbyApi = createApi({
 
           // Add player to lobby
           const updatedPlayers = [...currentPlayers, player]
-          const playersIds = [...currentPlayers.map(({ uid }) => uid), player.uid]
+          const playersIds = [
+            ...currentPlayers.map(({ uid }) => uid),
+            player.uid,
+          ]
 
           await updateDoc(lobbyRef, {
             players: updatedPlayers,
@@ -394,7 +410,7 @@ export const lobbyApi = createApi({
     }),
     leaveLobby: builder.mutation<
       LobbyDocWithId,
-      { lobbyId: string, playerId: string }
+      { lobbyId: string; playerId: string }
     >({
       queryFn: async ({ lobbyId, playerId }) => {
         try {
@@ -414,7 +430,9 @@ export const lobbyApi = createApi({
             (p: Player) => p.uid !== playerId,
           )
 
-          const updatedPlayersIds = currentPlayersIds.filter((id: string) => id !== playerId)
+          const updatedPlayersIds = currentPlayersIds.filter(
+            (id: string) => id !== playerId,
+          )
 
           await updateDoc(lobbyRef, {
             players: updatedPlayers,
@@ -445,10 +463,15 @@ export const lobbyApi = createApi({
         { type: "Lobby", id: lobbyId },
       ],
     }),
-    excludePlayer: builder.mutation <null, { lobbyId: string, playerId: string }>({
+    excludePlayer: builder.mutation<
+      null,
+      { lobbyId: string; playerId: string }
+    >({
       queryFn: async ({ lobbyId, playerId }, { dispatch }) => {
         try {
-          const docSnap = await dispatch(lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId })).unwrap()
+          const docSnap = await dispatch(
+            lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId }),
+          ).unwrap()
 
           if (!docSnap) {
             throw new Error("Lobby not found")
@@ -461,7 +484,9 @@ export const lobbyApi = createApi({
             (p: Player) => p.uid !== playerId,
           )
 
-          const updatedPlayersIds = (docSnap.playersIds || []).filter((id: string) => id !== playerId)
+          const updatedPlayersIds = (docSnap.playersIds || []).filter(
+            (id: string) => id !== playerId,
+          )
 
           await updateDoc(getLobbyRef(lobbyId), {
             players: updatedPlayers,
@@ -479,15 +504,19 @@ export const lobbyApi = createApi({
           }
         }
       },
-      invalidatesTags: (_result, _error, { lobbyId }) => [{ type: "Lobby", id: lobbyId }],
+      invalidatesTags: (_result, _error, { lobbyId }) => [
+        { type: "Lobby", id: lobbyId },
+      ],
     }),
     updatePlayerReady: builder.mutation<
       LobbyDocWithId,
-      { lobbyId: string, playerId: string, isReady: boolean }
+      { lobbyId: string; playerId: string; isReady: boolean }
     >({
       queryFn: async ({ lobbyId, playerId, isReady }, { dispatch }) => {
         try {
-          const lobby = await dispatch(lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId })).unwrap()
+          const lobby = await dispatch(
+            lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId }),
+          ).unwrap()
 
           if (!lobby) {
             throw new Error("Lobby not found")
@@ -531,44 +560,50 @@ export const lobbyApi = createApi({
         { type: "Lobby", id: lobbyId },
       ],
     }),
-    updatePlayerScore: builder.mutation<null, { lobbyId: string, playerId: string, newPoints: number }>(
-      {
-        queryFn: async ({ lobbyId, playerId, newPoints }, { dispatch }) => {
-          try {
-            const lobby = await dispatch(lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId })).unwrap()
+    updatePlayerScore: builder.mutation<
+      null,
+      { lobbyId: string; playerId: string; newPoints: number }
+    >({
+      queryFn: async ({ lobbyId, playerId, newPoints }, { dispatch }) => {
+        try {
+          const lobby = await dispatch(
+            lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId }),
+          ).unwrap()
 
-            if (!lobby) {
-              throw new Error("Lobby not found")
-            }
+          if (!lobby) {
+            throw new Error("Lobby not found")
+          }
 
-            const currentData = lobby
-            const currentPlayers = currentData?.players || []
+          const currentData = lobby
+          const currentPlayers = currentData?.players || []
 
-            // Update player ready status
-            const updatedPlayers = currentPlayers.map((p: Player) =>
-              p.uid === playerId ? { ...p, score: p.score + newPoints } : p,
-            )
+          // Update player ready status
+          const updatedPlayers = currentPlayers.map((p: Player) =>
+            p.uid === playerId ? { ...p, score: p.score + newPoints } : p,
+          )
 
-            const lobbyRef = getLobbyRef(lobbyId)
+          const lobbyRef = getLobbyRef(lobbyId)
 
-            await updateDoc(lobbyRef, {
-              players: updatedPlayers,
-              updatedAt: Timestamp.now(),
-            })
+          await updateDoc(lobbyRef, {
+            players: updatedPlayers,
+            updatedAt: Timestamp.now(),
+          })
 
-            return { data: null }
-          } catch (error) {
-            console.error("Error updating player ready status:", error)
-            toast.error("Error updating ready status")
+          return { data: null }
+        } catch (error) {
+          console.error("Error updating player ready status:", error)
+          toast.error("Error updating ready status")
 
-            return {
-              error: globalErrorHandler(error),
-            }
+          return {
+            error: globalErrorHandler(error),
           }
         }
-      }
-    ),
-    incrementPlayerLivesUsed: builder.mutation<null, { lobbyId: string, playerId: string, roundIndex: number }>({
+      },
+    }),
+    incrementPlayerLivesUsed: builder.mutation<
+      null,
+      { lobbyId: string; playerId: string; roundIndex: number }
+    >({
       queryFn: async ({ lobbyId, playerId, roundIndex }) => {
         try {
           const roundAnswerRef = getRoundAnswerRef(lobbyId, String(roundIndex))
@@ -578,10 +613,16 @@ export const lobbyApi = createApi({
             throw new Error("Round answer not found")
           }
 
-          const currentAnswers: PlayerAnswer[] = roundAnswerSnap.data()?.answers || []
+          const currentAnswers: PlayerAnswer[] =
+            roundAnswerSnap.data()?.answers || []
 
           const updatedAnswers = currentAnswers.map((a) =>
-            a.uid === playerId ? playerAnswerSchema.parse({ ...a, livesUsed: (a.livesUsed || 0) + 1 }) : a
+            a.uid === playerId
+              ? playerAnswerSchema.parse({
+                  ...a,
+                  livesUsed: (a.livesUsed || 0) + 1,
+                })
+              : a,
           )
 
           await updateDoc(roundAnswerRef, {
@@ -600,7 +641,7 @@ export const lobbyApi = createApi({
     }),
     updateLobbyConfig: builder.mutation<
       null,
-      { lobbyId: string, config: Partial<LobbyDoc["config"]> }
+      { lobbyId: string; config: Partial<LobbyDoc["config"]> }
     >({
       queryFn: async ({ lobbyId, config }) => {
         try {
@@ -640,13 +681,20 @@ export const lobbyApi = createApi({
           }
         }
       },
-      invalidatesTags: (_result, _error, { lobbyId }) => [{ type: "Lobby", id: lobbyId }],
+      invalidatesTags: (_result, _error, { lobbyId }) => [
+        { type: "Lobby", id: lobbyId },
+      ],
     }),
-    createSeedAndUpdateLobby: builder.mutation<{ seedId: string }, { lobbyId: string }>({
+    createSeedAndUpdateLobby: builder.mutation<
+      { seedId: string },
+      { lobbyId: string }
+    >({
       queryFn: async ({ lobbyId }, { dispatch }) => {
         try {
           const token = await auth.currentUser?.getIdToken()
-          const lobby = await dispatch(lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId })).unwrap()
+          const lobby = await dispatch(
+            lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId }),
+          ).unwrap()
 
           if (!lobby) {
             throw new Error("Lobby not found")
@@ -660,7 +708,7 @@ export const lobbyApi = createApi({
             },
             body: JSON.stringify({
               numberOfRounds: lobby.config.numberOfRounds,
-              hasSpecialRounds: lobby.config.hasSpecialRounds
+              hasSpecialRounds: lobby.config.hasSpecialRounds,
             }),
           })
 
@@ -692,73 +740,93 @@ export const lobbyApi = createApi({
           }
         }
       },
-      invalidatesTags: (_result, _error, { lobbyId }) => [{ type: "Lobby", id: lobbyId }],
+      invalidatesTags: (_result, _error, { lobbyId }) => [
+        { type: "Lobby", id: lobbyId },
+      ],
     }),
-    populateLobbyRounds: builder.mutation<{ maximumPossiblePoints: number }, { lobbyId: string, seedId: string, players: Player[] }>(
-      {
-        queryFn: async ({ lobbyId, seedId, players }, { dispatch }) => {
-          try {
-            const docSnap = await dispatch(seedApi.endpoints.getSeedById.initiate({ id: seedId })).unwrap()
+    populateLobbyRounds: builder.mutation<
+      { maximumPossiblePoints: number },
+      { lobbyId: string; seedId: string; players: Player[] }
+    >({
+      queryFn: async ({ lobbyId, seedId, players }, { dispatch }) => {
+        try {
+          const docSnap = await dispatch(
+            seedApi.endpoints.getSeedById.initiate({ id: seedId }),
+          ).unwrap()
 
-            if (!docSnap) throw new Error("Seed not found, cannot populate lobby rounds")
+          if (!docSnap)
+            throw new Error("Seed not found, cannot populate lobby rounds")
 
-            const now = Timestamp.now()
+          const now = Timestamp.now()
 
-            const emptyAnswers = players.map((player) =>
-              playerAnswerSchema.parse({
-                uid: player.uid,
-                playerName: player.name,
-              })
-            )
+          const emptyAnswers = players.map((player) =>
+            playerAnswerSchema.parse({
+              uid: player.uid,
+              playerName: player.name,
+            }),
+          )
 
-            const maximumPossiblePoints = docSnap.rounds.reduce((acc, round, i) => {
+          const maximumPossiblePoints = docSnap.rounds.reduce(
+            (acc, round, i) => {
               const index = i + 1
               const stage = Math.ceil(index / NUMBER_OF_ROUNDS_PER_STAGE)
 
-              const pointsGame = ROUND_POINTS.GAME_GUESS * (round.isSpecial ? 2 : 1)
-              const pointsDistance = round.isSpecial ? 0 : (ROUND_POINTS.DISTANCE + ROUND_POINTS.DISTANCE_ADDITION * stage)
+              const pointsGame =
+                ROUND_POINTS.GAME_GUESS * (round.isSpecial ? 2 : 1)
+              const pointsDistance = round.isSpecial
+                ? 0
+                : ROUND_POINTS.DISTANCE + ROUND_POINTS.DISTANCE_ADDITION * stage
 
               return acc + pointsGame + pointsDistance
-            }, 0)
+            },
+            0,
+          )
 
-            await Promise.all(
-              docSnap.rounds.map((round, i) => {
-                const index = i + 1
-                const stage = Math.ceil(index / NUMBER_OF_ROUNDS_PER_STAGE)
-                const pointsGame = ROUND_POINTS.GAME_GUESS * (round.isSpecial ? 2 : 1)
-                const pointsDistance = round.isSpecial ? 0 : (ROUND_POINTS.DISTANCE + ROUND_POINTS.DISTANCE_ADDITION * stage)
+          await Promise.all(
+            docSnap.rounds.map((round, i) => {
+              const index = i + 1
+              const stage = Math.ceil(index / NUMBER_OF_ROUNDS_PER_STAGE)
+              const pointsGame =
+                ROUND_POINTS.GAME_GUESS * (round.isSpecial ? 2 : 1)
+              const pointsDistance = round.isSpecial
+                ? 0
+                : ROUND_POINTS.DISTANCE + ROUND_POINTS.DISTANCE_ADDITION * stage
 
-                const roundAnswerDoc = roundAnswerDocSchema.parse({
-                  ...round,
-                  stage,
-                  roundIndex: index,
-                  pointsGame,
-                  pointsDistance,
-                  answers: emptyAnswers,
-                  isComplete: false,
-                  createdAt: now,
-                })
-
-                return setDoc(getRoundAnswerRef(lobbyId, String(index)), roundAnswerDoc)
+              const roundAnswerDoc = roundAnswerDocSchema.parse({
+                ...round,
+                stage,
+                roundIndex: index,
+                pointsGame,
+                pointsDistance,
+                answers: emptyAnswers,
+                isComplete: false,
+                createdAt: now,
               })
-            )
 
-            return { data: { maximumPossiblePoints } }
-          } catch (error) {
-            console.error("Error populating lobby rounds:", error)
-            toast.error("Error populating lobby rounds")
+              return setDoc(
+                getRoundAnswerRef(lobbyId, String(index)),
+                roundAnswerDoc,
+              )
+            }),
+          )
 
-            return {
-              error: globalErrorHandler(error),
-            }
+          return { data: { maximumPossiblePoints } }
+        } catch (error) {
+          console.error("Error populating lobby rounds:", error)
+          toast.error("Error populating lobby rounds")
+
+          return {
+            error: globalErrorHandler(error),
           }
         }
-      }
-    ),
+      },
+    }),
     startLobby: builder.mutation<null, { lobbyId: string }>({
       queryFn: async ({ lobbyId }, { dispatch }) => {
         try {
-          const lobby = await dispatch(lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId })).unwrap()
+          const lobby = await dispatch(
+            lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId }),
+          ).unwrap()
 
           if (!lobby) {
             throw new Error("Lobby not found")
@@ -775,12 +843,20 @@ export const lobbyApi = createApi({
           let seedId = lobby.seedId
 
           if (!seedId) {
-            const newSeed = await dispatch(lobbyApi.endpoints.createSeedAndUpdateLobby.initiate({ lobbyId })).unwrap()
+            const newSeed = await dispatch(
+              lobbyApi.endpoints.createSeedAndUpdateLobby.initiate({ lobbyId }),
+            ).unwrap()
 
             seedId = newSeed.seedId
           }
 
-          const { maximumPossiblePoints } = await dispatch(lobbyApi.endpoints.populateLobbyRounds.initiate({ lobbyId, seedId, players: lobby.players })).unwrap()
+          const { maximumPossiblePoints } = await dispatch(
+            lobbyApi.endpoints.populateLobbyRounds.initiate({
+              lobbyId,
+              seedId,
+              players: lobby.players,
+            }),
+          ).unwrap()
 
           await updateDoc(getLobbyRef(lobbyId), {
             seedId,
@@ -790,7 +866,9 @@ export const lobbyApi = createApi({
             updatedAt: Timestamp.now(),
           })
 
-          await dispatch(lobbyApi.endpoints.updateNextRound.initiate({ lobbyId }))
+          await dispatch(
+            lobbyApi.endpoints.updateNextRound.initiate({ lobbyId }),
+          )
 
           return { data: null }
         } catch (error) {
@@ -802,9 +880,19 @@ export const lobbyApi = createApi({
           }
         }
       },
-      invalidatesTags: (_result, _error, { lobbyId }) => [{ type: "Lobby", id: lobbyId }],
+      invalidatesTags: (_result, _error, { lobbyId }) => [
+        { type: "Lobby", id: lobbyId },
+      ],
     }),
-    submitRoundAnswer: builder.mutation<null, { lobbyId: string, roundIndex: number, uid: string, answer: Partial<PlayerAnswer> }>({
+    submitRoundAnswer: builder.mutation<
+      null,
+      {
+        lobbyId: string
+        roundIndex: number
+        uid: string
+        answer: Partial<PlayerAnswer>
+      }
+    >({
       queryFn: async ({ lobbyId, roundIndex, uid, answer }) => {
         try {
           const roundAnswerRef = getRoundAnswerRef(lobbyId, String(roundIndex))
@@ -814,10 +902,11 @@ export const lobbyApi = createApi({
             throw new Error("Round answer not found")
           }
 
-          const currentAnswers: PlayerAnswer[] = roundAnswerSnap.data()?.answers || []
+          const currentAnswers: PlayerAnswer[] =
+            roundAnswerSnap.data()?.answers || []
 
           const updatedAnswers = currentAnswers.map((a) =>
-            a.uid === uid ? playerAnswerSchema.parse({ ...a, ...answer }) : a
+            a.uid === uid ? playerAnswerSchema.parse({ ...a, ...answer }) : a,
           )
 
           await updateDoc(roundAnswerRef, {
@@ -835,10 +924,15 @@ export const lobbyApi = createApi({
         }
       },
     }),
-    listenRoundAnswer: builder.query<RoundAnswerDocWithId | null, { lobbyId: string, roundIndex: number }>({
+    listenRoundAnswer: builder.query<
+      RoundAnswerDocWithId | null,
+      { lobbyId: string; roundIndex: number }
+    >({
       queryFn: async ({ lobbyId, roundIndex }) => {
         try {
-          const roundAnswerSnap = await getDoc(getRoundAnswerRef(lobbyId, String(roundIndex)))
+          const roundAnswerSnap = await getDoc(
+            getRoundAnswerRef(lobbyId, String(roundIndex)),
+          )
 
           if (!roundAnswerSnap.exists()) {
             return { data: null }
@@ -885,7 +979,8 @@ export const lobbyApi = createApi({
                 ...snapshot.data(),
               }
 
-              const { data, error } = roundAnswerDocWithIdSchema.safeParse(newData)
+              const { data, error } =
+                roundAnswerDocWithIdSchema.safeParse(newData)
 
               if (error) {
                 console.error("Error parsing round answer data:", error)
@@ -914,7 +1009,9 @@ export const lobbyApi = createApi({
     updateNextRound: builder.mutation<null, { lobbyId: string }>({
       queryFn: async ({ lobbyId }, { dispatch }) => {
         try {
-          const lobby = await dispatch(lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId })).unwrap()
+          const lobby = await dispatch(
+            lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId }),
+          ).unwrap()
 
           if (!lobby) throw new Error("Lobby not found")
 
@@ -931,7 +1028,9 @@ export const lobbyApi = createApi({
             return { data: null }
           }
 
-          const roundAnswerSnap = await getDoc(getRoundAnswerRef(lobbyId, String(nextRound)))
+          const roundAnswerSnap = await getDoc(
+            getRoundAnswerRef(lobbyId, String(nextRound)),
+          )
 
           if (!roundAnswerSnap.exists()) {
             throw new Error(`Round answer ${nextRound} not found`)
@@ -939,9 +1038,11 @@ export const lobbyApi = createApi({
 
           const roundAnswerData = roundAnswerSnap.data()
 
-          const { data: currentRoundData, error: parseError } = currentRoundDataSchema.safeParse(roundAnswerData)
+          const { data: currentRoundData, error: parseError } =
+            currentRoundDataSchema.safeParse(roundAnswerData)
 
-          if (parseError) throw new Error(parseError.message || "Data parsing error")
+          if (parseError)
+            throw new Error(parseError.message || "Data parsing error")
 
           await updateDoc(getLobbyRef(lobbyId), {
             currentRound: nextRound,
@@ -960,17 +1061,41 @@ export const lobbyApi = createApi({
           }
         }
       },
-      invalidatesTags: (_result, _error, { lobbyId }) => [{ type: "Lobby", id: lobbyId }],
+      invalidatesTags: (_result, _error, { lobbyId }) => [
+        { type: "Lobby", id: lobbyId },
+      ],
     }),
-    selectOptionIndex: builder.mutation<null, { lobbyId: string, playerId: string, roundIndex: number, selectedOptionIndex: number }>({
-      queryFn: async ({ lobbyId, roundIndex, playerId, selectedOptionIndex }, { dispatch }) => {
+    selectOptionIndex: builder.mutation<
+      null,
+      {
+        lobbyId: string
+        playerId: string
+        roundIndex: number
+        selectedOptionIndex: number
+      }
+    >({
+      queryFn: async (
+        { lobbyId, roundIndex, playerId, selectedOptionIndex },
+        { dispatch },
+      ) => {
         try {
-          const roundAnswer = await dispatch(lobbyApi.endpoints.listenRoundAnswer.initiate({ lobbyId, roundIndex })).unwrap()
+          const roundAnswer = await dispatch(
+            lobbyApi.endpoints.listenRoundAnswer.initiate({
+              lobbyId,
+              roundIndex,
+            }),
+          ).unwrap()
 
           const currentAnswers: PlayerAnswer[] = roundAnswer?.answers || []
 
           const updatedAnswers = currentAnswers.map((answer) =>
-            answer.uid === playerId ? playerAnswerSchema.parse({ ...answer, selectedOptionIndex, selectedOptionAt: Timestamp.now() }) : answer
+            answer.uid === playerId
+              ? playerAnswerSchema.parse({
+                  ...answer,
+                  selectedOptionIndex,
+                  selectedOptionAt: Timestamp.now(),
+                })
+              : answer,
           )
 
           const roundAnswerRef = getRoundAnswerRef(lobbyId, String(roundIndex))
@@ -988,18 +1113,26 @@ export const lobbyApi = createApi({
             error: globalErrorHandler(error),
           }
         }
-      }
+      },
     }),
     createDemoLobby: builder.mutation<LobbyDocWithId, { user: SessionUser }>({
-      queryFn: async ({ user }, { dispatch }): Promise<{ data: LobbyDocWithId } | { error: GlobalError }> => {
+      queryFn: async (
+        { user },
+        { dispatch },
+      ): Promise<{ data: LobbyDocWithId } | { error: GlobalError }> => {
         try {
           const code = generateRandomCode()
           const player = createPlayerFromSessionUser(user)
 
           // Fetch the seed to get round config
-          const seed = await dispatch(seedApi.endpoints.getSeedById.initiate({ id: DEMO_SEED_ID })).unwrap()
+          const seed = await dispatch(
+            seedApi.endpoints.getSeedById.initiate({ id: DEMO_SEED_ID }),
+          ).unwrap()
 
-          if (!seed) throw new Error("Demo seed not found. Check DEMO_SEED_ID in constants/demo.ts")
+          if (!seed)
+            throw new Error(
+              "Demo seed not found. Check DEMO_SEED_ID in constants/demo.ts",
+            )
 
           const hasSpecialRounds = seed.rounds.some((r) => r.isSpecial)
 
@@ -1037,7 +1170,9 @@ export const lobbyApi = createApi({
 
           // Auto-start the demo lobby
           await dispatch(
-            lobbyApi.endpoints.startLobby.initiate({ lobbyId: createdLobby.id }),
+            lobbyApi.endpoints.startLobby.initiate({
+              lobbyId: createdLobby.id,
+            }),
           ).unwrap()
 
           // Return the lobby — subscription will update cache with the playing state
@@ -1055,7 +1190,7 @@ export const lobbyApi = createApi({
     getMyLobbyHistory: builder.infiniteQuery<
       LobbyDocWithId[],
       { userId: string },
-      { limit?: number, startAfterCreatedAt?: string }
+      { limit?: number; startAfterCreatedAt?: string }
     >({
       queryFn: async ({ queryArg, pageParam }) => {
         try {
@@ -1117,26 +1252,37 @@ export const lobbyApi = createApi({
           if (!createdAt) return undefined
 
           return {
-            startAfterCreatedAt: (createdAt as unknown as { toDate: () => Date }).toDate().toISOString(),
+            startAfterCreatedAt: (
+              createdAt as unknown as { toDate: () => Date }
+            )
+              .toDate()
+              .toISOString(),
             limit: limitValue,
           }
         },
       },
       providesTags: (result) =>
-        result ? [
-          ...result.pages
-            .flat()
-            .map(({ id }) => ({ type: "LobbyHistory" as const, id })),
-          { type: "LobbyHistory" as const },
-        ] : [{ type: "LobbyHistory" as const }],
+        result
+          ? [
+              ...result.pages
+                .flat()
+                .map(({ id }) => ({ type: "LobbyHistory" as const, id })),
+              { type: "LobbyHistory" as const },
+            ]
+          : [{ type: "LobbyHistory" as const }],
     }),
-    subscribeAllRoundAnswers: builder.query<RoundAnswerDocWithId[], { lobbyId: string, numberOfRounds: number }>({
+    subscribeAllRoundAnswers: builder.query<
+      RoundAnswerDocWithId[],
+      { lobbyId: string; numberOfRounds: number }
+    >({
       queryFn: async ({ lobbyId, numberOfRounds }) => {
         try {
           const rounds: RoundAnswerDocWithId[] = []
 
           for (let i = 1; i <= numberOfRounds; i++) {
-            const roundAnswerSnap = await getDoc(getRoundAnswerRef(lobbyId, String(i)))
+            const roundAnswerSnap = await getDoc(
+              getRoundAnswerRef(lobbyId, String(i)),
+            )
 
             if (!roundAnswerSnap.exists()) continue
 
@@ -1182,7 +1328,9 @@ export const lobbyApi = createApi({
                 if (error) return
 
                 updateCachedData((draft) => {
-                  const index = draft.findIndex((r) => r.roundIndex === data.roundIndex)
+                  const index = draft.findIndex(
+                    (r) => r.roundIndex === data.roundIndex,
+                  )
 
                   if (index >= 0) {
                     if (isEqual(draft[index], data)) return
@@ -1212,7 +1360,11 @@ export const lobbyApi = createApi({
       queryFn: async () => {
         try {
           const constraints: QueryConstraint[] = [
-            where("status", "in", [LOBBY_STATUS.WAITING, LOBBY_STATUS.STARTING, LOBBY_STATUS.PLAYING]),
+            where("status", "in", [
+              LOBBY_STATUS.WAITING,
+              LOBBY_STATUS.STARTING,
+              LOBBY_STATUS.PLAYING,
+            ]),
             orderBy("createdAt", "desc"),
             limit(100),
           ]
@@ -1244,21 +1396,33 @@ export const lobbyApi = createApi({
       },
       providesTags: ["Lobby"],
     }),
-    getNumberGameFoundByPlayer: builder.query<{ numberGameFound: number }, { lobbyId: string, playerId: string }>({
+    getNumberGameFoundByPlayer: builder.query<
+      { numberGameFound: number },
+      { lobbyId: string; playerId: string }
+    >({
       queryFn: async ({ lobbyId, playerId }, { dispatch }) => {
         try {
-          const lobby = await dispatch(lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId })).unwrap()
+          const lobby = await dispatch(
+            lobbyApi.endpoints.subscribeLobby.initiate({ id: lobbyId }),
+          ).unwrap()
 
           if (!lobby) throw new Error("Lobby not found")
 
           let numberGameFound = 0
 
           for (let i = 1; i <= lobby.config.numberOfRounds; i++) {
-            const roundAnswer = await dispatch(lobbyApi.endpoints.listenRoundAnswer.initiate({ lobbyId, roundIndex: i })).unwrap()
+            const roundAnswer = await dispatch(
+              lobbyApi.endpoints.listenRoundAnswer.initiate({
+                lobbyId,
+                roundIndex: i,
+              }),
+            ).unwrap()
 
             if (!roundAnswer) continue
 
-            const playerAnswer = roundAnswer.answers.find((a) => a.uid === playerId)
+            const playerAnswer = roundAnswer.answers.find(
+              (a) => a.uid === playerId,
+            )
 
             if (playerAnswer?.isCorrect) {
               numberGameFound++
@@ -1275,7 +1439,7 @@ export const lobbyApi = createApi({
         }
       },
     }),
-  })
+  }),
 })
 
 export const {

@@ -1,7 +1,10 @@
 import { type Timestamp } from "@firebase/firestore"
 import { useEffect, useRef, useState } from "react"
 
-export const useIsExpired = (startedAt: Timestamp | null | undefined, durationSeconds: number) => {
+export const useIsExpired = (
+  startedAt: Timestamp | null | undefined,
+  durationSeconds: number,
+) => {
   const [isExpired, setIsExpired] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -49,7 +52,10 @@ export const useIsExpired = (startedAt: Timestamp | null | undefined, durationSe
   return isExpired
 }
 
-export const useCountdown = (startedAt: Timestamp | null | undefined, durationSeconds: number) => {
+export const useCountdown = (
+  startedAt: Timestamp | null | undefined,
+  durationSeconds: number,
+) => {
   const [timeRemaining, setTimeRemaining] = useState(durationSeconds)
 
   useEffect(() => {

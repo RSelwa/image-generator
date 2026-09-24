@@ -1,10 +1,22 @@
 import { faker } from "@faker-js/faker"
-import { DEFAULT_MAX_DISTANCE_POINTS, DIFFICULTIES, mockedGameImageURL, mockedImageURL, mockedMapImageURL, mockedSphericalImageURL } from "@repo/common"
+import {
+  DEFAULT_MAX_DISTANCE_POINTS,
+  DIFFICULTIES,
+  mockedGameImageURL,
+  mockedImageURL,
+  mockedMapImageURL,
+  mockedSphericalImageURL,
+} from "@repo/common"
 import { type DailyChallengeDoc } from "@repo/schemas"
 import { type FactoryDoc } from "~/orm"
 
-const baseDailyChallengeFields = (item: Partial<DailyChallengeDoc> = {}): DailyChallengeDoc => ({
-  date: item.date || faker.date.recent().toISOString().split("T")[0] || "2026-03-11",
+const baseDailyChallengeFields = (
+  item: Partial<DailyChallengeDoc> = {},
+): DailyChallengeDoc => ({
+  date:
+    item.date ||
+    faker.date.recent().toISOString().split("T")[0] ||
+    "2026-03-11",
   gameId: faker.database.mongodbObjectId(),
   gameTitle: faker.lorem.words(3),
   gameAlternateNames: [],
@@ -33,7 +45,9 @@ const mapFields = () => ({
   maxDistancePoints: DEFAULT_MAX_DISTANCE_POINTS,
 })
 
-export const dailyChallengeSphericalWithMapFactory: FactoryDoc<DailyChallengeDoc & { id: string }> = (item = {}) => {
+export const dailyChallengeSphericalWithMapFactory: FactoryDoc<
+  DailyChallengeDoc & { id: string }
+> = (item = {}) => {
   const base = baseDailyChallengeFields({
     isSpherical: true,
     sphericalId: faker.database.mongodbObjectId(),
@@ -45,7 +59,9 @@ export const dailyChallengeSphericalWithMapFactory: FactoryDoc<DailyChallengeDoc
   return { ...base, id: base.date }
 }
 
-export const dailyChallengeSphericalWithoutMapFactory: FactoryDoc<DailyChallengeDoc & { id: string }> = (item = {}) => {
+export const dailyChallengeSphericalWithoutMapFactory: FactoryDoc<
+  DailyChallengeDoc & { id: string }
+> = (item = {}) => {
   const base = baseDailyChallengeFields({
     isSpherical: true,
     sphericalId: faker.database.mongodbObjectId(),
@@ -56,7 +72,9 @@ export const dailyChallengeSphericalWithoutMapFactory: FactoryDoc<DailyChallenge
   return { ...base, id: base.date }
 }
 
-export const dailyChallengeFlatWithMapFactory: FactoryDoc<DailyChallengeDoc & { id: string }> = (item = {}) => {
+export const dailyChallengeFlatWithMapFactory: FactoryDoc<
+  DailyChallengeDoc & { id: string }
+> = (item = {}) => {
   const base = baseDailyChallengeFields({
     isSpherical: false,
     flatId: faker.database.mongodbObjectId(),
@@ -68,7 +86,9 @@ export const dailyChallengeFlatWithMapFactory: FactoryDoc<DailyChallengeDoc & { 
   return { ...base, id: base.date }
 }
 
-export const dailyChallengeFlatWithoutMapFactory: FactoryDoc<DailyChallengeDoc & { id: string }> = (item = {}) => {
+export const dailyChallengeFlatWithoutMapFactory: FactoryDoc<
+  DailyChallengeDoc & { id: string }
+> = (item = {}) => {
   const base = baseDailyChallengeFields({
     isSpherical: false,
     flatId: faker.database.mongodbObjectId(),
@@ -86,5 +106,7 @@ const DAILY_CHALLENGE_FACTORIES = [
   dailyChallengeFlatWithoutMapFactory,
 ] as const
 
-export const dailyChallengeFactory = (index: number, item: Partial<DailyChallengeDoc> = {}) =>
-  DAILY_CHALLENGE_FACTORIES[index % DAILY_CHALLENGE_FACTORIES.length]!(item)
+export const dailyChallengeFactory = (
+  index: number,
+  item: Partial<DailyChallengeDoc> = {},
+) => DAILY_CHALLENGE_FACTORIES[index % DAILY_CHALLENGE_FACTORIES.length]!(item)

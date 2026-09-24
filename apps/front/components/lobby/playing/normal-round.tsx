@@ -12,11 +12,18 @@ const PlayingNormalRound = () => {
   const lobbyId = getLobbyIdFromPathname(pathname)
 
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
-  const cachedSphereUrl = usePanoUrl(currentRoundData?.sphericalId, currentRoundData?.sphericalImageUrl)
+  const cachedSphereUrl = usePanoUrl(
+    currentRoundData?.sphericalId,
+    currentRoundData?.sphericalImageUrl,
+  )
   const sphereSrc = cachedSphereUrl || currentRoundData?.sphericalImageUrl
 
-  const cachedFlatUrl = usePanoUrl(currentRoundData?.flatId, currentRoundData?.flatImageUrl)
-  const flatSrc = cachedFlatUrl || currentRoundData?.flatImageUrl || FALL_BACK_IMAGE
+  const cachedFlatUrl = usePanoUrl(
+    currentRoundData?.flatId,
+    currentRoundData?.flatImageUrl,
+  )
+  const flatSrc =
+    cachedFlatUrl || currentRoundData?.flatImageUrl || FALL_BACK_IMAGE
 
   if (!currentRoundData) return null
 
@@ -28,7 +35,11 @@ const PlayingNormalRound = () => {
         </div>
       )}
       {currentRoundData.type === ROUND_TYPE.FLAT && (
-        <img src={flatSrc} alt="Current round image" className="aspect-video size-full max-h-full-height object-contain" />
+        <img
+          src={flatSrc}
+          alt="Current round image"
+          className="aspect-video size-full max-h-full-height object-contain"
+        />
       )}
     </article>
   )

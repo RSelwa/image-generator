@@ -6,7 +6,7 @@ import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
-import z from "zod"
+import { z } from "zod"
 import { ColoredGoogleIcon } from "@/components/icons"
 import Loader from "@/components/icons/loader"
 import { Button } from "@/components/ui/button"
@@ -62,7 +62,9 @@ export const SignupForm = ({
     if (!authUser || authUser?.isAnonymous) return
 
     const searchParams = new URLSearchParams(MODAL_KEYS.CHANGE_PSEUDO)
-    const redirectUrl = redirect ? new URL(redirect, window.location.origin) : new URL(`${PAGES.HOME}?${searchParams}`, window.location.origin)
+    const redirectUrl = redirect
+      ? new URL(redirect, window.location.origin)
+      : new URL(`${PAGES.HOME}?${searchParams}`, window.location.origin)
 
     router.push(redirectUrl.href)
   }, [authUser?.isAnonymous, redirect, router])
@@ -94,7 +96,9 @@ export const SignupForm = ({
           <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">{t("createAccountTitle")}</h1>
+                <h1 className="text-2xl font-bold">
+                  {t("createAccountTitle")}
+                </h1>
                 <p className="text-muted-primary-foreground text-sm text-balance">
                   {t("createAccountDescription")}
                 </p>
@@ -107,9 +111,7 @@ export const SignupForm = ({
                   placeholder={t("emailPlaceholder")}
                   {...register("email", { required: true })}
                 />
-                <FieldDescription>
-                  {t("emailNote")}
-                </FieldDescription>
+                <FieldDescription>{t("emailNote")}</FieldDescription>
               </Field>
               <Field>
                 <Field>
@@ -120,9 +122,7 @@ export const SignupForm = ({
                     {...register("password", { required: true })}
                   />
                 </Field>
-                <FieldDescription>
-                  {t("passwordNote")}
-                </FieldDescription>
+                <FieldDescription>{t("passwordNote")}</FieldDescription>
               </Field>
               <Field>
                 <Button type="submit">
@@ -145,7 +145,16 @@ export const SignupForm = ({
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                {t("alreadyHaveAccount")} <Link href={redirect ? `${PAGES.LOGIN}?${QUERY_PARAMS.REDIRECT}=${encodeURIComponent(redirect)}` : PAGES.LOGIN}>{t("signIn")}</Link>
+                {t("alreadyHaveAccount")}{" "}
+                <Link
+                  href={
+                    redirect
+                      ? `${PAGES.LOGIN}?${QUERY_PARAMS.REDIRECT}=${encodeURIComponent(redirect)}`
+                      : PAGES.LOGIN
+                  }
+                >
+                  {t("signIn")}
+                </Link>
               </FieldDescription>
             </FieldGroup>
           </form>
@@ -161,14 +170,9 @@ export const SignupForm = ({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        {t("signupTermsAgreement")}
-        {" "}
-        <Link href={PAGES.TERMS}>{t("termsOfService")}</Link>
-        {" "}
-        {t("and")}
-        {" "}
-        <Link href={PAGES.PRIVACY}>{t("privacyPolicy")}</Link>
-        .
+        {t("signupTermsAgreement")}{" "}
+        <Link href={PAGES.TERMS}>{t("termsOfService")}</Link> {t("and")}{" "}
+        <Link href={PAGES.PRIVACY}>{t("privacyPolicy")}</Link>.
       </FieldDescription>
     </div>
   )

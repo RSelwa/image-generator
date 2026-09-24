@@ -8,7 +8,10 @@ const Breadcrumb = ({ ...props }: React.ComponentProps<"nav">) => (
   <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
 )
 
-const BreadcrumbList = ({ className, ...props }: React.ComponentProps<"ol">) => (
+const BreadcrumbList = ({
+  className,
+  ...props
+}: React.ComponentProps<"ol">) => (
   <ol
     data-slot="breadcrumb-list"
     className={cn(
@@ -19,7 +22,10 @@ const BreadcrumbList = ({ className, ...props }: React.ComponentProps<"ol">) => 
   />
 )
 
-const BreadcrumbItem = ({ className, ...props }: React.ComponentProps<"li">) => (
+const BreadcrumbItem = ({
+  className,
+  ...props
+}: React.ComponentProps<"li">) => (
   <li
     data-slot="breadcrumb-item"
     className={cn("inline-flex items-center gap-1.5", className)}

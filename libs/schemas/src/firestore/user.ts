@@ -1,5 +1,10 @@
-import { AVATARS_KEYS, DONOR_TIERS, getRandomAvatar, USERS_FIELDS } from "@repo/common"
-import z from "zod"
+import {
+  AVATARS_KEYS,
+  DONOR_TIERS,
+  getRandomAvatar,
+  USERS_FIELDS,
+} from "@repo/common"
+import { z } from "zod"
 import { dailyChallengeDateSchema } from "~/firestore/daily-challenge"
 import { timestampSchema, WITH_ID } from "~/zod"
 
@@ -19,6 +24,8 @@ export const userDocSchema = z.object({
   bestDeathRunScore: z.number().nullish().default(0),
   donorTier: donorTierSchema.default(null),
   newsletter: z.boolean().nullish().default(false),
+  credits: z.number().nullish().default(0),
+  referralCode: z.string().nullish(),
 })
 
 export const userDocWithIdSchema = z.object({

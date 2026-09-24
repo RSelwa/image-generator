@@ -12,13 +12,25 @@ import { LoadingModal, ModalBase } from "@/components/modals/base"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { DIFFICULTIES_TO_BADGE_VARIANT, FALL_BACK_IMAGE, MODAL_KEYS } from "@/constants/mapping"
-import { useChangeSeedNameMutation, useGetSeedByIdQuery, useToggleFeaturedSeedMutation } from "@/redux/api/seed"
+import {
+  DIFFICULTIES_TO_BADGE_VARIANT,
+  FALL_BACK_IMAGE,
+  MODAL_KEYS,
+} from "@/constants/mapping"
+import {
+  useChangeSeedNameMutation,
+  useGetSeedByIdQuery,
+  useToggleFeaturedSeedMutation,
+} from "@/redux/api/seed"
 
 const DEBOUNCE_DELAY = 700
 
-const RoundRow = ({ round, index }: { round: Round, index: number }) => {
-  const imageUrl = round.isSpecial ? round.options?.[0]?.thumbnailUrl : round.type === ROUND_TYPE.FLAT ? round.flatImageUrl : round.sphericalImageUrl
+const RoundRow = ({ round, index }: { round: Round; index: number }) => {
+  const imageUrl = round.isSpecial
+    ? round.options?.[0]?.thumbnailUrl
+    : round.type === ROUND_TYPE.FLAT
+      ? round.flatImageUrl
+      : round.sphericalImageUrl
 
   return (
     <div className="flex items-center gap-3 rounded-lg border p-3">
@@ -35,17 +47,13 @@ const RoundRow = ({ round, index }: { round: Round, index: number }) => {
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          {round.isSpecial && (
-            <Badge variant="orange">Special</Badge>
-          )}
+          {round.isSpecial && <Badge variant="orange">Special</Badge>}
           {!round.isSpecial && (
             <Badge variant="outline" className="capitalize">
               {round.type}
             </Badge>
           )}
-          <Badge
-            variant={DIFFICULTIES_TO_BADGE_VARIANT[round.difficulty as keyof typeof DIFFICULTIES_TO_BADGE_VARIANT]}
-          >
+          <Badge variant={DIFFICULTIES_TO_BADGE_VARIANT[round.difficulty]}>
             {round.difficulty}
           </Badge>
         </div>
@@ -58,7 +66,10 @@ const RoundRow = ({ round, index }: { round: Round, index: number }) => {
       {round.isSpecial && round.options && (
         <div className="flex gap-1">
           {round.options.map((option) => (
-            <div key={option.thumbnailUrl} className="relative size-10 overflow-hidden rounded">
+            <div
+              key={option.thumbnailUrl}
+              className="relative size-10 overflow-hidden rounded"
+            >
               <Image
                 src={option.thumbnailUrl || FALL_BACK_IMAGE}
                 alt={option.gameTitle}
@@ -76,19 +87,23 @@ const RoundRow = ({ round, index }: { round: Round, index: number }) => {
 export const SeedDetailModal = () => {
   const t = useTranslations("seedDetail")
   const [seedId] = useQueryState(MODAL_KEYS.SEED_DETAIL)
-  const [toggleFeatured, { isLoading: isLoadingFeatured }] = useToggleFeaturedSeedMutation()
+  const [toggleFeatured, { isLoading: isLoadingFeatured }] =
+    useToggleFeaturedSeedMutation()
   const [changeName, { isLoading: isLoadingName }] = useChangeSeedNameMutation()
 
   const [localName, setLocalName] = useState("")
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const debouncedChangeName = useCallback((name: string) => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
+  const debouncedChangeName = useCallback(
+    (name: string) => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
 
-    debounceRef.current = setTimeout(() => {
-      if (seedId) changeName({ id: seedId, name })
-    }, DEBOUNCE_DELAY)
-  }, [seedId, changeName])
+      debounceRef.current = setTimeout(() => {
+        if (seedId) changeName({ id: seedId, name })
+      }, DEBOUNCE_DELAY)
+    },
+    [seedId, changeName],
+  )
 
   const isLoadingUpdate = isLoadingFeatured || isLoadingName
 
@@ -118,9 +133,13 @@ export const SeedDetailModal = () => {
     toast.success(t("idCopied"))
   }
 
-  const createdAt = seed.createdAt ? new Date(
-    "seconds" in seed.createdAt ? seed.createdAt.seconds * 1000 : seed.createdAt,
-  ).toLocaleDateString() : null
+  const createdAt = seed.createdAt
+    ? new Date(
+        "seconds" in seed.createdAt
+          ? seed.createdAt.seconds * 1000
+          : seed.createdAt,
+      ).toLocaleDateString()
+    : null
 
   const specialCount = seed.rounds.filter((r) => r.isSpecial).length
 
@@ -137,18 +156,22 @@ export const SeedDetailModal = () => {
                   debouncedChangeName(e.target.value)
                 }}
               />
-              <button disabled={isLoadingUpdate} onClick={() => toggleFeatured({ id: seed.id })} className="disabled:bg-neutral-300">
-                {seed.featuredAt ? <Star className="size-4 fill-primary text-primary" /> : <StarOff className="size-4 text-primary" />}
+              <button
+                disabled={isLoadingUpdate}
+                onClick={() => toggleFeatured({ id: seed.id })}
+                className="disabled:bg-neutral-300"
+              >
+                {seed.featuredAt ? (
+                  <Star className="size-4 fill-primary text-primary" />
+                ) : (
+                  <StarOff className="size-4 text-primary" />
+                )}
               </button>
             </div>
             <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Play className="size-3" />
-                {t("used")}
-                {" "}
-                {seed.timesUsed}
-                {" "}
-                {t("times")}
+                {t("used")} {seed.timesUsed} {t("times")}
               </span>
               {createdAt && (
                 <span className="flex items-center gap-1">
@@ -166,9 +189,13 @@ export const SeedDetailModal = () => {
         </header>
 
         <div className="flex gap-2">
-          <Badge variant="secondary">{seed.rounds.length} {t("rounds")}</Badge>
+          <Badge variant="secondary">
+            {seed.rounds.length} {t("rounds")}
+          </Badge>
           {specialCount > 0 && (
-            <Badge variant="orange">{specialCount} {t("special")}</Badge>
+            <Badge variant="orange">
+              {specialCount} {t("special")}
+            </Badge>
           )}
         </div>
 

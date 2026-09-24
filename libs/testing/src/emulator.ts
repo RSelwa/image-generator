@@ -1,4 +1,7 @@
-import { type CollectionReference, type WithFieldValue } from "firebase-admin/firestore"
+import {
+  type CollectionReference,
+  type WithFieldValue,
+} from "firebase-admin/firestore"
 
 const AUTH_EMULATOR_URL = "http://localhost:9099"
 // const FIRESTORE_EMULATOR_URL = "http://localhost:8080"
@@ -14,16 +17,16 @@ export const createAuthUser = async (email: string, password: string) => {
   )
   const data = await response.json()
 
-  return (data as unknown as any).localId as string
+  return (data as any).localId as string
 }
 
 export type FirestoreFieldValue =
-  | { stringValue: string } |
-  { booleanValue: boolean } |
-  { integerValue: string } |
-  { doubleValue: number } |
-  { timestampValue: string } |
-  { nullValue: null }
+  | { stringValue: string }
+  | { booleanValue: boolean }
+  | { integerValue: string }
+  | { doubleValue: number }
+  | { timestampValue: string }
+  | { nullValue: null }
 
 export const toFirestoreFields = (
   obj: Record<string, unknown>,
@@ -43,7 +46,11 @@ export const toFirestoreFields = (
     } else if (value === null || value === undefined) {
       fields[key] = { nullValue: null }
     } else if (typeof value === "object" && "toDate" in value) {
-      fields[key] = { timestampValue: (value as { toDate: () => Date }).toDate().toISOString() }
+      fields[key] = {
+        timestampValue: (value as { toDate: () => Date })
+          .toDate()
+          .toISOString(),
+      }
     }
   }
 
@@ -56,7 +63,9 @@ export const createFirestoreDoc = async (
 ) => {
   const id = (data as { id?: string }).id
 
-  console.info(`Creating Firestore doc with data: ${collectionRef.path} - ${data.id || "no-id"}`)
+  console.info(
+    `Creating Firestore doc with data: ${collectionRef.path} - ${data.id || "no-id"}`,
+  )
 
   if ("id" in data && id) {
     const ref = collectionRef.doc(id)

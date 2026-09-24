@@ -76,10 +76,11 @@
   /* --header-height: 76px; */
   /* --footer-height: 85px; */
   --spacing-full-height-admin: calc(100svh - var(--admin-header-height));
-  --spacing-full-height: calc(100svh - var(--header-height) - var(--footer-height));
+  --spacing-full-height: calc(
+    100svh - var(--header-height) - var(--footer-height)
+  );
 
   @keyframes loadingColors {
-
     0%,
     12.4% {
       fill: var(--color-gray-200);
@@ -131,7 +132,7 @@
     }
   }
 
-   @keyframes diagonal-infinite {
+  @keyframes diagonal-infinite {
     from {
       background-position: 0 0;
     }
@@ -158,7 +159,6 @@
   }
 
   --animate-holo-shimmer: holo-shimmer 6s ease infinite;
-
 }
 
 :root {
@@ -246,9 +246,9 @@
   /* --primary: oklch(0.6415 0.2129 33.35); */
   --primary: oklch(0.6723 0.239166 18.94);
   --primary-foreground: oklch(0 0 0);
-  --marathon-pink:oklch(0.6723 0.239166 18.94);
-  --marathon-orange:oklch(0.6416 0.2133 32.82);
-  --marathon-orange-foreground:oklch(47.388% 0.15893 32.816);
+  --marathon-pink: oklch(0.6723 0.239166 18.94);
+  --marathon-orange: oklch(0.6416 0.2133 32.82);
+  --marathon-orange-foreground: oklch(47.388% 0.15893 32.816);
   --marathon-yellow: oklch(0.9262 0.1979 115.19);
   --marathon-yellow-foreground: oklch(43.102% 0.08189 114.777);
   --marathon-green: oklch(0.8537 0.217249 153.4818);
@@ -290,18 +290,17 @@
 
   ::-webkit-scrollbar {
     @apply w-2.5 h-2.5;
-
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-transparent
+    @apply bg-transparent;
   }
 
   ::-webkit-scrollbar-thumb {
     @apply rounded-full bg-transparent border-0 bg-clip-padding;
   }
 
-  *:hover> ::-webkit-scrollbar-thumb,
+  *:hover > ::-webkit-scrollbar-thumb,
   ::-webkit-scrollbar-thumb:hover,
   ::-webkit-scrollbar-thumb:active {
     @apply bg-border;
@@ -326,51 +325,53 @@
   .scrollbar::-webkit-scrollbar-thumb:hover {
     background: #c0a0b9;
   }
-
 }
 
 @layer utilities {
-/* Class assigned to popover wrapper */
-.driver-popover {
-  @apply bg-primary! rounded-none!;
-}
+  /* Class assigned to popover wrapper */
+  .driver-popover {
+    @apply bg-primary! rounded-none!;
+  }
 
-/* Arrow pointing towards the highlighted element */
-.driver-popover-arrow-side-bottom {
-  @apply border-t-transparent border-l-transparent border-r-transparent border-b-primary!;
-}
-/* Arrow pointing towards the highlighted element */
-.driver-popover-arrow-side-left {
-  @apply border-t-transparent border-l-primary! border-r-transparent border-b-transparent;
-}
+  /* Arrow pointing towards the highlighted element */
+  .driver-popover-arrow-side-bottom {
+    @apply border-t-transparent border-l-transparent border-r-transparent border-b-primary!;
+  }
+  /* Arrow pointing towards the highlighted element */
+  .driver-popover-arrow-side-left {
+    @apply border-t-transparent border-l-primary! border-r-transparent border-b-transparent;
+  }
 
-/* Arrow pointing towards the highlighted element */
-.driver-popover-arrow-side-right {
-  @apply border-t-transparent border-l-transparent border-b-transparent border-r-primary!;
-}
+  /* Arrow pointing towards the highlighted element */
+  .driver-popover-arrow-side-right {
+    @apply border-t-transparent border-l-transparent border-b-transparent border-r-primary!;
+  }
 
-/* Title and description */
-.driver-popover-title {
-  @apply text-lg font-bold text-primary-foreground font-interference!
-}
+  /* Title and description */
+  .driver-popover-title {
+    @apply text-lg font-bold text-primary-foreground font-interference!;
+  }
 
-.driver-popover-description {
-  @apply text-primary-foreground/80 font-mono!
-}
+  .driver-popover-description {
+    @apply text-primary-foreground/80 font-mono!;
+  }
 
-/* Close button displayed on the top right corner */
-.driver-popover-close-btn {
-  @apply text-primary-foreground/80 hover:text-primary-foreground;
-}
+  /* Close button displayed on the top right corner */
+  .driver-popover-close-btn {
+    @apply text-primary-foreground/80 hover:text-primary-foreground;
+  }
 
-/* Footer of the popover displaying progress and navigation buttons */
-.driver-popover-footer {}
+  /* Footer of the popover displaying progress and navigation buttons */
+  .driver-popover-footer {
+  }
 
-.driver-popover-progress-text {}
+  .driver-popover-progress-text {
+  }
 
-.driver-popover-prev-btn, .driver-popover-next-btn {
-  @apply bg-background! text-primary! border-none! text-shadow-none!
-}
+  .driver-popover-prev-btn,
+  .driver-popover-next-btn {
+    @apply bg-background! text-primary! border-none! text-shadow-none!;
+  }
 }
 
 .glow::after {
@@ -390,11 +391,11 @@
     var(--sunpillar-6) 54%,
     transparent 56%,
     transparent 100%
-    );
-    background-size: 300% 300%;
-    animation: var(--animate-holo-shimmer);
-    mix-blend-mode: hard-light;
-    
+  );
+  background-size: 300% 300%;
+  animation: var(--animate-holo-shimmer);
+  mix-blend-mode: hard-light;
+
   pointer-events: none;
   mask-image: var(--glow-mask);
   mask-size: contain;

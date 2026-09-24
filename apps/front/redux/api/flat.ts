@@ -42,7 +42,7 @@ export const flatApi = createApi({
     getFlats: builder.infiniteQuery<
       FlatEntity[],
       void,
-      { limit?: number, startAfter?: Timestamp | null }
+      { limit?: number; startAfter?: Timestamp | null }
     >({
       queryFn: async ({ pageParam }, { dispatch }) => {
         try {
@@ -52,13 +52,9 @@ export const flatApi = createApi({
             constraints.push(startAfter(pageParam.startAfter))
           }
 
-          if (pageParam.limit)
-            constraints.push(limit(pageParam.limit))
+          if (pageParam.limit) constraints.push(limit(pageParam.limit))
 
-          const q = query(
-            TABLES_GROUP_REFS[TABLES.FLAT],
-            ...constraints,
-          )
+          const q = query(TABLES_GROUP_REFS[TABLES.FLAT], ...constraints)
 
           const snapshot = await getDocs(q)
 
@@ -72,11 +68,14 @@ export const flatApi = createApi({
                 }),
               ).unwrap()
 
-              const docWithId = flatDocWithIdSchema.parse({ id: doc.id, ...doc.data(), gameId })
+              const docWithId = flatDocWithIdSchema.parse({
+                id: doc.id,
+                ...doc.data(),
+                gameId,
+              })
               const data = toFlatEntity(docWithId, game)
 
-              if (!data)
-                throw new Error(`Flat ${doc.id} is incomplete`)
+              if (!data) throw new Error(`Flat ${doc.id} is incomplete`)
 
               return data
             }),
@@ -113,17 +112,16 @@ export const flatApi = createApi({
         },
       },
       providesTags: (result) =>
-        result ? [
-          ...result.pages
-            .flat()
-            .map(({ id }) => ({ type: "Flat" as const, id })),
-          { type: "FlatList" as const },
-        ] : [{ type: "FlatList" as const }],
+        result
+          ? [
+              ...result.pages
+                .flat()
+                .map(({ id }) => ({ type: "Flat" as const, id })),
+              { type: "FlatList" as const },
+            ]
+          : [{ type: "FlatList" as const }],
     }),
-    getFlatById: builder.query<
-      FlatEntity,
-      { gameId: string, id: string }
-    >({
+    getFlatById: builder.query<FlatEntity, { gameId: string; id: string }>({
       queryFn: async ({ id, gameId }, { dispatch }) => {
         try {
           const docSnap = await getDoc(getFlatRef(gameId, id))
@@ -138,7 +136,10 @@ export const flatApi = createApi({
             }),
           ).unwrap()
 
-          const docWithId = flatDocWithIdSchema.parse({ id: docSnap.id, ...docSnap.data() })
+          const docWithId = flatDocWithIdSchema.parse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
           const data = toFlatEntity(docWithId, game)
 
           if (!data) throw new Error(`Flat ${docSnap.id} is incomplete`)
@@ -155,10 +156,7 @@ export const flatApi = createApi({
       },
       providesTags: (_result, _error, { id }) => [{ type: "Flat", id }],
     }),
-    getFlatsByGameId: builder.query<
-      FlatDocWithId[],
-      { gameId: string }
-    >({
+    getFlatsByGameId: builder.query<FlatDocWithId[], { gameId: string }>({
       queryFn: async ({ gameId }) => {
         try {
           const q = query(
@@ -198,7 +196,9 @@ export const flatApi = createApi({
     getTotalFlatsCount: builder.query<number, void>({
       queryFn: async () => {
         try {
-          const snapshot = await getCountFromServer(TABLES_GROUP_REFS[TABLES.FLAT])
+          const snapshot = await getCountFromServer(
+            TABLES_GROUP_REFS[TABLES.FLAT],
+          )
 
           return { data: snapshot.data().count }
         } catch (error) {
@@ -212,7 +212,7 @@ export const flatApi = createApi({
       },
       providesTags: [{ type: "FlatCount" }],
     }),
-    deleteFlat: builder.mutation<null, { gameId: string, id: string }>({
+    deleteFlat: builder.mutation<null, { gameId: string; id: string }>({
       queryFn: async ({ gameId, id }) => {
         try {
           await deleteDoc(getFlatRef(gameId, id))
@@ -241,7 +241,7 @@ export const flatApi = createApi({
     }),
     createFlat: builder.mutation<
       FlatDocWithId,
-      { gameId: string, data: CreateFlatInput }
+      { gameId: string; data: CreateFlatInput }
     >({
       queryFn: async ({ gameId, data: input }) => {
         try {
@@ -253,14 +253,11 @@ export const flatApi = createApi({
           }
 
           const now = Timestamp.now()
-          const docRef = await addDoc(
-            TABLES_SUB_REFS[TABLES.FLAT](gameId),
-            {
-              ...validatedInput,
-              createdAt: now,
-              updatedAt: now,
-            },
-          )
+          const docRef = await addDoc(TABLES_SUB_REFS[TABLES.FLAT](gameId), {
+            ...validatedInput,
+            createdAt: now,
+            updatedAt: now,
+          })
 
           const docSnap = await getDoc(docRef)
 
@@ -291,7 +288,7 @@ export const flatApi = createApi({
     }),
     updateFlatById: builder.mutation<
       FlatDocWithId,
-      { gameId: string, id: string, data: UpdateFlatInput }
+      { gameId: string; id: string; data: UpdateFlatInput }
     >({
       queryFn: async ({ gameId, id, data: input }) => {
         try {

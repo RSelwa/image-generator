@@ -1,7 +1,7 @@
 export type BlogSection = {
   heading: string
   paragraphs: string[]
-  items?: Array<{ label: string, text: string }>
+  items?: Array<{ label: string; text: string }>
 }
 
 export type BlogPost = {
@@ -160,8 +160,8 @@ export const BLOG_POSTS = {
           "Every day at midnight UTC, a brand-new Daily Challenge goes live. Each challenge consists of 5 rounds, each featuring a different scene drawn from the full library. The catch? Everyone in the world gets the exact same scenes every day.",
           "It's the ultimate test of skill and consistency — can you maintain a high score across an ever-changing set of locations? The global leaderboard resets daily, so there's always a fresh opportunity to climb to the top.",
         ],
-      }
-    ]
+      },
+    ],
   },
   RACE: {
     slug: "race",
@@ -174,12 +174,12 @@ export const BLOG_POSTS = {
       {
         heading: "What is Race Mode?",
         paragraphs: [
-          "Race Mode is a high-intensity variation of the standard Geo Gamer formula. Instead of a fixed time limit for the entire game, each round has its own countdown. The faster you make a correct guess, the more points you earn — but if you take too long, your score for that round plummets."
-        ]
-      }
-    ]
-  }
+          "Race Mode is a high-intensity variation of the standard Geo Gamer formula. Instead of a fixed time limit for the entire game, each round has its own countdown. The faster you make a correct guess, the more points you earn — but if you take too long, your score for that round plummets.",
+        ],
+      },
+    ],
+  },
 }
 
-export const BLOG_POST_BY_SLUG = (slug: string): BlogPost | undefined => Object.values(BLOG_POSTS).find((post) => post.slug === slug
-)
+export const BLOG_POST_BY_SLUG = (slug: string): BlogPost | undefined =>
+  Object.values(BLOG_POSTS).find((post) => post.slug === slug)

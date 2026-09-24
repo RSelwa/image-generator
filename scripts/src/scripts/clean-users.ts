@@ -38,20 +38,28 @@ for (const userDoc of anonymousUsers.docs) {
     .get()
 
   if (!dailyChallengeResults.empty) {
-    console.info(`  - ${dailyChallengeResults.docs.length} daily challenge results`)
+    console.info(
+      `  - ${dailyChallengeResults.docs.length} daily challenge results`,
+    )
     await deleteBatch(dailyChallengeResults.docs)
     deletedDailyChallengeResults += dailyChallengeResults.docs.length
   }
 
   // 2. Delete lobbies where user is host + their roundAnswers subcollections
-  const userLobbies = await refs[TABLES.LOBBIES].where("hostId", "==", uid).get()
+  const userLobbies = await refs[TABLES.LOBBIES]
+    .where("hostId", "==", uid)
+    .get()
 
   if (!userLobbies.empty) {
     console.info(`  - ${userLobbies.docs.length} lobbies as host`)
     for (const lobbyDoc of userLobbies.docs) {
-      const roundAnswers = await subRefs[TABLES.ROUND_ANSWERS](lobbyDoc.id).get()
+      const roundAnswers = await subRefs[TABLES.ROUND_ANSWERS](
+        lobbyDoc.id,
+      ).get()
       if (!roundAnswers.empty) {
-        console.info(`    - ${roundAnswers.docs.length} round answers in lobby ${lobbyDoc.id}`)
+        console.info(
+          `    - ${roundAnswers.docs.length} round answers in lobby ${lobbyDoc.id}`,
+        )
         await deleteBatch(roundAnswers.docs)
       }
       await refs[TABLES.LOBBIES].doc(lobbyDoc.id).delete()

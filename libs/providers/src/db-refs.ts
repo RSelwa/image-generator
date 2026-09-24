@@ -1,5 +1,27 @@
 import { TABLES } from "@repo/common"
-import { type CouponDoc, type DailyChallengeDoc, type DeathRunDoc, type DeathRunRunDoc, type FlatDoc, type GameDoc, type LeaderboardDoc, type LobbyDoc, type MapDoc, type MarathonSeedDoc, type RaceDoc, type RaceRunDoc, type RightDoc, type RoundAnswerDoc, type SeedDoc, type SocialDoc, type SoundDoc, type SphericalDoc, type UserDoc } from "@repo/schemas"
+import {
+  type AchievementDoc,
+  type CouponDoc,
+  type DailyChallengeDoc,
+  type DeathRunDoc,
+  type DeathRunRunDoc,
+  type FlatDoc,
+  type GameDoc,
+  type LeaderboardDoc,
+  type LobbyDoc,
+  type MapDoc,
+  type MarathonSeedDoc,
+  type RaceDoc,
+  type RaceRunDoc,
+  type RightDoc,
+  type RoundAnswerDoc,
+  type SeedDoc,
+  type SocialDoc,
+  type SoundDoc,
+  type SphericalDoc,
+  type UnlockedAchievementDoc,
+  type UserDoc,
+} from "@repo/schemas"
 import {
   type CollectionGroup,
   type CollectionReference,
@@ -60,14 +82,12 @@ export const refs = {
     SoundDoc,
     SoundDoc
   >,
-  [TABLES.DAILY_CHALLENGES]: db.collection(TABLES.DAILY_CHALLENGES) as CollectionReference<
-    DailyChallengeDoc,
-    DailyChallengeDoc
-  >,
-  [TABLES.MARATHON_SEEDS]: db.collection(TABLES.MARATHON_SEEDS) as CollectionReference<
-    MarathonSeedDoc,
-    MarathonSeedDoc
-  >,
+  [TABLES.DAILY_CHALLENGES]: db.collection(
+    TABLES.DAILY_CHALLENGES,
+  ) as CollectionReference<DailyChallengeDoc, DailyChallengeDoc>,
+  [TABLES.MARATHON_SEEDS]: db.collection(
+    TABLES.MARATHON_SEEDS,
+  ) as CollectionReference<MarathonSeedDoc, MarathonSeedDoc>,
   [TABLES.RACES]: db.collection(TABLES.RACES) as CollectionReference<
     RaceDoc,
     RaceDoc
@@ -76,14 +96,16 @@ export const refs = {
     DeathRunDoc,
     DeathRunDoc
   >,
-  [TABLES.LEADERBOARD]: db.collection(TABLES.LEADERBOARD) as CollectionReference<
-    LeaderboardDoc,
-    LeaderboardDoc
-  >,
+  [TABLES.LEADERBOARD]: db.collection(
+    TABLES.LEADERBOARD,
+  ) as CollectionReference<LeaderboardDoc, LeaderboardDoc>,
   [TABLES.COUPONS]: db.collection(TABLES.COUPONS) as CollectionReference<
     CouponDoc,
     CouponDoc
   >,
+  [TABLES.ACHIEVEMENTS]: db.collection(
+    TABLES.ACHIEVEMENTS,
+  ) as CollectionReference<AchievementDoc, AchievementDoc>,
 }
 
 export const collectionGroupRefs = {
@@ -126,4 +148,8 @@ export const subRefs = {
     db.collection(
       `${TABLES.DEATH_RUNS}/${deathRunId}/${TABLES.DEATH_RUN_RUNS}`,
     ) as CollectionReference<DeathRunRunDoc, DeathRunRunDoc>,
+  [TABLES.UNLOCKED_ACHIEVEMENTS]: (uid: string) =>
+    db.collection(
+      `${TABLES.USERS}/${uid}/${TABLES.UNLOCKED_ACHIEVEMENTS}`,
+    ) as CollectionReference<UnlockedAchievementDoc, UnlockedAchievementDoc>,
 } as const

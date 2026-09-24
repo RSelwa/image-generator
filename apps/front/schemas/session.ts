@@ -5,8 +5,17 @@ import { z } from "zod"
 import { SESSION_STATUS } from "@/constants/mapping"
 
 export const sessionUserSchema = z.object({
-  ...userDocWithIdSchema.pick({ id: true, email: true, avatar: true, donorTier: true, newsletter: true }).shape,
-  pseudo: z.string().nullish().transform((v) => v || ""),
+  ...userDocWithIdSchema.pick({
+    id: true,
+    email: true,
+    avatar: true,
+    donorTier: true,
+    newsletter: true,
+  }).shape,
+  pseudo: z
+    .string()
+    .nullish()
+    .transform((v) => v || ""),
   rights: z.enum(USER_RIGHT).nullish(),
   isAnonymous: z.boolean().default(false),
   avatar: z.enum(AVATARS_KEYS).default(getRandomAvatar()),

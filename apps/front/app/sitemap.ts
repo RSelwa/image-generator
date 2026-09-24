@@ -25,7 +25,11 @@ export default (): MetadataRoute.Sitemap => {
     { path: "", priority: 1.0, changeFrequency: "daily" as const },
     { path: "/login", priority: 0.8, changeFrequency: "monthly" as const },
     { path: "/signup", priority: 0.8, changeFrequency: "monthly" as const },
-    { path: "/daily-challenge", priority: 0.9, changeFrequency: "daily" as const },
+    {
+      path: "/daily-challenge",
+      priority: 0.9,
+      changeFrequency: "daily" as const,
+    },
     { path: "/blog", priority: 0.8, changeFrequency: "weekly" as const },
     { path: "/privacy", priority: 0.4, changeFrequency: "yearly" as const },
     { path: "/terms", priority: 0.4, changeFrequency: "yearly" as const },
@@ -43,7 +47,9 @@ export default (): MetadataRoute.Sitemap => {
         priority,
         alternates: {
           languages: {
-            ...Object.fromEntries(LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}${path}`])),
+            ...Object.fromEntries(
+              LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}${path}`]),
+            ),
             "x-default": `${APP_BASE_URL}/en${path}`,
           },
         },
@@ -57,7 +63,9 @@ export default (): MetadataRoute.Sitemap => {
         priority: 0.7,
         alternates: {
           languages: {
-            ...Object.fromEntries(LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}/blog/${slug}`])),
+            ...Object.fromEntries(
+              LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}/blog/${slug}`]),
+            ),
             "x-default": `${APP_BASE_URL}/en/blog/${slug}`,
           },
         },
@@ -71,7 +79,12 @@ export default (): MetadataRoute.Sitemap => {
         priority: 0.6,
         alternates: {
           languages: {
-            ...Object.fromEntries(LOCALES.map((l) => [l, `${APP_BASE_URL}/${l}/daily-challenge/${date}`])),
+            ...Object.fromEntries(
+              LOCALES.map((l) => [
+                l,
+                `${APP_BASE_URL}/${l}/daily-challenge/${date}`,
+              ]),
+            ),
             "x-default": `${APP_BASE_URL}/en/daily-challenge/${date}`,
           },
         },

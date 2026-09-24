@@ -1,0 +1,203 @@
+name: 🚀 Deploy Cloud Functions
+run-name: 🚀 Deploy Cloud Functions
+
+on:
+  workflow_call:
+    inputs:
+      functions:
+        type: string
+        required: false
+        default: ""
+  workflow_dispatch:
+    inputs:
+      functions:
+        description: >
+          Comma-separated function directory names to deploy (e.g. "socials,listen-docs").
+          Leave empty to deploy all functions.
+        type: string
+        required: false
+        default: ""
+
+env:
+  # Directories under functions/ that are not Firebase functions deployed from
+  # here: http-base has no deploy pipeline, video-capture is a Cloud Run job
+  # (deploy-cloud-run.yml). One name per line, "#" starts a comment.
+  CF_BLACKLIST: |
+    http-base
+    video-capture
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    name: 🔍 List functions
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      has_functions: ${{ steps.matrix.outputs.has_functions }}
+      filters: ${{ steps.matrix.outputs.filters }}
+      tests: ${{ steps.matrix.outputs.tests }}
+      has_tests: ${{ steps.matrix.outputs.has_tests }}
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🧩 Build deploy matrix
+        id: matrix
+        env:
+          INPUT: ${{ inputs.functions }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "$INPUT" ]; then
+            NAMES=$(echo "$INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' |
+              { grep -v '^$' || true; } | jq -R . | jq -sc 'sort')
+          else
+            NAMES=$(find functions -mindepth 2 -maxdepth 2 -name package.json |
+              cut -d/ -f2 | jq -R . | jq -sc 'sort')
+          fi
+
+          DENY=$(printf '%s\n' "$CF_BLACKLIST" | sed 's/#.*//' | tr -d '[:blank:]' |
+            { grep -v '^$' || true; } | jq -R . | jq -sc .)
+
+          SKIPPED=$(echo "$NAMES" | jq -c --argjson deny "$DENY" '[.[] | select(IN($deny[]))]')
+          NAMES=$(echo "$NAMES" | jq -c --argjson deny "$DENY" '[.[] | select(IN($deny[]) | not)]')
+
+          if [ "$(echo "$SKIPPED" | jq 'length')" -gt 0 ]; then
+            echo "::notice::Blacklisted, skipped: $SKIPPED"
+          fi
+
+          for FN in $(echo "$NAMES" | jq -r '.[]'); do
+            [ -f "functions/$FN/package.json" ] || { echo "::error::functions/$FN is not a package"; exit 1; }
+          done
+
+          COUNT=$(echo "$NAMES" | jq 'length')
+          echo "Functions ($COUNT): $NAMES"
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "has_functions=false" >> "$GITHUB_OUTPUT"
+            echo 'matrix={"include":[]}' >> "$GITHUB_OUTPUT"
+            echo "filters=" >> "$GITHUB_OUTPUT"
+            echo "has_tests=false" >> "$GITHUB_OUTPUT"
+            echo 'tests={"include":[]}' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          TESTED=$(for FN in $(echo "$NAMES" | jq -r '.[]'); do
+            if jq -e '.scripts.test' "functions/$FN/package.json" > /dev/null; then echo "$FN"; fi
+          done | jq -R . | jq -sc .)
+          echo "has_tests=$([ "$(echo "$TESTED" | jq 'length')" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "tests=$(echo "$TESTED" | jq -c '{include: map({function: .})}')" >> "$GITHUB_OUTPUT"
+
+          FILTERS=$(echo "$NAMES" | jq -r '.[] | "--filter=./functions/\(.)"' | tr '\n' ' ')
+          MATRIX=$(echo "$NAMES" | jq -c '{include: (to_entries | group_by(.key / 5 | floor) | map({chunk: (map(.value) | join(","))}))}')
+          echo "has_functions=true" >> "$GITHUB_OUTPUT"
+          echo "filters=$FILTERS" >> "$GITHUB_OUTPUT"
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+          echo "Matrix: $MATRIX"
+
+  build:
+    runs-on: ubuntu-latest
+    name: 🧱 Build
+    needs: detect
+    if: needs.detect.outputs.has_functions == 'true'
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: 💾 Turbo Cache
+        uses: ./.github/actions/turbo-cache
+
+      - name: 🧱 Build functions
+        env:
+          FILTERS: ${{ needs.detect.outputs.filters }}
+        run: |
+          # shellcheck disable=SC2086
+          pnpm exec turbo run build $FILTERS
+
+  test:
+    runs-on: ubuntu-latest
+    name: 🧪 Test ${{ matrix.function }}
+    needs: [detect, build]
+    if: needs.detect.outputs.has_tests == 'true'
+    environment: prod
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.detect.outputs.tests) }}
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: 💾 Turbo Cache
+        uses: ./.github/actions/turbo-cache
+
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: 🔒 Create .env.test file
+        if: matrix.function == 'create-party-doc'
+        env:
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+        run: |
+          {
+            echo "STRIPE_API_KEY=$STRIPE_API_KEY"
+            echo 'DEMO_ENV_VAR="env test file"'
+          } >> functions/create-party-doc/.env.test
+
+      # Only this function is built, so it is the only codebase the functions
+      # emulator loads: another function's triggers cannot touch its data.
+      - name: ✨ Build function
+        run: pnpm exec turbo run build --filter=./functions/${{ matrix.function }}
+
+      # No --project: the tests hardcode the .firebaserc project id.
+      - name: 🧪 Run tests
+        run: pnpm exec firebase emulators:exec "pnpm --filter ./functions/${{ matrix.function }} test"
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy
+    needs: [detect, test]
+    concurrency:
+      group: deploy-cloud-functions-${{ github.ref }}-${{ matrix.chunk }}
+      cancel-in-progress: false
+    if: >-
+      !cancelled() && !failure()
+      && needs.detect.outputs.has_functions == 'true'
+      && (github.ref_name == 'main' || github.ref_name == 'develop')
+    environment: prod
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
+    steps:
+      - name: ✨ Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Initialize Node.js Environment
+        uses: ./.github/actions/initialization
+
+      - name: 💾 Turbo Cache
+        uses: ./.github/actions/turbo-cache
+
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: 🚀 Deploy to Firebase
+        env:
+          CHUNK: ${{ matrix.chunk }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          TARGETS=""
+          for FN in ${CHUNK//,/ }; do
+            TARGETS="${TARGETS:+$TARGETS,}functions:$FN"
+          done
+          echo "Deploying $TARGETS"
+          pnpm exec firebase deploy --project "$PROJECT_ID" --only "$TARGETS" --force

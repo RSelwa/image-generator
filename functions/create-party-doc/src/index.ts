@@ -5,7 +5,7 @@ import { HttpsError } from "firebase-functions/https"
 type Payload = { boardId: string }
 
 export const createPartyDoc = https.onCall<Payload>(
-  { region: region as string, cors: "*" },
+  { region: region, cors: "*" },
   async ({ auth, data }) => {
     try {
       if (!auth?.uid) {

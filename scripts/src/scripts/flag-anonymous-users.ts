@@ -12,7 +12,8 @@ await Promise.all(
     const userData = user.data()
 
     const email = userData.email || ``
-    const isAnonymousEmail = email.startsWith("anonymous-") && email.endsWith(SUFFIX_ANONYMOUS_USER)
+    const isAnonymousEmail =
+      email.startsWith("anonymous-") && email.endsWith(SUFFIX_ANONYMOUS_USER)
 
     if (isAnonymousEmail) {
       console.info(`User ${user.id} is should be anonymous:`, userData.email)
@@ -21,5 +22,5 @@ await Promise.all(
       isAnonymousUser: isAnonymousEmail,
     })
     console.info(`Updated user ${user.id} with isAnonymousUser flag`)
-  })
+  }),
 )

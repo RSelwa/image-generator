@@ -125,8 +125,7 @@ const MapGuesser = () => {
         {hasSubmitted && guessPosition && (
           <div className="bg-primary/80 text-foreground px-4 py-2 rounded-lg text-center">
             <p>
-              Distance:
-              {" "}
+              Distance:{" "}
               {calculateDistance(
                 guessPosition,
                 currentMap.correctPosition,
@@ -151,10 +150,7 @@ const MapGuesser = () => {
         ) : isGameOver ? (
           <div className="flex flex-col items-center gap-2">
             <p className="text-foreground text-xl font-bold">
-              Game Over! Final Score:
-              {" "}
-              {totalScore}
-              /
+              Game Over! Final Score: {totalScore}/
               {MAX_POINTS * EXAMPLE_ROUNDS.length}
             </p>
             <Button size="lg" onClick={handleReset}>

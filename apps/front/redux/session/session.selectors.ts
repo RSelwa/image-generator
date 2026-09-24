@@ -7,15 +7,17 @@ export const selectAuthUser = ({ session }: RootState) => session.authUser
 
 export const selectUserId = ({ session }: RootState) => session.user?.id || ""
 
-export const selectIsAnonymous = ({ session }: RootState) => session.user?.isAnonymous || false
+export const selectIsAnonymous = ({ session }: RootState) =>
+  session.user?.isAnonymous || false
 
 export const selectSessionStatus = ({ session }: RootState) => session.status
-export const selectSessionIsReady = ({ session }: RootState) => session.status === SESSION_STATUS.SUCCESS
+export const selectSessionIsReady = ({ session }: RootState) =>
+  session.status === SESSION_STATUS.SUCCESS
 
-export const selectUserSteak = ({ session }: RootState) => session.user?.streak || 0
+export const selectUserSteak = ({ session }: RootState) =>
+  session.user?.streak || 0
 
-export const selectUserRights = ({ session }: RootState) =>
-  session.user?.rights
+export const selectUserRights = ({ session }: RootState) => session.user?.rights
 
 export const selectHasRightToDashBoard = ({ session }: RootState) => {
   const right = session.user?.rights

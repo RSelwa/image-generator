@@ -61,7 +61,7 @@ fit.
 - Firebase emulators with hot reloading
 - Shared Biomejs configuration for linting and formatting
 - [Vitest](https://vitest.dev/) for testing
-- [Husky](https://typicode.github.io/husky/#/) for pre-commit and pre-push hooks
+- [Lefthook](https://lefthook.dev) for pre-commit and pre-push hooks
 - [PNPM](https://pnpm.io/) as a package manager
 
 ## Getting Started
@@ -228,7 +228,9 @@ This folder contains all the cloud functions
 This folder contains all the firestore rules and their tests.
 
 ### Apps
+
 This folder contains all the apps used in Flim
+
 - [api](./apps/api) The Flim API
 
 ## Firebase
@@ -338,16 +340,19 @@ Check for .env.example for environnement variables to setup
 
 ## Github Secrets
 
- There are few github secrets to setup for auto deploy cloud functions
- - PROJECT_ID
- - FIREBASE_TOKEN
+There are few github secrets to setup for auto deploy cloud functions
+
+- PROJECT_ID
+- FIREBASE_TOKEN
 
 ## Service account
+
 Put the service account at the root of the repo
 export GOOGLE_APPLICATION_CREDENTIALS="./service-account.json"
 echo $GOOGLE_APPLICATION_CREDENTIALS
 
 ## PM 2 Commands
+
 pm2 start pnpm --name "dev" -- -F @repo/front start -p 3001 <!-- OR 3000 -->
 Two pm2 environment "dev" and "prod"
 
@@ -390,9 +395,12 @@ Steps to follow:
 - Use `ecosystem.config.js` to setup pm2 deploy, just run `pm2 start ecosystem.config.js`
 
 ## Send build to vps
+
 # First method (slow)
- scp -r apps/front/.next/ debian@141.94.220.102:/var/www/prod/
+
+scp -r apps/front/.next/ debian@141.94.220.102:/var/www/prod/
 
 # second method (slow)
+
 tar -czf next.tar.gz apps/front/.next/
 scp -r next.tar.gz debian@141.94.220.102:/var/www/prod/

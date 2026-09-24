@@ -1,9 +1,13 @@
 {
   "name": "@repo/testing",
-  "type": "module",
   "version": "1.0.0",
   "description": "Testing utilities for the monorepo",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
   "exports": {
     "./factory": {
       "types": "./dist/factory.d.ts",
@@ -22,14 +26,9 @@
       "default": "./dist/document-snapshot.js"
     }
   },
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsdown",
     "compile": "tsc --noEmit",
-    "lint": "biome check",
     "check-circular": "madge --circular --extensions ts ./src --ts-config ./tsconfig.json",
     "test": "vitest run --coverage",
     "clean": "del-cli dist isolate tsconfig.tsbuildinfo",

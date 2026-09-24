@@ -3,14 +3,33 @@ import { isSameNormalized } from "@repo/common"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import useSound from "use-sound"
-import z from "zod"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { useSound } from "use-sound"
+import { z } from "zod"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
 import { SOUNDS } from "@/constants/sound"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { useGetDailyChallengeEntityByDateQuery, useSubmitDailyChallengeResultMutation } from "@/redux/api/daily-challenge"
+import {
+  useGetDailyChallengeEntityByDateQuery,
+  useSubmitDailyChallengeResultMutation,
+} from "@/redux/api/daily-challenge"
 import { useGetAllGamesNamesQuery } from "@/redux/api/games"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
@@ -28,43 +47,47 @@ const GameInputGuessDaily = ({ date }: { date: string }) => {
   const isMobile = useIsMobile()
 
   const { data: allGamesNames } = useGetAllGamesNamesQuery()
-  const { data: challenge, isLoading } = useGetDailyChallengeEntityByDateQuery({ date })
+  const { data: challenge, isLoading } = useGetDailyChallengeEntityByDateQuery({
+    date,
+  })
 
-  const [submitResult, { isLoading: isSubmitting }] = useSubmitDailyChallengeResultMutation()
+  const [submitResult, { isLoading: isSubmitting }] =
+    useSubmitDailyChallengeResultMutation()
 
   const [comboboxKey, setComboboxKey] = useState(0)
   const [playCorrect] = useSound(SOUNDS.CORRECT_GAME, { volume: 0.5 })
   const [playWrong] = useSound(SOUNDS.WRONG, { volume: 0.5 })
 
-  const {
-    handleSubmit,
-    register,
-    watch,
-    setValue,
-    reset,
-  } = useForm<Schema>({
+  const { handleSubmit, register, watch, setValue, reset } = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: { input: "" },
   })
 
   const lowerCaseInput = (watch("input") || "").toLocaleLowerCase().trim()
 
-  const gameList = allGamesNames?.filter(({ title }) => title.trim().toLocaleLowerCase().includes(lowerCaseInput)) || []
+  const gameList =
+    allGamesNames?.filter(({ title }) =>
+      title.trim().toLocaleLowerCase().includes(lowerCaseInput),
+    ) || []
 
   const verifyGameName = async (data: Schema) => {
     const input = data.input.trim()
 
     if (!challenge || isSubmitting) return
 
-    const playerAnswerValue = input?.toString() || ""
+    const playerAnswerValue = input || ""
 
     const { gameTitle, gameAlternateNames } = challenge
 
-    const isCorrect = isSameNormalized(gameTitle, playerAnswerValue) || gameAlternateNames.some((name) => isSameNormalized(name, playerAnswerValue))
+    const isCorrect =
+      isSameNormalized(gameTitle, playerAnswerValue) ||
+      gameAlternateNames.some((name) =>
+        isSameNormalized(name, playerAnswerValue),
+      )
 
     if (isCorrect) {
       playCorrect()
-      await submitResult({ answer: input, date, isCorrect, uid: userId! })
+      await submitResult({ answer: input, date, isCorrect, uid: userId })
     } else {
       playWrong()
       reset()
@@ -80,13 +103,17 @@ const GameInputGuessDaily = ({ date }: { date: string }) => {
   const giveUp = async () => {
     if (!challenge || isSubmitting) return
 
-    await submitResult({ answer: "", date, isCorrect: false, uid: userId! })
+    await submitResult({ answer: "", date, isCorrect: false, uid: userId })
   }
 
   if (isLoading) return null
 
   return (
-    <form onSubmit={handleSubmit(verifyGameName)} autoComplete="off" className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-0 flex flex-col items-center gap-4">
+    <form
+      onSubmit={handleSubmit(verifyGameName)}
+      autoComplete="off"
+      className="absolute z-10 w-full left-1/2 -translate-1/2 bottom-0 flex flex-col items-center gap-4"
+    >
       <Combobox key={comboboxKey}>
         <ComboboxInput
           showTrigger={false}
@@ -102,7 +129,12 @@ const GameInputGuessDaily = ({ date }: { date: string }) => {
           <ComboboxContent sideOffset={8} side="top" align="center">
             <ComboboxList>
               {gameList?.map((game) => (
-                <ComboboxItem key={game.id} value={game.title} className="font-mono" onClick={() => handleClickItem(game.title)}>
+                <ComboboxItem
+                  key={game.id}
+                  value={game.title}
+                  className="font-mono"
+                  onClick={() => handleClickItem(game.title)}
+                >
                   {game.title}
                 </ComboboxItem>
               ))}
@@ -112,18 +144,31 @@ const GameInputGuessDaily = ({ date }: { date: string }) => {
       </Combobox>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button type="button" variant="marathon-black" data-testid="daily-challenge-give-up" disabled={isSubmitting}>
+          <Button
+            type="button"
+            variant="marathon-black"
+            data-testid="daily-challenge-give-up"
+            disabled={isSubmitting}
+          >
             {t("giveUp")}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("giveUpTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>{t("giveUpDescription")}</AlertDialogDescription>
+            <AlertDialogDescription>
+              {t("giveUpDescription")}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel variant="marathon-black">{t("giveUpCancel")}</AlertDialogCancel>
-            <AlertDialogAction data-testid="daily-challenge-give-up-confirm" onClick={giveUp} variant="marathon">
+            <AlertDialogCancel variant="marathon-black">
+              {t("giveUpCancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              data-testid="daily-challenge-give-up-confirm"
+              onClick={giveUp}
+              variant="marathon"
+            >
               {t("giveUpConfirm")}
             </AlertDialogAction>
           </AlertDialogFooter>

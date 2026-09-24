@@ -29,8 +29,18 @@ export const UserAvatar = ({
   action,
 }: UserAvatarProps) => (
   <Avatar size={size} className={className}>
-    {avatar && <AvatarImage donorTier={donorTier} src={getAvatarUrl(avatar as ConstantValues<typeof AVATARS_KEYS>)} alt={name} className={imageClassName} {...imageData} />}
-    <AvatarFallback className={fallbackClassName}>{firstLetter(name)}</AvatarFallback>
+    {avatar && (
+      <AvatarImage
+        donorTier={donorTier}
+        src={getAvatarUrl(avatar as ConstantValues<typeof AVATARS_KEYS>)}
+        alt={name}
+        className={imageClassName}
+        {...imageData}
+      />
+    )}
+    <AvatarFallback className={fallbackClassName}>
+      {firstLetter(name)}
+    </AvatarFallback>
     {action}
   </Avatar>
 )

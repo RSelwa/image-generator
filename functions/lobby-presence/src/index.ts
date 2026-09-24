@@ -17,7 +17,9 @@ export const on_lobby_player_disconnected = onValueDeleted(
     logger.log(`[lobby-presence] Event ref: ${event.ref}`)
     logger.log(`[lobby-presence] Event instance: ${event.instance}`)
     logger.log(`[lobby-presence] Params: lobbyId=${lobbyId}, userId=${userId}`)
-    logger.log(`[lobby-presence] Deleted value: ${JSON.stringify(event.data.val())}`)
+    logger.log(
+      `[lobby-presence] Deleted value: ${JSON.stringify(event.data.val())}`,
+    )
     logger.log(`Player ${userId} disconnected from lobby ${lobbyId}`)
 
     const lobbyRef = refs[TABLES.LOBBIES].doc(lobbyId)
@@ -32,7 +34,9 @@ export const on_lobby_player_disconnected = onValueDeleted(
     const lobbyData = lobbySnap.data()
 
     if (lobbyData?.status !== LOBBY_STATUS.WAITING) {
-      logger.log(`Lobby ${lobbyId} is not waiting (status: ${lobbyData?.status}), skipping removal`)
+      logger.log(
+        `Lobby ${lobbyId} is not waiting (status: ${lobbyData?.status}), skipping removal`,
+      )
 
       return
     }

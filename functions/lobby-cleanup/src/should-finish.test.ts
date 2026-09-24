@@ -2,16 +2,17 @@ import { TABLES } from "@repo/common"
 import { describe, expect, it, vi } from "vitest"
 import { shouldFinishInsteadOfAbandon } from "~/should-finish"
 
-const createMockSubRefs = (roundData: { answers: { uid: string }[] } | null) => ({
-  [TABLES.ROUND_ANSWERS]: vi.fn().mockReturnValue({
-    doc: vi.fn().mockReturnValue({
-      get: vi.fn().mockResolvedValue({
-        exists: roundData !== null,
-        data: () => roundData,
+const createMockSubRefs = (roundData: { answers: { uid: string }[] } | null) =>
+  ({
+    [TABLES.ROUND_ANSWERS]: vi.fn().mockReturnValue({
+      doc: vi.fn().mockReturnValue({
+        get: vi.fn().mockResolvedValue({
+          exists: roundData !== null,
+          data: () => roundData,
+        }),
       }),
     }),
-  }),
-}) as any
+  }) as any
 
 describe("shouldFinishInsteadOfAbandon", () => {
   it("should return true when at last round and all players answered", async () => {
@@ -122,6 +123,8 @@ describe("shouldFinishInsteadOfAbandon", () => {
       subRefs,
     })
 
-    expect(subRefs[TABLES.ROUND_ANSWERS]("lobby1").doc).toHaveBeenCalledWith("7")
+    expect(subRefs[TABLES.ROUND_ANSWERS]("lobby1").doc).toHaveBeenCalledWith(
+      "7",
+    )
   })
 })

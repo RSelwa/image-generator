@@ -1,10 +1,40 @@
 "use client"
 
-import { addDoc, arrayUnion, getDoc, getDocs, increment, onSnapshot, orderBy, query, setDoc, Timestamp, type Unsubscribe, updateDoc, where } from "@firebase/firestore"
+import {
+  addDoc,
+  arrayUnion,
+  getDoc,
+  getDocs,
+  increment,
+  onSnapshot,
+  orderBy,
+  query,
+  setDoc,
+  Timestamp,
+  type Unsubscribe,
+  updateDoc,
+  where,
+} from "@firebase/firestore"
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { DEATH_RUN_LIVES, DEATH_RUN_POINTS_PER_ANSWER, DEATH_RUN_SEED_EXTENSION_THRESHOLD, DEATH_RUN_STATUS, TABLES } from "@repo/common"
-import { type DeathRunDocWithId, deathRunDocWithIdSchema, type DeathRunRunDocWithId, deathRunRunDocWithIdSchema } from "@repo/schemas"
-import { getDeathRunRef, getDeathRunRunRef, TABLE_REFS, TABLES_SUB_REFS } from "@/constants/db-refs"
+import {
+  DEATH_RUN_LIVES,
+  DEATH_RUN_POINTS_PER_ANSWER,
+  DEATH_RUN_SEED_EXTENSION_THRESHOLD,
+  DEATH_RUN_STATUS,
+  TABLES,
+} from "@repo/common"
+import {
+  type DeathRunDocWithId,
+  deathRunDocWithIdSchema,
+  type DeathRunRunDocWithId,
+  deathRunRunDocWithIdSchema,
+} from "@repo/schemas"
+import {
+  getDeathRunRef,
+  getDeathRunRunRef,
+  TABLE_REFS,
+  TABLES_SUB_REFS,
+} from "@/constants/db-refs"
 import { cloudFunctionsApi } from "@/redux/api/cloud-functions"
 import { userApi } from "@/redux/api/user"
 import { type SessionUser } from "@/schemas/session"
@@ -12,7 +42,10 @@ import { type GlobalError, globalErrorHandler } from "@/utils/error"
 import { createPlayerFromSessionUser, generateRandomCode } from "@/utils/player"
 
 const parseDeathRun = (id: string, data: object): DeathRunDocWithId | null => {
-  const { data: parsed, error } = deathRunDocWithIdSchema.safeParse({ id, ...data })
+  const { data: parsed, error } = deathRunDocWithIdSchema.safeParse({
+    id,
+    ...data,
+  })
   if (error) {
     console.error(`Error parsing death run ${id}:`, error)
 
@@ -55,37 +88,51 @@ export const deathRunApi = createApi({
       },
     }),
 
-    getDeathRunByCode: builder.query<DeathRunDocWithId | null, { code: string }>({
+    getDeathRunByCode: builder.query<
+      DeathRunDocWithId | null,
+      { code: string }
+    >({
       queryFn: async ({ code }) => {
         try {
           const snapshot = await getDocs(
-            query(TABLE_REFS[TABLES.DEATH_RUNS], where("code", "==", code.toUpperCase())),
+            query(
+              TABLE_REFS[TABLES.DEATH_RUNS],
+              where("code", "==", code.toUpperCase()),
+            ),
           )
           if (snapshot.empty) return { data: null }
           const docSnap = snapshot.docs[0]
 
-          return { data: parseDeathRun(docSnap.id, docSnap.data() as object) }
+          return { data: parseDeathRun(docSnap.id, docSnap.data()) }
         } catch (error) {
           console.error("Error fetching death run by code:", error)
 
           return { error: globalErrorHandler(error) }
         }
       },
-      providesTags: (_result, _error, { code }) => [{ type: "DeathRun", id: code }],
+      providesTags: (_result, _error, { code }) => [
+        { type: "DeathRun", id: code },
+      ],
     }),
 
-    subscribeDeathRun: builder.query<DeathRunDocWithId | null, { deathRunId: string }>({
+    subscribeDeathRun: builder.query<
+      DeathRunDocWithId | null,
+      { deathRunId: string }
+    >({
       queryFn: async ({ deathRunId }) => {
         try {
           const docSnap = await getDoc(getDeathRunRef(deathRunId))
           if (!docSnap.exists()) return { data: null }
 
-          return { data: parseDeathRun(docSnap.id, docSnap.data() as object) }
+          return { data: parseDeathRun(docSnap.id, docSnap.data()) }
         } catch (error) {
           return { error: globalErrorHandler(error) }
         }
       },
-      onCacheEntryAdded: async ({ deathRunId }, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) => {
+      onCacheEntryAdded: async (
+        { deathRunId },
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) => {
         let unsubscribe: Unsubscribe | undefined
         try {
           await cacheDataLoaded
@@ -95,17 +142,24 @@ export const deathRunApi = createApi({
 
               return
             }
-            const deathRun = parseDeathRun(snapshot.id, snapshot.data() as object)
+            const deathRun = parseDeathRun(snapshot.id, snapshot.data())
             if (deathRun) updateCachedData(() => deathRun)
           })
-        } catch { /* cache already gone */ }
+        } catch {
+          /* cache already gone */
+        }
         await cacheEntryRemoved
         unsubscribe?.()
       },
-      providesTags: (_result, _error, { deathRunId }) => [{ type: "DeathRun", id: deathRunId }],
+      providesTags: (_result, _error, { deathRunId }) => [
+        { type: "DeathRun", id: deathRunId },
+      ],
     }),
 
-    joinDeathRun: builder.mutation<null, { deathRunId: string, user: SessionUser }>({
+    joinDeathRun: builder.mutation<
+      null,
+      { deathRunId: string; user: SessionUser }
+    >({
       queryFn: async ({ deathRunId, user }) => {
         try {
           const player = createPlayerFromSessionUser(user)
@@ -122,10 +176,16 @@ export const deathRunApi = createApi({
       },
     }),
 
-    prepareAndStartDeathRun: builder.mutation<null, { deathRunId: string, playersIds: string[], lives: number }>({
+    prepareAndStartDeathRun: builder.mutation<
+      null,
+      { deathRunId: string; playersIds: string[]; lives: number }
+    >({
       queryFn: async ({ deathRunId, playersIds, lives }, { dispatch }) => {
         try {
-          await updateDoc(getDeathRunRef(deathRunId), { status: DEATH_RUN_STATUS.STARTING, updatedAt: Timestamp.now() })
+          await updateDoc(getDeathRunRef(deathRunId), {
+            status: DEATH_RUN_STATUS.STARTING,
+            updatedAt: Timestamp.now(),
+          })
 
           const now = Timestamp.now()
           const seedDocRef = await addDoc(TABLE_REFS[TABLES.MARATHON_SEEDS], {
@@ -135,21 +195,28 @@ export const deathRunApi = createApi({
             updatedAt: now,
           })
 
-          await dispatch(cloudFunctionsApi.endpoints.populateRaceSeed.initiate({ seedId: seedDocRef.id, playerCurrentIndex: 0 }))
+          await dispatch(
+            cloudFunctionsApi.endpoints.populateRaceSeed.initiate({
+              seedId: seedDocRef.id,
+              playerCurrentIndex: 0,
+            }),
+          )
 
           const runNow = Timestamp.now()
-          await Promise.all(playersIds.map((uid) =>
-            setDoc(getDeathRunRunRef(deathRunId, uid), {
-              uid,
-              score: 0,
-              currentRoundIndex: 0,
-              answers: [],
-              livesRemaining: lives,
-              revivesUsed: 0,
-              startedAt: runNow,
-              finishedAt: null,
-            })
-          ))
+          await Promise.all(
+            playersIds.map((uid) =>
+              setDoc(getDeathRunRunRef(deathRunId, uid), {
+                uid,
+                score: 0,
+                currentRoundIndex: 0,
+                answers: [],
+                livesRemaining: lives,
+                revivesUsed: 0,
+                startedAt: runNow,
+                finishedAt: null,
+              }),
+            ),
+          )
 
           await updateDoc(getDeathRunRef(deathRunId), {
             seedId: seedDocRef.id,
@@ -165,12 +232,18 @@ export const deathRunApi = createApi({
       },
     }),
 
-    subscribeDeathRunRun: builder.query<DeathRunRunDocWithId | null, { deathRunId: string, uid: string }>({
+    subscribeDeathRunRun: builder.query<
+      DeathRunRunDocWithId | null,
+      { deathRunId: string; uid: string }
+    >({
       queryFn: async ({ deathRunId, uid }) => {
         try {
           const docSnap = await getDoc(getDeathRunRunRef(deathRunId, uid))
           if (!docSnap.exists()) return { data: null }
-          const { data, error } = deathRunRunDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+          const { data, error } = deathRunRunDocWithIdSchema.safeParse({
+            id: docSnap.id,
+            ...docSnap.data(),
+          })
           if (error) throw new Error(error.message)
 
           return { data }
@@ -178,32 +251,79 @@ export const deathRunApi = createApi({
           return { error: globalErrorHandler(error) }
         }
       },
-      onCacheEntryAdded: async ({ deathRunId, uid }, { updateCachedData, cacheDataLoaded, cacheEntryRemoved }) => {
+      onCacheEntryAdded: async (
+        { deathRunId, uid },
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) => {
         let unsubscribe: Unsubscribe | undefined
         try {
           await cacheDataLoaded
-          unsubscribe = onSnapshot(getDeathRunRunRef(deathRunId, uid), (snapshot) => {
-            if (!snapshot.exists()) {
-              updateCachedData(() => null)
+          unsubscribe = onSnapshot(
+            getDeathRunRunRef(deathRunId, uid),
+            (snapshot) => {
+              if (!snapshot.exists()) {
+                updateCachedData(() => null)
 
-              return
-            }
-            const { data, error } = deathRunRunDocWithIdSchema.safeParse({ id: snapshot.id, ...snapshot.data() })
-            if (!error) updateCachedData(() => data)
-          })
-        } catch { /* cache already gone */ }
+                return
+              }
+              const { data, error } = deathRunRunDocWithIdSchema.safeParse({
+                id: snapshot.id,
+                ...snapshot.data(),
+              })
+              if (!error) updateCachedData(() => data)
+            },
+          )
+        } catch {
+          /* cache already gone */
+        }
         await cacheEntryRemoved
         unsubscribe?.()
       },
-      providesTags: (_result, _error, { deathRunId, uid }) => [{ type: "DeathRunRun", id: `${deathRunId}_${uid}` }],
+      providesTags: (_result, _error, { deathRunId, uid }) => [
+        { type: "DeathRunRun", id: `${deathRunId}_${uid}` },
+      ],
     }),
 
-    submitDeathRunAnswer: builder.mutation<null, { deathRunId: string, uid: string, roundIndex: number, gameId: string, seedId: string, currentRoundIndex: number, currentScore: number, currentLives: number, seedRoundsCount: number, answer: string, isCorrect: boolean }>({
-      queryFn: async ({ deathRunId, uid, roundIndex, gameId, seedId, currentRoundIndex, currentScore, currentLives, seedRoundsCount, isCorrect, answer: playerAnswer }, { dispatch }) => {
+    submitDeathRunAnswer: builder.mutation<
+      null,
+      {
+        deathRunId: string
+        uid: string
+        roundIndex: number
+        gameId: string
+        seedId: string
+        currentRoundIndex: number
+        currentScore: number
+        currentLives: number
+        seedRoundsCount: number
+        answer: string
+        isCorrect: boolean
+      }
+    >({
+      queryFn: async (
+        {
+          deathRunId,
+          uid,
+          roundIndex,
+          gameId,
+          seedId,
+          currentRoundIndex,
+          currentScore,
+          currentLives,
+          seedRoundsCount,
+          isCorrect,
+          answer: playerAnswer,
+        },
+        { dispatch },
+      ) => {
         try {
           const now = Timestamp.now()
-          const newScore = isCorrect ? currentScore + DEATH_RUN_POINTS_PER_ANSWER : currentScore
-          const newLives = isCorrect ? currentLives : Math.max(0, currentLives - 1)
+          const newScore = isCorrect
+            ? currentScore + DEATH_RUN_POINTS_PER_ANSWER
+            : currentScore
+          const newLives = isCorrect
+            ? currentLives
+            : Math.max(0, currentLives - 1)
           const newIndex = currentRoundIndex + 1
 
           await updateDoc(getDeathRunRunRef(deathRunId, uid), {
@@ -219,8 +339,16 @@ export const deathRunApi = createApi({
             }),
           })
 
-          if (seedRoundsCount - newIndex <= DEATH_RUN_SEED_EXTENSION_THRESHOLD) {
-            dispatch(cloudFunctionsApi.endpoints.populateRaceSeed.initiate({ seedId, playerCurrentIndex: newIndex }))
+          if (
+            seedRoundsCount - newIndex <=
+            DEATH_RUN_SEED_EXTENSION_THRESHOLD
+          ) {
+            dispatch(
+              cloudFunctionsApi.endpoints.populateRaceSeed.initiate({
+                seedId,
+                playerCurrentIndex: newIndex,
+              }),
+            )
           }
 
           return { data: null }
@@ -230,30 +358,49 @@ export const deathRunApi = createApi({
       },
     }),
 
-    finishDeathRunRun: builder.mutation<null, { deathRunId: string, uid: string }>({
+    finishDeathRunRun: builder.mutation<
+      null,
+      { deathRunId: string; uid: string }
+    >({
       queryFn: async ({ deathRunId, uid }, { dispatch }) => {
         try {
           const now = Timestamp.now()
-          await updateDoc(getDeathRunRunRef(deathRunId, uid), { finishedAt: now })
+          await updateDoc(getDeathRunRunRef(deathRunId, uid), {
+            finishedAt: now,
+          })
 
           const deathRunSnap = await getDoc(getDeathRunRef(deathRunId))
           const playersIds: string[] = deathRunSnap.data()?.playersIds || []
 
-          const runSnaps = await Promise.all(playersIds.map((id) => getDoc(getDeathRunRunRef(deathRunId, id))))
-          const allFinished = runSnaps.every((snap) => snap.exists() && snap.data()?.finishedAt)
+          const runSnaps = await Promise.all(
+            playersIds.map((id) => getDoc(getDeathRunRunRef(deathRunId, id))),
+          )
+          const allFinished = runSnaps.every(
+            (snap) => snap.exists() && snap.data()?.finishedAt,
+          )
 
           if (allFinished) {
-            await updateDoc(getDeathRunRef(deathRunId), { status: DEATH_RUN_STATUS.FINISHED, updatedAt: now })
+            await updateDoc(getDeathRunRef(deathRunId), {
+              status: DEATH_RUN_STATUS.FINISHED,
+              updatedAt: now,
+            })
           }
 
           const runSnap = await getDoc(getDeathRunRunRef(deathRunId, uid))
           const finalScore = runSnap.data()?.score || 0
 
-          const user = await dispatch(userApi.endpoints.getUserById.initiate({ id: uid })).unwrap()
+          const user = await dispatch(
+            userApi.endpoints.getUserById.initiate({ id: uid }),
+          ).unwrap()
           const currentBest = user?.bestDeathRunScore || 0
 
           if (finalScore > currentBest) {
-            await dispatch(userApi.endpoints.updateUserDoc.initiate({ id: uid, data: { bestDeathRunScore: finalScore } })).unwrap()
+            await dispatch(
+              userApi.endpoints.updateUserDoc.initiate({
+                id: uid,
+                data: { bestDeathRunScore: finalScore },
+              }),
+            ).unwrap()
           }
 
           return { data: null }
@@ -263,7 +410,10 @@ export const deathRunApi = createApi({
       },
     }),
 
-    reviveDeathRunRun: builder.mutation<null, { deathRunId: string, uid: string }>({
+    reviveDeathRunRun: builder.mutation<
+      null,
+      { deathRunId: string; uid: string }
+    >({
       queryFn: async ({ deathRunId, uid }) => {
         try {
           await updateDoc(getDeathRunRunRef(deathRunId, uid), {
@@ -278,15 +428,24 @@ export const deathRunApi = createApi({
       },
     }),
 
-    getDeathRunRuns: builder.query<DeathRunRunDocWithId[], { deathRunId: string }>({
+    getDeathRunRuns: builder.query<
+      DeathRunRunDocWithId[],
+      { deathRunId: string }
+    >({
       queryFn: async ({ deathRunId }) => {
         try {
           const snapshot = await getDocs(
-            query(TABLES_SUB_REFS[TABLES.DEATH_RUN_RUNS](deathRunId), orderBy("score", "desc")),
+            query(
+              TABLES_SUB_REFS[TABLES.DEATH_RUN_RUNS](deathRunId),
+              orderBy("score", "desc"),
+            ),
           )
           const runs: DeathRunRunDocWithId[] = []
           for (const docSnap of snapshot.docs) {
-            const { data, error } = deathRunRunDocWithIdSchema.safeParse({ id: docSnap.id, ...docSnap.data() })
+            const { data, error } = deathRunRunDocWithIdSchema.safeParse({
+              id: docSnap.id,
+              ...docSnap.data(),
+            })
             if (!error) runs.push(data)
           }
 
@@ -295,7 +454,9 @@ export const deathRunApi = createApi({
           return { error: globalErrorHandler(error) }
         }
       },
-      providesTags: (_result, _error, { deathRunId }) => [{ type: "DeathRunRuns", id: deathRunId }],
+      providesTags: (_result, _error, { deathRunId }) => [
+        { type: "DeathRunRuns", id: deathRunId },
+      ],
     }),
   }),
 })

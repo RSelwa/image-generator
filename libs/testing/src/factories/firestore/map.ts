@@ -8,13 +8,17 @@ import { type FactoryDoc } from "~/orm"
 export const mapFactory: FactoryDoc<MapDoc & { id: string }> = (item = {}) => ({
   id: faker.database.mongodbObjectId(),
   gameId: faker.database.mongodbObjectId(),
-  createdAt: Timestamp.fromDate(faker.date.past()) as unknown as ClientTimestamp,
-  updatedAt: Timestamp.fromDate(faker.date.recent()) as unknown as ClientTimestamp,
+  createdAt: Timestamp.fromDate(
+    faker.date.past(),
+  ) as unknown as ClientTimestamp,
+  updatedAt: Timestamp.fromDate(
+    faker.date.recent(),
+  ) as unknown as ClientTimestamp,
   imageUrl: mockedMapImageURL,
   width: 828,
   height: 828,
   name: faker.lorem.words(2),
   maxDistancePoints: DEFAULT_MAX_DISTANCE_POINTS,
   gratitude: [],
-  ...item
+  ...item,
 })

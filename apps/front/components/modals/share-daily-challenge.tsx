@@ -4,7 +4,14 @@ import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { ImageGlow } from "@/components/ui/image-glow"
 import { PAGES } from "@/constants/pages"
 import { Link } from "@/i18n/routing"
@@ -36,26 +43,50 @@ const ShareDailyChallengeModal = ({ challenge }: Props) => {
 
   return (
     <Dialog defaultOpen={true}>
-      <DialogTrigger asChild className="absolute left-1/2 -translate-x-1/2 bottom-6"><Button>{t("shareResult")}</Button></DialogTrigger>
+      <DialogTrigger
+        asChild
+        className="absolute left-1/2 -translate-x-1/2 bottom-6"
+      >
+        <Button>{t("shareResult")}</Button>
+      </DialogTrigger>
       <DialogContent data-testid="share-daily-challenge-modal">
-        <ImageGlow radius={30} opacity={0.5} className="w-full object-cover max-h-96 max-w-[80vw]">
-          <Image data-testid="daily-challenge-result-thumbnail" src={challenge.gameThumbnailUrl} alt={`${challenge.gameTitle}`} height={500} width={1000} className="max-h-56 object-contain" />
+        <ImageGlow
+          radius={30}
+          opacity={0.5}
+          className="w-full object-cover max-h-96 max-w-[80vw]"
+        >
+          <Image
+            data-testid="daily-challenge-result-thumbnail"
+            src={challenge.gameThumbnailUrl}
+            alt={challenge.gameTitle}
+            height={500}
+            width={1000}
+            className="max-h-56 object-contain"
+          />
         </ImageGlow>
         {!!user?.streak && user.streak > 0 && (
-          <div data-testid="streak-badge" className="flex items-center justify-center gap-2 text-orange-500 font-bold text-lg">
+          <div
+            data-testid="streak-badge"
+            className="flex items-center justify-center gap-2 text-orange-500 font-bold text-lg"
+          >
             <Flame className="size-5" />
             <span>{t("streak", { count: user.streak })}</span>
           </div>
         )}
         <DialogTitle>{t("shareTitle")}</DialogTitle>
-        <DialogDescription>{t("shareDescription", { gameTitle: challenge.gameTitle })}</DialogDescription>
+        <DialogDescription>
+          {t("shareDescription", { gameTitle: challenge.gameTitle })}
+        </DialogDescription>
         <DialogFooter className="justify-center!">
           {shouldCreateAccount && (
             <Link href={PAGES.SIGNUP}>
               <Button variant="marathon-white">{t("createAccount")}</Button>
             </Link>
           )}
-          <Button onClick={copyChallengeToClipboard}>{t("shareButton")}<ArrowUpRightFromSquare /></Button>
+          <Button onClick={copyChallengeToClipboard}>
+            {t("shareButton")}
+            <ArrowUpRightFromSquare />
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

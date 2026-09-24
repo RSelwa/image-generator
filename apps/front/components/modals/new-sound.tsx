@@ -5,12 +5,18 @@ import { soundDocSchema } from "@repo/schemas"
 import * as React from "react"
 import { type SubmitHandler } from "react-hook-form"
 import { useForm } from "react-hook-form"
-import z from "zod"
+import { z } from "zod"
 import { ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import YoutubeEmbed from "@/components/youtube-embed"
 import { MODAL_KEYS } from "@/constants/mapping"
@@ -24,7 +30,7 @@ const soundFormSchema = z.object({
     youtubeLink: true,
     canBeUsedInPosts: true,
     status: true,
-  }).shape
+  }).shape,
 })
 
 type SocialFormSchema = z.input<typeof soundFormSchema>
@@ -34,12 +40,7 @@ const NewSound = () => {
 
   const [createSound] = useCreateSoundMutation()
 
-  const {
-    handleSubmit,
-    watch,
-    reset,
-    register
-  } = useForm<SocialFormSchema>({
+  const { handleSubmit, watch, reset, register } = useForm<SocialFormSchema>({
     resolver: zodResolver(soundFormSchema),
     defaultValues: {
       canBeUsedInPosts: true,
@@ -64,10 +65,12 @@ const NewSound = () => {
         <section className="flex flex-col items-center gap-8 justify-between">
           <Field>
             <Label className="text-lg">Youtube Link</Label>
-            <Input {...register("youtubeLink")} placeholder="https://www.youtube.com/watch?v=..." />
+            <Input
+              {...register("youtubeLink")}
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
             {watch("youtubeLink") && (
               <YoutubeEmbed youtubeLink={watch("youtubeLink") || ""} />
-
             )}
           </Field>
           <Field>
@@ -90,9 +93,7 @@ const NewSound = () => {
           </Field>
         </section>
         <section className="flex justify-end items-center gap-2">
-          <Button type="submit">
-            Create
-          </Button>
+          <Button type="submit">Create</Button>
         </section>
       </form>
     </ModalBase>

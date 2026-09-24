@@ -5,25 +5,59 @@ import { useQueryState } from "nuqs"
 import * as React from "react"
 import OpenFirestoreDoc from "@/components/open-firestore"
 import { EmptySheet } from "@/components/sheet/empty"
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import YoutubeEmbed from "@/components/youtube-embed"
 import { getSoundRef } from "@/constants/db-refs"
 import { QUERY_PARAMS } from "@/constants/mapping"
-import { useDeleteSoundByIdMutation, useGetSoundByIdQuery, useUpdateSoundByIdMutation } from "@/redux/api/sounds"
+import {
+  useDeleteSoundByIdMutation,
+  useGetSoundByIdQuery,
+  useUpdateSoundByIdMutation,
+} from "@/redux/api/sounds"
 
 const SoundSheet = () => {
   const [soundId, setSoundId] = useQueryState(QUERY_PARAMS.SOUND_ID)
   const open = Boolean(soundId)
 
-  const [updateSoundDoc, { isLoading: isLoadingUpdate }] = useUpdateSoundByIdMutation()
+  const [updateSoundDoc, { isLoading: isLoadingUpdate }] =
+    useUpdateSoundByIdMutation()
   const [deleteSoundById, { isLoading }] = useDeleteSoundByIdMutation()
-  const { data: sound } = useGetSoundByIdQuery({ id: soundId || "" }, { skip: !soundId, refetchOnMountOrArgChange: true })
+  const { data: sound } = useGetSoundByIdQuery(
+    { id: soundId || "" },
+    { skip: !soundId, refetchOnMountOrArgChange: true },
+  )
 
-  if (!sound || !soundId) return <Sheet open={open} onOpenChange={(open) => !open && setSoundId(null)}><EmptySheet /></Sheet>
+  if (!sound || !soundId)
+    return (
+      <Sheet open={open} onOpenChange={(open) => !open && setSoundId(null)}>
+        <EmptySheet />
+      </Sheet>
+    )
 
   const close = async (open: boolean) => {
     if (open) return
@@ -40,9 +74,7 @@ const SoundSheet = () => {
     <Sheet key={soundId} open={open} onOpenChange={close}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>
-            {sound.youtubeTitle}
-          </SheetTitle>
+          <SheetTitle>{sound.youtubeTitle}</SheetTitle>
           <SheetDescription>
             {sound.id} <OpenFirestoreDoc docRef={getSoundRef(soundId)} />
           </SheetDescription>
@@ -72,15 +104,17 @@ const SoundSheet = () => {
             disabled={isLoadingUpdate}
             value={sound.status || ""}
             onValueChange={async (value) => {
-              const parsedStatus = soundDocSchema.pick({ status: true }).safeParse({ status: value })
+              const parsedStatus = soundDocSchema
+                .pick({ status: true })
+                .safeParse({ status: value })
 
               if (!parsedStatus.success) return
 
               await updateSoundDoc({
                 id: soundId,
                 data: {
-                  status: parsedStatus.data.status
-                }
+                  status: parsedStatus.data.status,
+                },
               })
             }}
           >
@@ -97,15 +131,14 @@ const SoundSheet = () => {
           </Select>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="marathon-destructive">
-                Delete sound
-              </Button>
+              <Button variant="marathon-destructive">Delete sound</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete Sound</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to delete this sound? This action cannot be undone.
+                  Are you sure you want to delete this sound? This action cannot
+                  be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -114,7 +147,11 @@ const SoundSheet = () => {
                     Cancel
                   </Button>
                 </AlertDialogCancel>
-                <Button variant="marathon-destructive" disabled={isLoading} onClick={deleteSound}>
+                <Button
+                  variant="marathon-destructive"
+                  disabled={isLoading}
+                  onClick={deleteSound}
+                >
                   Yes, delete sound
                 </Button>
               </AlertDialogFooter>
@@ -122,7 +159,6 @@ const SoundSheet = () => {
           </AlertDialog>
         </SheetFooter>
       </SheetContent>
-
     </Sheet>
   )
 }

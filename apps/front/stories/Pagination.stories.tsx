@@ -32,7 +32,9 @@ export const Default: Story = {
           <PaginationLink href="#">1</PaginationLink>
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink href="#" isActive>2</PaginationLink>
+          <PaginationLink href="#" isActive>
+            2
+          </PaginationLink>
         </PaginationItem>
         <PaginationItem>
           <PaginationLink href="#">3</PaginationLink>
@@ -53,7 +55,9 @@ export const FirstPage: Story = {
     <Pagination>
       <PaginationContent>
         <PaginationItem>
-          <PaginationLink href="#" isActive>1</PaginationLink>
+          <PaginationLink href="#" isActive>
+            1
+          </PaginationLink>
         </PaginationItem>
         <PaginationItem>
           <PaginationLink href="#">2</PaginationLink>
@@ -86,7 +90,9 @@ export const ManyPages: Story = {
           <PaginationLink href="#">4</PaginationLink>
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink href="#" isActive>5</PaginationLink>
+          <PaginationLink href="#" isActive>
+            5
+          </PaginationLink>
         </PaginationItem>
         <PaginationItem>
           <PaginationLink href="#">6</PaginationLink>

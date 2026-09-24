@@ -7,6 +7,7 @@ import {
   Lightbulb,
   Music2,
   Sprout,
+  Trophy,
   User,
 } from "lucide-react"
 
@@ -19,13 +20,16 @@ import {
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu"
 import { PAGES } from "@/constants/pages"
+import { SELECTORS } from "@/constants/testing"
 import { Link } from "@/i18n/routing"
 
 const NavUserAdmin = () => {
   return (
     <>
       <DropdownMenuSub>
-        <DropdownMenuSubTrigger>Admin</DropdownMenuSubTrigger>
+        <DropdownMenuSubTrigger data-testid={SELECTORS.ADMIN_MENU_TRIGGER}>
+          Admin
+        </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
           <DropdownMenuItem asChild>
             <Link href={PAGES.ADMIN_USERS} className="cursor-pointer">
@@ -67,6 +71,16 @@ const NavUserAdmin = () => {
             <Link href={PAGES.ADMIN_DAILY_CHALLENGE} className="cursor-pointer">
               <Calendar />
               Daily Challenges
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link
+              href={PAGES.ADMIN_ACHIEVEMENTS}
+              className="cursor-pointer"
+              data-testid={SELECTORS.ADMIN_MENU_ACHIEVEMENTS}
+            >
+              <Trophy />
+              Achievements
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

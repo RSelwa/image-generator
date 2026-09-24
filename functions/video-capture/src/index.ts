@@ -3,7 +3,12 @@ import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { chromium, type Page } from "@playwright/test"
 import { SOCIALS_STATUS, STORAGE_PATHS, TABLES } from "@repo/common"
-import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app"
+import {
+  applicationDefault,
+  cert,
+  getApps,
+  initializeApp,
+} from "firebase-admin/app"
 import { getFirestore } from "firebase-admin/firestore"
 import { getStorage } from "firebase-admin/storage"
 
@@ -43,7 +48,8 @@ const parseArgs = (args: string[]) => {
 const cliArgs = parseArgs(process.argv.slice(2))
 
 // CLI args take priority over env vars
-const getParam = (cliKey: string, envKey: string) => cliArgs[cliKey] || process.env[envKey]
+const getParam = (cliKey: string, envKey: string) =>
+  cliArgs[cliKey] || process.env[envKey]
 
 // Configuration
 const CONFIG: CaptureConfig = {
@@ -53,12 +59,15 @@ const CONFIG: CaptureConfig = {
   duration: 5,
   panRange: Math.PI / 2,
   pitchAmplitude: 0.1,
-  captureUrl: getParam("capture-url", "CAPTURE_URL") || "https://www.geo-gamer.net/en/capture",
+  captureUrl:
+    getParam("capture-url", "CAPTURE_URL") ||
+    "https://www.geo-gamer.net/en/capture",
   imageUrl: getParam("image-url", "IMAGE_URL"),
   outputPath: getParam("output-path", "OUTPUT_PATH") || "output.mp4",
 }
 
-const PROJECT_ID = getParam("project-id", "FIREBASE_PROJECT_ID") || "tiktok-generator-fa261"
+const PROJECT_ID =
+  getParam("project-id", "FIREBASE_PROJECT_ID") || "tiktok-generator-fa261"
 
 const log = (message: string) => console.info(`[Capture] ${message}`)
 const logError = (message: string) => console.error(`[Error] ${message}`)
@@ -95,7 +104,10 @@ const initFirebase = () => {
 /**
  * Spawns FFmpeg process and pipes frames to it
  */
-const createFFmpegProcess = (outputPath: string, fps: number): ChildProcessWithoutNullStreams => {
+const createFFmpegProcess = (
+  outputPath: string,
+  fps: number,
+): ChildProcessWithoutNullStreams => {
   const args = [
     "-y", // Overwrite output file
     "-f",
@@ -141,7 +153,9 @@ const generateZoomCurve = (totalFrames: number) => {
 
   // Generate 4-6 random keyframes spread across the duration
   const segmentCount = Math.floor(Math.random() * 3) + 4
-  const keyframes: { frame: number, zoom: number }[] = [{ frame: 0, zoom: START_ZOOM }]
+  const keyframes: { frame: number; zoom: number }[] = [
+    { frame: 0, zoom: START_ZOOM },
+  ]
 
   for (let i = 1; i < segmentCount; i++) {
     const frame = Math.floor((i / segmentCount) * totalFrames)
@@ -157,7 +171,10 @@ const generateZoomCurve = (totalFrames: number) => {
   let keyIndex = 0
 
   for (let i = 0; i < totalFrames; i++) {
-    while (keyIndex < keyframes.length - 2 && keyframes[keyIndex + 1]!.frame <= i) {
+    while (
+      keyIndex < keyframes.length - 2 &&
+      keyframes[keyIndex + 1]!.frame <= i
+    ) {
       keyIndex++
     }
 
@@ -203,7 +220,7 @@ const captureFrames = async (page: Page, config: CaptureConfig) => {
         window.setCamera(yaw, pitch)
         window.setZoom(zoom)
       },
-      { yaw, pitch, zoom: zoomCurve[i] || 40 }
+      { yaw, pitch, zoom: zoomCurve[i] || 40 },
     )
 
     const screenshot = await page.screenshot({
@@ -243,18 +260,31 @@ const captureFrames = async (page: Page, config: CaptureConfig) => {
 /**
  * Main capture function
  */
-const capture = async (imageUrl: string, outputPath?: string, duration?: number) => {
+const capture = async (
+  imageUrl: string,
+  outputPath?: string,
+  duration?: number,
+) => {
   log("Starting video capture service...")
 
   if (!imageUrl) {
     throw new Error("IMAGE_URL is required")
   }
 
-  const config = { ...CONFIG, imageUrl, outputPath: outputPath || CONFIG.outputPath, ...(duration && { duration }) }
+  const config = {
+    ...CONFIG,
+    imageUrl,
+    outputPath: outputPath || CONFIG.outputPath,
+    ...(duration && { duration }),
+  }
 
   const browser = await chromium.launch({
     headless: true,
-    args: ["--disable-dev-shm-usage", "--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--disable-dev-shm-usage",
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+    ],
   })
 
   const context = await browser.newContext({
@@ -274,7 +304,9 @@ const capture = async (imageUrl: string, outputPath?: string, duration?: number)
     await page.goto(url, { waitUntil: "load", timeout: 60000 })
 
     log("Page loaded, waiting for viewer to initialize...")
-    await page.waitForFunction(() => window.sceneReady === true, { timeout: 60000 })
+    await page.waitForFunction(() => window.sceneReady, {
+      timeout: 60000,
+    })
 
     log("Scene ready! Starting capture...")
 
@@ -323,7 +355,9 @@ const uploadAndUpdateDoc = async (videoPath: string, socialDocId: string) => {
     status: SOCIALS_STATUS.WAITING_CUSTOMIZATION,
   })
 
-  log(`Social doc ${socialDocId} updated with video URL and status IN_PROGRESS_CUSTOMIZATION`)
+  log(
+    `Social doc ${socialDocId} updated with video URL and status IN_PROGRESS_CUSTOMIZATION`,
+  )
 }
 
 /**
@@ -346,7 +380,10 @@ const main = async () => {
 
     if (socialDocId) {
       initFirebase()
-      const socialDoc = await getFirestore().collection(TABLES.SOCIALS).doc(socialDocId).get()
+      const socialDoc = await getFirestore()
+        .collection(TABLES.SOCIALS)
+        .doc(socialDocId)
+        .get()
       const socialData = socialDoc.data()
 
       if (socialData?.duration) {
@@ -373,12 +410,17 @@ const main = async () => {
       try {
         initFirebase()
         const db = getFirestore()
-        await db.collection(TABLES.SOCIALS).doc(socialDocId).update({
-          status: SOCIALS_STATUS.ERROR,
-          errorInfo: (err as Error).message,
-        })
+        await db
+          .collection(TABLES.SOCIALS)
+          .doc(socialDocId)
+          .update({
+            status: SOCIALS_STATUS.ERROR,
+            errorInfo: (err as Error).message,
+          })
       } catch (updateErr) {
-        logError(`Failed to update social doc with error status: ${(updateErr as Error).message}`)
+        logError(
+          `Failed to update social doc with error status: ${(updateErr as Error).message}`,
+        )
       }
     }
 

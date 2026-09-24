@@ -29,7 +29,9 @@ test.describe("anonymous auth", () => {
     expect(userDoc.data()?.avatar).toBeTruthy()
   })
 
-  test("anonymous user can not sign up with an already used email", async ({ page }) => {
+  test("anonymous user can not sign up with an already used email", async ({
+    page,
+  }) => {
     const existingUser = await setupUser()
 
     await waitForAnonymousAuth(page)
@@ -40,10 +42,16 @@ test.describe("anonymous auth", () => {
     await page.getByLabel("Password").fill(PASSWORD)
     await page.getByRole("button", { name: "Create Account" }).click()
 
-    await expect(page.getByText("An account with this email already exists. Please log in instead.")).toBeVisible()
+    await expect(
+      page.getByText(
+        "An account with this email already exists. Please log in instead.",
+      ),
+    ).toBeVisible()
   })
 
-  test("anonymous user can login with existing credentials", async ({ page }) => {
+  test("anonymous user can login with existing credentials", async ({
+    page,
+  }) => {
     const existingUser = await setupUser()
 
     await waitForAnonymousAuth(page)

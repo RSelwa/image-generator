@@ -1,6 +1,9 @@
 import { faker } from "@faker-js/faker"
 import { DEATH_RUN_LIVES, DEATH_RUN_STATUS } from "@repo/common"
-import { type DeathRunDocWithId, type DeathRunRunDocWithId } from "@repo/schemas"
+import {
+  type DeathRunDocWithId,
+  type DeathRunRunDocWithId,
+} from "@repo/schemas"
 import { type FactoryDoc } from "~/orm"
 
 export const deathRunFactory: FactoryDoc<DeathRunDocWithId> = (item = {}) => ({
@@ -18,7 +21,9 @@ export const deathRunFactory: FactoryDoc<DeathRunDocWithId> = (item = {}) => ({
   ...item,
 })
 
-export const deathRunRunFactory: FactoryDoc<DeathRunRunDocWithId> = (item = {}) => ({
+export const deathRunRunFactory: FactoryDoc<DeathRunRunDocWithId> = (
+  item = {},
+) => ({
   id: faker.database.mongodbObjectId(),
   uid: faker.database.mongodbObjectId(),
   score: 0,

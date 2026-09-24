@@ -26,7 +26,9 @@ let testEnv: RulesTestEnvironment
 describe("firebase Security Rules", () => {
   beforeAll(async () => {
     if (!process.env.FIRESTORE_EMULATOR_HOST) {
-      throw new Error("FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.")
+      throw new Error(
+        "FIRESTORE_EMULATOR_HOST is not set. Aborting tests to prevent production database modifications.",
+      )
     }
     const firestore = { port, host, rules }
 
@@ -335,6 +337,99 @@ describe("firebase Security Rules", () => {
         }),
       )
     })
+
+    describe("when a client writes a server-only field", () => {
+      const uid = "uid"
+      const adminUid = "admin"
+      const SERVER_ONLY_FIELDS = [
+        { credits: 1_000 },
+        { referralCode: "042137" },
+      ]
+
+      const setupAdmin = async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+            uid: adminUid,
+            right: "admin",
+          })
+        })
+      }
+
+      const setupOwnDoc = async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `users/${uid}`), {
+            uid,
+            credits: 0,
+            referralCode: "123456",
+          })
+        })
+      }
+
+      it("should let a user create their doc without them", async () => {
+        const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(setDoc(doc(authedUserDb, `users/${uid}`), { uid }))
+      })
+
+      it.each(SERVER_ONLY_FIELDS)(
+        "should deny a user creating their doc with %o",
+        async (field) => {
+          const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+          await assertFails(
+            setDoc(doc(authedUserDb, `users/${uid}`), { uid, ...field }),
+          )
+        },
+      )
+
+      it.each(SERVER_ONLY_FIELDS)(
+        "should deny a user updating their own %o",
+        async (field) => {
+          await setupOwnDoc()
+          const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+          await assertFails(updateDoc(doc(authedUserDb, `users/${uid}`), field))
+        },
+      )
+
+      it("should let a user update their other fields", async () => {
+        await setupOwnDoc()
+        const authedUserDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(
+          updateDoc(doc(authedUserDb, `users/${uid}`), { pseudo: "pseudo" }),
+        )
+      })
+
+      it.each(SERVER_ONLY_FIELDS)(
+        "should let an admin create a user doc with %o",
+        async (field) => {
+          await setupAdmin()
+          const authedAdminDb = testEnv
+            .authenticatedContext(adminUid)
+            .firestore()
+
+          await assertSucceeds(
+            setDoc(doc(authedAdminDb, `users/${uid}`), { uid, ...field }),
+          )
+        },
+      )
+
+      it.each(SERVER_ONLY_FIELDS)(
+        "should let an admin update a user %o",
+        async (field) => {
+          await setupAdmin()
+          await setupOwnDoc()
+          const authedAdminDb = testEnv
+            .authenticatedContext(adminUid)
+            .firestore()
+
+          await assertSucceeds(
+            updateDoc(doc(authedAdminDb, `users/${uid}`), field),
+          )
+        },
+      )
+    })
   })
 
   describe("games collection", () => {
@@ -581,7 +676,9 @@ describe("firebase Security Rules", () => {
 
       const adminDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertSucceeds(setDoc(doc(adminDb, flatPath), { name: "Test Flat" }))
+      await assertSucceeds(
+        setDoc(doc(adminDb, flatPath), { name: "Test Flat" }),
+      )
     })
 
     it("should be able to update as admin", async () => {
@@ -643,7 +740,9 @@ describe("firebase Security Rules", () => {
 
       const iconoDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertSucceeds(setDoc(doc(iconoDb, flatPath), { name: "Test Flat" }))
+      await assertSucceeds(
+        setDoc(doc(iconoDb, flatPath), { name: "Test Flat" }),
+      )
     })
 
     it("should be able to update as iconograph", async () => {
@@ -1212,9 +1311,7 @@ describe("firebase Security Rules", () => {
 
         const iconoDb = testEnv.authenticatedContext(uid).firestore()
 
-        await assertFails(
-          deleteDoc(doc(iconoDb, "games/game1/spherical/s1")),
-        )
+        await assertFails(deleteDoc(doc(iconoDb, "games/game1/spherical/s1")))
       })
     })
 
@@ -1541,7 +1638,9 @@ describe("firebase Security Rules", () => {
 
       const unauthedDb = testEnv.unauthenticatedContext().firestore()
 
-      const result = await assertSucceeds(getDoc(doc(unauthedDb, "seeds/seed1")))
+      const result = await assertSucceeds(
+        getDoc(doc(unauthedDb, "seeds/seed1")),
+      )
 
       expect(result).toBeDefined()
     })
@@ -1698,9 +1797,7 @@ describe("firebase Security Rules", () => {
 
       const authedUserDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertSucceeds(
-        getDoc(doc(authedUserDb, "suggestions/suggestion1")),
-      )
+      await assertSucceeds(getDoc(doc(authedUserDb, "suggestions/suggestion1")))
     })
 
     it("should not be able to read another user's suggestion", async () => {
@@ -1716,9 +1813,7 @@ describe("firebase Security Rules", () => {
 
       const authedUserDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertFails(
-        getDoc(doc(authedUserDb, "suggestions/suggestion1")),
-      )
+      await assertFails(getDoc(doc(authedUserDb, "suggestions/suggestion1")))
     })
 
     it("should not be able to read a suggestion when not logged in", async () => {
@@ -1731,9 +1826,7 @@ describe("firebase Security Rules", () => {
 
       const unauthedDb = testEnv.unauthenticatedContext().firestore()
 
-      await assertFails(
-        getDoc(doc(unauthedDb, "suggestions/suggestion1")),
-      )
+      await assertFails(getDoc(doc(unauthedDb, "suggestions/suggestion1")))
     })
 
     it("should be able to read any suggestion as admin", async () => {
@@ -1752,9 +1845,7 @@ describe("firebase Security Rules", () => {
 
       const adminDb = testEnv.authenticatedContext(adminUid).firestore()
 
-      await assertSucceeds(
-        getDoc(doc(adminDb, "suggestions/suggestion1")),
-      )
+      await assertSucceeds(getDoc(doc(adminDb, "suggestions/suggestion1")))
     })
 
     it("should be able to update a suggestion as admin", async () => {
@@ -1796,9 +1887,7 @@ describe("firebase Security Rules", () => {
 
       const adminDb = testEnv.authenticatedContext(adminUid).firestore()
 
-      await assertSucceeds(
-        deleteDoc(doc(adminDb, "suggestions/suggestion1")),
-      )
+      await assertSucceeds(deleteDoc(doc(adminDb, "suggestions/suggestion1")))
     })
 
     it("should not be able to update a suggestion as regular user", async () => {
@@ -1832,9 +1921,7 @@ describe("firebase Security Rules", () => {
 
       const authedUserDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertFails(
-        deleteDoc(doc(authedUserDb, "suggestions/suggestion1")),
-      )
+      await assertFails(deleteDoc(doc(authedUserDb, "suggestions/suggestion1")))
     })
 
     it("should not be able to update a suggestion when not logged in", async () => {
@@ -1864,9 +1951,7 @@ describe("firebase Security Rules", () => {
 
       const unauthedDb = testEnv.unauthenticatedContext().firestore()
 
-      await assertFails(
-        deleteDoc(doc(unauthedDb, "suggestions/suggestion1")),
-      )
+      await assertFails(deleteDoc(doc(unauthedDb, "suggestions/suggestion1")))
     })
   })
 
@@ -2084,7 +2169,10 @@ describe("firebase Security Rules", () => {
       const authedUserDb = testEnv.authenticatedContext(uid).firestore()
 
       await assertSucceeds(
-        setDoc(doc(authedUserDb, "lobbies/lobby1"), createLobbyData(uid, [uid])),
+        setDoc(
+          doc(authedUserDb, "lobbies/lobby1"),
+          createLobbyData(uid, [uid]),
+        ),
       )
     })
 
@@ -2132,7 +2220,9 @@ describe("firebase Security Rules", () => {
 
       const outsiderDb = testEnv.authenticatedContext(outsiderId).firestore()
 
-      const result = await assertSucceeds(getDoc(doc(outsiderDb, "lobbies/lobby1")))
+      const result = await assertSucceeds(
+        getDoc(doc(outsiderDb, "lobbies/lobby1")),
+      )
 
       expect(result).toBeDefined()
     })
@@ -2547,12 +2637,17 @@ describe("firebase Security Rules", () => {
 
     it("should be able to read a daily challenge when not logged in", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), "dailyChallenges/2026-03-09"), challengeData)
+        await setDoc(
+          doc(context.firestore(), "dailyChallenges/2026-03-09"),
+          challengeData,
+        )
       })
 
       const unauthedDb = testEnv.unauthenticatedContext().firestore()
 
-      const result = await assertSucceeds(getDoc(doc(unauthedDb, "dailyChallenges/2026-03-09")))
+      const result = await assertSucceeds(
+        getDoc(doc(unauthedDb, "dailyChallenges/2026-03-09")),
+      )
       expect(result).toBeDefined()
     })
 
@@ -2560,12 +2655,17 @@ describe("firebase Security Rules", () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), "dailyChallenges/2026-03-09"), challengeData)
+        await setDoc(
+          doc(context.firestore(), "dailyChallenges/2026-03-09"),
+          challengeData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(uid).firestore()
 
-      const result = await assertSucceeds(getDoc(doc(authedDb, "dailyChallenges/2026-03-09")))
+      const result = await assertSucceeds(
+        getDoc(doc(authedDb, "dailyChallenges/2026-03-09")),
+      )
       expect(result).toBeDefined()
     })
 
@@ -2574,13 +2674,17 @@ describe("firebase Security Rules", () => {
 
       const authedDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertFails(setDoc(doc(authedDb, "dailyChallenges/2026-03-09"), challengeData))
+      await assertFails(
+        setDoc(doc(authedDb, "dailyChallenges/2026-03-09"), challengeData),
+      )
     })
 
     it("should not be able to create a daily challenge when not logged in", async () => {
       const unauthedDb = testEnv.unauthenticatedContext().firestore()
 
-      await assertFails(setDoc(doc(unauthedDb, "dailyChallenges/2026-03-09"), challengeData))
+      await assertFails(
+        setDoc(doc(unauthedDb, "dailyChallenges/2026-03-09"), challengeData),
+      )
     })
 
     it("should be able to create a daily challenge as admin", async () => {
@@ -2595,7 +2699,9 @@ describe("firebase Security Rules", () => {
 
       const adminDb = testEnv.authenticatedContext(adminId).firestore()
 
-      await assertSucceeds(setDoc(doc(adminDb, "dailyChallenges/2026-03-09"), challengeData))
+      await assertSucceeds(
+        setDoc(doc(adminDb, "dailyChallenges/2026-03-09"), challengeData),
+      )
     })
 
     it("should be able to update a daily challenge as admin", async () => {
@@ -2606,24 +2712,175 @@ describe("firebase Security Rules", () => {
           uid: adminId,
           right: "admin",
         })
-        await setDoc(doc(context.firestore(), "dailyChallenges/2026-03-09"), challengeData)
+        await setDoc(
+          doc(context.firestore(), "dailyChallenges/2026-03-09"),
+          challengeData,
+        )
       })
 
       const adminDb = testEnv.authenticatedContext(adminId).firestore()
 
-      await assertSucceeds(updateDoc(doc(adminDb, "dailyChallenges/2026-03-09"), { difficulty: "HARD" }))
+      await assertSucceeds(
+        updateDoc(doc(adminDb, "dailyChallenges/2026-03-09"), {
+          difficulty: "HARD",
+        }),
+      )
     })
 
     it("should not be able to update a daily challenge as a regular user", async () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), "dailyChallenges/2026-03-09"), challengeData)
+        await setDoc(
+          doc(context.firestore(), "dailyChallenges/2026-03-09"),
+          challengeData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertFails(updateDoc(doc(authedDb, "dailyChallenges/2026-03-09"), { difficulty: "HARD" }))
+      await assertFails(
+        updateDoc(doc(authedDb, "dailyChallenges/2026-03-09"), {
+          difficulty: "HARD",
+        }),
+      )
+    })
+  })
+
+  describe("achievements collection", () => {
+    const uid = "user1"
+    const adminUid = "admin"
+    const achievementPath = "achievements/change_username"
+    const achievement = {
+      key: "change_username",
+      name: "New identity",
+      description: "Change your username",
+      reward: 50,
+    }
+
+    const setupAchievement = async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), achievementPath), achievement)
+      })
+    }
+
+    const setupAdmin = async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+      })
+    }
+
+    describe("when anyone reads an achievement", () => {
+      it("should allow a signed-out visitor", async () => {
+        await setupAchievement()
+        const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+        await assertSucceeds(getDoc(doc(unauthedDb, achievementPath)))
+      })
+    })
+
+    describe("when a user writes an achievement", () => {
+      it("should deny creating one", async () => {
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(setDoc(doc(authedDb, achievementPath), achievement))
+      })
+
+      it("should deny updating one", async () => {
+        await setupAchievement()
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(
+          updateDoc(doc(authedDb, achievementPath), { reward: 1_000 }),
+        )
+      })
+    })
+
+    describe("when an admin writes an achievement", () => {
+      it("should allow creating one", async () => {
+        await setupAdmin()
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(setDoc(doc(adminDb, achievementPath), achievement))
+      })
+
+      it("should allow updating one", async () => {
+        await setupAdmin()
+        await setupAchievement()
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(
+          updateDoc(doc(adminDb, achievementPath), { reward: 100 }),
+        )
+      })
+    })
+  })
+
+  describe("unlockedAchievements subcollection", () => {
+    const uid = "user1"
+    const otherUid = "user2"
+    const unlockedPath = (userId: string) =>
+      `users/${userId}/unlockedAchievements/change_username`
+    const unlocked = { achievedAt: new Date(), reward: 50 }
+
+    const setupUnlocked = async (userId: string) => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), unlockedPath(userId)), unlocked)
+      })
+    }
+
+    describe("when a user reads their own unlocked achievement", () => {
+      it("should allow it", async () => {
+        await setupUnlocked(uid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(getDoc(doc(authedDb, unlockedPath(uid))))
+      })
+    })
+
+    describe("when a user reads another user's unlocked achievement", () => {
+      it("should deny it", async () => {
+        await setupUnlocked(otherUid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(getDoc(doc(authedDb, unlockedPath(otherUid))))
+      })
+    })
+
+    describe("when a signed-out visitor reads an unlocked achievement", () => {
+      it("should deny it", async () => {
+        await setupUnlocked(uid)
+        const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+        await assertFails(getDoc(doc(unauthedDb, unlockedPath(uid))))
+      })
+    })
+
+    describe("when a user writes their own unlocked achievement", () => {
+      it("should deny creating it", async () => {
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(setDoc(doc(authedDb, unlockedPath(uid)), unlocked))
+      })
+
+      it("should deny updating it", async () => {
+        await setupUnlocked(uid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(
+          updateDoc(doc(authedDb, unlockedPath(uid)), { reward: 1_000 }),
+        )
+      })
+
+      it("should deny deleting it", async () => {
+        await setupUnlocked(uid)
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(deleteDoc(doc(authedDb, unlockedPath(uid))))
+      })
     })
   })
 
@@ -2634,13 +2891,16 @@ describe("firebase Security Rules", () => {
       isCorrect: true,
     }
 
-    const resultPath = (uid: string) => `users/${uid}/dailyChallengeResults/2026-03-09`
+    const resultPath = (uid: string) =>
+      `users/${uid}/dailyChallengeResults/2026-03-09`
 
     it("should be able to create own daily challenge result when logged in", async () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `users/${uid}`), { pseudo: "Player1" })
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          pseudo: "Player1",
+        })
       })
 
       const authedDb = testEnv.authenticatedContext(uid).firestore()
@@ -2653,7 +2913,9 @@ describe("firebase Security Rules", () => {
       const otherUid = "user2"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `users/${otherUid}`), { pseudo: "Player2" })
+        await setDoc(doc(context.firestore(), `users/${otherUid}`), {
+          pseudo: "Player2",
+        })
       })
 
       const authedDb = testEnv.authenticatedContext(uid).firestore()
@@ -2673,13 +2935,17 @@ describe("firebase Security Rules", () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `users/${uid}`), { pseudo: "Player1" })
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          pseudo: "Player1",
+        })
         await setDoc(doc(context.firestore(), resultPath(uid)), resultData)
       })
 
       const authedDb = testEnv.authenticatedContext(uid).firestore()
 
-      const result = await assertSucceeds(getDoc(doc(authedDb, resultPath(uid))))
+      const result = await assertSucceeds(
+        getDoc(doc(authedDb, resultPath(uid))),
+      )
       expect(result).toBeDefined()
     })
 
@@ -2688,7 +2954,9 @@ describe("firebase Security Rules", () => {
       const otherUid = "user2"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `users/${otherUid}`), { pseudo: "Player2" })
+        await setDoc(doc(context.firestore(), `users/${otherUid}`), {
+          pseudo: "Player2",
+        })
         await setDoc(doc(context.firestore(), resultPath(otherUid)), resultData)
       })
 
@@ -2701,13 +2969,17 @@ describe("firebase Security Rules", () => {
       const uid = "user1"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `users/${uid}`), { pseudo: "Player1" })
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          pseudo: "Player1",
+        })
         await setDoc(doc(context.firestore(), resultPath(uid)), resultData)
       })
 
       const authedDb = testEnv.authenticatedContext(uid).firestore()
 
-      await assertFails(updateDoc(doc(authedDb, resultPath(uid)), { isCorrect: false }))
+      await assertFails(
+        updateDoc(doc(authedDb, resultPath(uid)), { isCorrect: false }),
+      )
     })
 
     it("should be able to read and write any result as admin", async () => {
@@ -2719,7 +2991,9 @@ describe("firebase Security Rules", () => {
           uid: adminId,
           right: "admin",
         })
-        await setDoc(doc(context.firestore(), `users/${uid}`), { pseudo: "Player1" })
+        await setDoc(doc(context.firestore(), `users/${uid}`), {
+          pseudo: "Player1",
+        })
         await setDoc(doc(context.firestore(), resultPath(uid)), resultData)
       })
 
@@ -2728,7 +3002,9 @@ describe("firebase Security Rules", () => {
       const result = await assertSucceeds(getDoc(doc(adminDb, resultPath(uid))))
       expect(result).toBeDefined()
 
-      await assertSucceeds(updateDoc(doc(adminDb, resultPath(uid)), { isCorrect: false }))
+      await assertSucceeds(
+        updateDoc(doc(adminDb, resultPath(uid)), { isCorrect: false }),
+      )
     })
   })
 
@@ -2777,7 +3053,10 @@ describe("firebase Security Rules", () => {
 
     it("should allow admin to write a marathon seed", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
       })
 
       const adminDb = testEnv.authenticatedContext(adminId).firestore()
@@ -2788,7 +3067,15 @@ describe("firebase Security Rules", () => {
   describe("races collection", () => {
     const raceId = "race1"
     const racePath = `races/${raceId}`
-    const raceData = { code: "ABCD", hostId: "user1", seedId: "seed1", status: "waiting", players: [], playersIds: [], duration: 300 }
+    const raceData = {
+      code: "ABCD",
+      hostId: "user1",
+      seedId: "seed1",
+      status: "waiting",
+      players: [],
+      playersIds: [],
+      duration: 300,
+    }
 
     it("should allow signed-in user to create a race", async () => {
       const authedDb = testEnv.authenticatedContext("user1").firestore()
@@ -2824,7 +3111,9 @@ describe("firebase Security Rules", () => {
       })
 
       const authedDb = testEnv.authenticatedContext("user1").firestore()
-      await assertSucceeds(updateDoc(doc(authedDb, racePath), { status: "playing" }))
+      await assertSucceeds(
+        updateDoc(doc(authedDb, racePath), { status: "playing" }),
+      )
     })
 
     it("should not allow unauthenticated user to delete a race", async () => {
@@ -2900,7 +3189,16 @@ describe("firebase Security Rules", () => {
   describe("leaderboard collection", () => {
     const entryId = "entry1"
     const entryPath = `leaderboard/${entryId}`
-    const entryData = { uid: "user1", pseudo: "Player1", avatar: "default", score: 500, roundsCompleted: 5, seedId: "seed1", seedName: "Test Seed", raceId: "race1" }
+    const entryData = {
+      uid: "user1",
+      pseudo: "Player1",
+      avatar: "default",
+      score: 500,
+      roundsCompleted: 5,
+      seedId: "seed1",
+      seedName: "Test Seed",
+      raceId: "race1",
+    }
     const adminId = "admin1"
 
     it("should allow anyone to read leaderboard entries", async () => {
@@ -2919,7 +3217,10 @@ describe("firebase Security Rules", () => {
 
     it("should allow admin to write leaderboard entries", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
       })
 
       const adminDb = testEnv.authenticatedContext(adminId).firestore()
@@ -2972,7 +3273,10 @@ describe("firebase Security Rules", () => {
       const otherCouponPath = "coupons/someOtherCoupon"
 
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), otherCouponPath), { ...couponData, claimedBy: "user2" })
+        await setDoc(doc(context.firestore(), otherCouponPath), {
+          ...couponData,
+          claimedBy: "user2",
+        })
       })
 
       const authedDb = testEnv.authenticatedContext("user1").firestore()
@@ -2981,7 +3285,10 @@ describe("firebase Security Rules", () => {
 
     it("should allow admin to read a coupon", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
         await setDoc(doc(context.firestore(), couponPath), couponData)
       })
 
@@ -2991,7 +3298,10 @@ describe("firebase Security Rules", () => {
 
     it("should allow admin to write a coupon", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
       })
 
       const adminDb = testEnv.authenticatedContext(adminId).firestore()
@@ -3025,16 +3335,24 @@ describe("firebase Security Rules", () => {
 
     it("should allow admin to create a message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
       })
 
       const adminDb = testEnv.authenticatedContext(adminId).firestore()
-      await assertSucceeds(setDoc(doc(adminDb, userMessagePath), userMessageData))
+      await assertSucceeds(
+        setDoc(doc(adminDb, userMessagePath), userMessageData),
+      )
     })
 
     it("should allow admin to delete a message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
         await setDoc(doc(context.firestore(), userMessagePath), userMessageData)
       })
 
@@ -3076,7 +3394,10 @@ describe("firebase Security Rules", () => {
 
     it("should allow any signed-in user to read a lobby-targeted message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyMessagePath), lobbyMessageData)
+        await setDoc(
+          doc(context.firestore(), lobbyMessagePath),
+          lobbyMessageData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(otherUserId).firestore()
@@ -3085,20 +3406,30 @@ describe("firebase Security Rules", () => {
 
     it("should allow signed-in user to update seenBy on a message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyMessagePath), lobbyMessageData)
+        await setDoc(
+          doc(context.firestore(), lobbyMessagePath),
+          lobbyMessageData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(otherUserId).firestore()
-      await assertSucceeds(updateDoc(doc(authedDb, lobbyMessagePath), { seenBy: [otherUserId] }))
+      await assertSucceeds(
+        updateDoc(doc(authedDb, lobbyMessagePath), { seenBy: [otherUserId] }),
+      )
     })
 
     it("should not allow signed-in user to update fields other than seenBy", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyMessagePath), lobbyMessageData)
+        await setDoc(
+          doc(context.firestore(), lobbyMessagePath),
+          lobbyMessageData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(otherUserId).firestore()
-      await assertFails(updateDoc(doc(authedDb, lobbyMessagePath), { content: "hacked" }))
+      await assertFails(
+        updateDoc(doc(authedDb, lobbyMessagePath), { content: "hacked" }),
+      )
     })
 
     it("should not allow regular user to delete a message", async () => {
@@ -3135,7 +3466,10 @@ describe("firebase Security Rules", () => {
 
     it("should allow participant to read their conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(user1Id).firestore()
@@ -3144,7 +3478,10 @@ describe("firebase Security Rules", () => {
 
     it("should not allow outsider to read a conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(outsiderId).firestore()
@@ -3153,63 +3490,109 @@ describe("firebase Security Rules", () => {
 
     it("should allow participant to create a conversation they are part of", async () => {
       const authedDb = testEnv.authenticatedContext(user1Id).firestore()
-      await assertSucceeds(setDoc(doc(authedDb, conversationPath), conversationData))
+      await assertSucceeds(
+        setDoc(doc(authedDb, conversationPath), conversationData),
+      )
     })
 
     it("should not allow user to create a conversation they are not part of", async () => {
       const authedDb = testEnv.authenticatedContext(outsiderId).firestore()
-      await assertFails(setDoc(doc(authedDb, conversationPath), conversationData))
+      await assertFails(
+        setDoc(doc(authedDb, conversationPath), conversationData),
+      )
     })
 
     it("should allow participant to update lastMessage and lastMessageAt", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(user1Id).firestore()
-      await assertSucceeds(updateDoc(doc(authedDb, conversationPath), { lastMessage: "updated", lastMessageAt: new Date() }))
+      await assertSucceeds(
+        updateDoc(doc(authedDb, conversationPath), {
+          lastMessage: "updated",
+          lastMessageAt: new Date(),
+        }),
+      )
     })
 
     it("should allow participant to update their own lastReadAt entry", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(user1Id).firestore()
-      await assertSucceeds(updateDoc(doc(authedDb, conversationPath), { [`lastReadAt.${user1Id}`]: new Date() }))
+      await assertSucceeds(
+        updateDoc(doc(authedDb, conversationPath), {
+          [`lastReadAt.${user1Id}`]: new Date(),
+        }),
+      )
     })
 
     it("should not allow participant to update another participant lastReadAt entry", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(user1Id).firestore()
-      await assertFails(updateDoc(doc(authedDb, conversationPath), { [`lastReadAt.${user2Id}`]: new Date() }))
+      await assertFails(
+        updateDoc(doc(authedDb, conversationPath), {
+          [`lastReadAt.${user2Id}`]: new Date(),
+        }),
+      )
     })
 
     it("should not allow outsider to update lastReadAt", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(outsiderId).firestore()
-      await assertFails(updateDoc(doc(authedDb, conversationPath), { [`lastReadAt.${outsiderId}`]: new Date() }))
+      await assertFails(
+        updateDoc(doc(authedDb, conversationPath), {
+          [`lastReadAt.${outsiderId}`]: new Date(),
+        }),
+      )
     })
 
     it("should not allow participant to update participants field", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(user1Id).firestore()
-      await assertFails(updateDoc(doc(authedDb, conversationPath), { participants: [user1Id, outsiderId] }))
+      await assertFails(
+        updateDoc(doc(authedDb, conversationPath), {
+          participants: [user1Id, outsiderId],
+        }),
+      )
     })
 
     it("should allow admin to delete a conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const adminDb = testEnv.authenticatedContext(adminId).firestore()
@@ -3218,7 +3601,10 @@ describe("firebase Security Rules", () => {
 
     it("should not allow participant to delete a conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(user1Id).firestore()
@@ -3227,7 +3613,10 @@ describe("firebase Security Rules", () => {
 
     it("should allow participant to read messages in their conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
         await setDoc(doc(context.firestore(), messagePath), messageData)
       })
 
@@ -3237,7 +3626,10 @@ describe("firebase Security Rules", () => {
 
     it("should not allow outsider to read messages in a conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
         await setDoc(doc(context.firestore(), messagePath), messageData)
       })
 
@@ -3247,7 +3639,10 @@ describe("firebase Security Rules", () => {
 
     it("should allow participant to create a message as themselves", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(user1Id).firestore()
@@ -3256,7 +3651,10 @@ describe("firebase Security Rules", () => {
 
     it("should not allow participant to create a message as someone else", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const spoofedMessage = { ...messageData, senderId: user2Id }
@@ -3266,7 +3664,10 @@ describe("firebase Security Rules", () => {
 
     it("should not allow outsider to send a message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
       })
 
       const outsiderMessage = { ...messageData, senderId: outsiderId }
@@ -3276,28 +3677,44 @@ describe("firebase Security Rules", () => {
 
     it("should not allow participant to update a message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
         await setDoc(doc(context.firestore(), messagePath), messageData)
       })
 
       const authedDb = testEnv.authenticatedContext(user2Id).firestore()
-      await assertFails(updateDoc(doc(authedDb, messagePath), { senderId: user2Id }))
+      await assertFails(
+        updateDoc(doc(authedDb, messagePath), { senderId: user2Id }),
+      )
     })
 
     it("should not allow participant to update content of a message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
         await setDoc(doc(context.firestore(), messagePath), messageData)
       })
 
       const authedDb = testEnv.authenticatedContext(user2Id).firestore()
-      await assertFails(updateDoc(doc(authedDb, messagePath), { content: "tampered" }))
+      await assertFails(
+        updateDoc(doc(authedDb, messagePath), { content: "tampered" }),
+      )
     })
 
     it("should allow admin to delete a conversation message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), `rights/${adminId}`), { uid: adminId, right: "admin" })
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(doc(context.firestore(), `rights/${adminId}`), {
+          uid: adminId,
+          right: "admin",
+        })
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
         await setDoc(doc(context.firestore(), messagePath), messageData)
       })
 
@@ -3307,7 +3724,10 @@ describe("firebase Security Rules", () => {
 
     it("should not allow participant to delete a conversation message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), conversationPath), conversationData)
+        await setDoc(
+          doc(context.firestore(), conversationPath),
+          conversationData,
+        )
         await setDoc(doc(context.firestore(), messagePath), messageData)
       })
 
@@ -3341,7 +3761,10 @@ describe("firebase Security Rules", () => {
 
     it("should allow any signed-in user to read a lobby conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+        await setDoc(
+          doc(context.firestore(), lobbyConversationPath),
+          lobbyConversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
@@ -3350,7 +3773,10 @@ describe("firebase Security Rules", () => {
 
     it("should not allow unauthenticated user to read a lobby conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+        await setDoc(
+          doc(context.firestore(), lobbyConversationPath),
+          lobbyConversationData,
+        )
       })
 
       const unauthDb = testEnv.unauthenticatedContext().firestore()
@@ -3359,13 +3785,21 @@ describe("firebase Security Rules", () => {
 
     it("should allow any signed-in user to create a lobby conversation", async () => {
       const authedDb = testEnv.authenticatedContext(adminId).firestore()
-      await assertSucceeds(setDoc(doc(authedDb, lobbyConversationPath), lobbyConversationData))
+      await assertSucceeds(
+        setDoc(doc(authedDb, lobbyConversationPath), lobbyConversationData),
+      )
     })
 
     it("should allow any signed-in user to read messages in a lobby conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
-        await setDoc(doc(context.firestore(), lobbyMessagePath), lobbyMessageData)
+        await setDoc(
+          doc(context.firestore(), lobbyConversationPath),
+          lobbyConversationData,
+        )
+        await setDoc(
+          doc(context.firestore(), lobbyMessagePath),
+          lobbyMessageData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
@@ -3374,8 +3808,14 @@ describe("firebase Security Rules", () => {
 
     it("should not allow unauthenticated user to read messages in a lobby conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
-        await setDoc(doc(context.firestore(), lobbyMessagePath), lobbyMessageData)
+        await setDoc(
+          doc(context.firestore(), lobbyConversationPath),
+          lobbyConversationData,
+        )
+        await setDoc(
+          doc(context.firestore(), lobbyMessagePath),
+          lobbyMessageData,
+        )
       })
 
       const unauthDb = testEnv.unauthenticatedContext().firestore()
@@ -3384,17 +3824,25 @@ describe("firebase Security Rules", () => {
 
     it("should allow any signed-in user to send a message as themselves in a lobby conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+        await setDoc(
+          doc(context.firestore(), lobbyConversationPath),
+          lobbyConversationData,
+        )
       })
 
       const playerMessage = { ...lobbyMessageData, senderId: regularUserId }
       const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
-      await assertSucceeds(setDoc(doc(authedDb, lobbyMessagePath), playerMessage))
+      await assertSucceeds(
+        setDoc(doc(authedDb, lobbyMessagePath), playerMessage),
+      )
     })
 
     it("should not allow signed-in user to send a message as someone else in a lobby conversation", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+        await setDoc(
+          doc(context.firestore(), lobbyConversationPath),
+          lobbyConversationData,
+        )
       })
 
       const spoofedMessage = { ...lobbyMessageData, senderId: adminId }
@@ -3404,30 +3852,52 @@ describe("firebase Security Rules", () => {
 
     it("should not allow any signed-in user to update a lobby conversation message", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
-        await setDoc(doc(context.firestore(), lobbyMessagePath), lobbyMessageData)
+        await setDoc(
+          doc(context.firestore(), lobbyConversationPath),
+          lobbyConversationData,
+        )
+        await setDoc(
+          doc(context.firestore(), lobbyMessagePath),
+          lobbyMessageData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
-      await assertFails(updateDoc(doc(authedDb, lobbyMessagePath), { content: "tampered" }))
+      await assertFails(
+        updateDoc(doc(authedDb, lobbyMessagePath), { content: "tampered" }),
+      )
     })
 
     it("should allow a non-participant signed-in user to mark a lobby conversation read", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+        await setDoc(
+          doc(context.firestore(), lobbyConversationPath),
+          lobbyConversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
-      await assertSucceeds(updateDoc(doc(authedDb, lobbyConversationPath), { [`lastReadAt.${regularUserId}`]: new Date() }))
+      await assertSucceeds(
+        updateDoc(doc(authedDb, lobbyConversationPath), {
+          [`lastReadAt.${regularUserId}`]: new Date(),
+        }),
+      )
     })
 
     it("should not allow a signed-in user to mark a lobby conversation read for someone else", async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), lobbyConversationPath), lobbyConversationData)
+        await setDoc(
+          doc(context.firestore(), lobbyConversationPath),
+          lobbyConversationData,
+        )
       })
 
       const authedDb = testEnv.authenticatedContext(regularUserId).firestore()
-      await assertFails(updateDoc(doc(authedDb, lobbyConversationPath), { [`lastReadAt.${adminId}`]: new Date() }))
+      await assertFails(
+        updateDoc(doc(authedDb, lobbyConversationPath), {
+          [`lastReadAt.${adminId}`]: new Date(),
+        }),
+      )
     })
   })
 })

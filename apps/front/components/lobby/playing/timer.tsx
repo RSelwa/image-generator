@@ -3,7 +3,13 @@ import * as React from "react"
 import { useCountdown } from "@/hooks/use-countdown"
 import { usePathname } from "@/i18n/routing"
 import { useSubscribeLobbyQuery } from "@/redux/api/lobby"
-import { selectCurrentPlayerRoundAnswer, selectCurrentRoundData, selectCurrentRoundIndex, selectHasSelectedOption, selectLobbyConfig } from "@/redux/lobby/lobby.selectors"
+import {
+  selectCurrentPlayerRoundAnswer,
+  selectCurrentRoundData,
+  selectCurrentRoundIndex,
+  selectHasSelectedOption,
+  selectLobbyConfig,
+} from "@/redux/lobby/lobby.selectors"
 import { useAppSelector } from "@/redux/store"
 import { getLobbyIdFromPathname } from "@/utils"
 
@@ -11,25 +17,41 @@ const Timer = () => {
   const pathname = usePathname()
   const lobbyId = getLobbyIdFromPathname(pathname)
 
-  const { data: lobby } = useSubscribeLobbyQuery({ id: lobbyId }, {
-    skip: !lobbyId,
-  })
+  const { data: lobby } = useSubscribeLobbyQuery(
+    { id: lobbyId },
+    {
+      skip: !lobbyId,
+    },
+  )
 
   const roundIndex = useAppSelector(selectCurrentRoundIndex(lobbyId))
-  const myAnswer = useAppSelector(selectCurrentPlayerRoundAnswer(lobbyId, roundIndex))
+  const myAnswer = useAppSelector(
+    selectCurrentPlayerRoundAnswer(lobbyId, roundIndex),
+  )
   const currentRoundData = useAppSelector(selectCurrentRoundData(lobbyId))
   const config = useAppSelector(selectLobbyConfig(lobbyId))
 
-  const hasSelectedOption = useAppSelector(selectHasSelectedOption(lobbyId, roundIndex))
+  const hasSelectedOption = useAppSelector(
+    selectHasSelectedOption(lobbyId, roundIndex),
+  )
   const isMapPhase = myAnswer?.isCorrect && currentRoundData?.mapPosition
-  const isWaitingForSelection = currentRoundData?.isSpecial && !hasSelectedOption
-  const timerStart = isWaitingForSelection ? null : ((isMapPhase && myAnswer?.submittedAt) || myAnswer?.selectedOptionAt || lobby?.roundStartedAt)
+  const isWaitingForSelection =
+    currentRoundData?.isSpecial && !hasSelectedOption
+  const timerStart = isWaitingForSelection
+    ? null
+    : (isMapPhase && myAnswer?.submittedAt) ||
+      myAnswer?.selectedOptionAt ||
+      lobby?.roundStartedAt
 
-  const { timeRemaining } = useCountdown(timerStart, (config?.roundDuration || DEFAULT_TIME_PER_ROUND))
+  const { timeRemaining } = useCountdown(
+    timerStart,
+    config?.roundDuration || DEFAULT_TIME_PER_ROUND,
+  )
 
   return (
     <span className="absolute z-10 bg-background font-fraktion-mono px-4 py-1 text-primary top-4 left-1/2 -translate-x-1/2 font-bold drop-shadow-2xl text-center text-6xl">
-      {timeRemaining < 10 && 0}{timeRemaining}
+      {timeRemaining < 10 && 0}
+      {timeRemaining}
     </span>
   )
 }

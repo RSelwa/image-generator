@@ -41,7 +41,8 @@
     "play": "Play",
     "joinLobby": "Join a lobby",
     "about": "About",
-    "deathRun": "Death Run"
+    "deathRun": "Death Run",
+    "achievements": "Achievements"
   },
   "auth": {
     "loginTitle": "Login",
@@ -171,7 +172,8 @@
     "title": "Personalize your account",
     "description": "Your pseudo and your avatar is what other users see when they interact with you. Choose something that represents you well!",
     "pseudo": "Pseudo",
-    "skipForNow": "Skip for now"
+    "skipForNow": "Skip for now",
+    "achievementUnlocked": "Achievement unlocked! +{reward, plural, one {# credit} other {# credits}}"
   },
   "reportBug": {
     "title": "Report a bug",
@@ -279,5 +281,26 @@
     "found": "{count, plural, one {Lobby found with # player} other {Lobby found with # players}}",
     "notFound": "No lobby found with this code.",
     "join": "Join"
+  },
+  "achievementCard": {
+    "locked": "Locked",
+    "unlocked": "Unlocked",
+    "reward": "{reward, plural, one {# credit} other {# credits}}",
+    "goal": "Goal: {goal}",
+    "achievedAt": "Unlocked on {date}",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "legendary": "Legendary"
+    }
+  },
+  "achievements": {
+    "metaTitle": "Achievements — Geo Gamer",
+    "metaDescription": "Unlock achievements while playing Geo Gamer and earn credits.",
+    "title": "Achievements",
+    "description": "Unlock achievements to earn credits",
+    "empty": "No achievements yet.",
+    "error": "Your achievements could not be loaded."
   }
 }

@@ -43,10 +43,14 @@ service cloud.firestore {
       allow read: if isDocOwner(right);
     } 
 
-    match /users/{user} {
-      allow create: if isSignedIn();
+    function serverOnlyUserFields() {
+      return ['credits', 'referralCode'];
+    }
 
-      allow update: if isDocOwner(user) || signedInAdmin();
+    match /users/{user} {
+      allow create: if isSignedIn() && !request.resource.data.keys().hasAny(serverOnlyUserFields());
+
+      allow update: if (isDocOwner(user) && noUpdatesOnFields(serverOnlyUserFields())) || signedInAdmin();
       allow delete: if request.auth.uid == user;
      
       allow read: if true;
@@ -56,7 +60,18 @@ service cloud.firestore {
         allow create, read: if isSignedIn() && request.auth.uid == user;
         allow write: if signedInAdmin();
       }
+
+      // Unlocked achievements - owner reads, written by the server only (admin SDK)
+      match /unlockedAchievements/{achievement} {
+        allow read: if isSignedIn() && request.auth.uid == user;
+      }
     } 
+
+    // Achievement definitions - anyone reads, admin writes
+    match /achievements/{achievement} {
+      allow read: if true;
+      allow write: if signedInAdmin();
+    }
 
     match /games/{game} {
       allow create, update: if signedInIconograph();

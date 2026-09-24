@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { useDispatch, useSelector, useStore } from "react-redux"
+import { achievementsApi } from "@/redux/api/achievements"
 import { adminApi } from "@/redux/api/admin"
 import { authApi } from "@/redux/api/auth"
 import { cloudFunctionsApi } from "@/redux/api/cloud-functions"
@@ -27,6 +28,7 @@ import { sessionSlice } from "@/redux/session/session.slice"
 export const makeStore = () =>
   configureStore({
     reducer: {
+      [achievementsApi.reducerPath]: achievementsApi.reducer,
       [adminApi.reducerPath]: adminApi.reducer,
       [conversationsApi.reducerPath]: conversationsApi.reducer,
       [messagesApi.reducerPath]: messagesApi.reducer,
@@ -53,6 +55,7 @@ export const makeStore = () =>
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ serializableCheck: false })
+        .concat(achievementsApi.middleware)
         .concat(adminApi.middleware)
         .concat(conversationsApi.middleware)
         .concat(messagesApi.middleware)

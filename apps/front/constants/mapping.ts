@@ -1,4 +1,10 @@
-import { DIFFICULTIES, DOCUMENTS_STATUS, DONOR_TIERS, SUGGESTIONS_TYPE } from "@repo/common"
+import {
+  ACHIEVEMENT_DIFFICULTY,
+  DIFFICULTIES,
+  DOCUMENTS_STATUS,
+  DONOR_TIERS,
+  SUGGESTIONS_TYPE,
+} from "@repo/common"
 
 export const IS_PLAYWRIGHT_EMULATOR = process.env.NEXT_PUBLIC_EMULATOR
 
@@ -20,6 +26,8 @@ export const QUERY_PARAMS = {
   USER_ID: "user-id",
   SPHERICAL_ID: "spherical-id",
   DAILY_CHALLENGE_DATE: "daily-challenge-date",
+  ACHIEVEMENT_KEY: "achievement-key",
+  FEATURE_FLAG: "ff",
 } as const
 
 export const MODAL_KEYS = {
@@ -39,6 +47,7 @@ export const MODAL_KEYS = {
   NEW_SOCIALS: "new-socials",
   NEW_SOUND: "new-sound",
   NEW_DAILY_CHALLENGE: "new-daily-challenge",
+  NEW_ACHIEVEMENT: "new-achievement",
   JOIN_LOBBY: "join-lobby",
 } as const
 
@@ -79,6 +88,15 @@ export const DIFFICULTIES_TO_BADGE_VARIANT = {
   [DIFFICULTIES.HARD]: BADGE_VARIANTS.RED,
 } as const
 
+export const NO_ACHIEVEMENT_DIFFICULTY = "none"
+
+export const ACHIEVEMENT_DIFFICULTY_TO_BADGE_VARIANT = {
+  [ACHIEVEMENT_DIFFICULTY.EASY]: BADGE_VARIANTS.GREEN,
+  [ACHIEVEMENT_DIFFICULTY.MEDIUM]: BADGE_VARIANTS.ORANGE,
+  [ACHIEVEMENT_DIFFICULTY.HARD]: BADGE_VARIANTS.RED,
+  [ACHIEVEMENT_DIFFICULTY.LEGENDARY]: BADGE_VARIANTS.PURPLE,
+} as const
+
 export const STATUS_TO_BADGE_VARIANT = {
   [DOCUMENTS_STATUS.ERROR]: BADGE_VARIANTS.RED,
   [DOCUMENTS_STATUS.NEED_VERIFICATION]: BADGE_VARIANTS.ORANGE,
@@ -101,6 +119,7 @@ export const SUGGESTIONS_TYPE_TO_BADGE_VARIANT = {
 export const API_ENDPOINTS = {
   CREATE_SEED: "/api/create-seed",
   DAILY_CHALLENGE: "/api/daily-challenge",
+  ACHIEVEMENT_EVENTS: "/api/achievements/events",
 } as const
 
 export const FIREBASE_ERRORS = {

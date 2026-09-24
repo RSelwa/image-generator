@@ -32,7 +32,9 @@ export const Default: Story = {
       <PopoverContent>
         <PopoverHeader>
           <PopoverTitle>Dimensions</PopoverTitle>
-          <PopoverDescription>Set the dimensions for the layer.</PopoverDescription>
+          <PopoverDescription>
+            Set the dimensions for the layer.
+          </PopoverDescription>
         </PopoverHeader>
         <div className="mt-4 flex flex-col gap-3">
           <div className="flex items-center gap-4">

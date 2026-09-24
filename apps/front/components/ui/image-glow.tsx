@@ -1,4 +1,9 @@
-import { type CSSProperties, type ImgHTMLAttributes, type ReactElement, useState } from "react"
+import {
+  type CSSProperties,
+  type ImgHTMLAttributes,
+  type ReactElement,
+  useState,
+} from "react"
 import * as React from "react"
 import { cn } from "@/utils"
 
@@ -15,7 +20,7 @@ const blurStyle = (
   baseImage: string,
   radius: number,
   saturation: number,
-  opacity: number
+  opacity: number,
 ): CSSProperties => ({
   position: "absolute",
   top: 0,
@@ -60,17 +65,27 @@ export const ImageGlow = ({
   }
 
   const styledImage = React.cloneElement(children, {
-    style: { ...glowStyle, ...(childStyle || {}) },
+    style: { ...glowStyle, ...childStyle },
     className: `${childClassName || ""} ${className}`.trim(),
   })
 
   if (typeof baseImage !== "string") return null
 
   return (
-    <div className={cn("relative", className)} onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
+    <div
+      className={cn("relative", className)}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
       {styledImage}
-      <div style={blurStyle(baseImage, radius, saturation, isBlurOnHover ? isHover ? 1 : 0 : opacity)} />
+      <div
+        style={blurStyle(
+          baseImage,
+          radius,
+          saturation,
+          isBlurOnHover ? (isHover ? 1 : 0) : opacity,
+        )}
+      />
     </div>
-
   )
 }

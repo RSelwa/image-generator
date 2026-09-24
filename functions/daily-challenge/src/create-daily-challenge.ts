@@ -1,11 +1,17 @@
 import { DOCUMENTS_STATUS, METADATA_DOCS, TABLES } from "@repo/common"
 import { collectionGroupRefs, refs, subRefs } from "@repo/providers/db-refs"
-import { type DailyChallengeDate, type DailyChallengeDoc, type DailyChallengeHistoryDoc } from "@repo/schemas"
+import {
+  type DailyChallengeDate,
+  type DailyChallengeDoc,
+  type DailyChallengeHistoryDoc,
+} from "@repo/schemas"
 import { getFirestore } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 
 const getHistoryRef = () =>
-  getFirestore().doc(`${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`)
+  getFirestore().doc(
+    `${TABLES.METADATA}/${METADATA_DOCS.DAILY_CHALLENGE_HISTORY}`,
+  )
 
 const formatDate = (date: Date) => {
   const year = date.getFullYear()
@@ -28,7 +34,9 @@ export const createDailyChallenge = async (date?: DailyChallengeDate) => {
   const existingDoc = await refs[TABLES.DAILY_CHALLENGES].doc(targetDate).get()
 
   if (existingDoc.exists) {
-    logger.info(`[daily-challenge] Challenge already exists for ${targetDate}, skipping`)
+    logger.info(
+      `[daily-challenge] Challenge already exists for ${targetDate}, skipping`,
+    )
 
     return
   }
@@ -45,7 +53,9 @@ export const createDailyChallenge = async (date?: DailyChallengeDate) => {
     .where("status", "==", DOCUMENTS_STATUS.READY)
     .get()
 
-  const availableSphericals = readySphericals.docs.filter((doc) => !usedImages[doc.id])
+  const availableSphericals = readySphericals.docs.filter(
+    (doc) => !usedImages[doc.id],
+  )
   const availableFlats = readyFlats.docs.filter((doc) => !usedImages[doc.id])
 
   const allAvailable = [
@@ -63,7 +73,9 @@ export const createDailyChallenge = async (date?: DailyChallengeDate) => {
   const picked = allAvailable[randomIndex]
 
   if (!picked) {
-    logger.error(`[daily-challenge] Failed to pick a random image for ${targetDate}`)
+    logger.error(
+      `[daily-challenge] Failed to pick a random image for ${targetDate}`,
+    )
 
     return
   }
@@ -122,7 +134,9 @@ export const createDailyChallenge = async (date?: DailyChallengeDate) => {
 
   await refs[TABLES.DAILY_CHALLENGES].doc(targetDate).set(challenge)
 
-  logger.info(`[daily-challenge] Created challenge for ${targetDate}: ${gameData.title} (${picked.type}, image: ${picked.doc.id})`)
+  logger.info(
+    `[daily-challenge] Created challenge for ${targetDate}: ${gameData.title} (${picked.type}, image: ${picked.doc.id})`,
+  )
 
   return { ...challenge, id: targetDate }
 }

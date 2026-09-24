@@ -26,6 +26,8 @@ export const TABLES = {
   MESSAGES: "messages",
   CONVERSATIONS: "conversations",
   CONVERSATION_MESSAGES: "conversationMessages",
+  ACHIEVEMENTS: "achievements",
+  UNLOCKED_ACHIEVEMENTS: "unlockedAchievements",
 } as const
 
 export const METADATA_DOCS = {
@@ -52,59 +54,88 @@ export const USER_RIGHT = {
 export const BUCKETS_ACTIONS = {
   CREATE: "create",
   UPDATE: "update",
-  DELETE: "delete"
+  DELETE: "delete",
 } as const
 
 export const RIGHTS_CREATE_TO_BUCKETS = {
-  [STORAGE_PATHS.GAME_THUMBNAILS]: [{
-    role:
-      USER_RIGHT.ADMIN,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE, BUCKETS_ACTIONS.DELETE],
-  }, {
-    role:
-        USER_RIGHT.ICONOGRAPH,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
-  }],
-  [STORAGE_PATHS.SPHERICALS]: [{
-    role:
-      USER_RIGHT.ADMIN,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE, BUCKETS_ACTIONS.DELETE],
-  }, {
-    role:
-        USER_RIGHT.ICONOGRAPH,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
-  }],
-  [STORAGE_PATHS.MAP_IMAGES]: [{
-    role:
-      USER_RIGHT.ADMIN,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE, BUCKETS_ACTIONS.DELETE],
-  }, {
-    role:
-        USER_RIGHT.ICONOGRAPH,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
-  }],
-  [STORAGE_PATHS.FLAT_IMAGES]: [{
-    role:
-      USER_RIGHT.ADMIN,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE, BUCKETS_ACTIONS.DELETE],
-  }, {
-    role:
-        USER_RIGHT.ICONOGRAPH,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
-  }],
-  [STORAGE_PATHS.FLAT_THUMBNAILS]: [{
-    role:
-      USER_RIGHT.ADMIN,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE, BUCKETS_ACTIONS.DELETE],
-  }, {
-    role:
-        USER_RIGHT.ICONOGRAPH,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
-  }],
-  [STORAGE_PATHS.SOCIALS]: [{
-    role:
-      USER_RIGHT.ADMIN,
-    rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE, BUCKETS_ACTIONS.DELETE],
-  }],
-
+  [STORAGE_PATHS.GAME_THUMBNAILS]: [
+    {
+      role: USER_RIGHT.ADMIN,
+      rights: [
+        BUCKETS_ACTIONS.CREATE,
+        BUCKETS_ACTIONS.UPDATE,
+        BUCKETS_ACTIONS.DELETE,
+      ],
+    },
+    {
+      role: USER_RIGHT.ICONOGRAPH,
+      rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
+    },
+  ],
+  [STORAGE_PATHS.SPHERICALS]: [
+    {
+      role: USER_RIGHT.ADMIN,
+      rights: [
+        BUCKETS_ACTIONS.CREATE,
+        BUCKETS_ACTIONS.UPDATE,
+        BUCKETS_ACTIONS.DELETE,
+      ],
+    },
+    {
+      role: USER_RIGHT.ICONOGRAPH,
+      rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
+    },
+  ],
+  [STORAGE_PATHS.MAP_IMAGES]: [
+    {
+      role: USER_RIGHT.ADMIN,
+      rights: [
+        BUCKETS_ACTIONS.CREATE,
+        BUCKETS_ACTIONS.UPDATE,
+        BUCKETS_ACTIONS.DELETE,
+      ],
+    },
+    {
+      role: USER_RIGHT.ICONOGRAPH,
+      rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
+    },
+  ],
+  [STORAGE_PATHS.FLAT_IMAGES]: [
+    {
+      role: USER_RIGHT.ADMIN,
+      rights: [
+        BUCKETS_ACTIONS.CREATE,
+        BUCKETS_ACTIONS.UPDATE,
+        BUCKETS_ACTIONS.DELETE,
+      ],
+    },
+    {
+      role: USER_RIGHT.ICONOGRAPH,
+      rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
+    },
+  ],
+  [STORAGE_PATHS.FLAT_THUMBNAILS]: [
+    {
+      role: USER_RIGHT.ADMIN,
+      rights: [
+        BUCKETS_ACTIONS.CREATE,
+        BUCKETS_ACTIONS.UPDATE,
+        BUCKETS_ACTIONS.DELETE,
+      ],
+    },
+    {
+      role: USER_RIGHT.ICONOGRAPH,
+      rights: [BUCKETS_ACTIONS.CREATE, BUCKETS_ACTIONS.UPDATE],
+    },
+  ],
+  [STORAGE_PATHS.SOCIALS]: [
+    {
+      role: USER_RIGHT.ADMIN,
+      rights: [
+        BUCKETS_ACTIONS.CREATE,
+        BUCKETS_ACTIONS.UPDATE,
+        BUCKETS_ACTIONS.DELETE,
+      ],
+    },
+  ],
 } as const
