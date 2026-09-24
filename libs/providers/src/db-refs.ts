@@ -21,6 +21,7 @@ import {
   type SoundDoc,
   type SphericalDoc,
   type UnlockedAchievementDoc,
+  type UserCardDoc,
   type UserDoc,
 } from "@repo/schemas"
 import {
@@ -157,4 +158,8 @@ export const subRefs = {
     db.collection(
       `${TABLES.USERS}/${uid}/${TABLES.UNLOCKED_ACHIEVEMENTS}`,
     ) as CollectionReference<UnlockedAchievementDoc, UnlockedAchievementDoc>,
+  [TABLES.CARDS]: (uid: string) =>
+    db.collection(
+      `${TABLES.USERS}/${uid}/${TABLES.CARDS}`,
+    ) as CollectionReference<UserCardDoc, UserCardDoc>,
 } as const

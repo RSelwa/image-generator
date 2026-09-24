@@ -84,3 +84,14 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **`drawRarities(random)`**: slots 1–4 weighted over every rarity, the last slot weighted over the guaranteed rarities only (10 / 4 / 1, i.e. the weights renormalised).
 - **`pickCard(pools, rarity, random)`**: empty pool → next rarity **down**, then **up** if nothing lower has cards, so a pack only fails when no map is rated at all. Returns `{ rarity, entry }` with the rarity actually drawn (the card is recorded under it), or `null` when every pool is empty — the endpoint turns that into an error response.
 - `random` is injected in both, so the tests pin every rarity band, the guaranteed slot and the fallbacks.
+
+## Packs API › `POST /api/packs/open`
+
+- **One transaction, every read first**: user + the 5 pools, then the drawn maps + the user's owned cards for them, then the writes. 409 (no pack) and 503 (no rated card anywhere) return before any write, so no pack is consumed. No side effect outside Firestore, so a transaction retry is safe (it re-rolls).
+- **Status codes**: 401 no / invalid token, 404 user doc missing, 409 no pack, 503 no card, 500 otherwise. Body ignored: the uid comes only from `verifyIdToken`.
+- **Duplicates inside one pack** are grouped: one `create` (count = occurrences) or one `increment` per map. `isNew` is true only on a map's first reveal in the pack, and only if the user didn't own it.
+- **`cardPropertiesAtPull`** snapshots the map doc's `cardProperties`; falls back to the pool rarity if the map doc is gone (pool drift). The response carries map name / image for the reveal.
+- **Response schema** `openPackResponseSchema` in `apps/front/schemas/packs.ts` (cards + new `packsStored` + `packsRefillAnchorMs`), parsed by the redux endpoint.
+- **`getVerifiedUid` duplicated** from the achievements route (2 copies). The third route needing it moves it to a shared util; extracting now would edit the achievements route (a refactor outside this sub-bullet).
+- **Pools read inside the transaction**: a pool write by the trigger during an open makes it retry, which is safe. Move the pool reads out of the transaction if contention ever shows.
+- **Tests**: e2e request spec `e2e/tcg/open-pack.spec.ts` (API-route precedent). Success tests seed all 5 pools with one known map for a deterministic draw; accepted flake risk: a late `listen-docs` trigger from another spec adding a map to a pool mid-test (CI runs one worker). Not run locally (CI-only).
