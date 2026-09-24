@@ -19,6 +19,21 @@ export const CARD_RARITY = {
   LEGENDARY: "legendary",
 } as const
 
+export const CARD_RARITY_WEIGHTS = {
+  [CARD_RARITY.COMMON]: 60,
+  [CARD_RARITY.UNCOMMON]: 25,
+  [CARD_RARITY.RARE]: 10,
+  [CARD_RARITY.ULTRA_RARE]: 4,
+  [CARD_RARITY.LEGENDARY]: 1,
+} as const
+
+export const GUARANTEED_CARD_RARITIES = [
+  CARD_RARITY.RARE,
+  CARD_RARITY.ULTRA_RARE,
+  CARD_RARITY.LEGENDARY,
+] as const
+
+export const PACK_SIZE = 5
 export const PACKS_MAX = 10
 export const PACK_REFILL_MS = 10 * 60 * 1000
 

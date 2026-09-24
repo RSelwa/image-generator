@@ -77,3 +77,10 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - `PACK_REFILL_MS = 10 min` added with its first reader.
 - **Full stock or never consumed (`refillAnchorMs: null`) → consuming restarts the refill from `now`**; otherwise the anchor advances by whole consumed periods only, so the partial progress toward the next pack is kept. A full stock doesn't bank refill time beyond the cap.
 - `consumePack` returns `null` when no pack is available (a normal outcome, not an error). `getNextPackAt` returns `null` when full or never consumed. An anchor in the future adds no pack (clock skew).
+
+## Packs API › Draw utils
+
+- **`apps/front/utils/card-draw.ts`** (its only consumer is the Next API route). `CARD_RARITY_WEIGHTS` (60 / 25 / 10 / 4 / 1), `GUARANTEED_CARD_RARITIES` (rare, ultraRare, legendary) and `PACK_SIZE = 5` are game rules in `libs/common` constants, next to `CARD_RARITY`.
+- **`drawRarities(random)`**: slots 1–4 weighted over every rarity, the last slot weighted over the guaranteed rarities only (10 / 4 / 1, i.e. the weights renormalised).
+- **`pickCard(pools, rarity, random)`**: empty pool → next rarity **down**, then **up** if nothing lower has cards, so a pack only fails when no map is rated at all. Returns `{ rarity, entry }` with the rarity actually drawn (the card is recorded under it), or `null` when every pool is empty — the endpoint turns that into an error response.
+- `random` is injected in both, so the tests pin every rarity band, the guaranteed slot and the fallbacks.
