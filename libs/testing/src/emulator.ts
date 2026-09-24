@@ -6,18 +6,30 @@ import {
 const AUTH_EMULATOR_URL = "http://localhost:9099"
 // const FIRESTORE_EMULATOR_URL = "http://localhost:8080"
 
-export const createAuthUser = async (email: string, password: string) => {
+export const signUpAuthUser = async (credentials: {
+  email?: string
+  password?: string
+}) => {
   const response = await fetch(
     `${AUTH_EMULATOR_URL}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake-api-key`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, returnSecureToken: true }),
+      body: JSON.stringify({ ...credentials, returnSecureToken: true }),
     },
   )
-  const data = await response.json()
+  const { localId, idToken } = (await response.json()) as {
+    localId: string
+    idToken: string
+  }
 
-  return (data as any).localId as string
+  return { uid: localId, idToken }
+}
+
+export const createAuthUser = async (email: string, password: string) => {
+  const { uid } = await signUpAuthUser({ email, password })
+
+  return uid
 }
 
 export type FirestoreFieldValue =

@@ -5,6 +5,7 @@ import { refs, subRefs } from "@repo/providers/db-refs"
 import { type Achievement, achievementDocSchema } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
 import { FEATURE_FLAGS } from "@/constants/feature-flags"
+import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
 
@@ -38,12 +39,12 @@ test.describe("when the achievements flag is disabled", () => {
     await loginViaUI(page, user.email)
     await page.getByTestId(SELECTORS.NAV_USER_DROPDOWN_TRIGGER).click()
 
-    await expect(page.getByTestId("nav-history-link")).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.NAV_HISTORY_LINK)).toBeVisible()
     await expect(page.getByTestId(SELECTORS.NAV_ACHIEVEMENTS)).toHaveCount(0)
   })
 
   test("should redirect the achievements page home", async ({ page }) => {
-    await page.goto("/en/achievements")
+    await page.goto(`/en${PAGES.ACHIEVEMENTS}`)
 
     await expect(page).toHaveURL("/en")
   })
@@ -79,7 +80,7 @@ test.describe("when the achievements flag is enabled", () => {
     await enableAchievementsFlag(page)
 
     await loginViaUI(page, user.email)
-    await page.goto("/en/achievements")
+    await page.goto(`/en${PAGES.ACHIEVEMENTS}`)
 
     await expect(getCard(page, locked.key)).toHaveAttribute(
       "data-unlocked",

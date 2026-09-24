@@ -12,24 +12,21 @@ const takenReferralCodes = new Set(
   allUsers.docs.flatMap((user) => user.data().referralCode || []),
 )
 
-const generateFreeReferralCode = () => {
-  let referralCode = generateReferralCode()
-
-  while (takenReferralCodes.has(referralCode)) {
-    referralCode = generateReferralCode()
-  }
-
-  takenReferralCodes.add(referralCode)
-
-  return referralCode
-}
-
 const updates = allUsers.docs.flatMap((user) => {
   const { credits, referralCode } = user.data()
   const update: Partial<UserDoc> = {}
 
   if (typeof credits !== "number") update.credits = DEFAULT_CREDITS
-  if (!referralCode) update.referralCode = generateFreeReferralCode()
+  if (!referralCode) {
+    let freeReferralCode = generateReferralCode()
+
+    while (takenReferralCodes.has(freeReferralCode)) {
+      freeReferralCode = generateReferralCode()
+    }
+
+    takenReferralCodes.add(freeReferralCode)
+    update.referralCode = freeReferralCode
+  }
 
   const hasUpdate = Object.keys(update).length > 0
 

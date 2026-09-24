@@ -2,13 +2,12 @@ import { faker } from "@faker-js/faker"
 import { type APIRequestContext, expect, test } from "@playwright/test"
 import { ACHIEVEMENT_KEYS, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
+import { signUpAuthUser } from "@repo/testing/emulator"
 import { userFactory } from "@repo/testing/factory"
 import { PASSWORD } from "../helpers/lobby"
 
 const ENDPOINT = "/api/achievements/events"
 const REWARD = 50
-const AUTH_EMULATOR_HOST =
-  process.env.FIREBASE_AUTH_EMULATOR_HOST || "127.0.0.1:9099"
 
 const CHANGE_USERNAME_EVENT = {
   key: ACHIEVEMENT_KEYS.CHANGE_USERNAME,
@@ -16,30 +15,13 @@ const CHANGE_USERNAME_EVENT = {
   after: { pseudo: "new-pseudo" },
 }
 
-const signUp = async (credentials: { email?: string; password?: string }) => {
-  const response = await fetch(
-    `http://${AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake-api-key`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...credentials, returnSecureToken: true }),
-    },
-  )
-  const { localId, idToken } = (await response.json()) as {
-    localId: string
-    idToken: string
-  }
-
-  return { uid: localId, idToken }
-}
-
 const signUpWithEmail = () =>
-  signUp({
+  signUpAuthUser({
     email: faker.internet.email({ provider: "yopmail.com" }).toLowerCase(),
     password: PASSWORD,
   })
 
-const signUpAnonymously = () => signUp({})
+const signUpAnonymously = () => signUpAuthUser({})
 
 const postEvent = (
   request: APIRequestContext,
