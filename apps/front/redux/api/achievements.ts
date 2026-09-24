@@ -92,7 +92,7 @@ export const achievementsApi = createApi({
             ...docSnap.data(),
           })
 
-          if (error) throw new Error(error.message || "Data parsing error")
+          if (error) return { error: globalErrorHandler(error) }
 
           return { data }
         } catch (error) {
@@ -149,7 +149,13 @@ export const achievementsApi = createApi({
         try {
           const token = await auth.currentUser?.getIdToken()
 
-          if (!token) throw new Error("No authenticated user found")
+          if (!token) {
+            return {
+              error: globalErrorHandler(
+                new Error("No authenticated user found"),
+              ),
+            }
+          }
 
           const response = await fetch(API_ENDPOINTS.ACHIEVEMENT_EVENTS, {
             method: "POST",
@@ -161,9 +167,13 @@ export const achievementsApi = createApi({
           })
 
           if (!response.ok) {
-            throw new Error(
-              `Failed to send achievement event: ${await response.text()}`,
-            )
+            return {
+              error: globalErrorHandler(
+                new Error(
+                  `Failed to send achievement event: ${await response.text()}`,
+                ),
+              ),
+            }
           }
 
           return {
