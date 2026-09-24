@@ -70,3 +70,10 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **`gameId` from the doc path** (`map.ref.parent.parent.id`), the same source as the trigger's `event.params.gameId`, so `arrayRemove` always matches what the rebuild wrote. A doc without a parent game is skipped.
 - **Grouping is a pure `buildCardPools`** in `libs/schemas` `card-pool.ts` (precedent: `buildReadyImageItem`), unit tested. `refs[TABLES.CARD_POOLS]` added to `libs/providers`.
 - No header comment in the script (no-comments rule); the run command lives here.
+
+## Packs API › Pack refill utils
+
+- **`libs/common/src/utils/packs.ts`**: `getAvailablePacks`, `getNextPackAt`, `consumePack`, all taking one `{ packsStored, refillAnchorMs, nowMs }` object. **Milliseconds, not Timestamps**, so the endpoint (admin SDK) and the front (client SDK) call the same code.
+- `PACK_REFILL_MS = 10 min` added with its first reader.
+- **Full stock or never consumed (`refillAnchorMs: null`) → consuming restarts the refill from `now`**; otherwise the anchor advances by whole consumed periods only, so the partial progress toward the next pack is kept. A full stock doesn't bank refill time beyond the cap.
+- `consumePack` returns `null` when no pack is available (a normal outcome, not an error). `getNextPackAt` returns `null` when full or never consumed. An anchor in the future adds no pack (clock skew).

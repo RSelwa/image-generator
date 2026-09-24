@@ -20,6 +20,7 @@ export const CARD_RARITY = {
 } as const
 
 export const PACKS_MAX = 10
+export const PACK_REFILL_MS = 10 * 60 * 1000
 
 export const ACHIEVEMENT_KEYS = {
   CHANGE_USERNAME: "change_username",
