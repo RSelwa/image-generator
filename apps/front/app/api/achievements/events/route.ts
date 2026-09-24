@@ -1,7 +1,12 @@
 import { TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { auth, db } from "@repo/providers/firebase"
-import { achievementDocSchema, achievementEventSchema } from "@repo/schemas"
+import {
+  type AchievementEvent,
+  achievementDocSchema,
+  achievementEventSchema,
+  userDocSchema,
+} from "@repo/schemas"
 import { FieldValue } from "firebase-admin/firestore"
 import { isAchievementEventVerified } from "@/utils/achievement-events"
 
@@ -11,6 +16,7 @@ const UNLOCK_RESULT = {
   UNLOCKED: "unlocked",
   ALREADY_UNLOCKED: "already_unlocked",
   USER_NOT_FOUND: "user_not_found",
+  EVENT_NOT_VERIFIED: "event_not_verified",
 } as const
 
 const getVerifiedUid = async (request: Request) => {
@@ -29,8 +35,13 @@ const getVerifiedUid = async (request: Request) => {
   }
 }
 
-const unlockAchievement = (uid: string, key: string, reward: number) =>
+const unlockAchievement = (
+  uid: string,
+  event: AchievementEvent,
+  reward: number,
+) =>
   db.runTransaction(async (transaction) => {
+    const { key } = event
     const userRef = refs[TABLES.USERS].doc(uid)
     const unlockedRef = subRefs[TABLES.UNLOCKED_ACHIEVEMENTS](uid).doc(key)
 
@@ -41,6 +52,12 @@ const unlockAchievement = (uid: string, key: string, reward: number) =>
 
     if (!user.exists) return UNLOCK_RESULT.USER_NOT_FOUND
     if (unlocked.exists) return UNLOCK_RESULT.ALREADY_UNLOCKED
+
+    const storedUser = userDocSchema.parse(user.data())
+
+    if (!isAchievementEventVerified(key, event, storedUser)) {
+      return UNLOCK_RESULT.EVENT_NOT_VERIFIED
+    }
 
     transaction.create(unlockedRef, {
       key,
@@ -67,12 +84,6 @@ export const POST = async (request: Request) => {
 
     const event = parsed.data
 
-    if (!isAchievementEventVerified(event.key, event)) {
-      return new Response("Event does not unlock the achievement", {
-        status: 422,
-      })
-    }
-
     const achievementSnapshot = await refs[TABLES.ACHIEVEMENTS]
       .doc(event.key)
       .get()
@@ -92,10 +103,16 @@ export const POST = async (request: Request) => {
     }
 
     const { reward } = achievement.data
-    const result = await unlockAchievement(uid, event.key, reward)
+    const result = await unlockAchievement(uid, event, reward)
 
     if (result === UNLOCK_RESULT.USER_NOT_FOUND) {
       return new Response("User not found", { status: 404 })
+    }
+
+    if (result === UNLOCK_RESULT.EVENT_NOT_VERIFIED) {
+      return new Response("Event does not unlock the achievement", {
+        status: 422,
+      })
     }
 
     if (result === UNLOCK_RESULT.ALREADY_UNLOCKED) {
