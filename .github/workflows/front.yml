@@ -77,6 +77,8 @@ jobs:
             path: daily-challenge
           - suite: race
             path: race
+          - suite: death-run
+            path: death-run
           - suite: achievements
             path: achievements
       fail-fast: false
@@ -117,7 +119,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: 🧪 Run E2E Tests - ${{ matrix.suite }}
-        run: pnpm exec firebase emulators:exec --project "$GCLOUD_PROJECT" 'pnpm --filter @repo/front e2e -- e2e/${{ matrix.path }}'
+        run: pnpm exec firebase emulators:exec --project "$GCLOUD_PROJECT" 'pnpm --filter @repo/front e2e e2e/${{ matrix.path }}'
         env:
           GCLOUD_PROJECT: ${{ secrets.PROJECT_ID }}
 
