@@ -17,17 +17,13 @@ import type { HTTP_EVENTS } from "./create-function.http.mts"
 
 const exec = promisify(_exec)
 
-export const camelToDash = (value: string) => {
-  return value.replace(/([a-z\d])([A-Z])/g, "$1-$2").toLowerCase()
-}
+export const camelToDash = (value: string) =>
+  value.replace(/([a-z\d])([A-Z])/g, "$1-$2").toLowerCase()
 
-export const dashToCamel = (value: string) => {
-  return value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
-}
+export const dashToCamel = (value: string) =>
+  value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
 
-export const dashToSnake = (value: string) => {
-  return value.replace(/-/g, "_")
-}
+export const dashToSnake = (value: string) => value.replace(/-/g, "_")
 
 export const updateFirebaseConfigFile = (rawName: string) => {
   const name = camelToDash(rawName)

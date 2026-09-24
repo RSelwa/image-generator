@@ -7,9 +7,6 @@ const FEATURE_FLAG_ENABLED = "true"
 const isFeatureFlag = (name: string): name is FeatureFlag =>
   Object.values<string>(FEATURE_FLAGS).includes(name)
 
-export const isFeatureFlagEnabled = (storedValue: unknown) =>
-  storedValue === true
-
 export const parseFeatureFlagParam = (param: string | null) => {
   if (!param) return null
 
