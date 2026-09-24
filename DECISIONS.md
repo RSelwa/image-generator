@@ -54,3 +54,10 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **Counts computed client side** from the maps the page already loads (every map), with `countMapsByCardRarity` reusing `filterMapsByCardRarity` over the same options as the filter select, so the badges read "All maps / Not rated / <rarity>: n" with the select's labels.
 - **The util stays although it has one caller**: inlining it (tried after review round 1) left the feature without any test; `workflow.md` ("tests ship with the change") outranks the one-call-site rule. Concrete param type, no generic.
 - **No e2e for the counts**: the emulator DB is shared by every spec, so absolute counts aren't stable to assert.
+
+## Card pools › Trigger keeping the pools in sync
+
+- **Hooked into the existing `listen_doc_maps_written`** (same `games/{gameId}/maps/{mapId}` path), next to `refreshReadyImagesForMap` in a `Promise.all`, instead of a second trigger on the same document.
+- **`updateCardPools`** (`update-card-pools.ts`): compares `before?.cardProperties?.rarity` and `after?.…`; equal → no write (any other map edit costs nothing). Otherwise one batch: `arrayRemove({ mapId, gameId })` on the old pool, `arrayUnion` on the new one, both `set(…, { merge: true })` so a pool doc is created on its first card.
+- Deleting a card map is the same "rarity → none" transition: it leaves its pool.
+- Tests on the emulator through `firebase-functions-test` (file precedent): added, created as a card, rarity changed, removed, deleted, unchanged rarity.

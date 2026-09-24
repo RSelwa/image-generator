@@ -15,6 +15,7 @@ import {
 } from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
+import { updateCardPools } from "~/update-card-pools"
 import { updateDailyChallengesMetadata } from "~/update-daily-challenges-metadata"
 import { updateGamesList } from "~/updates-games-list"
 import {
@@ -123,7 +124,10 @@ export const listen_doc_maps_written = onDocumentWritten(
       const before = event.data?.before.data() as MapDoc | undefined
       const after = event.data?.after.data() as MapDoc | undefined
 
-      await refreshReadyImagesForMap(mapId, before, after)
+      await Promise.all([
+        refreshReadyImagesForMap(mapId, before, after),
+        updateCardPools(event.params.gameId, mapId, before, after),
+      ])
     } catch (error) {
       console.error(
         `Error in listen_doc_maps_written for document ${event.document}:`,

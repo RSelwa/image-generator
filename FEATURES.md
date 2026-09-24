@@ -128,7 +128,7 @@ Cards are **maps only** for now: a card is a view of a map doc, so no dedicated 
   - [x] Add a count per rarity at the top of the admin maps page, to balance pools by hand
 
 - [ ] Card pools
-  - [ ] Add a Firestore trigger in `functions/listen-docs` on `games/{gameId}/maps/{mapId}` writes: when `cardProperties.rarity` changes (`cardProperties` added, rarity updated, `cardProperties` removed, or map deleted), remove the map from its old pool and add it to the new one (`arrayRemove` / `arrayUnion` in one batch). Unit tests for each transition
+  - [x] Add a Firestore trigger in `functions/listen-docs` on `games/{gameId}/maps/{mapId}` writes: when `cardProperties.rarity` changes (`cardProperties` added, rarity updated, `cardProperties` removed, or map deleted), remove the map from its old pool and add it to the new one (`arrayRemove` / `arrayUnion` in one batch). Unit tests for each transition
   - [ ] Create a script that rebuilds every `cardPools` doc from the maps (for the first run and to repair drift). Do not run it yet
 
 - [ ] Packs API
