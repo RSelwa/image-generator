@@ -11,6 +11,14 @@ export const ACHIEVEMENT_DIFFICULTY = {
   LEGENDARY: "legendary",
 } as const
 
+export const CARD_RARITY = {
+  COMMON: "common",
+  UNCOMMON: "uncommon",
+  RARE: "rare",
+  ULTRA_RARE: "ultraRare",
+  LEGENDARY: "legendary",
+} as const
+
 export const ACHIEVEMENT_KEYS = {
   CHANGE_USERNAME: "change_username",
 } as const

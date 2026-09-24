@@ -1,5 +1,6 @@
 export * from "./achievement"
 export * from "./achievement.event"
+export * from "./card-properties"
 export * from "./conversation"
 export * from "./coupon"
 export * from "./daily-challenge"
