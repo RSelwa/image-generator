@@ -18,7 +18,7 @@ const CARDS = RARITIES.map((rarity, index) => ({
   gameId: "pokemon-red",
   name: `Map ${index + 1}`,
   imageUrl: null,
-  cardProperties: { rarity },
+  cardProperties: { rarity, number: index + 1 },
   isNew: index % 2 === 0,
 }))
 

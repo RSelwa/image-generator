@@ -6,6 +6,8 @@ import {
   updateMapInputSchema,
 } from "~/firestore/map"
 
+const CARD_NUMBER = 42
+
 const MAP = {
   name: "Kanto",
   gameId: "pokemon-red",
@@ -17,9 +19,12 @@ describe("mapDocSchema", () => {
       expect(
         mapDocSchema.parse({
           ...MAP,
-          cardProperties: { rarity: CARD_RARITY.LEGENDARY },
+          cardProperties: {
+            rarity: CARD_RARITY.LEGENDARY,
+            number: CARD_NUMBER,
+          },
         }).cardProperties,
-      ).toEqual({ rarity: CARD_RARITY.LEGENDARY })
+      ).toEqual({ rarity: CARD_RARITY.LEGENDARY, number: CARD_NUMBER })
     })
   })
 
@@ -33,6 +38,28 @@ describe("mapDocSchema", () => {
     it("should reject them", () => {
       expect(
         mapDocSchema.safeParse({ ...MAP, cardProperties: {} }).success,
+      ).toBe(false)
+    })
+  })
+
+  describe("when the card properties have no number", () => {
+    it("should reject them", () => {
+      expect(
+        mapDocSchema.safeParse({
+          ...MAP,
+          cardProperties: { rarity: CARD_RARITY.RARE },
+        }).success,
+      ).toBe(false)
+    })
+  })
+
+  describe("when the card number is not a positive integer", () => {
+    it.each([0, 1.5])("should reject %s", (number) => {
+      expect(
+        mapDocSchema.safeParse({
+          ...MAP,
+          cardProperties: { rarity: CARD_RARITY.RARE, number },
+        }).success,
       ).toBe(false)
     })
   })
@@ -53,9 +80,9 @@ describe("createMapInputSchema", () => {
       expect(
         createMapInputSchema.parse({
           ...MAP,
-          cardProperties: { rarity: CARD_RARITY.COMMON },
+          cardProperties: { rarity: CARD_RARITY.COMMON, number: CARD_NUMBER },
         }).cardProperties,
-      ).toEqual({ rarity: CARD_RARITY.COMMON })
+      ).toEqual({ rarity: CARD_RARITY.COMMON, number: CARD_NUMBER })
     })
   })
 })
@@ -65,9 +92,12 @@ describe("updateMapInputSchema", () => {
     it("should accept them", () => {
       expect(
         updateMapInputSchema.parse({
-          cardProperties: { rarity: CARD_RARITY.ULTRA_RARE },
+          cardProperties: {
+            rarity: CARD_RARITY.ULTRA_RARE,
+            number: CARD_NUMBER,
+          },
         }).cardProperties,
-      ).toEqual({ rarity: CARD_RARITY.ULTRA_RARE })
+      ).toEqual({ rarity: CARD_RARITY.ULTRA_RARE, number: CARD_NUMBER })
     })
   })
 })

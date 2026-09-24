@@ -7,6 +7,8 @@ import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
 import { enableTcgFlag, seedEveryPoolWithOneMap } from "../helpers/tcg"
 
+const CARD_NUMBER = 42
+
 const PACKS_LEFT = 7
 const LAST_PACK = 1
 
@@ -30,7 +32,10 @@ test.describe.configure({ mode: "serial" })
 
 test.describe("when a pack is opened from the packs page", () => {
   test.beforeEach(async () => {
-    await seedEveryPoolWithOneMap({ rarity: CARD_RARITY.RARE })
+    await seedEveryPoolWithOneMap({
+      rarity: CARD_RARITY.RARE,
+      number: CARD_NUMBER,
+    })
   })
 
   test("should reveal the next card on a click on the top card", async ({

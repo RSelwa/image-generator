@@ -3,13 +3,15 @@ import { CARD_RARITY } from "@repo/common"
 import { describe, expect, it } from "vitest"
 import { userCardDocSchema } from "~/firestore/user-card"
 
+const CARD_NUMBER = 42
+
 const PULLED_AT = Timestamp.now()
 
 const USER_CARD = {
   mapId: "kanto",
   gameId: "pokemon-red",
   count: 1,
-  cardPropertiesAtPull: { rarity: CARD_RARITY.RARE },
+  cardPropertiesAtPull: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
   firstPulledAt: PULLED_AT,
   lastPulledAt: PULLED_AT,
 }

@@ -74,13 +74,10 @@ const openPack = (uid: string) =>
 
     if (drawnCards.length < picks.length) return OPEN_PACK_RESULT.NO_CARD
 
-    const pulls = new Map<
-      string,
-      { entry: CardPoolEntry; rarity: CardRarity; count: number }
-    >()
-    drawnCards.forEach(({ entry, rarity }) => {
+    const pulls = new Map<string, { entry: CardPoolEntry; count: number }>()
+    drawnCards.forEach(({ entry }) => {
       const count = (pulls.get(entry.mapId)?.count || 0) + 1
-      pulls.set(entry.mapId, { entry, rarity, count })
+      pulls.set(entry.mapId, { entry, count })
     })
     const pulledEntries = [...pulls.values()]
 
@@ -96,23 +93,41 @@ const openPack = (uid: string) =>
       ),
     ])
 
-    const maps = new Map(
-      mapSnapshots.map((snapshot) => [
-        snapshot.id,
-        mapDocSchema.safeParse(snapshot.data()).data,
-      ]),
+    const cardMaps = new Map(
+      mapSnapshots.flatMap((snapshot) => {
+        const map = mapDocSchema.safeParse(snapshot.data()).data
+
+        if (!map?.cardProperties) return []
+
+        return [[snapshot.id, { ...map, cardProperties: map.cardProperties }]]
+      }),
     )
+
+    const pulledCards = pulledEntries.flatMap((pull) => {
+      const cardMap = cardMaps.get(pull.entry.mapId)
+
+      return cardMap ? [{ ...pull, cardMap }] : []
+    })
+
+    if (pulledCards.length < pulledEntries.length) {
+      console.error(
+        "Card pool drift, drawn maps gone or no longer cards:",
+        pulledEntries.flatMap(({ entry }) =>
+          cardMaps.has(entry.mapId) ? [] : [entry.mapId],
+        ),
+      )
+
+      return OPEN_PACK_RESULT.NO_CARD
+    }
+
     const ownedMapIds = new Set(
       ownedSnapshots.flatMap((snapshot) =>
         snapshot.exists ? [snapshot.id] : [],
       ),
     )
-    const getCardProperties = (mapId: string, rarity: CardRarity) =>
-      maps.get(mapId)?.cardProperties || { rarity }
-
     const now = FieldValue.serverTimestamp()
 
-    pulledEntries.forEach(({ entry, rarity, count }) => {
+    pulledCards.forEach(({ entry, count, cardMap }) => {
       const cardRef = cardsRef.doc(entry.mapId)
 
       if (ownedMapIds.has(entry.mapId)) {
@@ -127,25 +142,31 @@ const openPack = (uid: string) =>
       transaction.create(cardRef, {
         ...entry,
         count,
-        cardPropertiesAtPull: getCardProperties(entry.mapId, rarity),
+        cardPropertiesAtPull: cardMap.cardProperties,
         firstPulledAt: now,
         lastPulledAt: now,
       })
     })
 
     const revealedMapIds = new Set<string>()
-    const cards = drawnCards.map(({ entry, rarity }) => {
+    const cards = drawnCards.flatMap(({ entry }) => {
+      const cardMap = cardMaps.get(entry.mapId)
+
+      if (!cardMap) return []
+
       const isNew =
         !ownedMapIds.has(entry.mapId) && !revealedMapIds.has(entry.mapId)
       revealedMapIds.add(entry.mapId)
 
-      return {
-        ...entry,
-        name: maps.get(entry.mapId)?.name || "",
-        imageUrl: maps.get(entry.mapId)?.imageUrl || null,
-        cardProperties: getCardProperties(entry.mapId, rarity),
-        isNew,
-      }
+      return [
+        {
+          ...entry,
+          name: cardMap.name,
+          imageUrl: cardMap.imageUrl || null,
+          cardProperties: cardMap.cardProperties,
+          isNew,
+        },
+      ]
     })
 
     transaction.update(userRef, {

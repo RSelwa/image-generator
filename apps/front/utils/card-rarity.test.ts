@@ -7,6 +7,8 @@ import {
   filterMapsByCardRarity,
 } from "@/utils/card-rarity"
 
+const CARD_NUMBER = 42
+
 const buildMap = (
   id: string,
   cardProperties?: MapDocWithId["cardProperties"],
@@ -25,8 +27,14 @@ const buildMap = (
     cardProperties,
   }) satisfies MapDocWithId
 
-const LEGENDARY_MAP = buildMap("legendary", { rarity: CARD_RARITY.LEGENDARY })
-const COMMON_MAP = buildMap("common", { rarity: CARD_RARITY.COMMON })
+const LEGENDARY_MAP = buildMap("legendary", {
+  rarity: CARD_RARITY.LEGENDARY,
+  number: CARD_NUMBER,
+})
+const COMMON_MAP = buildMap("common", {
+  rarity: CARD_RARITY.COMMON,
+  number: CARD_NUMBER,
+})
 const UNRATED_MAP = buildMap("unrated")
 const MAPS = [LEGENDARY_MAP, COMMON_MAP, UNRATED_MAP]
 

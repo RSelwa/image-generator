@@ -2,6 +2,8 @@ import { CARD_RARITY } from "@repo/common"
 import { describe, expect, it } from "vitest"
 import { buildCardPools, cardPoolDocSchema } from "~/firestore/card-pool"
 
+const CARD_NUMBER = 42
+
 const ENTRY = { mapId: "kanto", gameId: "pokemon-red" }
 
 describe("when the pool lists maps", () => {
@@ -30,8 +32,14 @@ describe("when the card pools are built from maps", () => {
   const LEGENDARY_ENTRY = { mapId: "kanto", gameId: "pokemon-red" }
   const COMMON_ENTRY = { mapId: "route-1", gameId: "pokemon-red" }
   const pools = buildCardPools([
-    { ...LEGENDARY_ENTRY, cardProperties: { rarity: CARD_RARITY.LEGENDARY } },
-    { ...COMMON_ENTRY, cardProperties: { rarity: CARD_RARITY.COMMON } },
+    {
+      ...LEGENDARY_ENTRY,
+      cardProperties: { rarity: CARD_RARITY.LEGENDARY, number: CARD_NUMBER },
+    },
+    {
+      ...COMMON_ENTRY,
+      cardProperties: { rarity: CARD_RARITY.COMMON, number: CARD_NUMBER },
+    },
     { mapId: "unrated", gameId: "pokemon-red" },
   ])
 

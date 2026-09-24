@@ -5,6 +5,7 @@ export const cardRaritySchema = z.enum(CARD_RARITY)
 
 export const cardPropertiesSchema = z.object({
   rarity: cardRaritySchema,
+  number: z.number().int().positive(),
 })
 
 export type CardRarity = z.infer<typeof cardRaritySchema>

@@ -8,6 +8,8 @@ import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
 import { enableTcgFlag, seedEveryPoolWithOneMap } from "../helpers/tcg"
 
+const CARD_NUMBER = 42
+
 const PACKS_LEFT = 7
 const NO_PACK = 0
 
@@ -41,7 +43,10 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should count the opened pack off the stock", async ({ page }) => {
-    await seedEveryPoolWithOneMap({ rarity: CARD_RARITY.RARE })
+    await seedEveryPoolWithOneMap({
+      rarity: CARD_RARITY.RARE,
+      number: CARD_NUMBER,
+    })
     await loginWithPacks(page, PACKS_LEFT)
     await page.goto(`/en${PAGES.PACKS}`)
     await openAndRevealPack(page)
@@ -53,7 +58,10 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should add the opened cards to the collection", async ({ page }) => {
-    const map = await seedEveryPoolWithOneMap({ rarity: CARD_RARITY.RARE })
+    const map = await seedEveryPoolWithOneMap({
+      rarity: CARD_RARITY.RARE,
+      number: CARD_NUMBER,
+    })
     await loginWithPacks(page, PACKS_LEFT)
     await page.goto(`/en${PAGES.PACKS}`)
     await openAndRevealPack(page)
@@ -63,7 +71,10 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should not open a pack without any left", async ({ page }) => {
-    await seedEveryPoolWithOneMap({ rarity: CARD_RARITY.RARE })
+    await seedEveryPoolWithOneMap({
+      rarity: CARD_RARITY.RARE,
+      number: CARD_NUMBER,
+    })
     await loginWithPacks(page, NO_PACK)
     await page.goto(`/en${PAGES.PACKS}`)
 
@@ -76,7 +87,10 @@ test.describe("when a user plays the TCG from the packs page", () => {
   test("should keep another user's cards out of the collection", async ({
     page,
   }) => {
-    const map = await seedEveryPoolWithOneMap({ rarity: CARD_RARITY.RARE })
+    const map = await seedEveryPoolWithOneMap({
+      rarity: CARD_RARITY.RARE,
+      number: CARD_NUMBER,
+    })
     const collector = await setupUser()
     await subRefs[TABLES.CARDS](collector.id)
       .doc(map.id)
@@ -84,7 +98,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
         mapId: map.id,
         gameId: map.gameId,
         count: 1,
-        cardPropertiesAtPull: { rarity: CARD_RARITY.RARE },
+        cardPropertiesAtPull: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
         firstPulledAt: Timestamp.now(),
         lastPulledAt: Timestamp.now(),
       })

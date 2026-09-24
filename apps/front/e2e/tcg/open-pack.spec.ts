@@ -7,8 +7,10 @@ import { Timestamp } from "firebase-admin/firestore"
 import { PASSWORD } from "../helpers/lobby"
 import { seedEveryPoolWithOneMap } from "../helpers/tcg"
 
+const CARD_NUMBER = 42
+
 const ENDPOINT = "/api/packs/open"
-const CARD_PROPERTIES = { rarity: CARD_RARITY.LEGENDARY }
+const CARD_PROPERTIES = { rarity: CARD_RARITY.LEGENDARY, number: CARD_NUMBER }
 
 const signUp = () =>
   signUpAuthUser({

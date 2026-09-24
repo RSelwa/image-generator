@@ -56,6 +56,7 @@ import { uploadFileToBucket } from "@/utils/file"
 type MapFormSchema = z.input<typeof createMapInputSchema>
 
 const KEY = MODAL_KEYS.MAP_ID
+const UNSET_CARD_NUMBER = 0
 
 // Helper to parse combined param format: "parentId_childId"
 export const parseSubcollectionParam = (
@@ -175,7 +176,14 @@ const MapForm = ({
   const handleCardRarityChange = (value: string) => {
     const rarity = cardRaritySchema.safeParse(value).data
 
-    setValue("cardProperties", rarity && { rarity }, { shouldDirty: true })
+    setValue(
+      "cardProperties",
+      rarity && {
+        rarity,
+        number: cardProperties?.number || UNSET_CARD_NUMBER,
+      },
+      { shouldDirty: true },
+    )
   }
 
   const handleRemoveImage = () => {
@@ -332,6 +340,29 @@ const MapForm = ({
                 Maps without a rarity never drop from a pack
               </FieldDescription>
             </Field>
+
+            {cardProperties && (
+              <Field>
+                <FieldLabel htmlFor="card-number">Card number *</FieldLabel>
+                <Input
+                  id="card-number"
+                  type="number"
+                  data-testid={SELECTORS.MAP_FORM_CARD_NUMBER}
+                  {...register("cardProperties.number", {
+                    valueAsNumber: true,
+                  })}
+                  aria-invalid={!!errors.cardProperties?.number}
+                />
+                <FieldDescription>
+                  Unique number of the card in the collection
+                </FieldDescription>
+                {errors.cardProperties?.number && (
+                  <FieldError>
+                    {errors.cardProperties.number.message}
+                  </FieldError>
+                )}
+              </Field>
+            )}
 
             {data && (
               <div className="text-muted-primary-foreground mt-2 space-y-1 text-xs">

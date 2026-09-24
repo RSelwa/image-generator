@@ -8,17 +8,20 @@ import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
 import { enableTcgFlag } from "../helpers/tcg"
 
+const CARD_NUMBER = 42
+const LOCKED_CARD_NUMBER = 43
+
 const OWNED_COUNT = 2
 
 const seedGameWithTwoCards = async () => {
   const game = gameFactory()
   const ownedMap = mapFactory({
     gameId: game.id,
-    cardProperties: { rarity: CARD_RARITY.LEGENDARY },
+    cardProperties: { rarity: CARD_RARITY.LEGENDARY, number: CARD_NUMBER },
   })
   const lockedMap = mapFactory({
     gameId: game.id,
-    cardProperties: { rarity: CARD_RARITY.COMMON },
+    cardProperties: { rarity: CARD_RARITY.COMMON, number: LOCKED_CARD_NUMBER },
   })
   await refs[TABLES.GAMES].doc(game.id).set(game)
   await Promise.all(
@@ -50,7 +53,10 @@ test.describe("when a user opens their collection", () => {
         mapId: ownedMap.id,
         gameId,
         count: OWNED_COUNT,
-        cardPropertiesAtPull: { rarity: CARD_RARITY.LEGENDARY },
+        cardPropertiesAtPull: {
+          rarity: CARD_RARITY.LEGENDARY,
+          number: CARD_NUMBER,
+        },
         firstPulledAt: Timestamp.now(),
         lastPulledAt: Timestamp.now(),
       })

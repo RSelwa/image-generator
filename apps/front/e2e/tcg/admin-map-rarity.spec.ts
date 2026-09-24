@@ -13,6 +13,8 @@ import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
 
+const CARD_NUMBER = 42
+
 const seedMap = async (cardProperties?: CardProperties) => {
   const game = gameFactory()
   const map = mapFactory({ gameId: game.id, cardProperties })
@@ -46,8 +48,10 @@ const openMapForm = async (page: Page, gameId: string, mapId: string) => {
 const pickRarity = async (page: Page, rarity: string) => {
   await page.getByTestId(SELECTORS.MAP_FORM_CARD_RARITY).click()
   await page.getByTestId(SELECTORS.MAP_FORM_CARD_RARITY_OPTION(rarity)).click()
-  await page.getByTestId(SELECTORS.MAP_FORM_SUBMIT).click()
 }
+
+const submitMapForm = (page: Page) =>
+  page.getByTestId(SELECTORS.MAP_FORM_SUBMIT).click()
 
 test.describe("when an admin edits a map's card rarity", () => {
   for (const rarity of Object.values(CARD_RARITY)) {
@@ -56,20 +60,28 @@ test.describe("when an admin edits a map's card rarity", () => {
 
       await openMapForm(page, gameId, mapId)
       await pickRarity(page, rarity)
+      await page
+        .getByTestId(SELECTORS.MAP_FORM_CARD_NUMBER)
+        .fill(String(CARD_NUMBER))
+      await submitMapForm(page)
 
       await expect
         .poll(() => getCardProperties(gameId, mapId))
-        .toEqual({ rarity })
+        .toEqual({ rarity, number: CARD_NUMBER })
     })
   }
 
   test("should remove the card properties when set to not a card", async ({
     page,
   }) => {
-    const { gameId, mapId } = await seedMap({ rarity: CARD_RARITY.RARE })
+    const { gameId, mapId } = await seedMap({
+      rarity: CARD_RARITY.RARE,
+      number: CARD_NUMBER,
+    })
 
     await openMapForm(page, gameId, mapId)
     await pickRarity(page, NO_CARD_RARITY)
+    await submitMapForm(page)
 
     await expect.poll(() => getCardProperties(gameId, mapId)).toBeUndefined()
   })
@@ -84,7 +96,10 @@ test.describe("when an admin filters the maps by rarity", () => {
   }
 
   test("should show only the maps of that rarity", async ({ page }) => {
-    const legendary = await seedMap({ rarity: CARD_RARITY.LEGENDARY })
+    const legendary = await seedMap({
+      rarity: CARD_RARITY.LEGENDARY,
+      number: CARD_NUMBER,
+    })
     const unrated = await seedMap()
 
     await loginAsAdmin(page)
@@ -100,7 +115,10 @@ test.describe("when an admin filters the maps by rarity", () => {
   })
 
   test("should show only the maps left to rate", async ({ page }) => {
-    const legendary = await seedMap({ rarity: CARD_RARITY.LEGENDARY })
+    const legendary = await seedMap({
+      rarity: CARD_RARITY.LEGENDARY,
+      number: CARD_NUMBER,
+    })
     const unrated = await seedMap()
 
     await loginAsAdmin(page)

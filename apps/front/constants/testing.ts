@@ -71,6 +71,7 @@ export const SELECTORS = {
   MAP_FORM_CARD_RARITY: "map-form-card-rarity",
   MAP_FORM_CARD_RARITY_OPTION: (rarity: string) =>
     `map-form-card-rarity-option-${rarity}`,
+  MAP_FORM_CARD_NUMBER: "map-form-card-number",
   MAP_FORM_SUBMIT: "map-form-submit",
   MAP_CARD: (mapId: string) => `map-card-${mapId}`,
   TRADING_CARD: (mapId: string) => `trading-card-${mapId}`,

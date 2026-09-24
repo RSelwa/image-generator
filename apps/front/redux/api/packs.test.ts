@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import { API_ENDPOINTS } from "@/constants/mapping"
 import { packsApi } from "@/redux/api/packs"
 
+const CARD_NUMBER = 42
+
 const TOKEN = "id-token"
 
 const { currentUser } = vi.hoisted(() => ({
@@ -27,7 +29,7 @@ const OPEN_PACK_RESPONSE = {
       gameId: "pokemon-red",
       name: "Kanto",
       imageUrl: null,
-      cardProperties: { rarity: CARD_RARITY.RARE },
+      cardProperties: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
       isNew: true,
     },
   ],

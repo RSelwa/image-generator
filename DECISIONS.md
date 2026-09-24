@@ -159,3 +159,10 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 
 - **No draw bias toward missing cards** (user decision): draws stay fully random inside a rarity; duplicates are frustrating on purpose and push to open more packs.
 - **Numbers are fixed**: grouped by game, never renumbered; a new card takes the next free number.
+
+## TCG collection v1 › `number` in `cardProperties`
+
+- **`number: z.number().int().positive()`, required** inside `cardPropertiesSchema` (nothing in prod, no migration). Owned cards get it for free through `cardPropertiesAtPull`.
+- **The admin form got its number input in this step** (shown only when the map is a card), since a required field wouldn't compile otherwise. Picking a rarity keeps the existing number, or `UNSET_CARD_NUMBER = 0`, which fails validation so the admin must fill it. Prefill + duplicate / gap flags are the next sub-bullet.
+- **Pool drift now fails the open**: a drawn map whose doc is gone or no longer a card returns `NO_CARD` (503, nothing written, the missing ids logged) instead of the old `{ rarity }` fallback, which can't be a valid `CardProperties` anymore. `rebuild-card-pools.ts` repairs the pools.
+- Fixtures / specs / stories use a named `CARD_NUMBER` per file; rules tests untouched (rules don't validate the shape).

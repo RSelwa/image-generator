@@ -6,6 +6,8 @@ import firebaseFunctionsTest from "firebase-functions-test"
 import { beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { listen_doc_maps_written } from "~/index"
 
+const CARD_NUMBER = 42
+
 beforeAll(() => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) {
     throw new Error(
@@ -60,7 +62,10 @@ describe("when a map gets card properties", () => {
   it("should add it to the pool of its rarity", async () => {
     await getPoolRef(CARD_RARITY.RARE).set({ maps: [OTHER_ENTRY] })
 
-    await writeMap(makeMap(), makeMap({ rarity: CARD_RARITY.RARE }))
+    await writeMap(
+      makeMap(),
+      makeMap({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
+    )
 
     expect(await getPoolMaps(CARD_RARITY.RARE)).toEqual([OTHER_ENTRY, ENTRY])
   })
@@ -68,7 +73,10 @@ describe("when a map gets card properties", () => {
 
 describe("when a map is created as a card", () => {
   it("should create the pool of its rarity", async () => {
-    await writeMap({}, makeMap({ rarity: CARD_RARITY.LEGENDARY }))
+    await writeMap(
+      {},
+      makeMap({ rarity: CARD_RARITY.LEGENDARY, number: CARD_NUMBER }),
+    )
 
     expect(await getPoolMaps(CARD_RARITY.LEGENDARY)).toEqual([ENTRY])
   })
@@ -79,8 +87,8 @@ describe("when a card's rarity changes", () => {
     await getPoolRef(CARD_RARITY.COMMON).set({ maps: [ENTRY, OTHER_ENTRY] })
 
     await writeMap(
-      makeMap({ rarity: CARD_RARITY.COMMON }),
-      makeMap({ rarity: CARD_RARITY.ULTRA_RARE }),
+      makeMap({ rarity: CARD_RARITY.COMMON, number: CARD_NUMBER }),
+      makeMap({ rarity: CARD_RARITY.ULTRA_RARE, number: CARD_NUMBER }),
     )
 
     expect(await getPoolMaps(CARD_RARITY.COMMON)).toEqual([OTHER_ENTRY])
@@ -92,7 +100,10 @@ describe("when a map loses its card properties", () => {
   it("should remove it from its pool", async () => {
     await getPoolRef(CARD_RARITY.UNCOMMON).set({ maps: [ENTRY, OTHER_ENTRY] })
 
-    await writeMap(makeMap({ rarity: CARD_RARITY.UNCOMMON }), makeMap())
+    await writeMap(
+      makeMap({ rarity: CARD_RARITY.UNCOMMON, number: CARD_NUMBER }),
+      makeMap(),
+    )
 
     expect(await getPoolMaps(CARD_RARITY.UNCOMMON)).toEqual([OTHER_ENTRY])
   })
@@ -102,7 +113,10 @@ describe("when a card map is deleted", () => {
   it("should remove it from its pool", async () => {
     await getPoolRef(CARD_RARITY.RARE).set({ maps: [ENTRY] })
 
-    await writeMap(makeMap({ rarity: CARD_RARITY.RARE }), {})
+    await writeMap(
+      makeMap({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
+      {},
+    )
 
     expect(await getPoolMaps(CARD_RARITY.RARE)).toEqual([])
   })
@@ -110,8 +124,8 @@ describe("when a card map is deleted", () => {
 
 describe("when a card map changes without changing its rarity", () => {
   it("should leave the pools untouched", async () => {
-    await writeMap(makeMap({ rarity: CARD_RARITY.RARE }), {
-      ...makeMap({ rarity: CARD_RARITY.RARE }),
+    await writeMap(makeMap({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }), {
+      ...makeMap({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
       name: "Johto",
     })
 
