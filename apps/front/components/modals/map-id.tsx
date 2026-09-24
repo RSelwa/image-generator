@@ -1,8 +1,12 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { DEFAULT_MAX_DISTANCE_POINTS, STORAGE_PATHS } from "@repo/common"
-import { createMapInputSchema } from "@repo/schemas"
+import {
+  CARD_RARITY,
+  DEFAULT_MAX_DISTANCE_POINTS,
+  STORAGE_PATHS,
+} from "@repo/common"
+import { cardRaritySchema, createMapInputSchema } from "@repo/schemas"
 import { ArrowLeft } from "lucide-react"
 import { useQueryState } from "nuqs"
 import {
@@ -27,8 +31,20 @@ import {
 } from "@/components/ui/field"
 import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
+import {
+  MODAL_KEYS,
+  NEW_SEARCH_PARAM,
+  NO_CARD_RARITY,
+} from "@/constants/mapping"
+import { SELECTORS } from "@/constants/testing"
 import { useModal } from "@/hooks/use-modal"
 import {
   useCreateMapMutation,
@@ -109,6 +125,7 @@ const MapForm = ({
   const imageUrl = watch("imageUrl")
   const name = watch("name")
   const maxDistancePoints = watch("maxDistancePoints")
+  const cardProperties = watch("cardProperties")
 
   const handleOverlayClick = useCallback((e: MouseEvent<HTMLDivElement>) => {
     if (!overlayRef.current) return
@@ -128,6 +145,7 @@ const MapForm = ({
         maxDistancePoints:
           data.maxDistancePoints ?? DEFAULT_MAX_DISTANCE_POINTS,
         gameId: data.gameId,
+        cardProperties: data.cardProperties,
       })
     }
   }, [data, reset])
@@ -152,6 +170,12 @@ const MapForm = ({
     } finally {
       setIsUploading(false)
     }
+  }
+
+  const handleCardRarityChange = (value: string) => {
+    const rarity = cardRaritySchema.safeParse(value).data
+
+    setValue("cardProperties", rarity && { rarity }, { shouldDirty: true })
   }
 
   const handleRemoveImage = () => {
@@ -273,6 +297,42 @@ const MapForm = ({
               )}
             </Field>
 
+            <Field>
+              <FieldLabel>Card rarity</FieldLabel>
+              <Select
+                value={cardProperties?.rarity || NO_CARD_RARITY}
+                onValueChange={handleCardRarityChange}
+              >
+                <SelectTrigger data-testid={SELECTORS.MAP_FORM_CARD_RARITY}>
+                  <SelectValue placeholder="Select rarity" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    value={NO_CARD_RARITY}
+                    data-testid={SELECTORS.MAP_FORM_CARD_RARITY_OPTION(
+                      NO_CARD_RARITY,
+                    )}
+                  >
+                    Not a card
+                  </SelectItem>
+                  {Object.values(CARD_RARITY).map((rarity) => (
+                    <SelectItem
+                      key={rarity}
+                      value={rarity}
+                      data-testid={SELECTORS.MAP_FORM_CARD_RARITY_OPTION(
+                        rarity,
+                      )}
+                    >
+                      {rarity}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldDescription>
+                Maps without a rarity never drop from a pack
+              </FieldDescription>
+            </Field>
+
             {data && (
               <div className="text-muted-primary-foreground mt-2 space-y-1 text-xs">
                 <p>
@@ -344,7 +404,11 @@ const MapForm = ({
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button type="submit" disabled={isCreating || isUpdating || !isDirty}>
+          <Button
+            type="submit"
+            disabled={isCreating || isUpdating || !isDirty}
+            data-testid={SELECTORS.MAP_FORM_SUBMIT}
+          >
             {isCreating || isUpdating ? (
               <>
                 {isNew ? "Creating" : "Saving"} <Loader />

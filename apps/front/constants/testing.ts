@@ -68,6 +68,10 @@ export const SELECTORS = {
   ACHIEVEMENT_FORM_KEY_ERROR: "achievement-form-key-error",
   ACHIEVEMENT_DELETE: "achievement-delete",
   ACHIEVEMENT_DELETE_CONFIRM: "achievement-delete-confirm",
+  MAP_FORM_CARD_RARITY: "map-form-card-rarity",
+  MAP_FORM_CARD_RARITY_OPTION: (rarity: string) =>
+    `map-form-card-rarity-option-${rarity}`,
+  MAP_FORM_SUBMIT: "map-form-submit",
   NAV_ACHIEVEMENTS: "nav-achievements",
   NAV_HISTORY_LINK: "nav-history-link",
   ACHIEVEMENTS_ITEM: (key: string) => `achievements-item-${key}`,
