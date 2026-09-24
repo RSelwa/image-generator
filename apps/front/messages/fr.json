@@ -340,10 +340,11 @@
     "metaTitle": "Collection — Geo Gamer",
     "metaDescription": "Ta collection de cartes, jeu par jeu.",
     "title": "Collection",
-    "description": "Toutes les cartes, jeu par jeu",
+    "description": "Toutes les cartes, par numéro : complète la collection",
     "progress": "{owned}/{total}",
     "locked": "Carte pas encore obtenue",
     "empty": "Aucune carte à collectionner pour l'instant.",
-    "error": "Ta collection n'a pas pu être chargée."
+    "error": "Ta collection n'a pas pu être chargée.",
+    "overallProgress": "{owned}/{total} cartes obtenues"
   }
 }

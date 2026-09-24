@@ -15,7 +15,7 @@ import { useGetUserCardCountsQuery } from "@/redux/api/packs"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 import { formatCardNumber } from "@/utils/card-number"
-import { buildCollectionGroups, type CollectionCard } from "@/utils/collection"
+import { buildCollectionBinder, type CollectionCard } from "@/utils/collection"
 
 type CollectionContentProps = {
   cards: CollectionCard[]
@@ -43,6 +43,8 @@ export const CollectionContent = ({
 
   if (!isTcgEnabled) return null
 
+  const binder =
+    ownedCounts && buildCollectionBinder(cards, gameTitles, ownedCounts)
   const isLoading = !shouldSkipCounts && !ownedCounts && !isError
   const isEmpty = Boolean(ownedCounts) && cards.length === 0
 
@@ -63,66 +65,71 @@ export const CollectionContent = ({
       {isEmpty && (
         <p className="text-center py-12 text-muted-foreground">{t("empty")}</p>
       )}
-      {ownedCounts && (
+      {binder && (
         <div className="flex flex-col gap-10">
-          {buildCollectionGroups(cards, gameTitles, ownedCounts).map(
-            (group) => (
-              <section
-                key={group.gameId}
-                data-testid={SELECTORS.COLLECTION_GAME(group.gameId)}
-              >
-                <div className="mb-4 flex items-baseline justify-between">
-                  <h2 className="text-xl font-semibold">{group.gameTitle}</h2>
-                  <p
-                    className="text-muted-foreground tabular-nums"
-                    data-testid={SELECTORS.COLLECTION_GAME_PROGRESS(
-                      group.gameId,
+          <p
+            className="text-center text-2xl font-bold tabular-nums"
+            data-testid={SELECTORS.COLLECTION_PROGRESS}
+          >
+            {t("overallProgress", {
+              owned: binder.ownedCount,
+              total: binder.total,
+            })}
+          </p>
+          {binder.groups.map((group) => (
+            <section
+              key={group.gameId}
+              data-testid={SELECTORS.COLLECTION_GAME(group.gameId)}
+            >
+              <div className="mb-4 flex items-baseline justify-between">
+                <h2 className="text-xl font-semibold">{group.gameTitle}</h2>
+                <p
+                  className="text-muted-foreground tabular-nums"
+                  data-testid={SELECTORS.COLLECTION_GAME_PROGRESS(group.gameId)}
+                >
+                  {t("progress", {
+                    owned: group.ownedCount,
+                    total: group.cards.length,
+                  })}
+                </p>
+              </div>
+              <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5">
+                {group.cards.map((card) => (
+                  <li key={card.mapId}>
+                    {card.count > 0 && (
+                      <MapTradingCard
+                        mapId={card.mapId}
+                        name={card.name}
+                        imageUrl={card.imageUrl}
+                        rarity={card.rarity}
+                        number={card.number}
+                        count={card.count}
+                      />
                     )}
-                  >
-                    {t("progress", {
-                      owned: group.ownedCount,
-                      total: group.cards.length,
-                    })}
-                  </p>
-                </div>
-                <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5">
-                  {group.cards.map((card) => (
-                    <li key={card.mapId}>
-                      {card.count > 0 && (
-                        <MapTradingCard
-                          mapId={card.mapId}
-                          name={card.name}
-                          imageUrl={card.imageUrl}
-                          rarity={card.rarity}
-                          number={card.number}
-                          count={card.count}
-                        />
-                      )}
-                      {card.count === 0 && (
-                        <div
-                          data-rarity={card.rarity}
-                          aria-label={t("locked")}
-                          role="img"
-                          data-testid={SELECTORS.COLLECTION_LOCKED_CARD(
-                            card.mapId,
-                          )}
-                          className="relative flex aspect-5/7 w-full items-center justify-center rounded-xl border-4 border-dashed bg-muted text-muted-foreground data-[rarity=common]:border-neutral-500 data-[rarity=uncommon]:border-marathon-green data-[rarity=rare]:border-blue-accent data-[rarity=ultraRare]:border-purple-500 data-[rarity=legendary]:border-yellow-400"
+                    {card.count === 0 && (
+                      <div
+                        data-rarity={card.rarity}
+                        aria-label={t("locked")}
+                        role="img"
+                        data-testid={SELECTORS.COLLECTION_LOCKED_CARD(
+                          card.mapId,
+                        )}
+                        className="relative flex aspect-5/7 w-full items-center justify-center rounded-xl border-4 border-dashed bg-muted text-muted-foreground data-[rarity=common]:border-neutral-500 data-[rarity=uncommon]:border-marathon-green data-[rarity=rare]:border-blue-accent data-[rarity=ultraRare]:border-purple-500 data-[rarity=legendary]:border-yellow-400"
+                      >
+                        <Lock className="size-10" />
+                        <Badge
+                          variant="blur"
+                          className="absolute top-2 left-2 tabular-nums"
                         >
-                          <Lock className="size-10" />
-                          <Badge
-                            variant="blur"
-                            className="absolute top-2 left-2 tabular-nums"
-                          >
-                            {formatCardNumber(card.number)}
-                          </Badge>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ),
-          )}
+                          {formatCardNumber(card.number)}
+                        </Badge>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
         </div>
       )}
     </main>

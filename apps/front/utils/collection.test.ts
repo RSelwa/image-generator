@@ -1,7 +1,7 @@
 import { CARD_RARITY } from "@repo/common"
 import { type CardRarity } from "@repo/schemas"
 import { describe, expect, it } from "vitest"
-import { buildCollectionGroups } from "@/utils/collection"
+import { buildCollectionBinder } from "@/utils/collection"
 
 const buildCard = (
   mapId: string,
@@ -17,43 +17,47 @@ const buildCard = (
   number,
 })
 
-const KANTO = buildCard("kanto", "pokemon", CARD_RARITY.COMMON, 1)
-const JOHTO = buildCard("johto", "pokemon", CARD_RARITY.LEGENDARY, 2)
-const HYRULE = buildCard("hyrule", "zelda", CARD_RARITY.RARE, 3)
+const HYRULE = buildCard("hyrule", "zelda", CARD_RARITY.RARE, 1)
+const KANTO = buildCard("kanto", "pokemon", CARD_RARITY.COMMON, 2)
+const JOHTO = buildCard("johto", "pokemon", CARD_RARITY.LEGENDARY, 3)
 const GAME_TITLES = { pokemon: "Pokémon", zelda: "Zelda" }
 
-const groups = buildCollectionGroups([KANTO, HYRULE, JOHTO], GAME_TITLES, {
+const binder = buildCollectionBinder([JOHTO, KANTO, HYRULE], GAME_TITLES, {
   kanto: 3,
+  hyrule: 1,
 })
 
-describe("when the collection is grouped", () => {
-  it("should make one group per game sorted by title", () => {
-    expect(groups.map(({ gameTitle }) => gameTitle)).toEqual([
-      "Pokémon",
+describe("when the collection binder is built", () => {
+  it("should count the owned cards out of every card", () => {
+    expect(binder).toMatchObject({ ownedCount: 2, total: 3 })
+  })
+
+  it("should order the games by their first card number", () => {
+    expect(binder.groups.map(({ gameTitle }) => gameTitle)).toEqual([
       "Zelda",
+      "Pokémon",
     ])
   })
 
-  it("should put the rarest cards first", () => {
-    expect(groups[0]?.cards.map(({ mapId }) => mapId)).toEqual([
-      "johto",
-      "kanto",
-    ])
+  it("should order each game's cards by number", () => {
+    expect(binder.groups[1]?.cards.map(({ number }) => number)).toEqual([2, 3])
   })
 
   it("should count the owned cards of each game", () => {
-    expect(groups.map(({ ownedCount }) => ownedCount)).toEqual([1, 0])
+    expect(binder.groups.map(({ ownedCount }) => ownedCount)).toEqual([1, 1])
   })
 
   it("should carry the owned count on each card", () => {
-    expect(groups[0]?.cards.map(({ count }) => count)).toEqual([0, 3])
+    expect(binder.groups[1]?.cards.map(({ count }) => count)).toEqual([3, 0])
   })
 })
 
 describe("when a game has no title", () => {
   it("should fall back to its id", () => {
     expect(
-      buildCollectionGroups([HYRULE], {}, {}).map(({ gameTitle }) => gameTitle),
+      buildCollectionBinder([HYRULE], {}, {}).groups.map(
+        ({ gameTitle }) => gameTitle,
+      ),
     ).toEqual(["zelda"])
   })
 })

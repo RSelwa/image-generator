@@ -1,4 +1,3 @@
-import { CARD_RARITY } from "@repo/common"
 import { type CardRarity } from "@repo/schemas"
 
 export type CollectionCard = {
@@ -10,26 +9,21 @@ export type CollectionCard = {
   number: number
 }
 
-const RARITIES_BY_ORDER = Object.values(CARD_RARITY)
-
-const getRarityRank = (rarity: CardRarity) => RARITIES_BY_ORDER.indexOf(rarity)
-
-export const buildCollectionGroups = (
+export const buildCollectionBinder = (
   cards: CollectionCard[],
   gameTitles: Record<string, string>,
   ownedCounts: Record<string, number>,
 ) => {
-  const gameIds = [...new Set(cards.map(({ gameId }) => gameId))]
+  const binderCards = cards
+    .map((card) => ({ ...card, count: ownedCounts[card.mapId] || 0 }))
+    .toSorted((first, second) => first.number - second.number)
+  const gameIds = [...new Set(binderCards.map(({ gameId }) => gameId))]
 
-  return gameIds
-    .map((gameId) => {
-      const gameCards = cards
-        .filter((card) => card.gameId === gameId)
-        .map((card) => ({ ...card, count: ownedCounts[card.mapId] || 0 }))
-        .toSorted(
-          (first, second) =>
-            getRarityRank(second.rarity) - getRarityRank(first.rarity),
-        )
+  return {
+    ownedCount: binderCards.filter(({ count }) => count > 0).length,
+    total: binderCards.length,
+    groups: gameIds.map((gameId) => {
+      const gameCards = binderCards.filter((card) => card.gameId === gameId)
 
       return {
         gameId,
@@ -37,8 +31,6 @@ export const buildCollectionGroups = (
         ownedCount: gameCards.filter(({ count }) => count > 0).length,
         cards: gameCards,
       }
-    })
-    .toSorted((first, second) =>
-      first.gameTitle.localeCompare(second.gameTitle),
-    )
+    }),
+  }
 }

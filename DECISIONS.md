@@ -181,3 +181,9 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **`MapTradingCard` takes a required `number`**, shown as a blur badge top-left (`#042`); the `×n` duplicate badge stays top-right. The ghost card shows the same badge.
 - **The collection page builds each card from the map doc's `cardProperties`** (rarity + number, the source of truth) instead of the pool doc's rarity id. A pool entry whose map is gone or no longer a card is **skipped**, so it isn't counted in the progress either (it would reappear only through pool drift, repaired by the rebuild script).
 - Tests: `collection-page.spec.ts` asserts the owned card and the ghost show their `#number`. Story default `number: 42`.
+
+## TCG collection v1 › Numbered binder
+
+- **`buildCollectionGroups` → `buildCollectionBinder`**, replacing the rarest-first order of the first collection page: every card sorted by `number`, games ordered by their first number (numbers are contiguous per game, so the binder reads `#001, #002…` across sections), cards by number inside a game. Returns `{ ownedCount, total, groups }`.
+- **Overall progress on top** (`owned/total cards collected`), each game's `owned/total` kept as the secondary count. Owned cards in full with `×n`, missing ones as numbered ghosts (previous sub-bullets).
+- Kept as one commit although the reviewer flagged `SCOPE: SPLIT` (order vs overall counter).

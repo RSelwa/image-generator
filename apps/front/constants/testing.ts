@@ -85,6 +85,7 @@ export const SELECTORS = {
   PACK_OPEN_ANOTHER: "pack-open-another",
   PACK_BACK: "pack-back",
   PACK_SEE_COLLECTION: "pack-see-collection",
+  COLLECTION_PROGRESS: "collection-progress",
   COLLECTION_GAME: (gameId: string) => `collection-game-${gameId}`,
   COLLECTION_GAME_PROGRESS: (gameId: string) =>
     `collection-game-progress-${gameId}`,
