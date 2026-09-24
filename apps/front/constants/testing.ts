@@ -92,6 +92,8 @@ export const SELECTORS = {
   ADMIN_MAPS_RARITY_FILTER: "admin-maps-rarity-filter",
   ADMIN_MAPS_RARITY_FILTER_OPTION: (filter: string) =>
     `admin-maps-rarity-filter-option-${filter}`,
+  ADMIN_MAPS_DUPLICATE_NUMBERS: "admin-maps-duplicate-numbers",
+  ADMIN_MAPS_NUMBER_GAPS: "admin-maps-number-gaps",
   NAV_ACHIEVEMENTS: "nav-achievements",
   NAV_PACKS: "nav-packs",
   NAV_COLLECTION: "nav-collection",

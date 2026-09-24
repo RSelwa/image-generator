@@ -23,6 +23,7 @@ import {
   countMapsByCardRarity,
   filterMapsByCardRarity,
 } from "@/utils/card-rarity"
+import { formatCardNumber, getCardNumberIssues } from "@/utils/card-number"
 
 const RARITY_FILTER_OPTIONS = [
   { value: CARD_RARITY_FILTER.ALL, label: "All maps" },
@@ -41,6 +42,7 @@ const Page = () => {
 
   const allMaps = data || []
   const maps = filterMapsByCardRarity(allMaps, rarityFilter)
+  const { duplicates, gaps } = getCardNumberIssues(allMaps)
 
   return (
     <main className="p-2 h-full-height-admin">
@@ -57,6 +59,23 @@ const Page = () => {
           ),
         )}
       </ul>
+
+      {duplicates.length > 0 && (
+        <p
+          className="mb-2 text-sm text-destructive"
+          data-testid={SELECTORS.ADMIN_MAPS_DUPLICATE_NUMBERS}
+        >
+          Duplicate card numbers: {duplicates.map(formatCardNumber).join(", ")}
+        </p>
+      )}
+      {gaps.length > 0 && (
+        <p
+          className="mb-2 text-sm text-muted-foreground"
+          data-testid={SELECTORS.ADMIN_MAPS_NUMBER_GAPS}
+        >
+          Unused card numbers: {gaps.map(formatCardNumber).join(", ")}
+        </p>
+      )}
 
       <div className="mb-4 w-56">
         <Select

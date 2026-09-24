@@ -166,3 +166,12 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **The admin form got its number input in this step** (shown only when the map is a card), since a required field wouldn't compile otherwise. Picking a rarity keeps the existing number, or `UNSET_CARD_NUMBER = 0`, which fails validation so the admin must fill it. Prefill + duplicate / gap flags are the next sub-bullet.
 - **Pool drift now fails the open**: a drawn map whose doc is gone or no longer a card returns `NO_CARD` (503, nothing written, the missing ids logged) instead of the old `{ rarity }` fallback, which can't be a valid `CardProperties` anymore. `rebuild-card-pools.ts` repairs the pools.
 - Fixtures / specs / stories use a named `CARD_NUMBER` per file; rules tests untouched (rules don't validate the shape).
+
+## TCG collection v1 › Admin number prefill + checks
+
+- **Prefill = highest number used + 1** (`getNextCardNumber`), computed from the all-maps query the admin maps page already caches. Applied only when a map becomes a card without a number; an existing number is kept. The rarity select is disabled until that query resolves, so the prefill can't start from an empty list and collide.
+- **Admin maps page flags** duplicate numbers (destructive) and unused numbers up to the highest (muted), from `getCardNumberIssues`. Nothing blocks saving a duplicate: the admin fixes it from these lines.
+- **`formatCardNumber`**: `#` + 3-digit padding (`#042`), longer numbers kept whole.
+- **`getNextCardNumber` / `getCardNumberIssues` kept extracted with one caller each**, overruling the 2-call-site rule again (reviewer blocked twice): inlining deletes the only direct tests of the max+1 and gap logic.
+- Kept as one commit although the reviewer flagged `SCOPE: SPLIT` (prefill vs page flags).
+- Tests: unit (`utils/card-number.test.ts`), e2e (prefilled value is what gets stored; a duplicate number is flagged).

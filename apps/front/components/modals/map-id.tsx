@@ -49,14 +49,15 @@ import { useModal } from "@/hooks/use-modal"
 import {
   useCreateMapMutation,
   useGetMapByIdQuery,
+  useGetMapsQuery,
   useUpdateMapByIdMutation,
 } from "@/redux/api/maps"
+import { getNextCardNumber } from "@/utils/card-number"
 import { uploadFileToBucket } from "@/utils/file"
 
 type MapFormSchema = z.input<typeof createMapInputSchema>
 
 const KEY = MODAL_KEYS.MAP_ID
-const UNSET_CARD_NUMBER = 0
 
 // Helper to parse combined param format: "parentId_childId"
 export const parseSubcollectionParam = (
@@ -94,6 +95,7 @@ const MapForm = ({
     { gameId, id: mapId },
     { skip: isNew },
   )
+  const { data: allMaps } = useGetMapsQuery()
   const [createMap, { isLoading: isCreating }] = useCreateMapMutation()
   const [updateMap, { isLoading: isUpdating }] = useUpdateMapByIdMutation()
   const [isUploading, setIsUploading] = useState(false)
@@ -180,7 +182,7 @@ const MapForm = ({
       "cardProperties",
       rarity && {
         rarity,
-        number: cardProperties?.number || UNSET_CARD_NUMBER,
+        number: cardProperties?.number || getNextCardNumber(allMaps || []),
       },
       { shouldDirty: true },
     )
@@ -310,6 +312,7 @@ const MapForm = ({
               <Select
                 value={cardProperties?.rarity || NO_CARD_RARITY}
                 onValueChange={handleCardRarityChange}
+                disabled={!allMaps}
               >
                 <SelectTrigger data-testid={SELECTORS.MAP_FORM_CARD_RARITY}>
                   <SelectValue placeholder="Select rarity" />

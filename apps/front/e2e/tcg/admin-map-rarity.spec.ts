@@ -11,9 +11,11 @@ import {
 } from "@/constants/mapping"
 import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
+import { formatCardNumber } from "@/utils/card-number"
 import { loginViaUI, setupUser } from "../helpers/lobby"
 
 const CARD_NUMBER = 42
+const DUPLICATE_CARD_NUMBER = 77
 
 const seedMap = async (cardProperties?: CardProperties) => {
   const game = gameFactory()
@@ -70,6 +72,21 @@ test.describe("when an admin edits a map's card rarity", () => {
         .toEqual({ rarity, number: CARD_NUMBER })
     })
   }
+
+  test("should prefill the next free card number", async ({ page }) => {
+    const { gameId, mapId } = await seedMap()
+
+    await openMapForm(page, gameId, mapId)
+    await pickRarity(page, CARD_RARITY.COMMON)
+    const prefilledNumber = Number(
+      await page.getByTestId(SELECTORS.MAP_FORM_CARD_NUMBER).inputValue(),
+    )
+    await submitMapForm(page)
+
+    await expect
+      .poll(() => getCardProperties(gameId, mapId))
+      .toEqual({ rarity: CARD_RARITY.COMMON, number: prefilledNumber })
+  })
 
   test("should remove the card properties when set to not a card", async ({
     page,
@@ -131,5 +148,19 @@ test.describe("when an admin filters the maps by rarity", () => {
     await expect(
       page.getByTestId(SELECTORS.MAP_CARD(legendary.mapId)),
     ).toBeHidden()
+  })
+})
+
+test.describe("when two maps share a card number", () => {
+  test("should flag the duplicate on the admin maps page", async ({ page }) => {
+    await seedMap({ rarity: CARD_RARITY.RARE, number: DUPLICATE_CARD_NUMBER })
+    await seedMap({ rarity: CARD_RARITY.RARE, number: DUPLICATE_CARD_NUMBER })
+
+    await loginAsAdmin(page)
+    await page.goto(`/en${PAGES.ADMIN_MAPS}`)
+
+    await expect(
+      page.getByTestId(SELECTORS.ADMIN_MAPS_DUPLICATE_NUMBERS),
+    ).toContainText(formatCardNumber(DUPLICATE_CARD_NUMBER))
   })
 })
