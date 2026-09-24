@@ -312,5 +312,19 @@
       "legendary": "Légendaire"
     },
     "count": "×{count}"
+  },
+  "packs": {
+    "metaTitle": "Boosters — Geo Gamer",
+    "metaDescription": "Ouvre des boosters et collectionne les cartes de tes jeux préférés.",
+    "title": "Boosters",
+    "description": "Un nouveau booster toutes les {minutes} minutes, jusqu'à {max} en stock",
+    "stock": "{available}/{max}",
+    "nextPack": "Prochain booster dans {time}",
+    "full": "Ton stock est plein",
+    "open": "Ouvrir un booster",
+    "empty": "Plus de booster",
+    "error": "Le booster n'a pas pu être ouvert.",
+    "openedTitle": "Tes cartes",
+    "back": "Retour aux boosters"
   }
 }

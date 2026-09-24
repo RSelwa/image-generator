@@ -74,6 +74,11 @@ export const SELECTORS = {
   MAP_FORM_SUBMIT: "map-form-submit",
   MAP_CARD: (mapId: string) => `map-card-${mapId}`,
   TRADING_CARD: (mapId: string) => `trading-card-${mapId}`,
+  PACK_OPEN: "pack-open",
+  PACK_STOCK: "pack-stock",
+  PACK_TIMER: "pack-timer",
+  PACK_OPENED_CARDS: "pack-opened-cards",
+  PACK_BACK: "pack-back",
   ADMIN_MAPS_RARITY_FILTER: "admin-maps-rarity-filter",
   ADMIN_MAPS_RARITY_FILTER_OPTION: (filter: string) =>
     `admin-maps-rarity-filter-option-${filter}`,

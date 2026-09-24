@@ -17,6 +17,12 @@ export const selectSessionIsReady = ({ session }: RootState) =>
 export const selectUserSteak = ({ session }: RootState) =>
   session.user?.streak || 0
 
+export const selectPacksStored = ({ session }: RootState) =>
+  session.user?.packsStored || 0
+
+export const selectPacksRefillAnchorMs = ({ session }: RootState) =>
+  session.user?.packsRefillAnchorMs || null
+
 export const selectUserRights = ({ session }: RootState) => session.user?.rights
 
 export const selectHasRightToDashBoard = ({ session }: RootState) => {

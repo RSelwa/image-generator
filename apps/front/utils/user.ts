@@ -1,5 +1,5 @@
 import { type ConstantValues } from "@repo/common"
-import { DONOR_TIERS, getRandomAvatar } from "@repo/common"
+import { DONOR_TIERS, getRandomAvatar, PACKS_MAX } from "@repo/common"
 import { type RightDoc, type UserDoc } from "@repo/schemas"
 import { type User } from "firebase/auth"
 import { type SessionUser, sessionUserSchema } from "@/schemas/session"
@@ -22,6 +22,8 @@ export const formatSessionFromFirebaseUser = ({
     lastStreakDate,
     donorTier,
     newsletter,
+    packsStored,
+    packsRefillAnchor,
   } = user
 
   const avatar = user.avatar || getRandomAvatar()
@@ -37,6 +39,8 @@ export const formatSessionFromFirebaseUser = ({
     lastStreakDate,
     donorTier,
     newsletter,
+    packsStored,
+    packsRefillAnchorMs: packsRefillAnchor?.toMillis() || null,
   })
 
   if (!sessionUser.success) {
@@ -63,6 +67,8 @@ export const formatSessionFromAnonymousUser = ({
   lastStreakDate: null,
   donorTier: null,
   newsletter: false,
+  packsStored: PACKS_MAX,
+  packsRefillAnchorMs: null,
 })
 
 export const isAvatarGlow = (donorTier: ConstantValues<typeof DONOR_TIERS>) =>

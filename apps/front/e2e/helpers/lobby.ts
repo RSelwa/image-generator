@@ -99,6 +99,7 @@ export const createPlayerFromUserDoc = (user: userDocWithId) =>
     pseudo: user.pseudo || "",
     isAnonymous: false,
     avatar: user.avatar || getRandomAvatar(),
+    packsRefillAnchorMs: null,
   })
 
 export const createFirestoreLobbyDoc = async (lobby: LobbyDoc) =>

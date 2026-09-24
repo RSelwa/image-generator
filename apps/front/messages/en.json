@@ -312,5 +312,19 @@
       "legendary": "Legendary"
     },
     "count": "×{count}"
+  },
+  "packs": {
+    "metaTitle": "Packs — Geo Gamer",
+    "metaDescription": "Open card packs and collect maps from your favourite games.",
+    "title": "Packs",
+    "description": "A new pack every {minutes} minutes, up to {max} in stock",
+    "stock": "{available}/{max}",
+    "nextPack": "Next pack in {time}",
+    "full": "Your stock is full",
+    "open": "Open a pack",
+    "empty": "No pack left",
+    "error": "The pack could not be opened.",
+    "openedTitle": "Your cards",
+    "back": "Back to packs"
   }
 }

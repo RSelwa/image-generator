@@ -113,3 +113,13 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **Rarity frame via `data-rarity`** + Tailwind `data-[rarity=…]:` variants (border colour per rarity, coloured glow on ultraRare / legendary), not a class branch. Frame colours follow the badge colours (`CARD_RARITY_TO_BADGE_VARIANT`).
 - **`gameTitle` is optional**: the open-pack response has no game title (the reveal shows the map only); the collection page passes it.
 - Labels through next-intl `tradingCard` (en + fr). One story per rarity + `WithGame` + `Duplicate` (`stories/MapTradingCard.stories.tsx`, AchievementCard precedent).
+
+## Front TCG › Packs page
+
+- **Pack stock through the session user**: `sessionUserSchema` gains `packsStored` (default `PACKS_MAX`) and `packsRefillAnchorMs`, mapped in `formatSessionFromFirebaseUser` from the user doc the app already listens to live. Milliseconds so the store stays serializable; two primitive selectors (`selectPacksStored`, `selectPacksRefillAnchorMs`). After an open, the server write reaches the page through that snapshot — no refetch.
+- **`PackCounter`** (`components/tcg/pack-counter.tsx`) is presentational with its own 1 s tick: `7/10` from the shared `getAvailablePacks`, countdown from `getNextPackAt` (`formatCountdown` → `m:ss`), "stock full" instead of a timer when full. The pack is a `<button disabled>` at 0 or while opening (styled with `disabled:` variants).
+- **`PacksContent`**: TCG flag gate + redirect home (achievements page pattern), `page.tsx` for the metadata only.
+- **After an open, the 5 cards show in a grid** with "Back to packs" (`reset`), so opening is visible in this sub-bullet on its own; the next sub-bullet puts the Pokémon-style pile in front of it.
+- **No play tests**: there is no story test runner in the repo. Stories Full / Partial / Empty / AboutToRefill / Opening; the timer and count logic is unit tested (`libs/common` packs utils, `utils/countdown.test.ts`, `utils/user.test.ts` for the session mapping).
+- Copy reads the refill time and the max from the constants (`{minutes}`, `{max}`), en + fr.
+- Kept as one commit although the reviewer flagged `SCOPE: SPLIT` (stock display vs opening): one commit per sub-bullet, user's call.

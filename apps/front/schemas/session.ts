@@ -1,4 +1,9 @@
-import { AVATARS_KEYS, getRandomAvatar, USER_RIGHT } from "@repo/common"
+import {
+  AVATARS_KEYS,
+  getRandomAvatar,
+  PACKS_MAX,
+  USER_RIGHT,
+} from "@repo/common"
 import { userDocWithIdSchema } from "@repo/schemas"
 import { type User } from "firebase/auth"
 import { z } from "zod"
@@ -21,6 +26,8 @@ export const sessionUserSchema = z.object({
   avatar: z.enum(AVATARS_KEYS).default(getRandomAvatar()),
   streak: z.number().nullish().default(0),
   lastStreakDate: z.string().nullish().default(null),
+  packsStored: z.number().default(PACKS_MAX),
+  packsRefillAnchorMs: z.number().nullable().default(null),
 })
 
 const authUserSchema = z.custom<User>()
