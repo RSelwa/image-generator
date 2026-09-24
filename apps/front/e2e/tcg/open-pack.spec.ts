@@ -3,9 +3,9 @@ import { type APIRequestContext, expect, test } from "@playwright/test"
 import { CARD_RARITY, PACK_SIZE, PACKS_MAX, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { signUpAuthUser } from "@repo/testing/emulator"
-import { gameFactory, mapFactory } from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"
 import { PASSWORD } from "../helpers/lobby"
+import { seedEveryPoolWithOneMap } from "../helpers/tcg"
 
 const ENDPOINT = "/api/packs/open"
 const CARD_PROPERTIES = { rarity: CARD_RARITY.LEGENDARY }
@@ -20,22 +20,6 @@ const openPack = (request: APIRequestContext, idToken?: string) =>
   request.post(ENDPOINT, {
     headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
   })
-
-const seedEveryPoolWithOneMap = async () => {
-  const game = gameFactory()
-  const map = mapFactory({ gameId: game.id, cardProperties: CARD_PROPERTIES })
-  await refs[TABLES.GAMES].doc(game.id).set(game)
-  await subRefs[TABLES.MAPS](game.id).doc(map.id).set(map)
-  await Promise.all(
-    Object.values(CARD_RARITY).map((rarity) =>
-      refs[TABLES.CARD_POOLS]
-        .doc(rarity)
-        .set({ maps: [{ mapId: map.id, gameId: game.id }] }),
-    ),
-  )
-
-  return map
-}
 
 const getUser = async (uid: string) =>
   (await refs[TABLES.USERS].doc(uid).get()).data()
@@ -67,7 +51,7 @@ test.describe("when a pack is opened", () => {
   test("should reveal the drawn cards and consume one pack", async ({
     request,
   }) => {
-    const map = await seedEveryPoolWithOneMap()
+    const map = await seedEveryPoolWithOneMap(CARD_PROPERTIES)
     const { uid, idToken } = await signUp()
 
     const response = await openPack(request, idToken)
@@ -90,7 +74,7 @@ test.describe("when a pack is opened", () => {
   })
 
   test("should add a duplicate to the owned count", async ({ request }) => {
-    const map = await seedEveryPoolWithOneMap()
+    const map = await seedEveryPoolWithOneMap(CARD_PROPERTIES)
     const { uid, idToken } = await signUp()
 
     await openPack(request, idToken)

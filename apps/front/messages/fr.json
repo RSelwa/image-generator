@@ -323,8 +323,14 @@
     "full": "Ton stock est plein",
     "open": "Ouvrir un booster",
     "empty": "Plus de booster",
-    "error": "Le booster n'a pas pu être ouvert.",
-    "openedTitle": "Tes cartes",
+    "error": "Le booster n'a pas pu être ouvert."
+  },
+  "packReveal": {
+    "progress": "{current}/{total}",
+    "reveal": "Révéler la carte suivante",
+    "new": "Nouvelle",
+    "summaryTitle": "Tes cartes",
+    "openAnother": "En ouvrir un autre",
     "back": "Retour aux boosters"
   }
 }

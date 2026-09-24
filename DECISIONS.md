@@ -123,3 +123,12 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **No play tests**: there is no story test runner in the repo. Stories Full / Partial / Empty / AboutToRefill / Opening; the timer and count logic is unit tested (`libs/common` packs utils, `utils/countdown.test.ts`, `utils/user.test.ts` for the session mapping).
 - Copy reads the refill time and the max from the constants (`{minutes}`, `{max}`), en + fr.
 - Kept as one commit although the reviewer flagged `SCOPE: SPLIT` (stock display vs opening): one commit per sub-bullet, user's call.
+
+## Front TCG › Pack opening pile
+
+- **`PackReveal`** (`components/tcg/pack-reveal.tsx`): one `<button>` per card, stacked with an inline `zIndex`; only the top one is enabled, so a click or native Enter / Space reveals the next. Revealed cards get `data-revealed=true` → Tailwind `translate-x` + `rotate` + `invisible`, with `transition-[transform,visibility]` so the card slides before it hides; `motion-reduce:transition-none`. `m/5` counter under the pile.
+- The endpoint returns the guaranteed rare+ card last, so it sits at the bottom of the pile.
+- **Last card**: the summary replaces the pile in the same render, so the 5th card doesn't slide out. Accepted: showing the result right away beats a transition-end handler that never fires under reduced motion.
+- **Summary**: grid of the 5 cards, `new` badge on first pulls, "Open another" when the stock right after the open (`openedPack.packsStored`) is > 0, "Back to packs". `PackReveal` is keyed by the mutation `requestId`, so a second open starts a fresh pile.
+- **"See collection" deferred** to the collection-page sub-bullet: the route doesn't exist yet, a link now would 404.
+- **Tests**: e2e `e2e/tcg/packs-page.spec.ts` (click → 2/5, Enter → 2/5, 5 reveals → summary with one `new` badge and "Open another", last pack → no "Open another"), pools seeded with one map through the shared `e2e/helpers/tcg.ts`. Stories: `Pile`. No play tests (no story runner).

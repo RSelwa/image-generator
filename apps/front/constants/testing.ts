@@ -77,7 +77,11 @@ export const SELECTORS = {
   PACK_OPEN: "pack-open",
   PACK_STOCK: "pack-stock",
   PACK_TIMER: "pack-timer",
-  PACK_OPENED_CARDS: "pack-opened-cards",
+  PACK_REVEAL_CARD: (index: number) => `pack-reveal-card-${index}`,
+  PACK_REVEAL_PROGRESS: "pack-reveal-progress",
+  PACK_REVEAL_SUMMARY: "pack-reveal-summary",
+  PACK_REVEAL_NEW: "pack-reveal-new",
+  PACK_OPEN_ANOTHER: "pack-open-another",
   PACK_BACK: "pack-back",
   ADMIN_MAPS_RARITY_FILTER: "admin-maps-rarity-filter",
   ADMIN_MAPS_RARITY_FILTER_OPTION: (filter: string) =>

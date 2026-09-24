@@ -323,8 +323,14 @@
     "full": "Your stock is full",
     "open": "Open a pack",
     "empty": "No pack left",
-    "error": "The pack could not be opened.",
-    "openedTitle": "Your cards",
+    "error": "The pack could not be opened."
+  },
+  "packReveal": {
+    "progress": "{current}/{total}",
+    "reveal": "Reveal the next card",
+    "new": "New",
+    "summaryTitle": "Your cards",
+    "openAnother": "Open another",
     "back": "Back to packs"
   }
 }
