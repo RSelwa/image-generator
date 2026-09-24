@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { type AchievementDoc, achievementDocSchema } from "@repo/schemas"
+import { type Achievement, achievementSchema } from "@repo/schemas"
 import { useQueryState } from "nuqs"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { AchievementFormFields } from "@/components/achievement-form-fields"
@@ -34,16 +34,16 @@ import {
   useUpdateAchievementMutation,
 } from "@/redux/api/achievements"
 
-const AchievementForm = ({ achievement }: { achievement: AchievementDoc }) => {
+const AchievementForm = ({ achievement }: { achievement: Achievement }) => {
   const [, setAchievementKey] = useQueryState(QUERY_PARAMS.ACHIEVEMENT_KEY)
   const [updateAchievement, { isLoading }] = useUpdateAchievementMutation()
   const [deleteAchievement] = useDeleteAchievementMutation()
-  const form = useForm<AchievementDoc>({
-    resolver: zodResolver(achievementDocSchema),
+  const form = useForm<Achievement>({
+    resolver: zodResolver(achievementSchema),
     defaultValues: achievement,
   })
 
-  const onSubmit: SubmitHandler<AchievementDoc> = async (data) => {
+  const onSubmit: SubmitHandler<Achievement> = async (data) => {
     await updateAchievement({ ...data, key: achievement.key })
   }
 

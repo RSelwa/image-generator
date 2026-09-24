@@ -4,7 +4,6 @@ import { z } from "zod"
 export const achievementDifficultySchema = z.enum(ACHIEVEMENT_DIFFICULTY)
 
 export const achievementDocSchema = z.object({
-  key: z.string().min(1),
   name: z.string().min(1),
   description: z.string(),
   reward: z.number().int().nonnegative(),
@@ -12,5 +11,10 @@ export const achievementDocSchema = z.object({
   goalToAchieve: z.number().int().positive().optional(),
 })
 
+export const achievementSchema = achievementDocSchema.extend({
+  key: z.string().min(1),
+})
+
 export type AchievementDifficulty = z.infer<typeof achievementDifficultySchema>
 export type AchievementDoc = z.infer<typeof achievementDocSchema>
+export type Achievement = z.infer<typeof achievementSchema>

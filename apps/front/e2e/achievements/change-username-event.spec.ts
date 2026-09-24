@@ -50,7 +50,6 @@ const getUnlocked = async (uid: string) =>
 
 test.beforeEach(async () => {
   await refs[TABLES.ACHIEVEMENTS].doc(ACHIEVEMENT_KEYS.CHANGE_USERNAME).set({
-    key: ACHIEVEMENT_KEYS.CHANGE_USERNAME,
     name: "New identity",
     description: "Change your username",
     reward: REWARD,
@@ -70,6 +69,7 @@ test.describe("when the achievements flag is enabled", () => {
     await expect
       .poll(() => getUnlocked(user.id))
       .toMatchObject({
+        key: ACHIEVEMENT_KEYS.CHANGE_USERNAME,
         reward: REWARD,
       })
     await expect.poll(() => getCredits(user.id)).toBe(REWARD)

@@ -1,5 +1,5 @@
 import { ACHIEVEMENT_DIFFICULTY } from "@repo/common"
-import { type AchievementDoc, achievementDifficultySchema } from "@repo/schemas"
+import { type Achievement, achievementDifficultySchema } from "@repo/schemas"
 import { type UseFormReturn } from "react-hook-form"
 import {
   Field,
@@ -23,7 +23,7 @@ const toOptionalNumber = (value: string) =>
   value === "" ? undefined : Number(value)
 
 type AchievementFormFieldsProps = {
-  form: UseFormReturn<AchievementDoc>
+  form: UseFormReturn<Achievement>
   isKeyReadOnly: boolean
 }
 

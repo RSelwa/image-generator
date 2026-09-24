@@ -6,7 +6,6 @@ import { AchievementCard } from "@/components/cards/achievement-card"
 import messages from "@/messages/en.json"
 
 const ACHIEVEMENT = {
-  key: "change_username",
   name: "New identity",
   description: "Change your username",
   reward: 50,
@@ -14,6 +13,7 @@ const ACHIEVEMENT = {
 }
 
 const UNLOCKED = {
+  key: "change_username",
   achievedAt: Timestamp.fromDate(new Date("2026-09-20T10:00:00Z")),
   reward: 40,
 }
@@ -56,7 +56,6 @@ export const WithGoal: Story = {
   args: {
     achievement: {
       ...ACHIEVEMENT,
-      key: "finish_games",
       name: "Regular",
       description: "Finish 10 games",
       goalToAchieve: 10,

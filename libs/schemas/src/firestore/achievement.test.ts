@@ -1,9 +1,11 @@
 import { ACHIEVEMENT_DIFFICULTY } from "@repo/common"
 import { describe, expect, it } from "vitest"
-import { achievementDocSchema } from "~/firestore/achievement"
+import {
+  achievementDocSchema,
+  achievementSchema,
+} from "~/firestore/achievement"
 
 const ACHIEVEMENT = {
-  key: "change_username",
   name: "New identity",
   description: "Change your username",
   reward: 50,
@@ -56,6 +58,26 @@ describe("achievementDocSchema", () => {
       expect(
         achievementDocSchema.safeParse({ ...ACHIEVEMENT, goalToAchieve })
           .success,
+      ).toBe(false)
+    })
+  })
+})
+
+describe("achievementSchema", () => {
+  describe("when the achievement is stored", () => {
+    it("should strip the key", () => {
+      expect(
+        achievementDocSchema.parse(
+          achievementSchema.parse({ ...ACHIEVEMENT, key: "change_username" }),
+        ),
+      ).not.toHaveProperty("key")
+    })
+  })
+
+  describe("when the key is empty", () => {
+    it("should reject it", () => {
+      expect(
+        achievementSchema.safeParse({ ...ACHIEVEMENT, key: "" }).success,
       ).toBe(false)
     })
   })

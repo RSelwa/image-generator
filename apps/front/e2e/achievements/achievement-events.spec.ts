@@ -67,7 +67,6 @@ test.describe.configure({ mode: "serial" })
 test.describe("when an achievement event is posted", () => {
   test.beforeEach(async () => {
     await refs[TABLES.ACHIEVEMENTS].doc(ACHIEVEMENT_KEYS.CHANGE_USERNAME).set({
-      key: ACHIEVEMENT_KEYS.CHANGE_USERNAME,
       name: "New identity",
       description: "Change your username",
       reward: REWARD,

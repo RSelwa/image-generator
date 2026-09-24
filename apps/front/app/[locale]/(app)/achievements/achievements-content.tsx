@@ -1,6 +1,6 @@
 "use client"
 
-import { type AchievementDoc } from "@repo/schemas"
+import { type Achievement } from "@repo/schemas"
 import { useTranslations } from "next-intl"
 import { useEffect } from "react"
 import { AchievementCard } from "@/components/cards/achievement-card"
@@ -15,7 +15,7 @@ import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
 
 type AchievementsContentProps = {
-  achievements: AchievementDoc[]
+  achievements: Achievement[]
 }
 
 export const AchievementsContent = ({

@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { type AchievementDoc, achievementDocSchema } from "@repo/schemas"
+import { type Achievement, achievementSchema } from "@repo/schemas"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { AchievementFormFields } from "@/components/achievement-form-fields"
 import { ModalBase } from "@/components/modals/base"
@@ -18,12 +18,12 @@ const CREATE_ERROR_MESSAGE = "Could not create the achievement"
 export const NewAchievement = () => {
   const { closeModal } = useModal(KEY)
   const [createAchievement, { isLoading }] = useCreateAchievementMutation()
-  const form = useForm<AchievementDoc>({
-    resolver: zodResolver(achievementDocSchema),
+  const form = useForm<Achievement>({
+    resolver: zodResolver(achievementSchema),
     defaultValues: { description: "", reward: 0 },
   })
 
-  const onSubmit: SubmitHandler<AchievementDoc> = async (data) => {
+  const onSubmit: SubmitHandler<Achievement> = async (data) => {
     try {
       await createAchievement(data).unwrap()
       form.reset()

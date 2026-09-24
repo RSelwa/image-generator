@@ -1,6 +1,6 @@
 import { APP_BASE_URL, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { achievementDocSchema } from "@repo/schemas"
+import { achievementSchema } from "@repo/schemas"
 import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { connection } from "next/server"
@@ -47,7 +47,10 @@ const AchievementsPage = async () => {
   const snapshot = await refs[TABLES.ACHIEVEMENTS].get()
 
   const achievements = snapshot.docs.flatMap((doc) => {
-    const { data, error } = achievementDocSchema.safeParse(doc.data())
+    const { data, error } = achievementSchema.safeParse({
+      key: doc.id,
+      ...doc.data(),
+    })
 
     if (error) {
       console.error(`Error parsing achievement: ${doc.id}`, error)

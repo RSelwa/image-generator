@@ -43,6 +43,7 @@ const unlockAchievement = (uid: string, key: string, reward: number) =>
     if (unlocked.exists) return UNLOCK_RESULT.ALREADY_UNLOCKED
 
     transaction.create(unlockedRef, {
+      key,
       achievedAt: FieldValue.serverTimestamp(),
       reward,
     })

@@ -1,8 +1,8 @@
 import { ACHIEVEMENT_DIFFICULTY, ACHIEVEMENT_KEYS, TABLES } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type AchievementDoc, achievementDocSchema } from "@repo/schemas"
+import { type Achievement, achievementDocSchema } from "@repo/schemas"
 
-const ACHIEVEMENTS: AchievementDoc[] = [
+const ACHIEVEMENTS: Achievement[] = [
   {
     key: ACHIEVEMENT_KEYS.CHANGE_USERNAME,
     name: "New identity",

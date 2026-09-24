@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker"
 import { expect, type Page, test } from "@playwright/test"
 import { ACHIEVEMENT_DIFFICULTY, TABLES, USER_RIGHT } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
-import { type AchievementDoc } from "@repo/schemas"
+import { type Achievement, achievementDocSchema } from "@repo/schemas"
 import { NO_ACHIEVEMENT_DIFFICULTY } from "@/constants/mapping"
 import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
@@ -14,11 +14,13 @@ const buildAchievement = () =>
     description: faker.lorem.sentence(),
     reward: 50,
     difficulty: ACHIEVEMENT_DIFFICULTY.EASY,
-  }) satisfies AchievementDoc
+  }) satisfies Achievement
 
 const seedAchievement = async () => {
   const achievement = buildAchievement()
-  await refs[TABLES.ACHIEVEMENTS].doc(achievement.key).set(achievement)
+  await refs[TABLES.ACHIEVEMENTS]
+    .doc(achievement.key)
+    .set(achievementDocSchema.parse(achievement))
 
   return achievement
 }
@@ -79,7 +81,6 @@ test.describe("when an admin manages achievements", () => {
       page.getByTestId(SELECTORS.ADMIN_ACHIEVEMENT_ROW(achievement.key)),
     ).toBeVisible()
     expect(await getAchievement(achievement.key)).toEqual({
-      key: achievement.key,
       name: achievement.name,
       description: achievement.description,
       reward: 120,
@@ -100,7 +101,9 @@ test.describe("when an admin manages achievements", () => {
     await expect(
       page.getByTestId(SELECTORS.ACHIEVEMENT_FORM_KEY_ERROR),
     ).toBeVisible()
-    expect(await getAchievement(achievement.key)).toEqual(achievement)
+    expect(await getAchievement(achievement.key)).toEqual(
+      achievementDocSchema.parse(achievement),
+    )
   })
 
   test("should edit an achievement without changing its key", async ({
@@ -128,7 +131,6 @@ test.describe("when an admin manages achievements", () => {
     await expect
       .poll(() => getAchievement(achievement.key))
       .toEqual({
-        key: achievement.key,
         name: "Renamed",
         description: achievement.description,
         reward: 75,

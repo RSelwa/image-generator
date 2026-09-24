@@ -1,6 +1,6 @@
 "use client"
 
-import { type AchievementDoc } from "@repo/schemas"
+import { type Achievement } from "@repo/schemas"
 import { PlusIcon, RefreshCcw, Search } from "lucide-react"
 import { useQueryState } from "nuqs"
 import { useState } from "react"
@@ -31,7 +31,7 @@ import { SELECTORS } from "@/constants/testing"
 import { useModal } from "@/hooks/use-modal"
 import { useGetAllAchievementsQuery } from "@/redux/api/achievements"
 
-const AchievementRow = ({ achievement }: { achievement: AchievementDoc }) => {
+const AchievementRow = ({ achievement }: { achievement: Achievement }) => {
   const [, setAchievementKey] = useQueryState(QUERY_PARAMS.ACHIEVEMENT_KEY)
 
   return (

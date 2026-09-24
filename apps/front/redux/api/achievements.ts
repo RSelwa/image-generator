@@ -1,9 +1,10 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TABLES } from "@repo/common"
 import {
-  type AchievementDoc,
+  type Achievement,
   achievementDocSchema,
   type AchievementEvent,
+  achievementSchema,
   type UnlockedAchievementDoc,
   unlockedAchievementDocSchema,
 } from "@repo/schemas"
@@ -39,14 +40,17 @@ export const achievementsApi = createApi({
   baseQuery: fakeBaseQuery<GlobalError>(),
   tagTypes: ["Achievement", "AchievementList", "UnlockedAchievements"],
   endpoints: (builder) => ({
-    getAllAchievements: builder.query<AchievementDoc[], void>({
+    getAllAchievements: builder.query<Achievement[], void>({
       queryFn: async () => {
         try {
           const snapshot = await getDocs(TABLE_REFS[TABLES.ACHIEVEMENTS])
 
           const achievements = snapshot.docs
             .map((doc) => {
-              const { data, error } = achievementDocSchema.safeParse(doc.data())
+              const { data, error } = achievementSchema.safeParse({
+                key: doc.id,
+                ...doc.data(),
+              })
 
               if (error) {
                 console.error(`Error parsing achievement: ${doc.id}`, error)
@@ -76,14 +80,17 @@ export const achievementsApi = createApi({
             ]
           : ["AchievementList"],
     }),
-    getAchievementByKey: builder.query<AchievementDoc | null, { key: string }>({
+    getAchievementByKey: builder.query<Achievement | null, { key: string }>({
       queryFn: async ({ key }) => {
         try {
           const docSnap = await getDoc(getAchievementRef(key))
 
           if (!docSnap.exists()) return { data: null }
 
-          const { data, error } = achievementDocSchema.safeParse(docSnap.data())
+          const { data, error } = achievementSchema.safeParse({
+            key: docSnap.id,
+            ...docSnap.data(),
+          })
 
           if (error) throw new Error(error.message || "Data parsing error")
 
@@ -171,10 +178,10 @@ export const achievementsApi = createApi({
       invalidatesTags: (_result, error) =>
         error ? [] : ["UnlockedAchievements"],
     }),
-    createAchievement: builder.mutation<AchievementDoc, AchievementDoc>({
+    createAchievement: builder.mutation<Achievement, Achievement>({
       queryFn: async (input) => {
         try {
-          const achievement = achievementDocSchema.parse(input)
+          const achievement = achievementSchema.parse(input)
           const ref = getAchievementRef(achievement.key)
 
           await runTransaction(db, async (transaction) => {
@@ -182,7 +189,7 @@ export const achievementsApi = createApi({
 
             if (docSnap.exists()) throw new Error(ACHIEVEMENT_KEY_TAKEN_MESSAGE)
 
-            transaction.set(ref, achievement)
+            transaction.set(ref, achievementDocSchema.parse(achievement))
           })
 
           return { data: achievement }
@@ -194,12 +201,15 @@ export const achievementsApi = createApi({
       },
       invalidatesTags: ["AchievementList"],
     }),
-    updateAchievement: builder.mutation<AchievementDoc, AchievementDoc>({
+    updateAchievement: builder.mutation<Achievement, Achievement>({
       queryFn: async (input) => {
         try {
-          const achievement = achievementDocSchema.parse(input)
+          const achievement = achievementSchema.parse(input)
 
-          await setDoc(getAchievementRef(achievement.key), achievement)
+          await setDoc(
+            getAchievementRef(achievement.key),
+            achievementDocSchema.parse(achievement),
+          )
 
           return { data: achievement }
         } catch (error) {

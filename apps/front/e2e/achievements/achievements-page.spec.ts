@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker"
 import { expect, type Page, test } from "@playwright/test"
 import { ACHIEVEMENT_DIFFICULTY, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
-import { type AchievementDoc } from "@repo/schemas"
+import { type Achievement, achievementDocSchema } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
 import { FEATURE_FLAGS } from "@/constants/feature-flags"
 import { SELECTORS } from "@/constants/testing"
@@ -15,8 +15,10 @@ const seedAchievement = async () => {
     description: faker.lorem.sentence(),
     reward: 50,
     difficulty: ACHIEVEMENT_DIFFICULTY.EASY,
-  } satisfies AchievementDoc
-  await refs[TABLES.ACHIEVEMENTS].doc(achievement.key).set(achievement)
+  } satisfies Achievement
+  await refs[TABLES.ACHIEVEMENTS]
+    .doc(achievement.key)
+    .set(achievementDocSchema.parse(achievement))
 
   return achievement
 }
@@ -69,9 +71,11 @@ test.describe("when the achievements flag is enabled", () => {
       seedAchievement(),
     ])
     const user = await setupUser()
-    await subRefs[TABLES.UNLOCKED_ACHIEVEMENTS](user.id)
-      .doc(unlocked.key)
-      .set({ achievedAt: Timestamp.now(), reward: unlocked.reward })
+    await subRefs[TABLES.UNLOCKED_ACHIEVEMENTS](user.id).doc(unlocked.key).set({
+      key: unlocked.key,
+      achievedAt: Timestamp.now(),
+      reward: unlocked.reward,
+    })
     await enableAchievementsFlag(page)
 
     await loginViaUI(page, user.email)
