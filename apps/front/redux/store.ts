@@ -15,6 +15,7 @@ import { localApi } from "@/redux/api/local"
 import { mapApi } from "@/redux/api/maps"
 import { marathonSeedApi } from "@/redux/api/marathon-seed"
 import { messagesApi } from "@/redux/api/messages"
+import { packsApi } from "@/redux/api/packs"
 import { raceApi } from "@/redux/api/race"
 import { seedApi } from "@/redux/api/seed"
 import { seedMakerApi } from "@/redux/api/seed-maker"
@@ -32,6 +33,7 @@ export const makeStore = () =>
       [adminApi.reducerPath]: adminApi.reducer,
       [conversationsApi.reducerPath]: conversationsApi.reducer,
       [messagesApi.reducerPath]: messagesApi.reducer,
+      [packsApi.reducerPath]: packsApi.reducer,
       [gameApi.reducerPath]: gameApi.reducer,
       [suggestionsApi.reducerPath]: suggestionsApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
@@ -59,6 +61,7 @@ export const makeStore = () =>
         .concat(adminApi.middleware)
         .concat(conversationsApi.middleware)
         .concat(messagesApi.middleware)
+        .concat(packsApi.middleware)
         .concat(userApi.middleware)
         .concat(seedApi.middleware)
         .concat(lobbyApi.middleware)

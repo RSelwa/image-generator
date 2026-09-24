@@ -136,6 +136,7 @@ export const API_ENDPOINTS = {
   CREATE_SEED: "/api/create-seed",
   DAILY_CHALLENGE: "/api/daily-challenge",
   ACHIEVEMENT_EVENTS: "/api/achievements/events",
+  OPEN_PACK: "/api/packs/open",
 } as const
 
 export const FIREBASE_ERRORS = {

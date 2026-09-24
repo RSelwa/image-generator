@@ -95,3 +95,9 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **`getVerifiedUid` duplicated** from the achievements route (2 copies). The third route needing it moves it to a shared util; extracting now would edit the achievements route (a refactor outside this sub-bullet).
 - **Pools read inside the transaction**: a pool write by the trigger during an open makes it retry, which is safe. Move the pool reads out of the transaction if contention ever shows.
 - **Tests**: e2e request spec `e2e/tcg/open-pack.spec.ts` (API-route precedent). Success tests seed all 5 pools with one known map for a deterministic draw; accepted flake risk: a late `listen-docs` trigger from another spec adding a map to a pool mid-test (CI runs one worker). Not run locally (CI-only).
+
+## Packs API › Redux endpoint
+
+- **New `packsApi`** (one API per domain), registered in the store. `openPack` mirrors `sendAchievementEvent`: id token from `auth.currentUser`, `POST` with the bearer, `globalErrorHandler` on a non-OK answer, body parsed with `openPackResponseSchema`.
+- **Invalidates `UserCards` only, on success.** The collection query (Front TCG) provides that tag. The pack stock needs no invalidation, unlike the plan's wording: it lives on the user doc, which `authApi` already listens to live (`onSnapshot`), so the store updates by itself after the server write.
+- First unit-tested redux API in the repo (`packs.test.ts`: `auth` and `fetch` mocked, store built with only `packsApi`).

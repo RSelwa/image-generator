@@ -131,11 +131,11 @@ Cards are **maps only** for now: a card is a view of a map doc, so no dedicated 
   - [x] Add a Firestore trigger in `functions/listen-docs` on `games/{gameId}/maps/{mapId}` writes: when `cardProperties.rarity` changes (`cardProperties` added, rarity updated, `cardProperties` removed, or map deleted), remove the map from its old pool and add it to the new one (`arrayRemove` / `arrayUnion` in one batch). Unit tests for each transition
   - [x] Create a script that rebuilds every `cardPools` doc from the maps (for the first run and to repair drift). Do not run it yet
 
-- [ ] Packs API
+- [x] Packs API
   - [x] Create a pure util in `libs/common` `getAvailablePacks(packsStored, anchor, now)` + `getNextPackAt(...)` + `consumePack(...)` returning the new `packsStored` / anchor. Shared by the endpoint and the front countdown, so both compute the same count. Unit tests: empty, partial refill, capped at `PACKS_MAX` (no next pack date when full), anchor advanced by consumed periods only
   - [x] Create a pure util `drawRarities(random)` returning `PACK_SIZE` rarities with the weights and the guaranteed rare+ last card, plus `pickCard(pools, rarity)` with the fallback to the next rarity down. Unit tests with an injected random (every rarity reachable, last card always rare+, fallback when a pool is empty, error when all pools are empty)
   - [x] Create a `POST /api/packs/open` endpoint in the Next API: uid from bearer token, no payload. In one transaction: read the user, compute available packs (none → 409), read the pools, draw 5 cards, upsert `users/{uid}/cards/{mapId}` (`count` increment, `cardPropertiesAtPull`, timestamps), update `packsStored` / `packsRefillAnchor`. Returns the 5 cards (map data + `cardProperties` + `isNew`). Tests: unauthenticated 401, no pack 409, success writes cards and consumes one pack, duplicate increments `count`
-  - [ ] Add a redux endpoint for it (mutation, invalidates the user's cards and packs)
+  - [x] Add a redux endpoint for it (mutation, invalidates the user's cards and packs)
 
 - [ ] Front TCG
   - [ ] Add the `TCG` feature flag
