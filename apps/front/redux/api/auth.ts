@@ -43,6 +43,7 @@ import {
   updateSessionStatus,
 } from "@/redux/session/session.actions"
 import { type RootState } from "@/redux/store"
+import { globalErrorHandler } from "@/utils/error"
 import {
   formatSessionFromAnonymousUser,
   formatSessionFromFirebaseUser,
@@ -126,7 +127,7 @@ export const authApi = createApi({
           console.error(error)
           toast.error("Failed to Signup. Please check your credentials.")
 
-          return { error: error }
+          return { error: globalErrorHandler(error) }
         }
       },
     }),
@@ -191,7 +192,7 @@ export const authApi = createApi({
           console.error(error)
           toast.error("Failed to login with Google.")
 
-          return { error: error }
+          return { error: globalErrorHandler(error) }
         }
       },
     }),
@@ -294,7 +295,7 @@ export const authApi = createApi({
         } catch (error) {
           toast.error("Failed to login. Please check your credentials.")
 
-          return { error: error }
+          return { error: globalErrorHandler(error) }
         }
       },
     }),
@@ -305,7 +306,7 @@ export const authApi = createApi({
 
           return { data: null }
         } catch (error) {
-          return { error: error }
+          return { error: globalErrorHandler(error) }
         }
       },
     }),
@@ -451,7 +452,7 @@ export const authApi = createApi({
           console.error(error)
           toast.error("Failed to sign in anonymously.")
 
-          return { error: error }
+          return { error: globalErrorHandler(error) }
         }
       },
     }),
