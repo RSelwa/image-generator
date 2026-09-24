@@ -272,7 +272,7 @@ export const authApi = createApi({
           dispatch(updateSessionStatus(SESSION_STATUS.LOADING))
 
           unsubscribe = onAuthStateChanged(auth, (user) => {
-            void handleAuthChange(user)
+            handleAuthChange(user)
           })
         } catch (error) {
           dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
@@ -421,7 +421,7 @@ export const authApi = createApi({
               } catch (error) {
                 console.error("Error parsing user document:", error)
                 dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
-                void auth.signOut().catch(globalErrorHandler)
+                auth.signOut().catch(globalErrorHandler)
               }
             },
             (error) => {
