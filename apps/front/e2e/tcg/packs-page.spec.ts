@@ -2,19 +2,13 @@ import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
 import { expect, type Page, test } from "@playwright/test"
 import { CARD_RARITY, PACK_SIZE } from "@repo/common"
 import { Timestamp } from "firebase-admin/firestore"
-import { FEATURE_FLAGS } from "@/constants/feature-flags"
 import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
-import { seedEveryPoolWithOneMap } from "../helpers/tcg"
+import { enableTcgFlag, seedEveryPoolWithOneMap } from "../helpers/tcg"
 
 const PACKS_LEFT = 7
 const LAST_PACK = 1
-
-const enableTcgFlag = (page: Page) =>
-  page.addInitScript((flag) => {
-    localStorage.setItem(flag, JSON.stringify(true))
-  }, FEATURE_FLAGS.TCG)
 
 const openPackPage = async (page: Page, packsStored: number) => {
   const user = await setupUser({

@@ -1,7 +1,9 @@
+import { type Page } from "@playwright/test"
 import { CARD_RARITY, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { type CardProperties } from "@repo/schemas"
 import { gameFactory, mapFactory } from "@repo/testing/factory"
+import { FEATURE_FLAGS } from "@/constants/feature-flags"
 
 export const seedEveryPoolWithOneMap = async (
   cardProperties: CardProperties,
@@ -20,3 +22,8 @@ export const seedEveryPoolWithOneMap = async (
 
   return map
 }
+
+export const enableTcgFlag = (page: Page) =>
+  page.addInitScript((flag) => {
+    localStorage.setItem(flag, JSON.stringify(true))
+  }, FEATURE_FLAGS.TCG)

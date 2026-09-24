@@ -9,8 +9,10 @@ import {
   Crown,
   Gamepad2Icon,
   History,
+  Layers,
   LogOut,
   MenuIcon,
+  Package,
   Skull,
   Timer,
   Trophy,
@@ -64,6 +66,7 @@ export const NavUser = () => {
   const user = useAppSelector(selectUser)
   const isAdmin = useAppSelector(selectIsAdmin)
   const isAchievementsEnabled = useFeatureFlag(FEATURE_FLAGS.ACHIEVEMENTS)
+  const isTcgEnabled = useFeatureFlag(FEATURE_FLAGS.TCG)
 
   const [createLobbyDoc, { isLoading }] = useCreateAndJoinLobbyMutation()
   const isCreatingRef = useRef(false)
@@ -177,6 +180,30 @@ export const NavUser = () => {
                 {t("achievements")}
               </Link>
             </DropdownMenuItem>
+          )}
+          {isTcgEnabled && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={PAGES.PACKS}
+                  className="cursor-pointer"
+                  data-testid={SELECTORS.NAV_PACKS}
+                >
+                  <Package />
+                  {t("packs")}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={PAGES.COLLECTION}
+                  className="cursor-pointer"
+                  data-testid={SELECTORS.NAV_COLLECTION}
+                >
+                  <Layers />
+                  {t("collection")}
+                </Link>
+              </DropdownMenuItem>
+            </>
           )}
         </DropdownMenuGroup>
         <DropdownMenuGroup />

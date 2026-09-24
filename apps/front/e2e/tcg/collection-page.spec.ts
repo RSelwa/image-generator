@@ -1,19 +1,14 @@
-import { expect, type Page, test } from "@playwright/test"
+import { expect, test } from "@playwright/test"
 import { CARD_RARITY, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { gameFactory, mapFactory } from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"
-import { FEATURE_FLAGS } from "@/constants/feature-flags"
 import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
+import { enableTcgFlag } from "../helpers/tcg"
 
 const OWNED_COUNT = 2
-
-const enableTcgFlag = (page: Page) =>
-  page.addInitScript((flag) => {
-    localStorage.setItem(flag, JSON.stringify(true))
-  }, FEATURE_FLAGS.TCG)
 
 const seedGameWithTwoCards = async () => {
   const game = gameFactory()

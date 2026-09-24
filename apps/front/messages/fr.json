@@ -42,7 +42,9 @@
     "joinLobby": "Rejoindre un lobby",
     "about": "À propos",
     "deathRun": "Death Run",
-    "achievements": "Succès"
+    "achievements": "Succès",
+    "packs": "Boosters",
+    "collection": "Collection"
   },
   "auth": {
     "loginTitle": "Connexion",

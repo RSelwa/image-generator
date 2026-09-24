@@ -92,6 +92,8 @@ export const SELECTORS = {
   ADMIN_MAPS_RARITY_FILTER_OPTION: (filter: string) =>
     `admin-maps-rarity-filter-option-${filter}`,
   NAV_ACHIEVEMENTS: "nav-achievements",
+  NAV_PACKS: "nav-packs",
+  NAV_COLLECTION: "nav-collection",
   NAV_HISTORY_LINK: "nav-history-link",
   ACHIEVEMENTS_ITEM: (key: string) => `achievements-item-${key}`,
 } as const

@@ -143,3 +143,8 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - `packs.test.ts` mocks `@/constants/db-refs` (module-load Firestore refs now imported by `packs.ts`).
 - Signed-out (no uid): the page shows its heading only; the page is reached from the signed-in menu.
 - Tests: unit (`utils/collection.test.ts`), e2e `e2e/tcg/collection-page.spec.ts` (`1/2` progress, owned card, locked card). No story (no runner).
+
+## Front TCG › Menu tabs
+
+- **Two items, Packs and Collection**, in the user dropdown right after Achievements, same markup (`asChild` `Link`, `SELECTORS.NAV_PACKS` / `NAV_COLLECTION`), behind the `TCG` flag; lucide `Package` / `Layers`; en + fr.
+- E2E `e2e/tcg/tcg-menu.spec.ts` (flag off → no tabs + `/packs` redirects home; flag on → each tab links its page), mirroring the achievements menu tests. `enableTcgFlag` moved to `e2e/helpers/tcg.ts`, shared by the 3 TCG page specs.
