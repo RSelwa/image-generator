@@ -331,6 +331,17 @@
     "new": "New",
     "summaryTitle": "Your cards",
     "openAnother": "Open another",
-    "back": "Back to packs"
+    "back": "Back to packs",
+    "seeCollection": "See collection"
+  },
+  "collection": {
+    "metaTitle": "Collection — Geo Gamer",
+    "metaDescription": "Your collection of map cards, game by game.",
+    "title": "Collection",
+    "description": "Every map card, game by game",
+    "progress": "{owned}/{total}",
+    "locked": "Card not collected yet",
+    "empty": "No card to collect yet.",
+    "error": "Your collection could not be loaded."
   }
 }

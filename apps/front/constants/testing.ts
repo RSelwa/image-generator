@@ -83,6 +83,11 @@ export const SELECTORS = {
   PACK_REVEAL_NEW: "pack-reveal-new",
   PACK_OPEN_ANOTHER: "pack-open-another",
   PACK_BACK: "pack-back",
+  PACK_SEE_COLLECTION: "pack-see-collection",
+  COLLECTION_GAME: (gameId: string) => `collection-game-${gameId}`,
+  COLLECTION_GAME_PROGRESS: (gameId: string) =>
+    `collection-game-progress-${gameId}`,
+  COLLECTION_LOCKED_CARD: (mapId: string) => `collection-locked-card-${mapId}`,
   ADMIN_MAPS_RARITY_FILTER: "admin-maps-rarity-filter",
   ADMIN_MAPS_RARITY_FILTER_OPTION: (filter: string) =>
     `admin-maps-rarity-filter-option-${filter}`,

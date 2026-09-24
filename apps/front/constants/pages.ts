@@ -29,6 +29,7 @@ export const PAGES = {
   HISTORY: "/history",
   ACHIEVEMENTS: "/achievements",
   PACKS: "/packs",
+  COLLECTION: "/collection",
   PROMO: "/promo",
   BLOG: (slug: string) => `/blog/${slug}`,
   DAILY_CHALLENGE: "/daily-challenge",

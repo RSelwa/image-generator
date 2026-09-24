@@ -10,6 +10,8 @@ const { currentUser } = vi.hoisted(() => ({
   currentUser: { value: null as { getIdToken: () => Promise<string> } | null },
 }))
 
+vi.mock("@/constants/db-refs", () => ({ TABLES_SUB_REFS: {} }))
+
 vi.mock("@/constants/db", () => ({
   auth: {
     get currentUser() {

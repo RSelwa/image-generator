@@ -1,4 +1,8 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
+import { TABLES } from "@repo/common"
+import { userCardDocSchema } from "@repo/schemas"
+import { getDocs } from "firebase/firestore"
+import { TABLES_SUB_REFS } from "@/constants/db-refs"
 import { auth } from "@/constants/db"
 import { API_ENDPOINTS } from "@/constants/mapping"
 import { type OpenPackResponse, openPackResponseSchema } from "@/schemas/packs"
@@ -9,6 +13,32 @@ export const packsApi = createApi({
   baseQuery: fakeBaseQuery<GlobalError>(),
   tagTypes: ["UserCards"],
   endpoints: (builder) => ({
+    getUserCardCounts: builder.query<Record<string, number>, { uid: string }>({
+      queryFn: async ({ uid }) => {
+        try {
+          const snapshot = await getDocs(TABLES_SUB_REFS[TABLES.CARDS](uid))
+
+          const counts = snapshot.docs.flatMap((doc) => {
+            const { data, error } = userCardDocSchema.safeParse(doc.data())
+
+            if (error) {
+              console.error(`Error parsing user card: ${doc.id}`, error)
+
+              return []
+            }
+
+            return [[doc.id, data.count] as const]
+          })
+
+          return { data: Object.fromEntries(counts) }
+        } catch (error) {
+          console.error(`Error fetching user cards: ${uid}`, error)
+
+          return { error: globalErrorHandler(error) }
+        }
+      },
+      providesTags: ["UserCards"],
+    }),
     openPack: builder.mutation<OpenPackResponse, void>({
       queryFn: async () => {
         try {
@@ -49,4 +79,4 @@ export const packsApi = createApi({
   }),
 })
 
-export const { useOpenPackMutation } = packsApi
+export const { useGetUserCardCountsQuery, useOpenPackMutation } = packsApi

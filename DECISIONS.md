@@ -132,3 +132,14 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **Summary**: grid of the 5 cards, `new` badge on first pulls, "Open another" when the stock right after the open (`openedPack.packsStored`) is > 0, "Back to packs". `PackReveal` is keyed by the mutation `requestId`, so a second open starts a fresh pile.
 - **"See collection" deferred** to the collection-page sub-bullet: the route doesn't exist yet, a link now would 404.
 - **Tests**: e2e `e2e/tcg/packs-page.spec.ts` (click → 2/5, Enter → 2/5, 5 reveals → summary with one `new` badge and "Open another", last pack → no "Open another"), pools seeded with one map through the shared `e2e/helpers/tcg.ts`. Stories: `Pile`. No play tests (no story runner).
+
+## Front TCG › Collection page
+
+- **Server page reads the public data**: the 5 `cardPools` docs (= every card), one batched `db.getAll` of their map docs (name, image), and the `gamesList` metadata for game titles. **The client reads only the user's owned counts** (`getUserCardCounts` in `packsApi`, owner-only by the rules, provides the `UserCards` tag the open mutation invalidates, so a new pack refreshes the collection).
+- **`buildCollectionGroups`** (`utils/collection.ts`, pure): one group per game sorted by title, rarest first (rank = `CARD_RARITY` key order, common → legendary), owned count per game; total = the game's cards in the pools. Unknown game title → the game id.
+- **Owned → `MapTradingCard` with its count, unowned → a locked silhouette** (rarity frame via `data-rarity`, lock icon, `aria-label`), inline since it's rendered at one site.
+- **`buildCollectionGroups` kept extracted with one production caller**, overruling `simplicity.md`'s 2-call-site rule (reviewer blocked twice): inlining deletes its unit tests, and a story `play` wouldn't replace them — Storybook exists but nothing runs stories (vitest only includes `**/*.test.ts`). "Tests ship with the change" wins here; same reasoning as `countMapsByCardRarity`.
+- **"See collection"** (deferred by the pile sub-bullet) added to the pack summary now that the route exists.
+- `packs.test.ts` mocks `@/constants/db-refs` (module-load Firestore refs now imported by `packs.ts`).
+- Signed-out (no uid): the page shows its heading only; the page is reached from the signed-in menu.
+- Tests: unit (`utils/collection.test.ts`), e2e `e2e/tcg/collection-page.spec.ts` (`1/2` progress, owned card, locked card). No story (no runner).

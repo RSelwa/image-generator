@@ -5,7 +5,9 @@ import { useState } from "react"
 import { MapTradingCard } from "@/components/cards/map-trading-card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
+import { Link } from "@/i18n/routing"
 import { type OpenedCard } from "@/schemas/packs"
 
 type PackRevealProps = {
@@ -61,6 +63,14 @@ export const PackReveal = ({
               {t("openAnother")}
             </Button>
           )}
+          <Button variant="secondary" asChild>
+            <Link
+              href={PAGES.COLLECTION}
+              data-testid={SELECTORS.PACK_SEE_COLLECTION}
+            >
+              {t("seeCollection")}
+            </Link>
+          </Button>
           <Button
             variant="outline"
             onClick={onBack}
