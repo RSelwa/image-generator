@@ -148,3 +148,9 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 
 - **Two items, Packs and Collection**, in the user dropdown right after Achievements, same markup (`asChild` `Link`, `SELECTORS.NAV_PACKS` / `NAV_COLLECTION`), behind the `TCG` flag; lucide `Package` / `Layers`; en + fr.
 - E2E `e2e/tcg/tcg-menu.spec.ts` (flag off → no tabs + `/packs` redirects home; flag on → each tab links its page), mirroring the achievements menu tests. `enableTcgFlag` moved to `e2e/helpers/tcg.ts`, shared by the 3 TCG page specs.
+
+## Front TCG › E2E journey
+
+- **`e2e/tcg/tcg-journey.spec.ts`, one outcome per test** (workflow rule: no intermediate assertion): stock `7/10` + timer shown; open + reveal 5 + back → `6/10`; open + reveal 5 + "See collection" → the card is in the collection; `0/10` → the pack button is disabled; another user's card doc (seeded with the admin SDK) → the viewer sees that map locked, never as owned. The owner-only read rule itself is covered by the rules suite.
+- The stock test seeds no pool: it doesn't open a pack.
+- **Not run locally**, like every e2e spec of this phase (CI-only); they run on the next push that triggers `front.yml`.
