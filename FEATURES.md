@@ -145,3 +145,19 @@ Cards are **maps only** for now: a card is a view of a map doc, so no dedicated 
   - [x] Create a collection page, behind the `TCG` flag: the user's cards grouped by game, sorted by rarity, with owned / total per game (total = maps of the game that have `cardProperties`). Unowned cards shown as locked silhouettes. Story + play test of the grouping
   - [x] Add a TCG tab in the menu (packs + collection), behind the flag
   - [x] E2E: a seeded user at `7/10` sees the counter and the timer, opens a pack, clicks through the 5-card pile, reaches the summary, the counter shows `6/10`, the cards appear in the collection. A seeded user at `0/10` can't open a pack. A second user can't see the first user's cards
+
+---
+
+## TCG collection v1 (numbered binder)
+
+Goal: players aim to **complete the collection**, not only to pull rare cards. Every card gets a fixed number, and the collection page becomes a numbered binder where missing cards show as ghosts at their number.
+
+- `cardProperties.number`: required positive int, unique across cards, shown as `#042`. Numbered **by game** (each game a contiguous block), **never renumbered** once given: a new map takes the next free number.
+- **No draw bias toward missing cards**: draws stay fully random inside a rarity, duplicates are part of the loop (pushes to open more packs).
+
+- [ ] Collection v1
+  - [ ] Add `number` (int ≥ 1) to `cardPropertiesSchema` + schema tests; update the fixtures / tests that build `cardProperties`
+  - [ ] Admin: a required `number` field in the map form's card section, prefilled with the next free number (max used + 1); the admin maps page flags duplicate numbers and gaps. Tests
+  - [ ] Show `#number` on `MapTradingCard` and on the collection's ghost cards (stories updated)
+  - [ ] Collection page as a numbered binder: every card sorted by `number`, owned ones in full with their count, missing ones as ghosts with number + rarity frame, overall progress `owned/total` at the top (per-game count kept as secondary). Unit tests
+  - [ ] Update the e2e specs (collection binder order + progress, admin number field)

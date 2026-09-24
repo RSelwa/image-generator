@@ -154,3 +154,8 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **`e2e/tcg/tcg-journey.spec.ts`, one outcome per test** (workflow rule: no intermediate assertion): stock `7/10` + timer shown; open + reveal 5 + back → `6/10`; open + reveal 5 + "See collection" → the card is in the collection; `0/10` → the pack button is disabled; another user's card doc (seeded with the admin SDK) → the viewer sees that map locked, never as owned. The owner-only read rule itself is covered by the rules suite.
 - The stock test seeds no pool: it doesn't open a pack.
 - **Not run locally**, like every e2e spec of this phase (CI-only); they run on the next push that triggers `front.yml`.
+
+## TCG collection v1 › Plan
+
+- **No draw bias toward missing cards** (user decision): draws stay fully random inside a rarity; duplicates are frustrating on purpose and push to open more packs.
+- **Numbers are fixed**: grouped by game, never renumbered; a new card takes the next free number.
