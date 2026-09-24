@@ -101,3 +101,8 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **New `packsApi`** (one API per domain), registered in the store. `openPack` mirrors `sendAchievementEvent`: id token from `auth.currentUser`, `POST` with the bearer, `globalErrorHandler` on a non-OK answer, body parsed with `openPackResponseSchema`.
 - **Invalidates `UserCards` only, on success.** The collection query (Front TCG) provides that tag. The pack stock needs no invalidation, unlike the plan's wording: it lives on the user doc, which `authApi` already listens to live (`onSnapshot`), so the store updates by itself after the server write.
 - First unit-tested redux API in the repo (`packs.test.ts`: `auth` and `fetch` mocked, store built with only `packsApi`).
+
+## Front TCG › `TCG` feature flag
+
+- `FEATURE_FLAGS.TCG = "tcg"`, same pattern as Credits / Achievements: listed by the dev tools automatically, enabled with `?ff=tcg-true`. The existing `it.each(Object.values(FEATURE_FLAGS))` round-trip test covers it, so no dedicated test.
+- **UI strings go through next-intl** (`messages/en.json` + `fr.json`), like the achievements pages — the app is localized.
