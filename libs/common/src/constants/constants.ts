@@ -19,6 +19,8 @@ export const CARD_RARITY = {
   LEGENDARY: "legendary",
 } as const
 
+export const PACKS_MAX = 10
+
 export const ACHIEVEMENT_KEYS = {
   CHANGE_USERNAME: "change_username",
 } as const

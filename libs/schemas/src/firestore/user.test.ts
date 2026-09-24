@@ -1,3 +1,5 @@
+import { Timestamp } from "@firebase/firestore"
+import { PACKS_MAX } from "@repo/common"
 import { describe, expect, it } from "vitest"
 import { userDocSchema } from "~/firestore/user"
 
@@ -33,6 +35,38 @@ describe("userDocSchema", () => {
     it("should reject it", () => {
       expect(
         userDocSchema.safeParse({ email: EMAIL, referralCode: 42_137 }).success,
+      ).toBe(false)
+    })
+  })
+
+  describe("when the user doc has no pack fields", () => {
+    it("should start with a full pack stock", () => {
+      expect(userDocSchema.parse({ email: EMAIL }).packsStored).toBe(PACKS_MAX)
+    })
+
+    it("should leave the refill anchor empty", () => {
+      expect(userDocSchema.parse({ email: EMAIL }).packsRefillAnchor).toBeNull()
+    })
+  })
+
+  describe("when the user doc has pack fields", () => {
+    it("should keep them", () => {
+      const packsRefillAnchor = Timestamp.now()
+
+      expect(
+        userDocSchema.parse({
+          email: EMAIL,
+          packsStored: 7,
+          packsRefillAnchor,
+        }),
+      ).toMatchObject({ packsStored: 7, packsRefillAnchor })
+    })
+  })
+
+  describe("when the pack stock is out of bounds", () => {
+    it.each([-1, PACKS_MAX + 1, 1.5])("should reject %s", (packsStored) => {
+      expect(
+        userDocSchema.safeParse({ email: EMAIL, packsStored }).success,
       ).toBe(false)
     })
   })

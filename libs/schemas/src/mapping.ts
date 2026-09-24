@@ -1,6 +1,7 @@
 import { type TABLES } from "@repo/common"
 import {
   type AchievementDoc,
+  type CardPoolDoc,
   type ConversationDoc,
   type ConversationMessageDoc,
   type CouponDoc,
@@ -26,6 +27,7 @@ import {
   type SphericalDoc,
   type SuggestionDoc,
   type UnlockedAchievementDoc,
+  type UserCardDoc,
   type UserDoc,
 } from "~/firestore"
 
@@ -57,6 +59,8 @@ export type DocumentMapping = {
   [TABLES.COUPONS]: CouponDoc
   [TABLES.ACHIEVEMENTS]: AchievementDoc
   [TABLES.UNLOCKED_ACHIEVEMENTS]: UnlockedAchievementDoc
+  [TABLES.CARDS]: UserCardDoc
+  [TABLES.CARD_POOLS]: CardPoolDoc
 }
 
 export type Table = keyof DocumentMapping

@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { type Timestamp as ClientTimestamp } from "@firebase/firestore"
-import { AVATARS_KEYS } from "@repo/common"
+import { AVATARS_KEYS, PACKS_MAX } from "@repo/common"
 import { type UserDoc } from "@repo/schemas"
 import { Timestamp } from "firebase-admin/firestore"
 import { type FactoryDoc } from "~/orm"
@@ -27,5 +27,7 @@ export const userFactory: FactoryDoc<UserDoc & { id: string }> = (
   donorTier: null,
   newsletter: false,
   credits: 0,
+  packsStored: PACKS_MAX,
+  packsRefillAnchor: null,
   ...item,
 })

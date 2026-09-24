@@ -2,6 +2,7 @@ import {
   AVATARS_KEYS,
   DONOR_TIERS,
   getRandomAvatar,
+  PACKS_MAX,
   USERS_FIELDS,
 } from "@repo/common"
 import { z } from "zod"
@@ -26,6 +27,14 @@ export const userDocSchema = z.object({
   newsletter: z.boolean().nullish().default(false),
   credits: z.number().nullish().default(0),
   referralCode: z.string().nullish(),
+  packsStored: z
+    .number()
+    .int()
+    .min(0)
+    .max(PACKS_MAX)
+    .optional()
+    .default(PACKS_MAX),
+  packsRefillAnchor: timestampSchema.nullish().default(null),
 })
 
 export const userDocWithIdSchema = z.object({
