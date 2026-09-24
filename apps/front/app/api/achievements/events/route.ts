@@ -8,7 +8,7 @@ import {
   userDocSchema,
 } from "@repo/schemas"
 import { FieldValue } from "firebase-admin/firestore"
-import { isAchievementEventVerified } from "@/utils/achievement-events"
+import { isUsernameChanged } from "@/utils/achievement-event.change-username"
 
 const BEARER_PREFIX = "Bearer "
 
@@ -55,7 +55,7 @@ const unlockAchievement = (
 
     const storedUser = userDocSchema.parse(user.data())
 
-    if (!isAchievementEventVerified(key, event, storedUser)) {
+    if (!isUsernameChanged(event, storedUser)) {
       return UNLOCK_RESULT.EVENT_NOT_VERIFIED
     }
 
