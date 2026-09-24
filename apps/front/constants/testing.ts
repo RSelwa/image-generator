@@ -72,6 +72,10 @@ export const SELECTORS = {
   MAP_FORM_CARD_RARITY_OPTION: (rarity: string) =>
     `map-form-card-rarity-option-${rarity}`,
   MAP_FORM_SUBMIT: "map-form-submit",
+  MAP_CARD: (mapId: string) => `map-card-${mapId}`,
+  ADMIN_MAPS_RARITY_FILTER: "admin-maps-rarity-filter",
+  ADMIN_MAPS_RARITY_FILTER_OPTION: (filter: string) =>
+    `admin-maps-rarity-filter-option-${filter}`,
   NAV_ACHIEVEMENTS: "nav-achievements",
   NAV_HISTORY_LINK: "nav-history-link",
   ACHIEVEMENTS_ITEM: (key: string) => `achievements-item-${key}`,

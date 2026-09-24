@@ -15,16 +15,12 @@ import {
   getCountFromServer,
   getDoc,
   getDocs,
-  limit,
   query,
-  type QueryConstraint,
-  startAfter,
   Timestamp,
   updateDoc,
 } from "firebase/firestore"
 import { toast } from "sonner"
 // Need to use the React-specific entry point to import createApi
-import { DEFAULT_SIZE_MAPS } from "@/constants/api"
 import {
   getMapRef,
   TABLES_GROUP_REFS,
@@ -38,28 +34,10 @@ export const mapApi = createApi({
   baseQuery: fakeBaseQuery<GlobalError>(),
   tagTypes: ["Map", "MapList", "MapCount"],
   endpoints: (builder) => ({
-    getMaps: builder.infiniteQuery<
-      MapDocWithId[],
-      void,
-      { limit?: number; startAfter?: string }
-    >({
-      queryFn: async ({ pageParam }) => {
+    getMaps: builder.query<MapDocWithId[], void>({
+      queryFn: async () => {
         try {
-          const definedFieldsConstraints: QueryConstraint[] = []
-
-          if (pageParam.startAfter) {
-            definedFieldsConstraints.push(startAfter(pageParam.startAfter))
-          }
-
-          if (pageParam.limit)
-            definedFieldsConstraints.push(limit(pageParam.limit))
-
-          const q = query(
-            TABLES_GROUP_REFS[TABLES.MAPS],
-            ...definedFieldsConstraints,
-          )
-
-          const snapshot = await getDocs(q)
+          const snapshot = await getDocs(TABLES_GROUP_REFS[TABLES.MAPS])
 
           const maps = snapshot.docs.map((doc) => {
             const { data, error } = mapDocWithIdSchema.safeParse({
@@ -82,29 +60,10 @@ export const mapApi = createApi({
           }
         }
       },
-      infiniteQueryOptions: {
-        initialPageParam: {
-          limit: DEFAULT_SIZE_MAPS,
-          startAfter: "",
-        },
-        getNextPageParam: (_, allPages, lastPageParams) => {
-          const lastPage = allPages.at(-1)
-          const lastMap = lastPage?.at(-1)
-
-          const limitValue = lastPageParams?.limit || DEFAULT_SIZE_MAPS
-
-          return {
-            startAfter: lastMap?.id,
-            limit: limitValue,
-          }
-        },
-      },
       providesTags: (result) =>
         result
           ? [
-              ...result.pages
-                .flat()
-                .map(({ id }) => ({ type: "Map" as const, id })),
+              ...result.map(({ id }) => ({ type: "Map" as const, id })),
               { type: "MapList" as const },
             ]
           : [{ type: "MapList" as const }],
@@ -330,7 +289,7 @@ export const mapApi = createApi({
 })
 
 export const {
-  useGetMapsInfiniteQuery,
+  useGetMapsQuery,
   useGetMapsByGameIdQuery,
   useGetMapByIdQuery,
   useGetTotalMapsCountQuery,

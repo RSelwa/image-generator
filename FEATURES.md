@@ -124,7 +124,7 @@ Cards are **maps only** for now: a card is a view of a map doc, so no dedicated 
 
 - [ ] Admin map rarity
   - [x] Add a "Card" section in the map form (`components/modals/map-id.tsx`) bound to `cardProperties`, with a `rarity` select and a "not a card" option that removes the whole `cardProperties` object; wire it through the maps redux endpoint (update mutation). Story for the form with each rarity
-  - [ ] In the admin maps page, show the rarity on each `MapCard` (badge) and add a filter by rarity (including "not rated"), so admins can see which maps are left to rate. Story + play test of the filter
+  - [x] In the admin maps page, show the rarity on each `MapCard` (badge) and add a filter by rarity (including "not rated"), so admins can see which maps are left to rate. Story + play test of the filter
   - [ ] Add a count per rarity at the top of the admin maps page, to balance pools by hand
 
 - [ ] Card pools
