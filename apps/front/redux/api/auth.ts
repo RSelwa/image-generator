@@ -21,6 +21,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   type Unsubscribe,
+  type User,
 } from "firebase/auth"
 import {
   type DocumentReference,
@@ -206,71 +207,72 @@ export const authApi = createApi({
       ) => {
         let unsubscribe: Unsubscribe | undefined
 
+        const handleAuthChange = async (user: User | null) => {
+          const isSignedIn = !!user && !user.isAnonymous
+
+          if (!user) {
+            signInAnonymously(auth)
+
+            return
+          }
+
+          if (user.isAnonymous) {
+            const userRef = getUserRef(user.uid)
+            const userDoc = await getDoc(userRef)
+            const pseudo = generateUsername()
+
+            if (!userDoc.exists()) {
+              const parsingData: Partial<UserDoc> = {
+                email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
+                pseudo,
+                isAnonymousUser: true,
+                avatar: getRandomAvatar(),
+                streak: 0,
+                lastStreakDate: null,
+                newsletter: true,
+              }
+
+              const { credits: _, ...newUserDoc } =
+                userDocSchema.parse(parsingData)
+
+              await setDoc(
+                userRef,
+                {
+                  ...newUserDoc,
+                  createdAt: serverTimestamp(),
+                  updatedAt: serverTimestamp(),
+                },
+                { merge: true },
+              )
+            }
+
+            const sessionUser = formatSessionFromAnonymousUser({
+              authUser: user,
+              pseudo: userDoc.data()?.pseudo || pseudo,
+            })
+
+            dispatch(
+              updateSession({
+                authUser: user,
+                user: sessionUser,
+                status: SESSION_STATUS.SUCCESS,
+              }),
+            )
+
+            return
+          }
+
+          if (isSignedIn) {
+            await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
+          }
+        }
+
         try {
           await cacheDataLoaded
           dispatch(updateSessionStatus(SESSION_STATUS.LOADING))
 
           unsubscribe = onAuthStateChanged(auth, (user) => {
-            void (async () => {
-              const isSignedIn = !!user && !user.isAnonymous
-
-              if (!user) {
-                signInAnonymously(auth)
-
-                return
-              }
-
-              if (user.isAnonymous) {
-                // beforeUserCreated blocking function doesn't trigger for anonymous sign-ins,
-                // so we create the user doc client-side if it doesn't exist
-                const userRef = getUserRef(user.uid)
-                const userDoc = await getDoc(userRef)
-                const pseudo = generateUsername()
-
-                if (!userDoc.exists()) {
-                  const parsingData: Partial<UserDoc> = {
-                    email: `${PREFIX_ANONYMOUS_USER}${user.uid}${SUFFIX_ANONYMOUS_USER}`,
-                    pseudo,
-                    isAnonymousUser: true,
-                    avatar: getRandomAvatar(),
-                    streak: 0,
-                    lastStreakDate: null,
-                    newsletter: true,
-                  }
-
-                  const { credits: _, ...newUserDoc } =
-                    userDocSchema.parse(parsingData)
-
-                  await setDoc(
-                    userRef,
-                    {
-                      ...newUserDoc,
-                      createdAt: serverTimestamp(),
-                      updatedAt: serverTimestamp(),
-                    },
-                    { merge: true },
-                  )
-                }
-
-                const sessionUser = formatSessionFromAnonymousUser({
-                  authUser: user,
-                  pseudo: userDoc.data()?.pseudo || pseudo,
-                })
-
-                dispatch(
-                  updateSession({
-                    authUser: user,
-                    user: sessionUser,
-                    status: SESSION_STATUS.SUCCESS,
-                  }),
-                )
-
-                return
-              }
-
-              if (isSignedIn)
-                await dispatch(authApi.endpoints.updateAuth.initiate()).unwrap()
-            })()
+            handleAuthChange(user)
           })
         } catch (error) {
           dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
@@ -419,7 +421,7 @@ export const authApi = createApi({
               } catch (error) {
                 console.error("Error parsing user document:", error)
                 dispatch(updateSessionStatus(SESSION_STATUS.ERROR))
-                auth.signOut()
+                auth.signOut().catch(globalErrorHandler)
               }
             },
             (error) => {
