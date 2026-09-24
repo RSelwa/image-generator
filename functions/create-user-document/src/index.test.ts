@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker"
 import {
+  PACKS_MAX,
   PREFIX_ANONYMOUS_USER,
   REFERRAL_CODE_LENGTH,
   SUFFIX_ANONYMOUS_USER,
@@ -96,6 +97,8 @@ describe("createUserDocument", () => {
     expect(userDoc?.referralCode).toMatch(
       new RegExp(`^\\d{${REFERRAL_CODE_LENGTH}}$`),
     )
+    expect(userDoc).toHaveProperty("packsStored", PACKS_MAX)
+    expect(userDoc?.packsRefillAnchor).toEqual(userDoc?.createdAt)
   })
 
   // beforeUserCreated is not triggered for anonymous sign-in in the Firebase emulator

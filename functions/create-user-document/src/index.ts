@@ -36,6 +36,7 @@ export const createUserDocument: ReturnType<typeof beforeUserCreated> =
         avatar: getRandomAvatar(),
         newsletter: true,
         referralCode: await generateUniqueReferralCode(),
+        packsRefillAnchor: now,
       })
 
       await refs.users.doc(user.uid).set(userDoc)
