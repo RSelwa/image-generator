@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite"
+import { type Meta, type StoryObj } from "@storybook/nextjs-vite"
 import { ACHIEVEMENT_DIFFICULTY } from "@repo/common"
 import { Timestamp } from "firebase/firestore"
 import { NextIntlClientProvider } from "next-intl"
