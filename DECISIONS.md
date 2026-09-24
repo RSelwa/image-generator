@@ -175,3 +175,9 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **`getNextCardNumber` / `getCardNumberIssues` kept extracted with one caller each**, overruling the 2-call-site rule again (reviewer blocked twice): inlining deletes the only direct tests of the max+1 and gap logic.
 - Kept as one commit although the reviewer flagged `SCOPE: SPLIT` (prefill vs page flags).
 - Tests: unit (`utils/card-number.test.ts`), e2e (prefilled value is what gets stored; a duplicate number is flagged).
+
+## TCG collection v1 › `#number` on the cards
+
+- **`MapTradingCard` takes a required `number`**, shown as a blur badge top-left (`#042`); the `×n` duplicate badge stays top-right. The ghost card shows the same badge.
+- **The collection page builds each card from the map doc's `cardProperties`** (rarity + number, the source of truth) instead of the pool doc's rarity id. A pool entry whose map is gone or no longer a card is **skipped**, so it isn't counted in the progress either (it would reappear only through pool drift, repaired by the rebuild script).
+- Tests: `collection-page.spec.ts` asserts the owned card and the ghost show their `#number`. Story default `number: 42`.

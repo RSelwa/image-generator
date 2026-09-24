@@ -7,12 +7,14 @@ import {
   FALL_BACK_IMAGE,
 } from "@/constants/mapping"
 import { SELECTORS } from "@/constants/testing"
+import { formatCardNumber } from "@/utils/card-number"
 
 type MapTradingCardProps = {
   mapId: string
   name: string
   imageUrl: string | null
   rarity: CardRarity
+  number: number
   gameTitle?: string
   count?: number
 }
@@ -22,6 +24,7 @@ export const MapTradingCard = ({
   name,
   imageUrl,
   rarity,
+  number,
   gameTitle,
   count = 1,
 }: MapTradingCardProps) => {
@@ -42,6 +45,9 @@ export const MapTradingCard = ({
           sizes="(min-width: 640px) 240px, 50vw"
           className="object-cover"
         />
+        <Badge variant="blur" className="absolute top-2 left-2 tabular-nums">
+          {formatCardNumber(number)}
+        </Badge>
         {hasDuplicates && (
           <Badge variant="blur" className="absolute top-2 right-2">
             {t("count", { count })}

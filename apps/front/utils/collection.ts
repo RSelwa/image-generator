@@ -7,6 +7,7 @@ export type CollectionCard = {
   name: string
   imageUrl: string | null
   rarity: CardRarity
+  number: number
 }
 
 const RARITIES_BY_ORDER = Object.values(CARD_RARITY)

@@ -4,6 +4,7 @@ import { Lock } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect } from "react"
 import { MapTradingCard } from "@/components/cards/map-trading-card"
+import { Badge } from "@/components/ui/badge"
 import Loader from "@/components/icons/loader"
 import { FEATURE_FLAGS } from "@/constants/feature-flags"
 import { PAGES } from "@/constants/pages"
@@ -13,6 +14,7 @@ import { useRouter } from "@/i18n/routing"
 import { useGetUserCardCountsQuery } from "@/redux/api/packs"
 import { selectUserId } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import { formatCardNumber } from "@/utils/card-number"
 import { buildCollectionGroups, type CollectionCard } from "@/utils/collection"
 
 type CollectionContentProps = {
@@ -92,6 +94,7 @@ export const CollectionContent = ({
                           name={card.name}
                           imageUrl={card.imageUrl}
                           rarity={card.rarity}
+                          number={card.number}
                           count={card.count}
                         />
                       )}
@@ -103,9 +106,15 @@ export const CollectionContent = ({
                           data-testid={SELECTORS.COLLECTION_LOCKED_CARD(
                             card.mapId,
                           )}
-                          className="flex aspect-5/7 w-full items-center justify-center rounded-xl border-4 border-dashed bg-muted text-muted-foreground data-[rarity=common]:border-neutral-500 data-[rarity=uncommon]:border-marathon-green data-[rarity=rare]:border-blue-accent data-[rarity=ultraRare]:border-purple-500 data-[rarity=legendary]:border-yellow-400"
+                          className="relative flex aspect-5/7 w-full items-center justify-center rounded-xl border-4 border-dashed bg-muted text-muted-foreground data-[rarity=common]:border-neutral-500 data-[rarity=uncommon]:border-marathon-green data-[rarity=rare]:border-blue-accent data-[rarity=ultraRare]:border-purple-500 data-[rarity=legendary]:border-yellow-400"
                         >
                           <Lock className="size-10" />
+                          <Badge
+                            variant="blur"
+                            className="absolute top-2 left-2 tabular-nums"
+                          >
+                            {formatCardNumber(card.number)}
+                          </Badge>
                         </div>
                       )}
                     </li>

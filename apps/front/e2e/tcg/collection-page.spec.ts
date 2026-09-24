@@ -5,6 +5,7 @@ import { gameFactory, mapFactory } from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"
 import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
+import { formatCardNumber } from "@/utils/card-number"
 import { loginViaUI, setupUser } from "../helpers/lobby"
 import { enableTcgFlag } from "../helpers/tcg"
 
@@ -70,9 +71,9 @@ test.describe("when a user opens their collection", () => {
     ).toHaveText("1/2")
     await expect(
       page.getByTestId(SELECTORS.TRADING_CARD(ownedMap.id)),
-    ).toBeVisible()
+    ).toContainText(formatCardNumber(CARD_NUMBER))
     await expect(
       page.getByTestId(SELECTORS.COLLECTION_LOCKED_CARD(lockedMap.id)),
-    ).toBeVisible()
+    ).toContainText(formatCardNumber(LOCKED_CARD_NUMBER))
   })
 })

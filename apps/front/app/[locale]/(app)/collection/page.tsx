@@ -3,7 +3,6 @@ import { refs, subRefs } from "@repo/providers/db-refs"
 import { db } from "@repo/providers/firebase"
 import {
   cardPoolDocSchema,
-  cardRaritySchema,
   gamesListDocSchema,
   mapDocSchema,
 } from "@repo/schemas"
@@ -56,14 +55,9 @@ export const generateMetadata = async ({
 const getPoolEntries = async () => {
   const poolsSnapshot = await refs[TABLES.CARD_POOLS].get()
 
-  return poolsSnapshot.docs.flatMap((pool) => {
-    const rarity = cardRaritySchema.safeParse(pool.id).data
-    const maps = cardPoolDocSchema.safeParse(pool.data()).data?.maps
-
-    if (!rarity || !maps) return []
-
-    return maps.map((entry) => ({ ...entry, rarity }))
-  })
+  return poolsSnapshot.docs.flatMap(
+    (pool) => cardPoolDocSchema.safeParse(pool.data()).data?.maps || [],
+  )
 }
 
 const getGameTitles = async () => {
@@ -94,9 +88,16 @@ const CollectionPage = async () => {
   const cards = poolEntries.flatMap((entry, index) => {
     const map = mapDocSchema.safeParse(mapSnapshots[index]?.data()).data
 
-    if (!map) return []
+    if (!map?.cardProperties) return []
 
-    return [{ ...entry, name: map.name, imageUrl: map.imageUrl || null }]
+    return [
+      {
+        ...entry,
+        ...map.cardProperties,
+        name: map.name,
+        imageUrl: map.imageUrl || null,
+      },
+    ]
   })
 
   return <CollectionContent cards={cards} gameTitles={gameTitles} />

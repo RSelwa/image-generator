@@ -16,6 +16,7 @@ const meta = {
     name: "Kanto",
     imageUrl: null,
     rarity: CARD_RARITY.COMMON,
+    number: 42,
   },
   decorators: [
     (Story) => (

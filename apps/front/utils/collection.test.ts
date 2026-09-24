@@ -3,17 +3,23 @@ import { type CardRarity } from "@repo/schemas"
 import { describe, expect, it } from "vitest"
 import { buildCollectionGroups } from "@/utils/collection"
 
-const buildCard = (mapId: string, gameId: string, rarity: CardRarity) => ({
+const buildCard = (
+  mapId: string,
+  gameId: string,
+  rarity: CardRarity,
+  number: number,
+) => ({
   mapId,
   gameId,
   name: mapId,
   imageUrl: null,
   rarity,
+  number,
 })
 
-const KANTO = buildCard("kanto", "pokemon", CARD_RARITY.COMMON)
-const JOHTO = buildCard("johto", "pokemon", CARD_RARITY.LEGENDARY)
-const HYRULE = buildCard("hyrule", "zelda", CARD_RARITY.RARE)
+const KANTO = buildCard("kanto", "pokemon", CARD_RARITY.COMMON, 1)
+const JOHTO = buildCard("johto", "pokemon", CARD_RARITY.LEGENDARY, 2)
+const HYRULE = buildCard("hyrule", "zelda", CARD_RARITY.RARE, 3)
 const GAME_TITLES = { pokemon: "Pokémon", zelda: "Zelda" }
 
 const groups = buildCollectionGroups([KANTO, HYRULE, JOHTO], GAME_TITLES, {
