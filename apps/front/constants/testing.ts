@@ -73,6 +73,7 @@ export const SELECTORS = {
     `map-form-card-rarity-option-${rarity}`,
   MAP_FORM_SUBMIT: "map-form-submit",
   MAP_CARD: (mapId: string) => `map-card-${mapId}`,
+  TRADING_CARD: (mapId: string) => `trading-card-${mapId}`,
   ADMIN_MAPS_RARITY_FILTER: "admin-maps-rarity-filter",
   ADMIN_MAPS_RARITY_FILTER_OPTION: (filter: string) =>
     `admin-maps-rarity-filter-option-${filter}`,

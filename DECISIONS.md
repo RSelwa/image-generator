@@ -106,3 +106,10 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 
 - `FEATURE_FLAGS.TCG = "tcg"`, same pattern as Credits / Achievements: listed by the dev tools automatically, enabled with `?ff=tcg-true`. The existing `it.each(Object.values(FEATURE_FLAGS))` round-trip test covers it, so no dedicated test.
 - **UI strings go through next-intl** (`messages/en.json` + `fr.json`), like the achievements pages — the app is localized.
+
+## Front TCG › `MapTradingCard`
+
+- **`components/cards/map-trading-card.tsx`**: 5:7 card, map image, name, optional game title, rarity badge, `×n` badge when `count > 1`.
+- **Rarity frame via `data-rarity`** + Tailwind `data-[rarity=…]:` variants (border colour per rarity, coloured glow on ultraRare / legendary), not a class branch. Frame colours follow the badge colours (`CARD_RARITY_TO_BADGE_VARIANT`).
+- **`gameTitle` is optional**: the open-pack response has no game title (the reveal shows the map only); the collection page passes it.
+- Labels through next-intl `tradingCard` (en + fr). One story per rarity + `WithGame` + `Duplicate` (`stories/MapTradingCard.stories.tsx`, AchievementCard precedent).

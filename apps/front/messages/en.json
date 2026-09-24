@@ -302,5 +302,15 @@
     "description": "Unlock achievements to earn credits",
     "empty": "No achievements yet.",
     "error": "Your achievements could not be loaded."
+  },
+  "tradingCard": {
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "ultraRare": "Ultra rare",
+      "legendary": "Legendary"
+    },
+    "count": "×{count}"
   }
 }
