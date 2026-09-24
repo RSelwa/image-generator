@@ -20,6 +20,7 @@ import { QUERY_PARAMS } from "@/constants/mapping"
 import { useLocalStorage } from "@/hooks/use-storage"
 import { selectIsAdmin } from "@/redux/session/session.selectors"
 import { useAppSelector } from "@/redux/store"
+import { globalErrorHandler } from "@/utils/error"
 import { getFeatureFlagUrl, parseFeatureFlagParam } from "@/utils/feature-flags"
 import { setItemInLocalStorage } from "@/utils/storage"
 
@@ -28,10 +29,15 @@ const FeatureFlagItem = ({ flag }: { flag: FeatureFlag }) => {
 
   const copyLink = async (event: React.MouseEvent) => {
     event.stopPropagation()
-    await navigator.clipboard.writeText(
-      getFeatureFlagUrl(window.location.href, flag),
-    )
-    toast.success("Feature flag link copied")
+
+    try {
+      await navigator.clipboard.writeText(
+        getFeatureFlagUrl(window.location.href, flag),
+      )
+      toast.success("Feature flag link copied")
+    } catch (error) {
+      toast.error(globalErrorHandler(error).message)
+    }
   }
 
   return (
