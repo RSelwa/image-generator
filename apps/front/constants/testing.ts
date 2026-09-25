@@ -89,7 +89,8 @@ export const SELECTORS = {
   COLLECTION_GAME: (gameId: string) => `collection-game-${gameId}`,
   COLLECTION_GAME_PROGRESS: (gameId: string) =>
     `collection-game-progress-${gameId}`,
-  COLLECTION_LOCKED_CARD: (mapId: string) => `collection-locked-card-${mapId}`,
+  COLLECTION_LOCKED_CARD: (cardId: string) =>
+    `collection-locked-card-${cardId}`,
   ADMIN_MAPS_RARITY_FILTER: "admin-maps-rarity-filter",
   ADMIN_MAPS_RARITY_FILTER_OPTION: (filter: string) =>
     `admin-maps-rarity-filter-option-${filter}`,

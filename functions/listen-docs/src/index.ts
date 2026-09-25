@@ -6,6 +6,7 @@ import {
 } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import {
+  cardDocSchema,
   type DailyChallengeDoc,
   type FlatDoc,
   type GameDoc,
@@ -124,13 +125,27 @@ export const listen_doc_maps_written = onDocumentWritten(
       const before = event.data?.before.data() as MapDoc | undefined
       const after = event.data?.after.data() as MapDoc | undefined
 
-      await Promise.all([
-        refreshReadyImagesForMap(mapId, before, after),
-        updateCardPools(event.params.gameId, mapId, before, after),
-      ])
+      await refreshReadyImagesForMap(mapId, before, after)
     } catch (error) {
       console.error(
         `Error in listen_doc_maps_written for document ${event.document}:`,
+        error,
+      )
+    }
+  },
+)
+
+export const listen_doc_cards_written = onDocumentWritten(
+  `${TABLES.CARDS}/{cardId}`,
+  async (event) => {
+    try {
+      const before = cardDocSchema.safeParse(event.data?.before.data()).data
+      const after = cardDocSchema.safeParse(event.data?.after.data()).data
+
+      await updateCardPools(event.params.cardId, before, after)
+    } catch (error) {
+      console.error(
+        `Error in listen_doc_cards_written for document ${event.document}:`,
         error,
       )
     }

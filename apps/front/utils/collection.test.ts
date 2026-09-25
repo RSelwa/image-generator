@@ -9,6 +9,7 @@ const buildCard = (
   rarity: CardRarity,
   number: number,
 ) => ({
+  cardId: `${mapId}-card`,
   mapId,
   gameId,
   name: mapId,
@@ -23,8 +24,8 @@ const JOHTO = buildCard("johto", "pokemon", CARD_RARITY.LEGENDARY, 3)
 const GAME_TITLES = { pokemon: "Pokémon", zelda: "Zelda" }
 
 const binder = buildCollectionBinder([JOHTO, KANTO, HYRULE], GAME_TITLES, {
-  kanto: 3,
-  hyrule: 1,
+  [KANTO.cardId]: 3,
+  [HYRULE.cardId]: 1,
 })
 
 describe("when the collection binder is built", () => {

@@ -2,14 +2,14 @@ import { expect, type Page, test } from "@playwright/test"
 import { CARD_RARITY, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { db } from "@repo/providers/firebase"
-import { cardPoolDocSchema } from "@repo/schemas"
-import { gameFactory, mapFactory } from "@repo/testing/factory"
+import { cardDocSchema } from "@repo/schemas"
+import { gameFactory } from "@repo/testing/factory"
 import { Timestamp } from "firebase-admin/firestore"
 import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { formatCardNumber } from "@/utils/card-number"
 import { loginViaUI, setupUser } from "../helpers/lobby"
-import { enableTcgFlag } from "../helpers/tcg"
+import { enableTcgFlag, seedMapCard } from "../helpers/tcg"
 
 const LOCKED_CARD_NUMBER = 42
 const OWNED_CARD_NUMBER = 43
@@ -21,38 +21,24 @@ const OWNED_COUNT = 2
 
 const seedGameWithTwoCards = async () => {
   const game = gameFactory()
-  const ownedMap = mapFactory({
-    gameId: game.id,
-    cardProperties: OWNED_CARD_PROPERTIES,
-  })
-  const lockedMap = mapFactory({
-    gameId: game.id,
-    cardProperties: { rarity: CARD_RARITY.COMMON, number: LOCKED_CARD_NUMBER },
-  })
   await refs[TABLES.GAMES].doc(game.id).set(game)
-  await Promise.all(
-    [ownedMap, lockedMap].map((map) =>
-      subRefs[TABLES.MAPS](game.id).doc(map.id).set(map),
-    ),
-  )
-  await refs[TABLES.CARD_POOLS]
-    .doc(CARD_RARITY.LEGENDARY)
-    .set({ maps: [{ mapId: ownedMap.id, gameId: game.id }] })
-  await refs[TABLES.CARD_POOLS]
-    .doc(CARD_RARITY.COMMON)
-    .set({ maps: [{ mapId: lockedMap.id, gameId: game.id }] })
+  const ownedCard = await seedMapCard(game.id, OWNED_CARD_PROPERTIES)
+  const lockedCard = await seedMapCard(game.id, {
+    rarity: CARD_RARITY.COMMON,
+    number: LOCKED_CARD_NUMBER,
+  })
 
-  return { gameId: game.id, ownedMap, lockedMap }
+  return { gameId: game.id, ownedCard, lockedCard }
 }
 
 const openCollectionOwning = async (
   page: Page,
-  mapId: string,
+  cardId: string,
   gameId: string,
 ) => {
   const user = await setupUser()
-  await subRefs[TABLES.CARDS](user.id).doc(mapId).set({
-    mapId,
+  await subRefs[TABLES.CARDS](user.id).doc(cardId).set({
+    cardId,
     gameId,
     count: OWNED_COUNT,
     cardPropertiesAtPull: OWNED_CARD_PROPERTIES,
@@ -70,27 +56,27 @@ test.describe("when a user opens their collection", () => {
   test("should show the owned and locked cards with their number", async ({
     page,
   }) => {
-    const { gameId, ownedMap, lockedMap } = await seedGameWithTwoCards()
+    const { gameId, ownedCard, lockedCard } = await seedGameWithTwoCards()
 
-    await openCollectionOwning(page, ownedMap.id, gameId)
+    await openCollectionOwning(page, ownedCard.cardId, gameId)
 
     await expect(
       page.getByTestId(SELECTORS.COLLECTION_GAME_PROGRESS(gameId)),
     ).toHaveText("1/2")
     await expect(
-      page.getByTestId(SELECTORS.TRADING_CARD(ownedMap.id)),
+      page.getByTestId(SELECTORS.TRADING_CARD(ownedCard.map.id)),
     ).toContainText(formatCardNumber(OWNED_CARD_NUMBER))
     await expect(
-      page.getByTestId(SELECTORS.COLLECTION_LOCKED_CARD(lockedMap.id)),
+      page.getByTestId(SELECTORS.COLLECTION_LOCKED_CARD(lockedCard.cardId)),
     ).toContainText(formatCardNumber(LOCKED_CARD_NUMBER))
   })
 
   test("should order the cards by number rather than rarity", async ({
     page,
   }) => {
-    const { gameId, ownedMap, lockedMap } = await seedGameWithTwoCards()
+    const { gameId, ownedCard, lockedCard } = await seedGameWithTwoCards()
 
-    await openCollectionOwning(page, ownedMap.id, gameId)
+    await openCollectionOwning(page, ownedCard.cardId, gameId)
 
     await expect
       .poll(() =>
@@ -102,26 +88,26 @@ test.describe("when a user opens their collection", () => {
           ),
       )
       .toEqual([
-        SELECTORS.COLLECTION_LOCKED_CARD(lockedMap.id),
-        SELECTORS.TRADING_CARD(ownedMap.id),
+        SELECTORS.COLLECTION_LOCKED_CARD(lockedCard.cardId),
+        SELECTORS.TRADING_CARD(ownedCard.map.id),
       ])
   })
 
   test("should show the overall collection progress", async ({ page }) => {
-    const { gameId, ownedMap } = await seedGameWithTwoCards()
-    const pools = await refs[TABLES.CARD_POOLS].get()
-    const entries = pools.docs.flatMap(
-      (pool) => cardPoolDocSchema.safeParse(pool.data()).data?.maps || [],
-    )
+    const { gameId, ownedCard } = await seedGameWithTwoCards()
+    const cardsSnapshot = await refs[TABLES.CARDS].get()
+    const cards = cardsSnapshot.docs.flatMap((snapshot) => {
+      const card = cardDocSchema.safeParse(snapshot.data()).data
+
+      return card ? [card] : []
+    })
     const maps = await db.getAll(
-      ...entries.map((entry) =>
-        subRefs[TABLES.MAPS](entry.gameId).doc(entry.mapId),
-      ),
+      ...cards.map((card) => subRefs[TABLES.MAPS](card.gameId).doc(card.mapId)),
     )
 
-    const total = maps.filter((map) => map.data()?.cardProperties).length
+    const total = maps.filter((map) => map.exists).length
 
-    await openCollectionOwning(page, ownedMap.id, gameId)
+    await openCollectionOwning(page, ownedCard.cardId, gameId)
 
     await expect(page.getByTestId(SELECTORS.COLLECTION_PROGRESS)).toContainText(
       `1/${total}`,

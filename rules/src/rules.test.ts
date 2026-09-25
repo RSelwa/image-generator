@@ -3085,7 +3085,7 @@ describe("firebase Security Rules", () => {
     const uid = "user1"
     const adminUid = "admin"
     const poolPath = "cardPools/legendary"
-    const pool = { maps: [{ mapId: "map1", gameId: "game1" }] }
+    const pool = { cards: [{ cardId: "card1", gameId: "game1" }] }
 
     const setupPool = async () => {
       await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -3113,7 +3113,7 @@ describe("firebase Security Rules", () => {
         await setupPool()
         const authedDb = testEnv.authenticatedContext(uid).firestore()
 
-        await assertFails(updateDoc(doc(authedDb, poolPath), { maps: [] }))
+        await assertFails(updateDoc(doc(authedDb, poolPath), { cards: [] }))
       })
     })
 

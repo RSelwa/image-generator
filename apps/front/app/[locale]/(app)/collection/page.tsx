@@ -1,11 +1,7 @@
 import { APP_BASE_URL, METADATA_DOCS, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { db } from "@repo/providers/firebase"
-import {
-  cardPoolDocSchema,
-  gamesListDocSchema,
-  mapDocSchema,
-} from "@repo/schemas"
+import { cardDocSchema, gamesListDocSchema, mapDocSchema } from "@repo/schemas"
 import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { connection } from "next/server"
@@ -52,12 +48,14 @@ export const generateMetadata = async ({
   }
 }
 
-const getPoolEntries = async () => {
-  const poolsSnapshot = await refs[TABLES.CARD_POOLS].get()
+const getCardDocs = async () => {
+  const cardsSnapshot = await refs[TABLES.CARDS].get()
 
-  return poolsSnapshot.docs.flatMap(
-    (pool) => cardPoolDocSchema.safeParse(pool.data()).data?.maps || [],
-  )
+  return cardsSnapshot.docs.flatMap((snapshot) => {
+    const card = cardDocSchema.safeParse(snapshot.data()).data
+
+    return card ? [{ cardId: snapshot.id, card }] : []
+  })
 }
 
 const getGameTitles = async () => {
@@ -71,29 +69,31 @@ const getGameTitles = async () => {
 
 const CollectionPage = async () => {
   await connection()
-  const [poolEntries, gameTitles] = await Promise.all([
-    getPoolEntries(),
+  const [cardDocs, gameTitles] = await Promise.all([
+    getCardDocs(),
     getGameTitles(),
   ])
 
   const mapSnapshots =
-    poolEntries.length > 0
+    cardDocs.length > 0
       ? await db.getAll(
-          ...poolEntries.map(({ gameId, mapId }) =>
-            subRefs[TABLES.MAPS](gameId).doc(mapId),
+          ...cardDocs.map(({ card }) =>
+            subRefs[TABLES.MAPS](card.gameId).doc(card.mapId),
           ),
         )
       : []
 
-  const cards = poolEntries.flatMap((entry, index) => {
+  const cards = cardDocs.flatMap(({ cardId, card }, index) => {
     const map = mapDocSchema.safeParse(mapSnapshots[index]?.data()).data
 
-    if (!map?.cardProperties) return []
+    if (!map) return []
 
     return [
       {
-        ...entry,
-        ...map.cardProperties,
+        cardId,
+        gameId: card.gameId,
+        mapId: card.mapId,
+        ...card.cardProperties,
         name: map.name,
         imageUrl: map.imageUrl || null,
       },

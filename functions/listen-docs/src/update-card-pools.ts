@@ -1,5 +1,5 @@
 import { TABLES } from "@repo/common"
-import { type CardPoolDoc, type CardRarity, type MapDoc } from "@repo/schemas"
+import { type CardDoc, type CardPoolDoc, type CardRarity } from "@repo/schemas"
 import { FieldValue, getFirestore } from "firebase-admin/firestore"
 import { logger } from "firebase-functions"
 
@@ -9,31 +9,32 @@ const getCardPoolRef = (rarity: CardRarity) =>
   ) as FirebaseFirestore.DocumentReference<CardPoolDoc>
 
 export const updateCardPools = async (
-  gameId: string,
-  mapId: string,
-  before: MapDoc | undefined,
-  after: MapDoc | undefined,
+  cardId: string,
+  before: CardDoc | undefined,
+  after: CardDoc | undefined,
 ) => {
-  const beforeRarity = before?.cardProperties?.rarity
-  const afterRarity = after?.cardProperties?.rarity
+  const beforeRarity = before?.cardProperties.rarity
+  const afterRarity = after?.cardProperties.rarity
 
-  if (beforeRarity === afterRarity) return
+  const isPoolEntryUnchanged =
+    beforeRarity === afterRarity && before?.gameId === after?.gameId
 
-  const entry = { mapId, gameId }
+  if (isPoolEntryUnchanged) return
+
   const batch = getFirestore().batch()
 
-  if (beforeRarity) {
+  if (before) {
     batch.set(
-      getCardPoolRef(beforeRarity),
-      { maps: FieldValue.arrayRemove(entry) },
+      getCardPoolRef(before.cardProperties.rarity),
+      { cards: FieldValue.arrayRemove({ cardId, gameId: before.gameId }) },
       { merge: true },
     )
   }
 
-  if (afterRarity) {
+  if (after) {
     batch.set(
-      getCardPoolRef(afterRarity),
-      { maps: FieldValue.arrayUnion(entry) },
+      getCardPoolRef(after.cardProperties.rarity),
+      { cards: FieldValue.arrayUnion({ cardId, gameId: after.gameId }) },
       { merge: true },
     )
   }
@@ -41,6 +42,6 @@ export const updateCardPools = async (
   await batch.commit()
 
   logger.info(
-    `Moved map ${mapId} between card pools: ${beforeRarity || "none"} → ${afterRarity || "none"}`,
+    `Moved card ${cardId} between card pools: ${beforeRarity || "none"} → ${afterRarity || "none"}`,
   )
 }

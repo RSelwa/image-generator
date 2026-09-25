@@ -8,7 +8,7 @@ const HIGHEST_DRAW = 0.999_999
 
 const buildRandom = (value: number) => () => value
 
-const buildEntry = (mapId: string) => ({ mapId, gameId: "game" })
+const buildEntry = (cardId: string) => ({ cardId, gameId: "game" })
 
 const buildPools = (pools: Partial<Record<CardRarity, CardPoolEntry[]>>) => ({
   [CARD_RARITY.COMMON]: [],

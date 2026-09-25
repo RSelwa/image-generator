@@ -95,7 +95,7 @@ export const CollectionContent = ({
               </div>
               <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5">
                 {group.cards.map((card) => (
-                  <li key={card.mapId}>
+                  <li key={card.cardId}>
                     {card.count > 0 && (
                       <MapTradingCard
                         mapId={card.mapId}
@@ -112,7 +112,7 @@ export const CollectionContent = ({
                         aria-label={t("locked")}
                         role="img"
                         data-testid={SELECTORS.COLLECTION_LOCKED_CARD(
-                          card.mapId,
+                          card.cardId,
                         )}
                         className="relative flex aspect-5/7 w-full items-center justify-center rounded-xl border-4 border-dashed bg-muted text-muted-foreground data-[rarity=common]:border-neutral-500 data-[rarity=uncommon]:border-marathon-green data-[rarity=rare]:border-blue-accent data-[rarity=ultraRare]:border-purple-500 data-[rarity=legendary]:border-yellow-400"
                       >

@@ -1,18 +1,22 @@
 import { TABLES } from "@repo/common"
-import { collectionGroupRefs, refs } from "@repo/providers/db-refs"
-import { buildCardPools } from "@repo/schemas"
+import { refs } from "@repo/providers/db-refs"
+import { buildCardPools, cardDocSchema } from "@repo/schemas"
 
-const mapsSnapshot = await collectionGroupRefs[TABLES.MAPS].get()
+const cardsSnapshot = await refs[TABLES.CARDS].get()
 
 const pools = buildCardPools(
-  mapsSnapshot.docs.flatMap((map) => {
-    const gameId = map.ref.parent.parent?.id
+  cardsSnapshot.docs.flatMap((snapshot) => {
+    const card = cardDocSchema.safeParse(snapshot.data()).data
 
-    if (!gameId) return []
-
-    return [
-      { mapId: map.id, gameId, cardProperties: map.data().cardProperties },
-    ]
+    return card
+      ? [
+          {
+            cardId: snapshot.id,
+            gameId: card.gameId,
+            cardProperties: card.cardProperties,
+          },
+        ]
+      : []
   }),
 )
 
@@ -23,5 +27,5 @@ await Promise.all(
 )
 
 pools.forEach(({ rarity, pool }) => {
-  console.info(`${rarity}: ${pool.maps.length} cards`)
+  console.info(`${rarity}: ${pool.cards.length} cards`)
 })

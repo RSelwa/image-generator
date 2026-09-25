@@ -6,7 +6,7 @@ import { Timestamp } from "firebase-admin/firestore"
 import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
-import { enableTcgFlag, seedEveryPoolWithOneMap } from "../helpers/tcg"
+import { enableTcgFlag, seedEveryPoolWithOneCard } from "../helpers/tcg"
 
 const CARD_NUMBER = 42
 
@@ -43,7 +43,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should count the opened pack off the stock", async ({ page }) => {
-    await seedEveryPoolWithOneMap({
+    await seedEveryPoolWithOneCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
@@ -58,7 +58,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should add the opened cards to the collection", async ({ page }) => {
-    const map = await seedEveryPoolWithOneMap({
+    const { map } = await seedEveryPoolWithOneCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
@@ -71,7 +71,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should not open a pack without any left", async ({ page }) => {
-    await seedEveryPoolWithOneMap({
+    await seedEveryPoolWithOneCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
@@ -87,15 +87,15 @@ test.describe("when a user plays the TCG from the packs page", () => {
   test("should keep another user's cards out of the collection", async ({
     page,
   }) => {
-    const map = await seedEveryPoolWithOneMap({
+    const { map, cardId } = await seedEveryPoolWithOneCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
     const collector = await setupUser()
     await subRefs[TABLES.CARDS](collector.id)
-      .doc(map.id)
+      .doc(cardId)
       .set({
-        mapId: map.id,
+        cardId,
         gameId: map.gameId,
         count: 1,
         cardPropertiesAtPull: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
@@ -107,7 +107,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
     await page.goto(`/en${PAGES.COLLECTION}`)
 
     await expect(
-      page.getByTestId(SELECTORS.COLLECTION_LOCKED_CARD(map.id)),
+      page.getByTestId(SELECTORS.COLLECTION_LOCKED_CARD(cardId)),
     ).toBeVisible()
     await expect(page.getByTestId(SELECTORS.TRADING_CARD(map.id))).toHaveCount(
       0,

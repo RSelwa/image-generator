@@ -5,7 +5,7 @@ import { Timestamp } from "firebase-admin/firestore"
 import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
-import { enableTcgFlag, seedEveryPoolWithOneMap } from "../helpers/tcg"
+import { enableTcgFlag, seedEveryPoolWithOneCard } from "../helpers/tcg"
 
 const CARD_NUMBER = 42
 
@@ -32,7 +32,7 @@ test.describe.configure({ mode: "serial" })
 
 test.describe("when a pack is opened from the packs page", () => {
   test.beforeEach(async () => {
-    await seedEveryPoolWithOneMap({
+    await seedEveryPoolWithOneCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })

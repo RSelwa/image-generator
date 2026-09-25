@@ -1,10 +1,10 @@
-import { CARD_RARITY, TABLES } from "@repo/common"
+import { CARD_RARITY, CARD_TYPE, TABLES } from "@repo/common"
 import { type CardProperties, type CardPoolDoc } from "@repo/schemas"
 import { makeDocumentSnapshot } from "@repo/testing/document-snapshot"
 import { getFirestore } from "firebase-admin/firestore"
 import firebaseFunctionsTest from "firebase-functions-test"
 import { beforeAll, beforeEach, describe, expect, it } from "vitest"
-import { listen_doc_maps_written } from "~/index"
+import { listen_doc_cards_written } from "~/index"
 
 const CARD_NUMBER = 42
 
@@ -19,36 +19,38 @@ beforeAll(() => {
 const test = firebaseFunctionsTest()
 
 const GAME_ID = "game-1"
-const MAP_ID = "map-1"
-const ENTRY = { mapId: MAP_ID, gameId: GAME_ID }
-const OTHER_ENTRY = { mapId: "map-2", gameId: GAME_ID }
-const MAP_PATH = `${TABLES.GAMES}/${GAME_ID}/${TABLES.MAPS}/${MAP_ID}`
+const OTHER_GAME_ID = "game-2"
+const CARD_ID = "card-1"
+const ENTRY = { cardId: CARD_ID, gameId: GAME_ID }
+const OTHER_ENTRY = { cardId: "card-2", gameId: GAME_ID }
+const CARD_PATH = `${TABLES.CARDS}/${CARD_ID}`
 
 const getPoolRef = (rarity: string) =>
   getFirestore().doc(`${TABLES.CARD_POOLS}/${rarity}`)
 
-const getPoolMaps = async (rarity: string) => {
+const getPoolCards = async (rarity: string) => {
   const doc = await getPoolRef(rarity).get()
 
-  return (doc.data() as CardPoolDoc | undefined)?.maps
+  return (doc.data() as CardPoolDoc | undefined)?.cards
 }
 
-const makeMap = (cardProperties?: CardProperties) => ({
-  name: "Kanto",
-  gameId: GAME_ID,
-  ...(cardProperties && { cardProperties }),
+const makeCard = (cardProperties: CardProperties, gameId = GAME_ID) => ({
+  type: CARD_TYPE.MAP,
+  gameId,
+  mapId: "map-1",
+  cardProperties,
 })
 
-const writeMap = async (
+const writeCard = async (
   before: Record<string, unknown>,
   after: Record<string, unknown>,
 ) => {
-  await test.wrap(listen_doc_maps_written)({
+  await test.wrap(listen_doc_cards_written)({
     data: {
-      before: makeDocumentSnapshot(before, MAP_PATH),
-      after: makeDocumentSnapshot(after, MAP_PATH),
+      before: makeDocumentSnapshot(before, CARD_PATH),
+      after: makeDocumentSnapshot(after, CARD_PATH),
     },
-    params: { gameId: GAME_ID, mapId: MAP_ID },
+    params: { cardId: CARD_ID },
   })
 }
 
@@ -58,77 +60,102 @@ beforeEach(async () => {
   )
 })
 
-describe("when a map gets card properties", () => {
+describe("when a card is created", () => {
   it("should add it to the pool of its rarity", async () => {
-    await getPoolRef(CARD_RARITY.RARE).set({ maps: [OTHER_ENTRY] })
+    await getPoolRef(CARD_RARITY.RARE).set({ cards: [OTHER_ENTRY] })
 
-    await writeMap(
-      makeMap(),
-      makeMap({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
-    )
-
-    expect(await getPoolMaps(CARD_RARITY.RARE)).toEqual([OTHER_ENTRY, ENTRY])
-  })
-})
-
-describe("when a map is created as a card", () => {
-  it("should create the pool of its rarity", async () => {
-    await writeMap(
+    await writeCard(
       {},
-      makeMap({ rarity: CARD_RARITY.LEGENDARY, number: CARD_NUMBER }),
+      makeCard({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
     )
 
-    expect(await getPoolMaps(CARD_RARITY.LEGENDARY)).toEqual([ENTRY])
+    expect(await getPoolCards(CARD_RARITY.RARE)).toEqual([OTHER_ENTRY, ENTRY])
+  })
+
+  it("should create the pool of its rarity", async () => {
+    await writeCard(
+      {},
+      makeCard({ rarity: CARD_RARITY.LEGENDARY, number: CARD_NUMBER }),
+    )
+
+    expect(await getPoolCards(CARD_RARITY.LEGENDARY)).toEqual([ENTRY])
   })
 })
 
 describe("when a card's rarity changes", () => {
   it("should move it from the old pool to the new one", async () => {
-    await getPoolRef(CARD_RARITY.COMMON).set({ maps: [ENTRY, OTHER_ENTRY] })
+    await getPoolRef(CARD_RARITY.COMMON).set({ cards: [ENTRY, OTHER_ENTRY] })
 
-    await writeMap(
-      makeMap({ rarity: CARD_RARITY.COMMON, number: CARD_NUMBER }),
-      makeMap({ rarity: CARD_RARITY.ULTRA_RARE, number: CARD_NUMBER }),
+    await writeCard(
+      makeCard({ rarity: CARD_RARITY.COMMON, number: CARD_NUMBER }),
+      makeCard({ rarity: CARD_RARITY.ULTRA_RARE, number: CARD_NUMBER }),
     )
 
-    expect(await getPoolMaps(CARD_RARITY.COMMON)).toEqual([OTHER_ENTRY])
-    expect(await getPoolMaps(CARD_RARITY.ULTRA_RARE)).toEqual([ENTRY])
+    expect(await getPoolCards(CARD_RARITY.COMMON)).toEqual([OTHER_ENTRY])
+    expect(await getPoolCards(CARD_RARITY.ULTRA_RARE)).toEqual([ENTRY])
   })
 })
 
-describe("when a map loses its card properties", () => {
+describe("when a card is deleted", () => {
   it("should remove it from its pool", async () => {
-    await getPoolRef(CARD_RARITY.UNCOMMON).set({ maps: [ENTRY, OTHER_ENTRY] })
+    await getPoolRef(CARD_RARITY.UNCOMMON).set({ cards: [ENTRY, OTHER_ENTRY] })
 
-    await writeMap(
-      makeMap({ rarity: CARD_RARITY.UNCOMMON, number: CARD_NUMBER }),
-      makeMap(),
-    )
-
-    expect(await getPoolMaps(CARD_RARITY.UNCOMMON)).toEqual([OTHER_ENTRY])
-  })
-})
-
-describe("when a card map is deleted", () => {
-  it("should remove it from its pool", async () => {
-    await getPoolRef(CARD_RARITY.RARE).set({ maps: [ENTRY] })
-
-    await writeMap(
-      makeMap({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
+    await writeCard(
+      makeCard({ rarity: CARD_RARITY.UNCOMMON, number: CARD_NUMBER }),
       {},
     )
 
-    expect(await getPoolMaps(CARD_RARITY.RARE)).toEqual([])
+    expect(await getPoolCards(CARD_RARITY.UNCOMMON)).toEqual([OTHER_ENTRY])
   })
 })
 
-describe("when a card map changes without changing its rarity", () => {
+describe("when a card changes without changing its rarity", () => {
   it("should leave the pools untouched", async () => {
-    await writeMap(makeMap({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }), {
-      ...makeMap({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
-      name: "Johto",
-    })
+    await writeCard(
+      makeCard({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
+      makeCard({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER + 1 }),
+    )
 
-    expect(await getPoolMaps(CARD_RARITY.RARE)).toBeUndefined()
+    expect(await getPoolCards(CARD_RARITY.RARE)).toBeUndefined()
+  })
+})
+
+describe("when a card moves to another game without changing its rarity", () => {
+  it("should replace its pool entry", async () => {
+    await getPoolRef(CARD_RARITY.RARE).set({ cards: [ENTRY, OTHER_ENTRY] })
+
+    await writeCard(
+      makeCard({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
+      makeCard(
+        { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
+        OTHER_GAME_ID,
+      ),
+    )
+
+    expect(await getPoolCards(CARD_RARITY.RARE)).toEqual([
+      OTHER_ENTRY,
+      { cardId: CARD_ID, gameId: OTHER_GAME_ID },
+    ])
+  })
+})
+
+describe("when a malformed card is written", () => {
+  it("should leave the pools untouched", async () => {
+    await writeCard({}, { type: CARD_TYPE.MAP, gameId: GAME_ID })
+
+    expect(await getPoolCards(CARD_RARITY.RARE)).toBeUndefined()
+  })
+})
+
+describe("when a card becomes malformed", () => {
+  it("should remove it from its pool", async () => {
+    await getPoolRef(CARD_RARITY.RARE).set({ cards: [ENTRY, OTHER_ENTRY] })
+
+    await writeCard(
+      makeCard({ rarity: CARD_RARITY.RARE, number: CARD_NUMBER }),
+      { type: CARD_TYPE.MAP, gameId: GAME_ID },
+    )
+
+    expect(await getPoolCards(CARD_RARITY.RARE)).toEqual([OTHER_ENTRY])
   })
 })

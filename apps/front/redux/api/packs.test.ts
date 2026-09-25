@@ -25,8 +25,9 @@ vi.mock("@/constants/db", () => ({
 const OPEN_PACK_RESPONSE = {
   cards: [
     {
-      mapId: "kanto",
+      cardId: "kanto-card",
       gameId: "pokemon-red",
+      mapId: "kanto",
       name: "Kanto",
       imageUrl: null,
       cardProperties: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },

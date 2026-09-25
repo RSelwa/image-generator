@@ -5,7 +5,7 @@ import { refs, subRefs } from "@repo/providers/db-refs"
 import { signUpAuthUser } from "@repo/testing/emulator"
 import { Timestamp } from "firebase-admin/firestore"
 import { PASSWORD } from "../helpers/lobby"
-import { seedEveryPoolWithOneMap } from "../helpers/tcg"
+import { seedEveryPoolWithOneCard } from "../helpers/tcg"
 
 const CARD_NUMBER = 42
 
@@ -26,8 +26,8 @@ const openPack = (request: APIRequestContext, idToken?: string) =>
 const getUser = async (uid: string) =>
   (await refs[TABLES.USERS].doc(uid).get()).data()
 
-const getCard = async (uid: string, mapId: string) =>
-  (await subRefs[TABLES.CARDS](uid).doc(mapId).get()).data()
+const getOwnedCard = async (uid: string, cardId: string) =>
+  (await subRefs[TABLES.CARDS](uid).doc(cardId).get()).data()
 
 test.describe.configure({ mode: "serial" })
 
@@ -53,7 +53,7 @@ test.describe("when a pack is opened", () => {
   test("should reveal the drawn cards and consume one pack", async ({
     request,
   }) => {
-    const map = await seedEveryPoolWithOneMap(CARD_PROPERTIES)
+    const { map, cardId } = await seedEveryPoolWithOneCard(CARD_PROPERTIES)
     const { uid, idToken } = await signUp()
 
     const response = await openPack(request, idToken)
@@ -62,6 +62,7 @@ test.describe("when a pack is opened", () => {
     const { cards, packsStored } = await response.json()
     expect(cards).toHaveLength(PACK_SIZE)
     expect(cards[0]).toMatchObject({
+      cardId,
       mapId: map.id,
       name: map.name,
       cardProperties: CARD_PROPERTIES,
@@ -69,14 +70,14 @@ test.describe("when a pack is opened", () => {
     })
     expect(packsStored).toBe(PACKS_MAX - 1)
     expect((await getUser(uid))?.packsStored).toBe(PACKS_MAX - 1)
-    expect(await getCard(uid, map.id)).toMatchObject({
+    expect(await getOwnedCard(uid, cardId)).toMatchObject({
       count: PACK_SIZE,
       cardPropertiesAtPull: CARD_PROPERTIES,
     })
   })
 
   test("should add a duplicate to the owned count", async ({ request }) => {
-    const map = await seedEveryPoolWithOneMap(CARD_PROPERTIES)
+    const { cardId } = await seedEveryPoolWithOneCard(CARD_PROPERTIES)
     const { uid, idToken } = await signUp()
 
     await openPack(request, idToken)
@@ -85,6 +86,6 @@ test.describe("when a pack is opened", () => {
     expect(response.status()).toBe(200)
     const { cards } = await response.json()
     expect(cards[0].isNew).toBe(false)
-    expect((await getCard(uid, map.id))?.count).toBe(2 * PACK_SIZE)
+    expect((await getOwnedCard(uid, cardId))?.count).toBe(2 * PACK_SIZE)
   })
 })

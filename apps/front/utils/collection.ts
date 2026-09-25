@@ -1,6 +1,7 @@
 import { type CardRarity } from "@repo/schemas"
 
 export type CollectionCard = {
+  cardId: string
   mapId: string
   gameId: string
   name: string
@@ -15,7 +16,7 @@ export const buildCollectionBinder = (
   ownedCounts: Record<string, number>,
 ) => {
   const binderCards = cards
-    .map((card) => ({ ...card, count: ownedCounts[card.mapId] || 0 }))
+    .map((card) => ({ ...card, count: ownedCounts[card.cardId] || 0 }))
     .toSorted((first, second) => first.number - second.number)
   const gameIds = [...new Set(binderCards.map(({ gameId }) => gameId))]
 

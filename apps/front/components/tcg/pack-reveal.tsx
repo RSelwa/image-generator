@@ -36,7 +36,7 @@ export const PackReveal = ({
         <h2 className="text-2xl font-semibold">{t("summaryTitle")}</h2>
         <ul className="grid w-full grid-cols-2 gap-4 sm:grid-cols-5">
           {cards.map((card, index) => (
-            <li key={`${card.mapId}-${index}`} className="relative">
+            <li key={`${card.cardId}-${index}`} className="relative">
               <MapTradingCard
                 mapId={card.mapId}
                 name={card.name}
@@ -89,7 +89,7 @@ export const PackReveal = ({
       <div className="relative aspect-5/7 w-60">
         {cards.map((card, index) => (
           <button
-            key={`${card.mapId}-${index}`}
+            key={`${card.cardId}-${index}`}
             type="button"
             aria-label={t("reveal")}
             disabled={index !== revealedCount}

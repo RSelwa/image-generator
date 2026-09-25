@@ -8,7 +8,7 @@ const CARD_NUMBER = 42
 const PULLED_AT = Timestamp.now()
 
 const USER_CARD = {
-  mapId: "kanto",
+  cardId: "kanto-card",
   gameId: "pokemon-red",
   count: 1,
   cardPropertiesAtPull: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },

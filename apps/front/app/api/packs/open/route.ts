@@ -4,6 +4,7 @@ import { auth, db } from "@repo/providers/firebase"
 import {
   type CardPoolEntry,
   type CardRarity,
+  cardDocSchema,
   cardPoolDocSchema,
   mapDocSchema,
   userDocSchema,
@@ -62,7 +63,7 @@ const openPack = (uid: string) =>
     const pools = Object.fromEntries(
       RARITIES.map((rarity, index) => [
         rarity,
-        cardPoolDocSchema.safeParse(poolSnapshots[index]?.data()).data?.maps ||
+        cardPoolDocSchema.safeParse(poolSnapshots[index]?.data()).data?.cards ||
           [],
       ]),
     ) as Record<CardRarity, CardPoolEntry[]>
@@ -76,62 +77,74 @@ const openPack = (uid: string) =>
 
     const pulls = new Map<string, { entry: CardPoolEntry; count: number }>()
     drawnCards.forEach(({ entry }) => {
-      const count = (pulls.get(entry.mapId)?.count || 0) + 1
-      pulls.set(entry.mapId, { entry, count })
+      const count = (pulls.get(entry.cardId)?.count || 0) + 1
+      pulls.set(entry.cardId, { entry, count })
     })
     const pulledEntries = [...pulls.values()]
 
-    const cardsRef = subRefs[TABLES.CARDS](uid)
-    const [mapSnapshots, ownedSnapshots] = await Promise.all([
+    const ownedCardsRef = subRefs[TABLES.CARDS](uid)
+    const [cardSnapshots, ownedSnapshots] = await Promise.all([
       transaction.getAll(
         ...pulledEntries.map(({ entry }) =>
-          subRefs[TABLES.MAPS](entry.gameId).doc(entry.mapId),
+          refs[TABLES.CARDS].doc(entry.cardId),
         ),
       ),
       transaction.getAll(
-        ...pulledEntries.map(({ entry }) => cardsRef.doc(entry.mapId)),
+        ...pulledEntries.map(({ entry }) => ownedCardsRef.doc(entry.cardId)),
       ),
     ])
 
-    const cardMaps = new Map(
-      mapSnapshots.flatMap((snapshot) => {
-        const map = mapDocSchema.safeParse(snapshot.data()).data
+    const cardDocs = cardSnapshots.flatMap((snapshot) => {
+      const card = cardDocSchema.safeParse(snapshot.data()).data
 
-        if (!map?.cardProperties) return []
+      return card ? [{ cardId: snapshot.id, card }] : []
+    })
+    const mapSnapshots =
+      cardDocs.length > 0
+        ? await transaction.getAll(
+            ...cardDocs.map(({ card }) =>
+              subRefs[TABLES.MAPS](card.gameId).doc(card.mapId),
+            ),
+          )
+        : []
 
-        return [[snapshot.id, { ...map, cardProperties: map.cardProperties }]]
+    const drawnCardDetails = new Map(
+      cardDocs.flatMap(({ cardId, card }, index) => {
+        const map = mapDocSchema.safeParse(mapSnapshots[index]?.data()).data
+
+        return map ? [[cardId, { card, map }]] : []
       }),
     )
 
     const pulledCards = pulledEntries.flatMap((pull) => {
-      const cardMap = cardMaps.get(pull.entry.mapId)
+      const details = drawnCardDetails.get(pull.entry.cardId)
 
-      return cardMap ? [{ ...pull, cardMap }] : []
+      return details ? [{ ...pull, ...details }] : []
     })
 
     if (pulledCards.length < pulledEntries.length) {
       console.error(
-        "Card pool drift, drawn maps gone or no longer cards:",
+        "Card pool drift, drawn cards or their maps gone:",
         pulledEntries.flatMap(({ entry }) =>
-          cardMaps.has(entry.mapId) ? [] : [entry.mapId],
+          drawnCardDetails.has(entry.cardId) ? [] : [entry.cardId],
         ),
       )
 
       return OPEN_PACK_RESULT.NO_CARD
     }
 
-    const ownedMapIds = new Set(
+    const ownedCardIds = new Set(
       ownedSnapshots.flatMap((snapshot) =>
         snapshot.exists ? [snapshot.id] : [],
       ),
     )
     const now = FieldValue.serverTimestamp()
 
-    pulledCards.forEach(({ entry, count, cardMap }) => {
-      const cardRef = cardsRef.doc(entry.mapId)
+    pulledCards.forEach(({ entry, count, card }) => {
+      const ownedCardRef = ownedCardsRef.doc(entry.cardId)
 
-      if (ownedMapIds.has(entry.mapId)) {
-        transaction.update(cardRef, {
+      if (ownedCardIds.has(entry.cardId)) {
+        transaction.update(ownedCardRef, {
           count: FieldValue.increment(count),
           lastPulledAt: now,
         })
@@ -139,31 +152,32 @@ const openPack = (uid: string) =>
         return
       }
 
-      transaction.create(cardRef, {
+      transaction.create(ownedCardRef, {
         ...entry,
         count,
-        cardPropertiesAtPull: cardMap.cardProperties,
+        cardPropertiesAtPull: card.cardProperties,
         firstPulledAt: now,
         lastPulledAt: now,
       })
     })
 
-    const revealedMapIds = new Set<string>()
+    const revealedCardIds = new Set<string>()
     const cards = drawnCards.flatMap(({ entry }) => {
-      const cardMap = cardMaps.get(entry.mapId)
+      const details = drawnCardDetails.get(entry.cardId)
 
-      if (!cardMap) return []
+      if (!details) return []
 
       const isNew =
-        !ownedMapIds.has(entry.mapId) && !revealedMapIds.has(entry.mapId)
-      revealedMapIds.add(entry.mapId)
+        !ownedCardIds.has(entry.cardId) && !revealedCardIds.has(entry.cardId)
+      revealedCardIds.add(entry.cardId)
 
       return [
         {
           ...entry,
-          name: cardMap.name,
-          imageUrl: cardMap.imageUrl || null,
-          cardProperties: cardMap.cardProperties,
+          mapId: details.card.mapId,
+          name: details.map.name,
+          imageUrl: details.map.imageUrl || null,
+          cardProperties: details.card.cardProperties,
           isNew,
         },
       ]
