@@ -92,6 +92,9 @@ const DeathRunPlaying = ({
     if (isCorrect) playCorrect()
     else playWrong()
 
+    reset()
+    setComboboxKey((k) => k + 1)
+
     await submitAnswer({
       deathRunId: deathRun.id,
       uid,
@@ -105,9 +108,6 @@ const DeathRunPlaying = ({
       answer: gameTitle,
       isCorrect,
     })
-
-    reset()
-    setComboboxKey((k) => k + 1)
   }
 
   const handleGiveUp = () => {

@@ -232,8 +232,12 @@ export const authApi = createApi({
                 newsletter: true,
               }
 
-              const { credits: _, ...newUserDoc } =
-                userDocSchema.parse(parsingData)
+              const {
+                credits: _,
+                packsStored: __,
+                packsRefillAnchor: ___,
+                ...newUserDoc
+              } = userDocSchema.parse(parsingData)
 
               await setDoc(
                 userRef,
