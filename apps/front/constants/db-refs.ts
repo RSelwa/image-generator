@@ -1,5 +1,6 @@
 import { METADATA_DOCS, TABLES } from "@repo/common"
 import {
+  type CardDoc,
   type DailyChallengeHistoryDoc,
   type DocumentMapping,
   type GamesListDoc,
@@ -73,6 +74,10 @@ export const TABLE_REFS = {
     db,
     TABLES.CONVERSATIONS,
   ) as CustomCollectionRef<typeof TABLES.CONVERSATIONS>,
+  [TABLES.CARDS]: collection(db, TABLES.CARDS) as CollectionReference<
+    CardDoc,
+    CardDoc
+  >,
 } as const
 
 export const TABLES_GROUP_REFS = {
@@ -166,6 +171,9 @@ export const getSphericalRef = (gameId: string, sphericalId: string) =>
 
 export const getMapRef = (gameId: string, mapId: string) =>
   doc(TABLES_SUB_REFS[TABLES.MAPS](gameId), mapId)
+
+export const getCardRef = (cardId: string) =>
+  doc(TABLE_REFS[TABLES.CARDS], cardId)
 
 export const getFlatRef = (gameId: string, flatId: string) =>
   doc(TABLES_SUB_REFS[TABLES.FLAT](gameId), flatId)

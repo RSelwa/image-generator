@@ -1,5 +1,5 @@
 import { expect, type Page, test } from "@playwright/test"
-import { CARD_RARITY, TABLES, USER_RIGHT } from "@repo/common"
+import { CARD_RARITY, CARD_TYPE, TABLES, USER_RIGHT } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { type CardProperties } from "@repo/schemas"
 import { createFirestoreDoc } from "@repo/testing/emulator"
@@ -13,23 +13,36 @@ import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { formatCardNumber } from "@/utils/card-number"
 import { loginViaUI, setupUser } from "../helpers/lobby"
+import { seedMapCard } from "../helpers/tcg"
 
 const CARD_NUMBER = 42
 const DUPLICATE_CARD_NUMBER = 77
 
-const seedMap = async (cardProperties?: CardProperties) => {
+const seedMap = async () => {
   const game = gameFactory()
-  const map = mapFactory({ gameId: game.id, cardProperties })
+  const map = mapFactory({ gameId: game.id })
   await createFirestoreDoc(refs[TABLES.GAMES], game)
   await createFirestoreDoc(subRefs[TABLES.MAPS](game.id), map)
 
   return { gameId: game.id, mapId: map.id }
 }
 
-const getCardProperties = async (gameId: string, mapId: string) => {
-  const snapshot = await subRefs[TABLES.MAPS](gameId).doc(mapId).get()
+const seedCardMap = async (cardProperties: CardProperties) => {
+  const game = gameFactory()
+  await createFirestoreDoc(refs[TABLES.GAMES], game)
+  const { map } = await seedMapCard(game.id, cardProperties)
 
-  return snapshot.data()?.cardProperties
+  return { gameId: game.id, mapId: map.id }
+}
+
+const getMapCards = async (mapId: string) => {
+  const snapshot = await refs[TABLES.CARDS].where("mapId", "==", mapId).get()
+
+  return snapshot.docs.map((card) => {
+    const { type, gameId, cardProperties } = card.data()
+
+    return { type, gameId, cardProperties }
+  })
 }
 
 const loginAsAdmin = async (page: Page) => {
@@ -68,8 +81,14 @@ test.describe("when an admin edits a map's card rarity", () => {
       await submitMapForm(page)
 
       await expect
-        .poll(() => getCardProperties(gameId, mapId))
-        .toEqual({ rarity, number: CARD_NUMBER })
+        .poll(() => getMapCards(mapId))
+        .toEqual([
+          {
+            type: CARD_TYPE.MAP,
+            gameId,
+            cardProperties: { rarity, number: CARD_NUMBER },
+          },
+        ])
     })
   }
 
@@ -84,14 +103,45 @@ test.describe("when an admin edits a map's card rarity", () => {
     await submitMapForm(page)
 
     await expect
-      .poll(() => getCardProperties(gameId, mapId))
-      .toEqual({ rarity: CARD_RARITY.COMMON, number: prefilledNumber })
+      .poll(() => getMapCards(mapId))
+      .toEqual([
+        {
+          type: CARD_TYPE.MAP,
+          gameId,
+          cardProperties: {
+            rarity: CARD_RARITY.COMMON,
+            number: prefilledNumber,
+          },
+        },
+      ])
   })
 
-  test("should remove the card properties when set to not a card", async ({
-    page,
-  }) => {
-    const { gameId, mapId } = await seedMap({
+  test("should update the existing card", async ({ page }) => {
+    const { gameId, mapId } = await seedCardMap({
+      rarity: CARD_RARITY.RARE,
+      number: CARD_NUMBER,
+    })
+
+    await openMapForm(page, gameId, mapId)
+    await pickRarity(page, CARD_RARITY.LEGENDARY)
+    await submitMapForm(page)
+
+    await expect
+      .poll(() => getMapCards(mapId))
+      .toEqual([
+        {
+          type: CARD_TYPE.MAP,
+          gameId,
+          cardProperties: {
+            rarity: CARD_RARITY.LEGENDARY,
+            number: CARD_NUMBER,
+          },
+        },
+      ])
+  })
+
+  test("should delete the card when set to not a card", async ({ page }) => {
+    const { gameId, mapId } = await seedCardMap({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
@@ -100,7 +150,7 @@ test.describe("when an admin edits a map's card rarity", () => {
     await pickRarity(page, NO_CARD_RARITY)
     await submitMapForm(page)
 
-    await expect.poll(() => getCardProperties(gameId, mapId)).toBeUndefined()
+    await expect.poll(() => getMapCards(mapId)).toEqual([])
   })
 })
 
@@ -113,7 +163,7 @@ test.describe("when an admin filters the maps by rarity", () => {
   }
 
   test("should show only the maps of that rarity", async ({ page }) => {
-    const legendary = await seedMap({
+    const legendary = await seedCardMap({
       rarity: CARD_RARITY.LEGENDARY,
       number: CARD_NUMBER,
     })
@@ -132,7 +182,7 @@ test.describe("when an admin filters the maps by rarity", () => {
   })
 
   test("should show only the maps left to rate", async ({ page }) => {
-    const legendary = await seedMap({
+    const legendary = await seedCardMap({
       rarity: CARD_RARITY.LEGENDARY,
       number: CARD_NUMBER,
     })
@@ -153,8 +203,14 @@ test.describe("when an admin filters the maps by rarity", () => {
 
 test.describe("when two maps share a card number", () => {
   test("should flag the duplicate on the admin maps page", async ({ page }) => {
-    await seedMap({ rarity: CARD_RARITY.RARE, number: DUPLICATE_CARD_NUMBER })
-    await seedMap({ rarity: CARD_RARITY.RARE, number: DUPLICATE_CARD_NUMBER })
+    await seedCardMap({
+      rarity: CARD_RARITY.RARE,
+      number: DUPLICATE_CARD_NUMBER,
+    })
+    await seedCardMap({
+      rarity: CARD_RARITY.RARE,
+      number: DUPLICATE_CARD_NUMBER,
+    })
 
     await loginAsAdmin(page)
     await page.goto(`/en${PAGES.ADMIN_MAPS}`)

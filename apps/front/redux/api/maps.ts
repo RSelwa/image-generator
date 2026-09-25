@@ -11,7 +11,6 @@ import {
 import {
   addDoc,
   deleteDoc,
-  deleteField,
   getCountFromServer,
   getDoc,
   getDocs,
@@ -247,7 +246,6 @@ export const mapApi = createApi({
           const mapRef = getMapRef(gameId, id)
           await updateDoc(mapRef, {
             ...validatedInput,
-            cardProperties: validatedInput.cardProperties || deleteField(),
             updatedAt: Timestamp.now(),
           })
 

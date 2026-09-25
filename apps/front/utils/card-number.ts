@@ -1,17 +1,15 @@
-import { type MapDocWithId } from "@repo/schemas"
+import { type CardDoc } from "@repo/schemas"
 
 const CARD_NUMBER_DIGITS = 3
 
-const getCardNumbers = (maps: MapDocWithId[]) =>
-  maps.flatMap(({ cardProperties }) =>
-    cardProperties ? [cardProperties.number] : [],
-  )
+const getCardNumbers = (cards: CardDoc[]) =>
+  cards.map(({ cardProperties }) => cardProperties.number)
 
-export const getNextCardNumber = (maps: MapDocWithId[]) =>
-  Math.max(0, ...getCardNumbers(maps)) + 1
+export const getNextCardNumber = (cards: CardDoc[]) =>
+  Math.max(0, ...getCardNumbers(cards)) + 1
 
-export const getCardNumberIssues = (maps: MapDocWithId[]) => {
-  const numbers = getCardNumbers(maps)
+export const getCardNumberIssues = (cards: CardDoc[]) => {
+  const numbers = getCardNumbers(cards)
   const usedNumbers = new Set(numbers)
   const maxNumber = Math.max(0, ...numbers)
 

@@ -1,7 +1,7 @@
 import { Timestamp } from "@firebase/firestore"
 import { CARD_RARITY, CARD_TYPE } from "@repo/common"
 import { describe, expect, it } from "vitest"
-import { cardDocSchema } from "~/firestore/card"
+import { cardDocSchema, cardDocWithIdSchema } from "~/firestore/card"
 
 const CARD_NUMBER = 42
 
@@ -63,5 +63,14 @@ describe("when the card properties are invalid", () => {
     expect(
       cardDocSchema.safeParse({ ...MAP_CARD, cardProperties }).success,
     ).toBe(false)
+  })
+})
+
+describe("when the map card has an id", () => {
+  it("should keep it", () => {
+    expect(cardDocWithIdSchema.parse({ ...MAP_CARD, id: "card" })).toEqual({
+      ...MAP_CARD,
+      id: "card",
+    })
   })
 })

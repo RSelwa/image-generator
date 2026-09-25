@@ -1,4 +1,4 @@
-import { type MapDocWithId } from "@repo/schemas"
+import { type CardRarity, type MapDocWithId } from "@repo/schemas"
 import Image from "next/image"
 import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { Badge } from "@/components/ui/badge"
@@ -13,9 +13,11 @@ import { useModal } from "@/hooks/use-modal"
 export const MapCard = ({
   map,
   gameId,
+  rarity,
 }: {
   map: MapDocWithId
   gameId: string
+  rarity: CardRarity | undefined
 }) => {
   // Build the combined param for editing this map
   const mapParam = buildSubcollectionParam(gameId, map.id)
@@ -37,12 +39,12 @@ export const MapCard = ({
         fill
         className="object-cover transition-transform group-hover:scale-105"
       />
-      {map.cardProperties && (
+      {rarity && (
         <Badge
-          variant={CARD_RARITY_TO_BADGE_VARIANT[map.cardProperties.rarity]}
+          variant={CARD_RARITY_TO_BADGE_VARIANT[rarity]}
           className="absolute top-2 right-2"
         >
-          {map.cardProperties.rarity}
+          {rarity}
         </Badge>
       )}
       <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent p-3">

@@ -1,25 +1,32 @@
-import { type MapDocWithId } from "@repo/schemas"
+import { type CardDoc, type CardRarity, type MapDocWithId } from "@repo/schemas"
 import { CARD_RARITY_FILTER } from "@/constants/mapping"
 import { type CardRarityFilter } from "@/schemas/card-rarity-filter"
 
+export const getCardRarityByMapId = (cards: CardDoc[]) =>
+  new Map(
+    cards.map(({ mapId, cardProperties }) => [mapId, cardProperties.rarity]),
+  )
+
 export const filterMapsByCardRarity = (
   maps: MapDocWithId[],
+  rarityByMapId: Map<string, CardRarity>,
   filter: CardRarityFilter,
 ) => {
   if (filter === CARD_RARITY_FILTER.ALL) return maps
 
   if (filter === CARD_RARITY_FILTER.NOT_RATED) {
-    return maps.filter(({ cardProperties }) => !cardProperties)
+    return maps.filter(({ id }) => !rarityByMapId.has(id))
   }
 
-  return maps.filter(({ cardProperties }) => cardProperties?.rarity === filter)
+  return maps.filter(({ id }) => rarityByMapId.get(id) === filter)
 }
 
 export const countMapsByCardRarity = (
   maps: MapDocWithId[],
+  rarityByMapId: Map<string, CardRarity>,
   options: { value: CardRarityFilter; label: string }[],
 ) =>
   options.map((option) => ({
     ...option,
-    count: filterMapsByCardRarity(maps, option.value).length,
+    count: filterMapsByCardRarity(maps, rarityByMapId, option.value).length,
   }))

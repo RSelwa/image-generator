@@ -1,5 +1,5 @@
-import { CARD_RARITY } from "@repo/common"
-import { type MapDocWithId } from "@repo/schemas"
+import { CARD_RARITY, CARD_TYPE } from "@repo/common"
+import { type CardDoc } from "@repo/schemas"
 import { describe, expect, it } from "vitest"
 import {
   formatCardNumber,
@@ -7,40 +7,32 @@ import {
   getNextCardNumber,
 } from "@/utils/card-number"
 
-const buildMap = (id: string, number?: number) =>
+const buildCard = (mapId: string, number: number) =>
   ({
-    id,
-    name: id,
+    type: CARD_TYPE.MAP,
     gameId: "game",
-    imageUrl: null,
-    width: null,
-    height: null,
+    mapId,
+    cardProperties: { rarity: CARD_RARITY.COMMON, number },
     createdAt: null,
     updatedAt: null,
-    maxDistancePoints: null,
-    gratitude: [],
-    cardProperties: number ? { rarity: CARD_RARITY.COMMON, number } : undefined,
-  }) satisfies MapDocWithId
+  }) satisfies CardDoc
 
 describe("when the next card number is computed", () => {
   it("should follow the highest number used", () => {
-    expect(
-      getNextCardNumber([buildMap("a", 3), buildMap("b", 7), buildMap("c")]),
-    ).toBe(8)
+    expect(getNextCardNumber([buildCard("a", 3), buildCard("b", 7)])).toBe(8)
   })
 
   it("should start at one without any card", () => {
-    expect(getNextCardNumber([buildMap("a")])).toBe(1)
+    expect(getNextCardNumber([])).toBe(1)
   })
 })
 
 describe("when the card numbers are checked", () => {
   const issues = getCardNumberIssues([
-    buildMap("a", 1),
-    buildMap("b", 3),
-    buildMap("c", 3),
-    buildMap("d", 6),
-    buildMap("e"),
+    buildCard("a", 1),
+    buildCard("b", 3),
+    buildCard("c", 3),
+    buildCard("d", 6),
   ])
 
   it("should list the numbers used more than once", () => {
@@ -54,10 +46,12 @@ describe("when the card numbers are checked", () => {
 
 describe("when every number is used once in a row", () => {
   it("should report no issue", () => {
-    expect(getCardNumberIssues([buildMap("a", 1), buildMap("b", 2)])).toEqual({
-      duplicates: [],
-      gaps: [],
-    })
+    expect(getCardNumberIssues([buildCard("a", 1), buildCard("b", 2)])).toEqual(
+      {
+        duplicates: [],
+        gaps: [],
+      },
+    )
   })
 })
 

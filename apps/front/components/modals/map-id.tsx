@@ -6,7 +6,11 @@ import {
   DEFAULT_MAX_DISTANCE_POINTS,
   STORAGE_PATHS,
 } from "@repo/common"
-import { cardRaritySchema, createMapInputSchema } from "@repo/schemas"
+import {
+  cardPropertiesSchema,
+  cardRaritySchema,
+  createMapInputSchema,
+} from "@repo/schemas"
 import { ArrowLeft } from "lucide-react"
 import { useQueryState } from "nuqs"
 import {
@@ -46,16 +50,22 @@ import {
 } from "@/constants/mapping"
 import { SELECTORS } from "@/constants/testing"
 import { useModal } from "@/hooks/use-modal"
+import { useGetCardsQuery, useSaveMapCardMutation } from "@/redux/api/cards"
 import {
   useCreateMapMutation,
   useGetMapByIdQuery,
-  useGetMapsQuery,
   useUpdateMapByIdMutation,
 } from "@/redux/api/maps"
+import { selectIsAdmin } from "@/redux/session/session.selectors"
+import { useAppSelector } from "@/redux/store"
 import { getNextCardNumber } from "@/utils/card-number"
 import { uploadFileToBucket } from "@/utils/file"
 
-type MapFormSchema = z.input<typeof createMapInputSchema>
+const mapFormSchema = createMapInputSchema.extend({
+  cardProperties: cardPropertiesSchema.optional(),
+})
+
+type MapFormSchema = z.input<typeof mapFormSchema>
 
 const KEY = MODAL_KEYS.MAP_ID
 
@@ -95,9 +105,13 @@ const MapForm = ({
     { gameId, id: mapId },
     { skip: isNew },
   )
-  const { data: allMaps } = useGetMapsQuery()
+  const { data: cards, isLoading: isLoadingCards } = useGetCardsQuery()
+  const isAdmin = useAppSelector(selectIsAdmin)
+  const mapCard = cards?.find((card) => card.mapId === mapId)
   const [createMap, { isLoading: isCreating }] = useCreateMapMutation()
   const [updateMap, { isLoading: isUpdating }] = useUpdateMapByIdMutation()
+  const [saveMapCard, { isLoading: isSavingCard }] = useSaveMapCardMutation()
+  const isSaving = isCreating || isUpdating || isSavingCard
   const [isUploading, setIsUploading] = useState(false)
   const [clickPosition, setClickPosition] = useState<{
     x: number
@@ -114,7 +128,7 @@ const MapForm = ({
     watch,
     formState: { errors, isDirty },
   } = useForm<MapFormSchema>({
-    resolver: zodResolver(createMapInputSchema),
+    resolver: zodResolver(mapFormSchema),
     defaultValues: {
       name: "",
       imageUrl: null,
@@ -139,7 +153,7 @@ const MapForm = ({
   }, [])
 
   useEffect(() => {
-    if (data) {
+    if (data && cards) {
       reset({
         name: data.name,
         imageUrl: data.imageUrl ?? null,
@@ -148,10 +162,10 @@ const MapForm = ({
         maxDistancePoints:
           data.maxDistancePoints ?? DEFAULT_MAX_DISTANCE_POINTS,
         gameId: data.gameId,
-        cardProperties: data.cardProperties,
+        cardProperties: mapCard?.cardProperties,
       })
     }
-  }, [data, reset])
+  }, [data, cards, mapCard, reset])
 
   const handleFileUpload = async (file: File) => {
     setIsUploading(true)
@@ -182,7 +196,7 @@ const MapForm = ({
       "cardProperties",
       rarity && {
         rarity,
-        number: cardProperties?.number || getNextCardNumber(allMaps || []),
+        number: cardProperties?.number || getNextCardNumber(cards || []),
       },
       { shouldDirty: true },
     )
@@ -193,29 +207,51 @@ const MapForm = ({
   }
 
   const onSubmit: SubmitHandler<MapFormSchema> = async (formData) => {
-    const parsedData = createMapInputSchema.parse(formData)
+    const { cardProperties: submittedCardProperties, ...mapInput } =
+      mapFormSchema.parse(formData)
 
     if (isNew) {
       const { data: createdMap, error } = await createMap({
         gameId,
-        data: parsedData,
+        data: mapInput,
       })
 
-      if (error) return
+      if (error || !createdMap) return
+
+      const { error: cardError } = await saveMapCard({
+        card: undefined,
+        gameId,
+        mapId: createdMap.id,
+        cardProperties: submittedCardProperties,
+      })
+      setModalParam(buildSubcollectionParam(gameId, createdMap.id))
+
+      if (cardError) {
+        toast.error("Map created, but its card was not saved")
+        return
+      }
 
       toast.success("Map created successfully")
-      if (createdMap?.id) {
-        // Update URL to the new map's combined param
-        setModalParam(buildSubcollectionParam(gameId, createdMap.id))
-      }
     } else {
       const { error } = await updateMap({
         gameId,
         id: mapId,
-        data: parsedData,
+        data: mapInput,
       })
 
       if (error) return
+
+      const { error: cardError } = await saveMapCard({
+        card: mapCard,
+        gameId,
+        mapId,
+        cardProperties: submittedCardProperties,
+      })
+
+      if (cardError) {
+        toast.error("Map updated, but its card was not saved")
+        return
+      }
 
       toast.success("Map updated successfully")
     }
@@ -226,8 +262,20 @@ const MapForm = ({
     closeModal()
   }
 
-  if (!isNew && isLoading) {
+  const isLoadingForm = isLoadingCards || (!isNew && isLoading)
+
+  if (isLoadingForm) {
     return <LoadingModal modalKey={KEY} />
+  }
+
+  const hasMissingData = !cards || (!isNew && !data)
+
+  if (hasMissingData) {
+    return (
+      <ModalBase modalKey={KEY} title="Could not load this map">
+        <p className="p-6">Close the modal and try again.</p>
+      </ModalBase>
+    )
   }
 
   return (
@@ -307,64 +355,67 @@ const MapForm = ({
               )}
             </Field>
 
-            <Field>
-              <FieldLabel>Card rarity</FieldLabel>
-              <Select
-                value={cardProperties?.rarity || NO_CARD_RARITY}
-                onValueChange={handleCardRarityChange}
-                disabled={!allMaps}
-              >
-                <SelectTrigger data-testid={SELECTORS.MAP_FORM_CARD_RARITY}>
-                  <SelectValue placeholder="Select rarity" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem
-                    value={NO_CARD_RARITY}
-                    data-testid={SELECTORS.MAP_FORM_CARD_RARITY_OPTION(
-                      NO_CARD_RARITY,
-                    )}
+            {isAdmin && (
+              <>
+                <Field>
+                  <FieldLabel>Card rarity</FieldLabel>
+                  <Select
+                    value={cardProperties?.rarity || NO_CARD_RARITY}
+                    onValueChange={handleCardRarityChange}
                   >
-                    Not a card
-                  </SelectItem>
-                  {Object.values(CARD_RARITY).map((rarity) => (
-                    <SelectItem
-                      key={rarity}
-                      value={rarity}
-                      data-testid={SELECTORS.MAP_FORM_CARD_RARITY_OPTION(
-                        rarity,
-                      )}
-                    >
-                      {rarity}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldDescription>
-                Maps without a rarity never drop from a pack
-              </FieldDescription>
-            </Field>
+                    <SelectTrigger data-testid={SELECTORS.MAP_FORM_CARD_RARITY}>
+                      <SelectValue placeholder="Select rarity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        value={NO_CARD_RARITY}
+                        data-testid={SELECTORS.MAP_FORM_CARD_RARITY_OPTION(
+                          NO_CARD_RARITY,
+                        )}
+                      >
+                        Not a card
+                      </SelectItem>
+                      {Object.values(CARD_RARITY).map((rarity) => (
+                        <SelectItem
+                          key={rarity}
+                          value={rarity}
+                          data-testid={SELECTORS.MAP_FORM_CARD_RARITY_OPTION(
+                            rarity,
+                          )}
+                        >
+                          {rarity}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    Maps without a rarity never drop from a pack
+                  </FieldDescription>
+                </Field>
 
-            {cardProperties && (
-              <Field>
-                <FieldLabel htmlFor="card-number">Card number *</FieldLabel>
-                <Input
-                  id="card-number"
-                  type="number"
-                  data-testid={SELECTORS.MAP_FORM_CARD_NUMBER}
-                  {...register("cardProperties.number", {
-                    valueAsNumber: true,
-                  })}
-                  aria-invalid={!!errors.cardProperties?.number}
-                />
-                <FieldDescription>
-                  Unique number of the card in the collection
-                </FieldDescription>
-                {errors.cardProperties?.number && (
-                  <FieldError>
-                    {errors.cardProperties.number.message}
-                  </FieldError>
+                {cardProperties && (
+                  <Field>
+                    <FieldLabel htmlFor="card-number">Card number *</FieldLabel>
+                    <Input
+                      id="card-number"
+                      type="number"
+                      data-testid={SELECTORS.MAP_FORM_CARD_NUMBER}
+                      {...register("cardProperties.number", {
+                        valueAsNumber: true,
+                      })}
+                      aria-invalid={!!errors.cardProperties?.number}
+                    />
+                    <FieldDescription>
+                      Unique number of the card in the collection
+                    </FieldDescription>
+                    {errors.cardProperties?.number && (
+                      <FieldError>
+                        {errors.cardProperties.number.message}
+                      </FieldError>
+                    )}
+                  </Field>
                 )}
-              </Field>
+              </>
             )}
 
             {data && (
@@ -440,10 +491,10 @@ const MapForm = ({
         <div className="mt-6 flex justify-end gap-3">
           <Button
             type="submit"
-            disabled={isCreating || isUpdating || !isDirty}
+            disabled={isSaving || !isDirty}
             data-testid={SELECTORS.MAP_FORM_SUBMIT}
           >
-            {isCreating || isUpdating ? (
+            {isSaving ? (
               <>
                 {isNew ? "Creating" : "Saving"} <Loader />
               </>

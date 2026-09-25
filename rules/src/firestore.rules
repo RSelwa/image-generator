@@ -47,10 +47,6 @@ service cloud.firestore {
       return ['credits', 'referralCode', 'packsStored', 'packsRefillAnchor'];
     }
 
-    function adminOnlyMapFields() {
-      return ['cardProperties'];
-    }
-
     match /users/{user} {
       allow create: if isSignedIn() && !request.resource.data.keys().hasAny(serverOnlyUserFields());
 
@@ -110,8 +106,7 @@ service cloud.firestore {
 
       match /maps/{map} {
         allow write: if signedInAdmin();
-        allow create: if signedInIconograph() && !request.resource.data.keys().hasAny(adminOnlyMapFields());
-        allow update: if signedInIconograph() && noUpdatesOnFields(adminOnlyMapFields());
+        allow create, update: if signedInIconograph();
 
         allow read: if true;
       }
@@ -307,8 +302,7 @@ service cloud.firestore {
 
     match /{path=**}/maps/{map} {
       allow write: if signedInAdmin();
-      allow create: if signedInIconograph() && !request.resource.data.keys().hasAny(adminOnlyMapFields());
-      allow update: if signedInIconograph() && noUpdatesOnFields(adminOnlyMapFields());
+      allow create, update: if signedInIconograph();
 
       allow read: if true;
     }

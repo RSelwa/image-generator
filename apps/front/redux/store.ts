@@ -3,6 +3,7 @@ import { useDispatch, useSelector, useStore } from "react-redux"
 import { achievementsApi } from "@/redux/api/achievements"
 import { adminApi } from "@/redux/api/admin"
 import { authApi } from "@/redux/api/auth"
+import { cardApi } from "@/redux/api/cards"
 import { cloudFunctionsApi } from "@/redux/api/cloud-functions"
 import { conversationsApi } from "@/redux/api/conversations"
 import { dailyChallengeApi } from "@/redux/api/daily-challenge"
@@ -39,6 +40,7 @@ export const makeStore = () =>
       [userApi.reducerPath]: userApi.reducer,
       [localApi.reducerPath]: localApi.reducer,
       [mapApi.reducerPath]: mapApi.reducer,
+      [cardApi.reducerPath]: cardApi.reducer,
       [sphericalApi.reducerPath]: sphericalApi.reducer,
       [flatApi.reducerPath]: flatApi.reducer,
       [gratitudeApi.reducerPath]: gratitudeApi.reducer,
@@ -68,6 +70,7 @@ export const makeStore = () =>
         .concat(gameApi.middleware)
         .concat(localApi.middleware)
         .concat(mapApi.middleware)
+        .concat(cardApi.middleware)
         .concat(sphericalApi.middleware)
         .concat(flatApi.middleware)
         .concat(gratitudeApi.middleware)

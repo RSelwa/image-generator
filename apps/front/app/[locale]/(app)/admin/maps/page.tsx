@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select"
 import { CARD_RARITY_FILTER } from "@/constants/mapping"
 import { SELECTORS } from "@/constants/testing"
+import { useGetCardsQuery } from "@/redux/api/cards"
 import { useGetMapsQuery } from "@/redux/api/maps"
 import {
   type CardRarityFilter,
@@ -22,6 +23,7 @@ import {
 import {
   countMapsByCardRarity,
   filterMapsByCardRarity,
+  getCardRarityByMapId,
 } from "@/utils/card-rarity"
 import { formatCardNumber, getCardNumberIssues } from "@/utils/card-number"
 
@@ -36,28 +38,33 @@ const RARITY_FILTER_OPTIONS = [
 
 const Page = () => {
   const { data, isLoading } = useGetMapsQuery()
+  const { data: cards } = useGetCardsQuery()
   const [rarityFilter, setRarityFilter] = useState<CardRarityFilter>(
     CARD_RARITY_FILTER.ALL,
   )
 
   const allMaps = data || []
-  const maps = filterMapsByCardRarity(allMaps, rarityFilter)
-  const { duplicates, gaps } = getCardNumberIssues(allMaps)
+  const allCards = cards || []
+  const rarityByMapId = getCardRarityByMapId(allCards)
+  const maps = filterMapsByCardRarity(allMaps, rarityByMapId, rarityFilter)
+  const { duplicates, gaps } = getCardNumberIssues(allCards)
 
   return (
     <main className="p-2 h-full-height-admin">
       <AdminHeader title="Maps" />
 
       <ul className="mb-4 flex flex-wrap gap-2">
-        {countMapsByCardRarity(allMaps, RARITY_FILTER_OPTIONS).map(
-          ({ value, label, count }) => (
-            <li key={value}>
-              <Badge variant="outline">
-                {label}: {count}
-              </Badge>
-            </li>
-          ),
-        )}
+        {countMapsByCardRarity(
+          allMaps,
+          rarityByMapId,
+          RARITY_FILTER_OPTIONS,
+        ).map(({ value, label, count }) => (
+          <li key={value}>
+            <Badge variant="outline">
+              {label}: {count}
+            </Badge>
+          </li>
+        ))}
       </ul>
 
       {duplicates.length > 0 && (
@@ -104,7 +111,12 @@ const Page = () => {
       {isLoading && <p>Loading...</p>}
       <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 mb-8">
         {maps.map((map) => (
-          <MapCard key={map.id} map={map} gameId={map.gameId} />
+          <MapCard
+            key={map.id}
+            map={map}
+            gameId={map.gameId}
+            rarity={rarityByMapId.get(map.id)}
+          />
         ))}
       </ul>
     </main>

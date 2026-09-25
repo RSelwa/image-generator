@@ -994,100 +994,6 @@ describe("firebase Security Rules", () => {
 
       await assertFails(deleteDoc(doc(iconoDb, mapPath)))
     })
-
-    describe("when a client writes the card properties", () => {
-      const uid = "user1"
-      const iconographUid = "iconograph1"
-      const adminUid = "admin"
-      const cardProperties = { rarity: "legendary" }
-
-      const setupRight = async (rightUid: string, right: string) => {
-        await testEnv.withSecurityRulesDisabled(async (context) => {
-          await setDoc(doc(context.firestore(), `rights/${rightUid}`), {
-            uid: rightUid,
-            right,
-          })
-        })
-      }
-
-      const setupMap = async () => {
-        await testEnv.withSecurityRulesDisabled(async (context) => {
-          await setDoc(doc(context.firestore(), mapPath), { name: "Test Map" })
-        })
-      }
-
-      it("should deny a user creating a map with them", async () => {
-        const authedDb = testEnv.authenticatedContext(uid).firestore()
-
-        await assertFails(
-          setDoc(doc(authedDb, mapPath), { name: "Test Map", cardProperties }),
-        )
-      })
-
-      it("should deny a user updating them", async () => {
-        await setupMap()
-        const authedDb = testEnv.authenticatedContext(uid).firestore()
-
-        await assertFails(updateDoc(doc(authedDb, mapPath), { cardProperties }))
-      })
-
-      it("should deny an iconograph creating a map with them", async () => {
-        await setupRight(iconographUid, "iconograph")
-        const iconographDb = testEnv
-          .authenticatedContext(iconographUid)
-          .firestore()
-
-        await assertFails(
-          setDoc(doc(iconographDb, mapPath), {
-            name: "Test Map",
-            cardProperties,
-          }),
-        )
-      })
-
-      it("should deny an iconograph updating them", async () => {
-        await setupRight(iconographUid, "iconograph")
-        await setupMap()
-        const iconographDb = testEnv
-          .authenticatedContext(iconographUid)
-          .firestore()
-
-        await assertFails(
-          updateDoc(doc(iconographDb, mapPath), { cardProperties }),
-        )
-      })
-
-      it("should let an iconograph update the other fields", async () => {
-        await setupRight(iconographUid, "iconograph")
-        await setupMap()
-        const iconographDb = testEnv
-          .authenticatedContext(iconographUid)
-          .firestore()
-
-        await assertSucceeds(
-          updateDoc(doc(iconographDb, mapPath), { name: "Renamed Map" }),
-        )
-      })
-
-      it("should let an admin create a map with them", async () => {
-        await setupRight(adminUid, "admin")
-        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
-
-        await assertSucceeds(
-          setDoc(doc(adminDb, mapPath), { name: "Test Map", cardProperties }),
-        )
-      })
-
-      it("should let an admin update them", async () => {
-        await setupRight(adminUid, "admin")
-        await setupMap()
-        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
-
-        await assertSucceeds(
-          updateDoc(doc(adminDb, mapPath), { cardProperties }),
-        )
-      })
-    })
   })
 
   describe("spherical collection", () => {
@@ -3197,6 +3103,52 @@ describe("firebase Security Rules", () => {
         const authedDb = testEnv.authenticatedContext(uid).firestore()
 
         await assertFails(deleteDoc(doc(authedDb, cardPath)))
+      })
+    })
+
+    describe("when an iconograph writes a card", () => {
+      const iconographUid = "iconograph1"
+
+      const setupIconograph = async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), `rights/${iconographUid}`), {
+            uid: iconographUid,
+            right: "iconograph",
+          })
+        })
+      }
+
+      it("should deny creating it", async () => {
+        await setupIconograph()
+        const iconographDb = testEnv
+          .authenticatedContext(iconographUid)
+          .firestore()
+
+        await assertFails(setDoc(doc(iconographDb, cardPath), card))
+      })
+
+      it("should deny updating it", async () => {
+        await setupIconograph()
+        await setupCard()
+        const iconographDb = testEnv
+          .authenticatedContext(iconographUid)
+          .firestore()
+
+        await assertFails(
+          updateDoc(doc(iconographDb, cardPath), {
+            "cardProperties.number": 2,
+          }),
+        )
+      })
+
+      it("should deny deleting it", async () => {
+        await setupIconograph()
+        await setupCard()
+        const iconographDb = testEnv
+          .authenticatedContext(iconographUid)
+          .firestore()
+
+        await assertFails(deleteDoc(doc(iconographDb, cardPath)))
       })
     })
 

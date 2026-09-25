@@ -5,7 +5,9 @@ import { buildSubcollectionParam } from "@/components/modals/map-id"
 import { Button } from "@/components/ui/button"
 import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
 import { useModal } from "@/hooks/use-modal"
+import { useGetCardsQuery } from "@/redux/api/cards"
 import { useGetGameByIdQuery, useGetMapsByGameIdQuery } from "@/redux/api/games"
+import { getCardRarityByMapId } from "@/utils/card-rarity"
 
 export const MapsGallery = () => {
   const [gameId] = useQueryState(MODAL_KEYS.MAPS_GALLERY_ID)
@@ -21,12 +23,14 @@ export const MapsGallery = () => {
     { gameId: gameId || "" },
     { skip: !gameId },
   )
+  const { data: cards } = useGetCardsQuery()
 
   if (!gameId) return <LoadingModal modalKey={MODAL_KEYS.MAPS_GALLERY_ID} />
 
   // Build the combined param for creating a new map
   const newMapParam = buildSubcollectionParam(gameId, NEW_SEARCH_PARAM)
   const hasMaps = maps && maps.length > 0
+  const rarityByMapId = getCardRarityByMapId(cards || [])
 
   return (
     <ModalBase className="max-h-125" modalKey={MODAL_KEYS.MAPS_GALLERY_ID}>
@@ -52,7 +56,14 @@ export const MapsGallery = () => {
           </p>
         )}
         {hasMaps &&
-          maps.map((map) => <MapCard key={map.id} map={map} gameId={gameId} />)}
+          maps.map((map) => (
+            <MapCard
+              key={map.id}
+              map={map}
+              gameId={gameId}
+              rarity={rarityByMapId.get(map.id)}
+            />
+          ))}
       </section>
     </ModalBase>
   )
