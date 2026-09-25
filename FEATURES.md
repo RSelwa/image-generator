@@ -161,3 +161,22 @@ Goal: players aim to **complete the collection**, not only to pull rare cards. E
   - [x] Show `#number` on `MapTradingCard` and on the collection's ghost cards (stories updated)
   - [x] Collection page as a numbered binder: every card sorted by `number`, owned ones in full with their count, missing ones as ghosts with number + rarity frame, overall progress `owned/total` at the top (per-game count kept as secondary). Unit tests
   - [x] Update the e2e specs (collection binder order + progress, admin number field)
+
+---
+
+## TCG cards collection (cards decoupled from maps)
+
+Goal: a card is its own Firestore document instead of `cardProperties` on a map, so a card can point at a map **or at a game** (game cards), carry card-only fields later without touching `mapSchema`, and be retired without touching its map. Nothing is in prod: no data migration, the dev pools are rebuilt with the script.
+
+- `cards/{cardId}` (top-level, auto id): `{ type, gameId, mapId?, cardProperties, createdAt, updatedAt }`, `cardProperties` = the existing `cardPropertiesSchema` (`{ rarity, number }`). `type` from a `CARD_TYPE` constant (`map` / `game`); the schema is a `z.discriminatedUnion("type", …)` so a map card always has a `mapId` and a game card never has one. `gameId` on every card (binder grouping). At most one card per map and one game card per game.
+- Name and image are **not copied** on the card: read from the map / game doc (no stale denormalized data).
+- `cardPools/{rarity}`: entries become `{ cardId, gameId }`, derived from `cards` by the trigger.
+- `users/{uid}/cards/{cardId}`: owned cards keyed by `cardId`; `cardPropertiesAtPull` stays the snapshot of the card's `cardProperties`.
+- Numbers: game card first in its game's block, then the game's map cards (still fixed, never renumbered).
+- Security: anyone reads `cards`, only admins write them. Pools and owned cards stay server-only writes.
+
+- [ ] TCG cards collection
+  - [ ] Data layer for `cards`: `CARD_TYPE` constant, `cardDocSchema` (map variant only for now: `type: "map"` + `mapId`) + schema tests, `TABLES` / db-refs entry, Firestore rules + rules tests (anyone reads, admin writes, user denied on create / update / delete). Additive, nothing consumes it yet
+  - [ ] Switch the read side to `cards`: the `listen-docs` pools trigger listens on `cards/{cardId}` (rarity added / changed / removed / card deleted) instead of maps; `rebuild-card-pools` script rebuilds from `cards`; pool entries `{ cardId, gameId }`; `users/{uid}/cards/{cardId}` keyed by `cardId`; the open-pack endpoint draws cards and reads their map for name / image; the collection page builds the binder from `cards` + map docs. Unit + e2e tests updated (seed cards instead of `cardProperties` on maps)
+  - [ ] Admin writes `cards`: the map form's card section creates / updates / deletes the map's card doc (number prefill + checks computed from `cards`); the admin maps page badges, rarity filter, per-rarity counts and number flags read `cards`. Remove `cardProperties` from `mapDocSchema`, the map rules (`adminOnlyMapFields`) and every remaining consumer. Tests updated
+  - [ ] Game cards: add the `game` variant to `cardDocSchema` (no `mapId`); admin can make a game a card (rarity + number, prefilled) from the game form; the endpoint and `MapTradingCard` (or a game variant) render a game card with the game title + image; the binder shows it first in its game block. Schema / unit / e2e tests
