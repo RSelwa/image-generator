@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { CARD_RARITY, CARD_TYPE, TABLES } from "@repo/common"
-import { type CardDocWithId, type CardProperties } from "@repo/schemas"
+import { type CardDocWithId, type CardFields } from "@repo/schemas"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { cardApi } from "@/redux/api/cards"
 
@@ -12,9 +12,9 @@ const GAME_ID = "pokemon-red"
 
 const MAP_ID = "kanto"
 
-const RARE_PROPERTIES = { rarity: CARD_RARITY.RARE, number: CARD_NUMBER }
+const RARE_FIELDS = { rarity: CARD_RARITY.RARE, number: CARD_NUMBER }
 
-const LEGENDARY_PROPERTIES = {
+const LEGENDARY_FIELDS = {
   rarity: CARD_RARITY.LEGENDARY,
   number: CARD_NUMBER,
 }
@@ -24,7 +24,7 @@ const CARD = {
   type: CARD_TYPE.MAP,
   gameId: GAME_ID,
   mapId: MAP_ID,
-  cardProperties: RARE_PROPERTIES,
+  ...RARE_FIELDS,
   createdAt: null,
   updatedAt: null,
 } satisfies CardDocWithId
@@ -62,14 +62,14 @@ const buildStore = () =>
 
 const saveMapCard = (
   card: CardDocWithId | undefined,
-  cardProperties: CardProperties | undefined,
+  cardFields: CardFields | undefined,
 ) =>
   buildStore().dispatch(
     cardApi.endpoints.saveCard.initiate({
       card,
       gameId: GAME_ID,
       mapId: MAP_ID,
-      cardProperties,
+      cardFields,
     }),
   )
 
@@ -85,13 +85,13 @@ const expectNoWrite = () => {
 
 describe("when a map without a card becomes one", () => {
   it("should create the card", async () => {
-    await saveMapCard(undefined, RARE_PROPERTIES)
+    await saveMapCard(undefined, RARE_FIELDS)
 
     expect(firestore.addDoc).toHaveBeenCalledWith(CARDS_REF, {
       type: CARD_TYPE.MAP,
       gameId: GAME_ID,
       mapId: MAP_ID,
-      cardProperties: RARE_PROPERTIES,
+      ...RARE_FIELDS,
       createdAt: NOW,
       updatedAt: NOW,
     })
@@ -104,28 +104,28 @@ describe("when a game without a card becomes one", () => {
       cardApi.endpoints.saveCard.initiate({
         card: undefined,
         gameId: GAME_ID,
-        cardProperties: RARE_PROPERTIES,
+        cardFields: RARE_FIELDS,
       }),
     )
 
     expect(firestore.addDoc).toHaveBeenCalledWith(CARDS_REF, {
       type: CARD_TYPE.GAME,
       gameId: GAME_ID,
-      cardProperties: RARE_PROPERTIES,
+      ...RARE_FIELDS,
       createdAt: NOW,
       updatedAt: NOW,
     })
   })
 })
 
-describe("when the card properties change", () => {
+describe("when the card fields change", () => {
   it("should update the card", async () => {
-    await saveMapCard(CARD, LEGENDARY_PROPERTIES)
+    await saveMapCard(CARD, LEGENDARY_FIELDS)
 
     expect(firestore.updateDoc).toHaveBeenCalledWith(
       `${TABLES.CARDS}/${CARD.id}`,
       {
-        cardProperties: LEGENDARY_PROPERTIES,
+        ...LEGENDARY_FIELDS,
         updatedAt: NOW,
       },
     )
@@ -144,7 +144,7 @@ describe("when the map stops being a card", () => {
 
 describe("when the card properties are unchanged", () => {
   it("should not write", async () => {
-    await saveMapCard(CARD, { ...RARE_PROPERTIES })
+    await saveMapCard(CARD, { ...RARE_FIELDS })
 
     expectNoWrite()
   })
@@ -162,7 +162,7 @@ describe("when the write fails", () => {
   it("should return an error", async () => {
     firestore.addDoc.mockRejectedValueOnce(new Error("PERMISSION_DENIED"))
 
-    expect((await saveMapCard(undefined, RARE_PROPERTIES)).error).toBeDefined()
+    expect((await saveMapCard(undefined, RARE_FIELDS)).error).toBeDefined()
   })
 })
 

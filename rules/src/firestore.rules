@@ -80,10 +80,6 @@ service cloud.firestore {
       allow write: if signedInAdmin();
     }
 
-    match /cardPools/{rarity} {
-      allow read: if true;
-    }
-
     match /games/{game} {
       allow create, update: if signedInIconograph();
       allow write: if signedInAdmin();

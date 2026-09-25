@@ -2,8 +2,7 @@ import { type CardDoc } from "@repo/schemas"
 
 const CARD_NUMBER_DIGITS = 3
 
-const getCardNumbers = (cards: CardDoc[]) =>
-  cards.map(({ cardProperties }) => cardProperties.number)
+const getCardNumbers = (cards: CardDoc[]) => cards.map(({ number }) => number)
 
 export const getNextCardNumber = (cards: CardDoc[]) =>
   Math.max(0, ...getCardNumbers(cards)) + 1

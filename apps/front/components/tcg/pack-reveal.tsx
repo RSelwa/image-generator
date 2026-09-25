@@ -41,8 +41,8 @@ export const PackReveal = ({
                 cardId={card.cardId}
                 name={card.name}
                 imageUrl={card.imageUrl}
-                rarity={card.cardProperties.rarity}
-                number={card.cardProperties.number}
+                rarity={card.rarity}
+                number={card.number}
               />
               {card.isNew && (
                 <Badge
@@ -103,8 +103,8 @@ export const PackReveal = ({
               cardId={card.cardId}
               name={card.name}
               imageUrl={card.imageUrl}
-              rarity={card.cardProperties.rarity}
-              number={card.cardProperties.number}
+              rarity={card.rarity}
+              number={card.number}
             />
           </button>
         ))}

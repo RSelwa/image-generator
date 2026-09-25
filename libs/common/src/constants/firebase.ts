@@ -29,7 +29,6 @@ export const TABLES = {
   ACHIEVEMENTS: "achievements",
   UNLOCKED_ACHIEVEMENTS: "unlockedAchievements",
   CARDS: "cards",
-  CARD_POOLS: "cardPools",
 } as const
 
 export const METADATA_DOCS = {

@@ -90,7 +90,8 @@ const CollectionPage = async () => {
         cardId,
         type: card.type,
         gameId: card.gameId,
-        ...card.cardProperties,
+        rarity: card.rarity,
+        number: card.number,
         ...subject,
       },
     ]

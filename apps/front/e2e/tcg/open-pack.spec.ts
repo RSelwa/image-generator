@@ -5,15 +5,12 @@ import { refs, subRefs } from "@repo/providers/db-refs"
 import { signUpAuthUser } from "@repo/testing/emulator"
 import { Timestamp } from "firebase-admin/firestore"
 import { PASSWORD } from "../helpers/lobby"
-import {
-  seedEveryPoolWithOneCard,
-  seedEveryPoolWithOneGameCard,
-} from "../helpers/tcg"
+import { seedOnlyMapCard, seedOnlyGameCard } from "../helpers/tcg"
 
 const CARD_NUMBER = 42
 
 const ENDPOINT = "/api/packs/open"
-const CARD_PROPERTIES = { rarity: CARD_RARITY.LEGENDARY, number: CARD_NUMBER }
+const CARD_FIELDS = { rarity: CARD_RARITY.LEGENDARY, number: CARD_NUMBER }
 
 const signUp = () =>
   signUpAuthUser({
@@ -56,7 +53,7 @@ test.describe("when a pack is opened", () => {
   test("should reveal the drawn cards and consume one pack", async ({
     request,
   }) => {
-    const { map, cardId } = await seedEveryPoolWithOneCard(CARD_PROPERTIES)
+    const { map, cardId } = await seedOnlyMapCard(CARD_FIELDS)
     const { uid, idToken } = await signUp()
 
     const response = await openPack(request, idToken)
@@ -67,21 +64,20 @@ test.describe("when a pack is opened", () => {
     expect(cards[0]).toMatchObject({
       cardId,
       name: map.name,
-      cardProperties: CARD_PROPERTIES,
+      ...CARD_FIELDS,
       isNew: true,
     })
     expect(packsStored).toBe(PACKS_MAX - 1)
     expect((await getUser(uid))?.packsStored).toBe(PACKS_MAX - 1)
     expect(await getOwnedCard(uid, cardId)).toMatchObject({
       count: PACK_SIZE,
-      cardPropertiesAtPull: CARD_PROPERTIES,
     })
   })
 
   test("should reveal a drawn game card with its game title and image", async ({
     request,
   }) => {
-    const { game, cardId } = await seedEveryPoolWithOneGameCard(CARD_PROPERTIES)
+    const { game, cardId } = await seedOnlyGameCard(CARD_FIELDS)
     const { uid, idToken } = await signUp()
 
     const response = await openPack(request, idToken)
@@ -93,16 +89,15 @@ test.describe("when a pack is opened", () => {
       gameId: game.id,
       name: game.title,
       imageUrl: game.image || null,
-      cardProperties: CARD_PROPERTIES,
+      ...CARD_FIELDS,
     })
     expect(await getOwnedCard(uid, cardId)).toMatchObject({
       count: PACK_SIZE,
-      cardPropertiesAtPull: CARD_PROPERTIES,
     })
   })
 
   test("should add a duplicate to the owned count", async ({ request }) => {
-    const { cardId } = await seedEveryPoolWithOneCard(CARD_PROPERTIES)
+    const { cardId } = await seedOnlyMapCard(CARD_FIELDS)
     const { uid, idToken } = await signUp()
 
     await openPack(request, idToken)

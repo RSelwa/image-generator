@@ -1,5 +1,5 @@
 import { CARD_RARITY } from "@repo/common"
-import { type CardProperties, cardRaritySchema } from "@repo/schemas"
+import { type CardFields, cardRaritySchema } from "@repo/schemas"
 import { type UseFormReturn } from "react-hook-form"
 import {
   Field,
@@ -17,11 +17,13 @@ import {
 } from "@/components/ui/select"
 import { SELECTORS } from "@/constants/testing"
 
-type CardPropertiesFieldsProps = {
-  form: UseFormReturn<CardProperties>
+const NUMBER_INPUT_ID = "card-fields-number"
+
+type CardFieldsInputsProps = {
+  form: UseFormReturn<CardFields>
 }
 
-export const CardPropertiesFields = ({ form }: CardPropertiesFieldsProps) => {
+export const CardFieldsInputs = ({ form }: CardFieldsInputsProps) => {
   const {
     register,
     watch,
@@ -58,9 +60,9 @@ export const CardPropertiesFields = ({ form }: CardPropertiesFieldsProps) => {
         <FieldError errors={[errors.rarity]} />
       </Field>
       <Field>
-        <FieldLabel htmlFor="card-properties-number">Number</FieldLabel>
+        <FieldLabel htmlFor={NUMBER_INPUT_ID}>Number</FieldLabel>
         <Input
-          id="card-properties-number"
+          id={NUMBER_INPUT_ID}
           type="number"
           data-testid={SELECTORS.CARD_FORM_NUMBER}
           {...register("number", { valueAsNumber: true })}

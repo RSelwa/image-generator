@@ -8,7 +8,7 @@ import {
   STORAGE_PATHS,
 } from "@repo/common"
 import {
-  cardPropertiesSchema,
+  cardFieldsSchema,
   cardRaritySchema,
   createMapInputSchema,
 } from "@repo/schemas"
@@ -63,7 +63,7 @@ import { getNextCardNumber } from "@/utils/card-number"
 import { uploadFileToBucket } from "@/utils/file"
 
 const mapFormSchema = createMapInputSchema.extend({
-  cardProperties: cardPropertiesSchema.optional(),
+  cardFields: cardFieldsSchema.optional(),
 })
 
 type MapFormSchema = z.input<typeof mapFormSchema>
@@ -145,7 +145,7 @@ const MapForm = ({
   const imageUrl = watch("imageUrl")
   const name = watch("name")
   const maxDistancePoints = watch("maxDistancePoints")
-  const cardProperties = watch("cardProperties")
+  const cardFields = watch("cardFields")
 
   const handleOverlayClick = useCallback((e: MouseEvent<HTMLDivElement>) => {
     if (!overlayRef.current) return
@@ -165,7 +165,10 @@ const MapForm = ({
         maxDistancePoints:
           data.maxDistancePoints ?? DEFAULT_MAX_DISTANCE_POINTS,
         gameId: data.gameId,
-        cardProperties: mapCard?.cardProperties,
+        cardFields: mapCard && {
+          rarity: mapCard.rarity,
+          number: mapCard.number,
+        },
       })
     }
   }, [data, cards, mapCard, reset])
@@ -196,10 +199,10 @@ const MapForm = ({
     const rarity = cardRaritySchema.safeParse(value).data
 
     setValue(
-      "cardProperties",
+      "cardFields",
       rarity && {
         rarity,
-        number: cardProperties?.number || getNextCardNumber(cards || []),
+        number: cardFields?.number || getNextCardNumber(cards || []),
       },
       { shouldDirty: true },
     )
@@ -210,7 +213,7 @@ const MapForm = ({
   }
 
   const onSubmit: SubmitHandler<MapFormSchema> = async (formData) => {
-    const { cardProperties: submittedCardProperties, ...mapInput } =
+    const { cardFields: submittedCardFields, ...mapInput } =
       mapFormSchema.parse(formData)
 
     if (isNew) {
@@ -225,7 +228,7 @@ const MapForm = ({
         card: undefined,
         gameId,
         mapId: createdMap.id,
-        cardProperties: submittedCardProperties,
+        cardFields: submittedCardFields,
       })
       setModalParam(buildSubcollectionParam(gameId, createdMap.id))
 
@@ -248,7 +251,7 @@ const MapForm = ({
         card: mapCard,
         gameId,
         mapId,
-        cardProperties: submittedCardProperties,
+        cardFields: submittedCardFields,
       })
 
       if (cardError) {
@@ -363,7 +366,7 @@ const MapForm = ({
                 <Field>
                   <FieldLabel>Card rarity</FieldLabel>
                   <Select
-                    value={cardProperties?.rarity || NO_CARD_RARITY}
+                    value={cardFields?.rarity || NO_CARD_RARITY}
                     onValueChange={handleCardRarityChange}
                   >
                     <SelectTrigger data-testid={SELECTORS.MAP_FORM_CARD_RARITY}>
@@ -396,24 +399,24 @@ const MapForm = ({
                   </FieldDescription>
                 </Field>
 
-                {cardProperties && (
+                {cardFields && (
                   <Field>
                     <FieldLabel htmlFor="card-number">Card number *</FieldLabel>
                     <Input
                       id="card-number"
                       type="number"
                       data-testid={SELECTORS.MAP_FORM_CARD_NUMBER}
-                      {...register("cardProperties.number", {
+                      {...register("cardFields.number", {
                         valueAsNumber: true,
                       })}
-                      aria-invalid={!!errors.cardProperties?.number}
+                      aria-invalid={!!errors.cardFields?.number}
                     />
                     <FieldDescription>
                       Unique number of the card in the collection
                     </FieldDescription>
-                    {errors.cardProperties?.number && (
+                    {errors.cardFields?.number && (
                       <FieldError>
-                        {errors.cardProperties.number.message}
+                        {errors.cardFields.number.message}
                       </FieldError>
                     )}
                   </Field>

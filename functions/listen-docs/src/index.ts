@@ -6,7 +6,6 @@ import {
 } from "@repo/common"
 import { refs } from "@repo/providers/db-refs"
 import {
-  cardDocSchema,
   type DailyChallengeDoc,
   type FlatDoc,
   type GameDoc,
@@ -16,7 +15,6 @@ import {
 } from "@repo/schemas"
 import { logger } from "firebase-functions"
 import { onDocumentWritten } from "firebase-functions/firestore"
-import { updateCardPools } from "~/update-card-pools"
 import { updateDailyChallengesMetadata } from "~/update-daily-challenges-metadata"
 import { updateGamesList } from "~/updates-games-list"
 import {
@@ -129,23 +127,6 @@ export const listen_doc_maps_written = onDocumentWritten(
     } catch (error) {
       console.error(
         `Error in listen_doc_maps_written for document ${event.document}:`,
-        error,
-      )
-    }
-  },
-)
-
-export const listen_doc_cards_written = onDocumentWritten(
-  `${TABLES.CARDS}/{cardId}`,
-  async (event) => {
-    try {
-      const before = cardDocSchema.safeParse(event.data?.before.data()).data
-      const after = cardDocSchema.safeParse(event.data?.after.data()).data
-
-      await updateCardPools(event.params.cardId, before, after)
-    } catch (error) {
-      console.error(
-        `Error in listen_doc_cards_written for document ${event.document}:`,
         error,
       )
     }

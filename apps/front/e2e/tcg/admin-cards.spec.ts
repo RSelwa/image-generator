@@ -45,11 +45,7 @@ const pickOption = async (page: Page, trigger: string, option: string) => {
   await page.getByTestId(option).click()
 }
 
-const fillCardProperties = async (
-  page: Page,
-  rarity: string,
-  number: number,
-) => {
+const fillCardFields = async (page: Page, rarity: string, number: number) => {
   await pickOption(
     page,
     SELECTORS.CARD_FORM_RARITY,
@@ -90,7 +86,7 @@ test.describe("when an admin manages cards", () => {
       SELECTORS.CARD_FORM_MAP,
       SELECTORS.CARD_FORM_MAP_OPTION(map.id),
     )
-    await fillCardProperties(page, CARD_RARITY.LEGENDARY, CARD_NUMBER)
+    await fillCardFields(page, CARD_RARITY.LEGENDARY, CARD_NUMBER)
     await page.getByTestId(SELECTORS.CARD_FORM_SUBMIT).click()
 
     await expect
@@ -99,10 +95,8 @@ test.describe("when an admin manages cards", () => {
         {
           type: CARD_TYPE.MAP,
           mapId: map.id,
-          cardProperties: {
-            rarity: CARD_RARITY.LEGENDARY,
-            number: CARD_NUMBER,
-          },
+          rarity: CARD_RARITY.LEGENDARY,
+          number: CARD_NUMBER,
         },
       ])
   })
@@ -122,7 +116,7 @@ test.describe("when an admin manages cards", () => {
       SELECTORS.CARD_FORM_GAME,
       SELECTORS.CARD_FORM_GAME_OPTION(game.id),
     )
-    await fillCardProperties(page, CARD_RARITY.UNCOMMON, CARD_NUMBER)
+    await fillCardFields(page, CARD_RARITY.UNCOMMON, CARD_NUMBER)
     await page.getByTestId(SELECTORS.CARD_FORM_SUBMIT).click()
 
     await expect
@@ -130,7 +124,8 @@ test.describe("when an admin manages cards", () => {
       .toMatchObject([
         {
           type: CARD_TYPE.GAME,
-          cardProperties: { rarity: CARD_RARITY.UNCOMMON, number: CARD_NUMBER },
+          rarity: CARD_RARITY.UNCOMMON,
+          number: CARD_NUMBER,
         },
       ])
   })
@@ -144,11 +139,15 @@ test.describe("when an admin manages cards", () => {
 
     await openAdminCards(page)
     await page.getByTestId(SELECTORS.ADMIN_CARD_ROW(cardId)).click()
-    await fillCardProperties(page, CARD_RARITY.ULTRA_RARE, EDITED_CARD_NUMBER)
+    await fillCardFields(page, CARD_RARITY.ULTRA_RARE, EDITED_CARD_NUMBER)
     await page.getByTestId(SELECTORS.CARD_FORM_SUBMIT).click()
 
     await expect
-      .poll(async () => (await getCard(cardId))?.cardProperties)
+      .poll(async () => {
+        const card = await getCard(cardId)
+
+        return card && { rarity: card.rarity, number: card.number }
+      })
       .toEqual({ rarity: CARD_RARITY.ULTRA_RARE, number: EDITED_CARD_NUMBER })
   })
 

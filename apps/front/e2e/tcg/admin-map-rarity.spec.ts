@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test"
 import { CARD_RARITY, CARD_TYPE, TABLES, USER_RIGHT } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
-import { type CardProperties } from "@repo/schemas"
+import { type CardFields } from "@repo/schemas"
 import { createFirestoreDoc } from "@repo/testing/emulator"
 import { gameFactory, mapFactory } from "@repo/testing/factory"
 import {
@@ -27,10 +27,10 @@ const seedMap = async () => {
   return { gameId: game.id, mapId: map.id }
 }
 
-const seedCardMap = async (cardProperties: CardProperties) => {
+const seedCardMap = async (cardFields: CardFields) => {
   const game = gameFactory()
   await createFirestoreDoc(refs[TABLES.GAMES], game)
-  const { map } = await seedMapCard(game.id, cardProperties)
+  const { map } = await seedMapCard(game.id, cardFields)
 
   return { gameId: game.id, mapId: map.id }
 }
@@ -39,9 +39,9 @@ const getMapCards = async (mapId: string) => {
   const snapshot = await refs[TABLES.CARDS].where("mapId", "==", mapId).get()
 
   return snapshot.docs.map((card) => {
-    const { type, gameId, cardProperties } = card.data()
+    const { type, gameId, rarity, number } = card.data()
 
-    return { type, gameId, cardProperties }
+    return { type, gameId, rarity, number }
   })
 }
 
@@ -52,9 +52,9 @@ const getGameCards = async (gameId: string) => {
     .get()
 
   return snapshot.docs.map((card) => {
-    const { type, cardProperties } = card.data()
+    const { type, rarity, number } = card.data()
 
-    return { type, cardProperties }
+    return { type, rarity, number }
   })
 }
 
@@ -99,7 +99,8 @@ test.describe("when an admin edits a map's card rarity", () => {
           {
             type: CARD_TYPE.MAP,
             gameId,
-            cardProperties: { rarity, number: CARD_NUMBER },
+            rarity,
+            number: CARD_NUMBER,
           },
         ])
     })
@@ -121,10 +122,8 @@ test.describe("when an admin edits a map's card rarity", () => {
         {
           type: CARD_TYPE.MAP,
           gameId,
-          cardProperties: {
-            rarity: CARD_RARITY.COMMON,
-            number: prefilledNumber,
-          },
+          rarity: CARD_RARITY.COMMON,
+          number: prefilledNumber,
         },
       ])
   })
@@ -145,10 +144,8 @@ test.describe("when an admin edits a map's card rarity", () => {
         {
           type: CARD_TYPE.MAP,
           gameId,
-          cardProperties: {
-            rarity: CARD_RARITY.LEGENDARY,
-            number: CARD_NUMBER,
-          },
+          rarity: CARD_RARITY.LEGENDARY,
+          number: CARD_NUMBER,
         },
       ])
   })
@@ -204,7 +201,8 @@ test.describe("when an admin edits a game's card rarity", () => {
       .toEqual([
         {
           type: CARD_TYPE.GAME,
-          cardProperties: { rarity: CARD_RARITY.RARE, number: prefilledNumber },
+          rarity: CARD_RARITY.RARE,
+          number: prefilledNumber,
         },
       ])
   })
@@ -225,10 +223,8 @@ test.describe("when an admin edits a game's card rarity", () => {
       .toEqual([
         {
           type: CARD_TYPE.GAME,
-          cardProperties: {
-            rarity: CARD_RARITY.LEGENDARY,
-            number: CARD_NUMBER,
-          },
+          rarity: CARD_RARITY.LEGENDARY,
+          number: CARD_NUMBER,
         },
       ])
   })

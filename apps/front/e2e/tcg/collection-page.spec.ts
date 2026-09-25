@@ -14,7 +14,7 @@ import { enableTcgFlag, seedGameCard, seedMapCard } from "../helpers/tcg"
 
 const LOCKED_CARD_NUMBER = 42
 const OWNED_CARD_NUMBER = 43
-const OWNED_CARD_PROPERTIES = {
+const OWNED_CARD_FIELDS = {
   rarity: CARD_RARITY.LEGENDARY,
   number: OWNED_CARD_NUMBER,
 }
@@ -24,7 +24,7 @@ const GAME_CARD_NUMBER = 44
 const seedGameWithTwoCards = async () => {
   const game = gameFactory()
   await refs[TABLES.GAMES].doc(game.id).set(game)
-  const ownedCard = await seedMapCard(game.id, OWNED_CARD_PROPERTIES)
+  const ownedCard = await seedMapCard(game.id, OWNED_CARD_FIELDS)
   const lockedCard = await seedMapCard(game.id, {
     rarity: CARD_RARITY.COMMON,
     number: LOCKED_CARD_NUMBER,
@@ -43,7 +43,6 @@ const openCollectionOwning = async (
     cardId,
     gameId,
     count: OWNED_COUNT,
-    cardPropertiesAtPull: OWNED_CARD_PROPERTIES,
     firstPulledAt: Timestamp.now(),
     lastPulledAt: Timestamp.now(),
   })

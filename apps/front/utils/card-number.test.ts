@@ -12,7 +12,8 @@ const buildCard = (mapId: string, number: number) =>
     type: CARD_TYPE.MAP,
     gameId: "game",
     mapId,
-    cardProperties: { rarity: CARD_RARITY.COMMON, number },
+    rarity: CARD_RARITY.COMMON,
+    number,
     createdAt: null,
     updatedAt: null,
   }) satisfies CardDoc

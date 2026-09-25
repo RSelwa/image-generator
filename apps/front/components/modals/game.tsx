@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CARD_RARITY, CARD_TYPE, STORAGE_PATHS } from "@repo/common"
 import {
-  cardPropertiesSchema,
+  cardFieldsSchema,
   cardRaritySchema,
   createGameInputSchema,
 } from "@repo/schemas"
@@ -55,7 +55,7 @@ import { getNextCardNumber } from "@/utils/card-number"
 import { uploadFileToBucket } from "@/utils/file"
 
 const gameFormSchema = createGameInputSchema.extend({
-  cardProperties: cardPropertiesSchema.optional(),
+  cardFields: cardFieldsSchema.optional(),
 })
 
 type GameFormSchema = z.input<typeof gameFormSchema>
@@ -105,7 +105,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
   const image = watch("image")
   const title = watch("title")
   const youtubeLink = watch("youtubeLink")
-  const cardProperties = watch("cardProperties")
+  const cardFields = watch("cardFields")
 
   useEffect(() => {
     if (data && cards) {
@@ -118,7 +118,10 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
         hasSphericalImagesReady: data.hasSphericalImagesReady ?? false,
         hasSpecialImagesReady: data.hasSpecialImagesReady ?? false,
         youtubeLink: data.youtubeLink ?? "",
-        cardProperties: gameCard?.cardProperties,
+        cardFields: gameCard && {
+          rarity: gameCard.rarity,
+          number: gameCard.number,
+        },
       })
     }
   }, [data, cards, gameCard, reset])
@@ -151,17 +154,17 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
     const rarity = cardRaritySchema.safeParse(value).data
 
     setValue(
-      "cardProperties",
+      "cardFields",
       rarity && {
         rarity,
-        number: cardProperties?.number || getNextCardNumber(cards || []),
+        number: cardFields?.number || getNextCardNumber(cards || []),
       },
       { shouldDirty: true },
     )
   }
 
   const onSubmit: SubmitHandler<GameFormSchema> = async (formData) => {
-    const { cardProperties: submittedCardProperties, ...parsedData } =
+    const { cardFields: submittedCardFields, ...parsedData } =
       gameFormSchema.parse(formData)
 
     if (isNew) {
@@ -172,7 +175,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
       const { error: cardError } = await saveCard({
         card: undefined,
         gameId: createdGame.id,
-        cardProperties: submittedCardProperties,
+        cardFields: submittedCardFields,
       })
 
       if (cardError) {
@@ -197,7 +200,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
       const { error: cardError } = await saveCard({
         card: gameCard,
         gameId,
-        cardProperties: submittedCardProperties,
+        cardFields: submittedCardFields,
       })
 
       if (cardError) {
@@ -369,7 +372,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
                 <Field>
                   <FieldLabel>Card rarity</FieldLabel>
                   <Select
-                    value={cardProperties?.rarity || NO_CARD_RARITY}
+                    value={cardFields?.rarity || NO_CARD_RARITY}
                     onValueChange={handleCardRarityChange}
                   >
                     <SelectTrigger
@@ -404,24 +407,24 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
                   </FieldDescription>
                 </Field>
 
-                {cardProperties && (
+                {cardFields && (
                   <Field>
                     <FieldLabel htmlFor="card-number">Card number *</FieldLabel>
                     <Input
                       id="card-number"
                       type="number"
                       data-testid={SELECTORS.GAME_FORM_CARD_NUMBER}
-                      {...register("cardProperties.number", {
+                      {...register("cardFields.number", {
                         valueAsNumber: true,
                       })}
-                      aria-invalid={!!errors.cardProperties?.number}
+                      aria-invalid={!!errors.cardFields?.number}
                     />
                     <FieldDescription>
                       Unique number of the card in the collection
                     </FieldDescription>
-                    {errors.cardProperties?.number && (
+                    {errors.cardFields?.number && (
                       <FieldError>
-                        {errors.cardProperties.number.message}
+                        {errors.cardFields.number.message}
                       </FieldError>
                     )}
                   </Field>

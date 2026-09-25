@@ -2,10 +2,9 @@ import { CARD_RARITY, consumePack, TABLES } from "@repo/common"
 import { refs, subRefs } from "@repo/providers/db-refs"
 import { auth, db } from "@repo/providers/firebase"
 import {
-  type CardPoolEntry,
+  type CardDocWithId,
   type CardRarity,
   cardDocSchema,
-  cardPoolDocSchema,
   userDocSchema,
 } from "@repo/schemas"
 import { FieldValue, Timestamp } from "firebase-admin/firestore"
@@ -42,11 +41,9 @@ const getVerifiedUid = async (request: Request) => {
 const openPack = (uid: string) =>
   db.runTransaction(async (transaction) => {
     const userRef = refs[TABLES.USERS].doc(uid)
-    const [user, poolSnapshots] = await Promise.all([
+    const [user, cardsSnapshot] = await Promise.all([
       transaction.get(userRef),
-      transaction.getAll(
-        ...RARITIES.map((rarity) => refs[TABLES.CARD_POOLS].doc(rarity)),
-      ),
+      transaction.get(refs[TABLES.CARDS]),
     ])
 
     if (!user.exists) return OPEN_PACK_RESULT.USER_NOT_FOUND
@@ -60,71 +57,55 @@ const openPack = (uid: string) =>
 
     if (!consumedStock) return OPEN_PACK_RESULT.NO_PACK
 
+    const allCards = cardsSnapshot.docs.flatMap((snapshot) => {
+      const card = cardDocSchema.safeParse(snapshot.data()).data
+
+      return card ? [{ ...card, id: snapshot.id }] : []
+    })
     const pools = Object.fromEntries(
-      RARITIES.map((rarity, index) => [
+      RARITIES.map((rarity) => [
         rarity,
-        cardPoolDocSchema.safeParse(poolSnapshots[index]?.data()).data?.cards ||
-          [],
+        allCards.filter((card) => card.rarity === rarity),
       ]),
-    ) as Record<CardRarity, CardPoolEntry[]>
+    ) as Record<CardRarity, CardDocWithId[]>
 
     const picks = drawRarities(Math.random).map((rarity) =>
       pickCard(pools, rarity, Math.random),
     )
-    const drawnCards = picks.flatMap((pick) => (pick ? [pick] : []))
+    const drawnCards = picks.flatMap((pick) => (pick ? [pick.card] : []))
 
     if (drawnCards.length < picks.length) return OPEN_PACK_RESULT.NO_CARD
 
-    const pulls = new Map<string, { entry: CardPoolEntry; count: number }>()
-    drawnCards.forEach(({ entry }) => {
-      const count = (pulls.get(entry.cardId)?.count || 0) + 1
-      pulls.set(entry.cardId, { entry, count })
+    const pulls = new Map<string, { card: CardDocWithId; count: number }>()
+    drawnCards.forEach((card) => {
+      const count = (pulls.get(card.id)?.count || 0) + 1
+      pulls.set(card.id, { card, count })
     })
-    const pulledEntries = [...pulls.values()]
+    const pulledCards = [...pulls.values()]
 
     const ownedCardsRef = subRefs[TABLES.CARDS](uid)
-    const [cardSnapshots, ownedSnapshots] = await Promise.all([
+    const [ownedSnapshots, subjectSnapshots] = await Promise.all([
       transaction.getAll(
-        ...pulledEntries.map(({ entry }) =>
-          refs[TABLES.CARDS].doc(entry.cardId),
-        ),
+        ...pulledCards.map(({ card }) => ownedCardsRef.doc(card.id)),
       ),
       transaction.getAll(
-        ...pulledEntries.map(({ entry }) => ownedCardsRef.doc(entry.cardId)),
+        ...pulledCards.map(({ card }) => getCardSubjectRef(card)),
       ),
     ])
 
-    const cardDocs = cardSnapshots.flatMap((snapshot) => {
-      const card = cardDocSchema.safeParse(snapshot.data()).data
-
-      return card ? [{ cardId: snapshot.id, card }] : []
-    })
-    const subjectSnapshots =
-      cardDocs.length > 0
-        ? await transaction.getAll(
-            ...cardDocs.map(({ card }) => getCardSubjectRef(card)),
-          )
-        : []
-
-    const drawnCardDetails = new Map(
-      cardDocs.flatMap(({ cardId, card }, index) => {
+    const subjects = new Map(
+      pulledCards.flatMap(({ card }, index) => {
         const subject = getCardSubject(card, subjectSnapshots[index]?.data())
 
-        return subject ? [[cardId, { card, subject }]] : []
+        return subject ? [[card.id, subject]] : []
       }),
     )
 
-    const pulledCards = pulledEntries.flatMap((pull) => {
-      const details = drawnCardDetails.get(pull.entry.cardId)
-
-      return details ? [{ ...pull, ...details }] : []
-    })
-
-    if (pulledCards.length < pulledEntries.length) {
+    if (subjects.size < pulledCards.length) {
       console.error(
-        "Card pool drift, drawn cards or their maps / games gone:",
-        pulledEntries.flatMap(({ entry }) =>
-          drawnCardDetails.has(entry.cardId) ? [] : [entry.cardId],
+        "Drawn cards whose map / game is gone:",
+        pulledCards.flatMap(({ card }) =>
+          subjects.has(card.id) ? [] : [card.id],
         ),
       )
 
@@ -138,10 +119,10 @@ const openPack = (uid: string) =>
     )
     const now = FieldValue.serverTimestamp()
 
-    pulledCards.forEach(({ entry, count, card }) => {
-      const ownedCardRef = ownedCardsRef.doc(entry.cardId)
+    pulledCards.forEach(({ card, count }) => {
+      const ownedCardRef = ownedCardsRef.doc(card.id)
 
-      if (ownedCardIds.has(entry.cardId)) {
+      if (ownedCardIds.has(card.id)) {
         transaction.update(ownedCardRef, {
           count: FieldValue.increment(count),
           lastPulledAt: now,
@@ -151,29 +132,30 @@ const openPack = (uid: string) =>
       }
 
       transaction.create(ownedCardRef, {
-        ...entry,
+        cardId: card.id,
+        gameId: card.gameId,
         count,
-        cardPropertiesAtPull: card.cardProperties,
         firstPulledAt: now,
         lastPulledAt: now,
       })
     })
 
     const revealedCardIds = new Set<string>()
-    const cards = drawnCards.flatMap(({ entry }) => {
-      const details = drawnCardDetails.get(entry.cardId)
+    const cards = drawnCards.flatMap((card) => {
+      const subject = subjects.get(card.id)
 
-      if (!details) return []
+      if (!subject) return []
 
-      const isNew =
-        !ownedCardIds.has(entry.cardId) && !revealedCardIds.has(entry.cardId)
-      revealedCardIds.add(entry.cardId)
+      const isNew = !ownedCardIds.has(card.id) && !revealedCardIds.has(card.id)
+      revealedCardIds.add(card.id)
 
       return [
         {
-          ...entry,
-          ...details.subject,
-          cardProperties: details.card.cardProperties,
+          cardId: card.id,
+          gameId: card.gameId,
+          rarity: card.rarity,
+          number: card.number,
+          ...subject,
           isNew,
         },
       ]

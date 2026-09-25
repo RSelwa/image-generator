@@ -1,11 +1,16 @@
-import { CARD_TYPE } from "@repo/common"
+import { CARD_RARITY, CARD_TYPE } from "@repo/common"
 import { z } from "zod"
-import { cardPropertiesSchema } from "~/firestore/card-properties"
 import { timestampSchema, WITH_ID } from "~/zod"
 
-const cardDocBaseSchema = z.object({
+export const cardRaritySchema = z.enum(CARD_RARITY)
+
+export const cardFieldsSchema = z.object({
+  rarity: cardRaritySchema,
+  number: z.number().int().positive(),
+})
+
+const cardDocBaseSchema = cardFieldsSchema.extend({
   gameId: z.string().min(1),
-  cardProperties: cardPropertiesSchema,
   createdAt: timestampSchema.nullish().default(() => null),
   updatedAt: timestampSchema.nullish().default(() => null),
 })
@@ -22,5 +27,7 @@ export const cardDocSchema = z.discriminatedUnion("type", [
 
 export const cardDocWithIdSchema = cardDocSchema.and(WITH_ID)
 
+export type CardRarity = z.infer<typeof cardRaritySchema>
+export type CardFields = z.infer<typeof cardFieldsSchema>
 export type CardDoc = z.infer<typeof cardDocSchema>
 export type CardDocWithId = z.infer<typeof cardDocWithIdSchema>

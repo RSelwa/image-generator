@@ -2910,7 +2910,6 @@ describe("firebase Security Rules", () => {
       mapId: "map1",
       gameId: "game1",
       count: 1,
-      cardPropertiesAtPull: { rarity: "rare" },
       firstPulledAt: new Date(),
       lastPulledAt: new Date(),
     }
@@ -2987,57 +2986,6 @@ describe("firebase Security Rules", () => {
     })
   })
 
-  describe("when a client accesses a card pool", () => {
-    const uid = "user1"
-    const adminUid = "admin"
-    const poolPath = "cardPools/legendary"
-    const pool = { cards: [{ cardId: "card1", gameId: "game1" }] }
-
-    const setupPool = async () => {
-      await testEnv.withSecurityRulesDisabled(async (context) => {
-        await setDoc(doc(context.firestore(), poolPath), pool)
-      })
-    }
-
-    describe("when a signed-out visitor reads a pool", () => {
-      it("should allow it", async () => {
-        await setupPool()
-        const unauthedDb = testEnv.unauthenticatedContext().firestore()
-
-        await assertSucceeds(getDoc(doc(unauthedDb, poolPath)))
-      })
-    })
-
-    describe("when a user writes a pool", () => {
-      it("should deny creating it", async () => {
-        const authedDb = testEnv.authenticatedContext(uid).firestore()
-
-        await assertFails(setDoc(doc(authedDb, poolPath), pool))
-      })
-
-      it("should deny updating it", async () => {
-        await setupPool()
-        const authedDb = testEnv.authenticatedContext(uid).firestore()
-
-        await assertFails(updateDoc(doc(authedDb, poolPath), { cards: [] }))
-      })
-    })
-
-    describe("when an admin writes a pool", () => {
-      it("should allow it", async () => {
-        await testEnv.withSecurityRulesDisabled(async (context) => {
-          await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
-            uid: adminUid,
-            right: "admin",
-          })
-        })
-        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
-
-        await assertSucceeds(setDoc(doc(adminDb, poolPath), pool))
-      })
-    })
-  })
-
   describe("when a client accesses a card", () => {
     const uid = "user1"
     const adminUid = "admin"
@@ -3046,7 +2994,8 @@ describe("firebase Security Rules", () => {
       type: "map",
       gameId: "game1",
       mapId: "map1",
-      cardProperties: { rarity: "rare", number: 1 },
+      rarity: "rare",
+      number: 1,
     }
 
     const setupCard = async () => {
@@ -3093,9 +3042,7 @@ describe("firebase Security Rules", () => {
         await setupCard()
         const authedDb = testEnv.authenticatedContext(uid).firestore()
 
-        await assertFails(
-          updateDoc(doc(authedDb, cardPath), { "cardProperties.number": 2 }),
-        )
+        await assertFails(updateDoc(doc(authedDb, cardPath), { number: 2 }))
       })
 
       it("should deny deleting it", async () => {
@@ -3136,7 +3083,7 @@ describe("firebase Security Rules", () => {
 
         await assertFails(
           updateDoc(doc(iconographDb, cardPath), {
-            "cardProperties.number": 2,
+            number: 2,
           }),
         )
       })
@@ -3165,9 +3112,7 @@ describe("firebase Security Rules", () => {
         await setupCard()
         const adminDb = testEnv.authenticatedContext(adminUid).firestore()
 
-        await assertSucceeds(
-          updateDoc(doc(adminDb, cardPath), { "cardProperties.number": 2 }),
-        )
+        await assertSucceeds(updateDoc(doc(adminDb, cardPath), { number: 2 }))
       })
 
       it("should allow deleting it", async () => {

@@ -29,7 +29,8 @@ const buildCard = (mapId: string, rarity: CardRarity) =>
     type: CARD_TYPE.MAP,
     gameId: "game",
     mapId,
-    cardProperties: { rarity, number: CARD_NUMBER },
+    rarity,
+    number: CARD_NUMBER,
     createdAt: null,
     updatedAt: null,
   }) satisfies CardDoc
@@ -41,7 +42,8 @@ const MAPS = [LEGENDARY_MAP, COMMON_MAP, UNRATED_MAP]
 const GAME_CARD = {
   type: CARD_TYPE.GAME,
   gameId: "game",
-  cardProperties: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
+  rarity: CARD_RARITY.RARE,
+  number: CARD_NUMBER,
   createdAt: null,
   updatedAt: null,
 } satisfies CardDoc

@@ -27,13 +27,10 @@ export const buildAdminCardRows = (
         card,
         gameTitle,
         name,
-        isDuplicateNumber: duplicateNumbers.has(card.cardProperties.number),
+        isDuplicateNumber: duplicateNumbers.has(card.number),
       }
     })
-    .toSorted(
-      (first, second) =>
-        first.card.cardProperties.number - second.card.cardProperties.number,
-    )
+    .toSorted((first, second) => first.card.number - second.card.number)
 }
 
 export type AdminCardRow = ReturnType<typeof buildAdminCardRows>[number]

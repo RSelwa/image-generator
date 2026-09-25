@@ -4,14 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { CARD_RARITY, CARD_TYPE } from "@repo/common"
 import {
   type CardDocWithId,
-  type CardProperties,
-  cardPropertiesSchema,
+  type CardFields,
+  cardFieldsSchema,
 } from "@repo/schemas"
 import { useState } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { CardPropertiesFields } from "@/components/card-properties-fields"
+import { CardFieldsInputs } from "@/components/card-fields-inputs"
 import { ModalBase } from "@/components/modals/base"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
@@ -50,8 +50,8 @@ const NewCardForm = ({ cards }: { cards: CardDocWithId[] }) => {
     { skip: shouldSkipMaps },
   )
   const [saveCard, { isLoading }] = useSaveCardMutation()
-  const form = useForm<CardProperties>({
-    resolver: zodResolver(cardPropertiesSchema),
+  const form = useForm<CardFields>({
+    resolver: zodResolver(cardFieldsSchema),
     defaultValues: {
       rarity: CARD_RARITY.COMMON,
       number: getNextCardNumber(cards),
@@ -82,12 +82,12 @@ const NewCardForm = ({ cards }: { cards: CardDocWithId[] }) => {
     setMapId("")
   }
 
-  const onSubmit: SubmitHandler<CardProperties> = async (cardProperties) => {
+  const onSubmit: SubmitHandler<CardFields> = async (cardFields) => {
     const { error } = await saveCard({
       card: undefined,
       gameId,
       mapId: isMapCard ? mapId : undefined,
-      cardProperties,
+      cardFields,
     })
 
     if (error) {
@@ -163,7 +163,7 @@ const NewCardForm = ({ cards }: { cards: CardDocWithId[] }) => {
           </Select>
         </Field>
       )}
-      <CardPropertiesFields form={form} />
+      <CardFieldsInputs form={form} />
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="marathon-outline" onClick={closeModal}>
           Cancel

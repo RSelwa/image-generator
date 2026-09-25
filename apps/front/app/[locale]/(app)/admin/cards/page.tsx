@@ -48,7 +48,7 @@ const Page = () => {
   const rows = buildAdminCardRows(cards || [], games || [], maps || [])
   const search = input.toLowerCase()
   const isMatchingSearch = ({ card, name, gameTitle }: AdminCardRow) =>
-    formatCardNumber(card.cardProperties.number).includes(search) ||
+    formatCardNumber(card.number).includes(search) ||
     (name || "").toLowerCase().includes(search) ||
     (gameTitle || "").toLowerCase().includes(search)
   const filtered = rows.filter(isMatchingSearch)
@@ -107,7 +107,7 @@ const Page = () => {
                 data-testid={SELECTORS.ADMIN_CARD_ROW(card.id)}
               >
                 <TableCell className="font-mono space-x-2">
-                  <span>{formatCardNumber(card.cardProperties.number)}</span>
+                  <span>{formatCardNumber(card.number)}</span>
                   {isDuplicateNumber && (
                     <Badge variant={BADGE_VARIANTS.RED}>duplicate</Badge>
                   )}
@@ -123,12 +123,8 @@ const Page = () => {
                 <TableCell>{gameTitle || card.gameId}</TableCell>
                 <TableCell>{card.type}</TableCell>
                 <TableCell>
-                  <Badge
-                    variant={
-                      CARD_RARITY_TO_BADGE_VARIANT[card.cardProperties.rarity]
-                    }
-                  >
-                    {card.cardProperties.rarity}
+                  <Badge variant={CARD_RARITY_TO_BADGE_VARIANT[card.rarity]}>
+                    {card.rarity}
                   </Badge>
                 </TableCell>
               </TableRow>

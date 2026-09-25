@@ -15,7 +15,8 @@ const MAP_CARD = {
   type: CARD_TYPE.MAP,
   gameId: "pokemon-red",
   mapId: "kanto",
-  cardProperties: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
+  rarity: CARD_RARITY.RARE,
+  number: CARD_NUMBER,
   createdAt: CREATED_AT,
   updatedAt: CREATED_AT,
 }
@@ -80,15 +81,16 @@ describe("when the card type is unknown", () => {
   })
 })
 
-describe("when the card properties are invalid", () => {
+describe("when the card fields are invalid", () => {
   it.each([
-    { rarity: UNKNOWN_RARITY, number: CARD_NUMBER },
-    { rarity: CARD_RARITY.RARE, number: 0 },
-    { rarity: CARD_RARITY.RARE },
-  ])("should reject %o", (cardProperties) => {
-    expect(
-      cardDocSchema.safeParse({ ...MAP_CARD, cardProperties }).success,
-    ).toBe(false)
+    { rarity: UNKNOWN_RARITY },
+    { number: 0 },
+    { number: 1.5 },
+    { number: undefined },
+  ])("should reject %o", (fields) => {
+    expect(cardDocSchema.safeParse({ ...MAP_CARD, ...fields }).success).toBe(
+      false,
+    )
   })
 })
 

@@ -187,3 +187,16 @@ Goal: a card is its own Firestore document instead of `cardProperties` on a map,
 
 - [x] Admin cards page
   - [x] `/admin/cards` (admin menu + admin home): every card sorted by number (number, name from its map / game, game, type, rarity badge, `duplicate` flag, "Missing map / game" for orphans), search by number / name / game. "New card" modal: type (map / game), game, map (only maps without a card), rarity + number prefilled with the next free one; a game that already has a card can't get a second. Row click opens a sheet to edit rarity + number or delete (confirm). Writes reuse `saveCard`. Unit tests for the rows, e2e for list / create map card / create game card / edit / delete
+
+---
+
+## TCG cards single source of truth
+
+Goal: `cards` is the only place a card lives. No derived index to keep in sync, no nested properties object.
+
+- `cards/{cardId}`: `{ type, gameId, mapId?, rarity, number, createdAt, updatedAt }`, `rarity` / `number` at the root. `cardPropertiesSchema` is gone.
+- `cardPools` is gone (schema, trigger, rebuild script, rules). The open-pack endpoint reads every card in its transaction and draws in memory.
+- `users/{uid}/cards/{cardId}`: `{ cardId, gameId, count, firstPulledAt, lastPulledAt }`. No `cardPropertiesAtPull` snapshot: nothing read it, the collection shows the live card.
+
+- [x] Cards single source of truth
+  - [x] Drop `cardPools` (schema, `TABLES` / db-refs / mapping, `listen_doc_cards_written` trigger, rebuild script, rules + tests); the open-pack endpoint draws from `cards`; flatten `rarity` / `number` onto the card doc; drop `cardPropertiesAtPull`. Unit / rules / e2e tests updated

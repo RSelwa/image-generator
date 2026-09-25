@@ -6,7 +6,7 @@ import { Timestamp } from "firebase-admin/firestore"
 import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { loginViaUI, setupUser } from "../helpers/lobby"
-import { enableTcgFlag, seedEveryPoolWithOneCard } from "../helpers/tcg"
+import { enableTcgFlag, seedOnlyMapCard } from "../helpers/tcg"
 
 const CARD_NUMBER = 42
 
@@ -43,7 +43,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should count the opened pack off the stock", async ({ page }) => {
-    await seedEveryPoolWithOneCard({
+    await seedOnlyMapCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
@@ -58,7 +58,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should add the opened cards to the collection", async ({ page }) => {
-    const { cardId } = await seedEveryPoolWithOneCard({
+    const { cardId } = await seedOnlyMapCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
@@ -71,7 +71,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should not open a pack without any left", async ({ page }) => {
-    await seedEveryPoolWithOneCard({
+    await seedOnlyMapCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
@@ -87,21 +87,18 @@ test.describe("when a user plays the TCG from the packs page", () => {
   test("should keep another user's cards out of the collection", async ({
     page,
   }) => {
-    const { map, cardId } = await seedEveryPoolWithOneCard({
+    const { map, cardId } = await seedOnlyMapCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
     const collector = await setupUser()
-    await subRefs[TABLES.CARDS](collector.id)
-      .doc(cardId)
-      .set({
-        cardId,
-        gameId: map.gameId,
-        count: 1,
-        cardPropertiesAtPull: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
-        firstPulledAt: Timestamp.now(),
-        lastPulledAt: Timestamp.now(),
-      })
+    await subRefs[TABLES.CARDS](collector.id).doc(cardId).set({
+      cardId,
+      gameId: map.gameId,
+      count: 1,
+      firstPulledAt: Timestamp.now(),
+      lastPulledAt: Timestamp.now(),
+    })
 
     await loginWithPacks(page, PACKS_LEFT)
     await page.goto(`/en${PAGES.COLLECTION}`)

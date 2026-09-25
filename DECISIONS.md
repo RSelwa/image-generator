@@ -245,3 +245,14 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **Sheet** finds its card in the page's rows (`card-id` query param), no extra fetch. Type / subject are read-only: changing what a card points at is delete + create.
 - E2E `e2e/tcg/admin-cards.spec.ts`, navigates through the admin menu like the achievements spec. Not run locally (CI-only).
 - **Review calls overruled**: `buildAdminCardRows` stays a unit-tested pure util with one caller, like `utils/collection.ts` / `utils/card-rarity.ts` (the repo keeps page logic testable in `utils/`). Scope split (list + sheet vs create modal) declined: the ask was one CRUD, and the three parts share the constants, fields component and spec.
+
+## TCG cards single source of truth
+
+- **Draw reads the whole `cards` collection** in the open-pack transaction (`transaction.get(refs.cards)`), groups by rarity in memory, then `pickCard`. Picked by the user over a per-rarity query or a `random` field + index: nothing in prod, a small catalogue, and it removes the trigger, the rebuild script and pool drift. Cost is N card reads per pack; revisit with a `random` field + `where rarity == r && random >= x, limit 1` if reads grow.
+- The drawn cards come from the query, so the second read round for the card docs is gone: one round reads the owned docs and the maps / games together. A gone map / game still answers `NO_CARD` 503 with the ids logged.
+- **`cardFieldsSchema` (`{ rarity, number }`) in `card.ts`**, spread into the card base with `.extend`: the admin forms still edit that pair as one object (`CardFields`), but it is stored flat. `cardRaritySchema` / `CardRarity` moved into `card.ts`; `card-properties.ts` deleted. `CardPropertiesFields` → `CardFieldsInputs` (`card-fields-inputs.tsx`); the map / game form field `cardProperties` → `cardFields`; `saveCard` takes `cardFields` and writes them spread (`...cardFields`).
+- **`cardPropertiesAtPull` dropped**, not flattened: it was written by the endpoint and read by nothing (the binder reads the live card). An admin edit applies to every owner.
+- `pickCard` returns `{ rarity, card }` over `Record<CardRarity, CardDocWithId[]>`. The opened-card response is flat: `{ cardId, gameId, rarity, number, name, imageUrl, isNew }`.
+- `map.test.ts` still checks a leftover `cardProperties` on a map is stripped: it guards legacy map docs, untouched.
+- **E2E**: `seedEveryPoolWithOneCard` / `…GameCard` → `seedOnlyMapCard` / `seedOnlyGameCard`, which delete every `cards` doc before seeding so a pack can only draw the seeded card. Deterministic under CI's single worker; a local fully-parallel run can race with specs seeding cards (collection, admin). Not run locally (CI-only).
+- **Deploy**: `listen_doc_cards_written` is removed from the code; the next functions deploy asks to delete it. Leftover `cardPools` docs in dev are dead data, safe to delete by hand.

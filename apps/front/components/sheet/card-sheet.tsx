@@ -1,11 +1,11 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { type CardProperties, cardPropertiesSchema } from "@repo/schemas"
+import { type CardFields, cardFieldsSchema } from "@repo/schemas"
 import { useQueryState } from "nuqs"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { CardPropertiesFields } from "@/components/card-properties-fields"
+import { CardFieldsInputs } from "@/components/card-fields-inputs"
 import { EmptySheet } from "@/components/sheet/empty"
 import {
   AlertDialog,
@@ -37,16 +37,16 @@ const CardForm = ({ row }: { row: AdminCardRow }) => {
   const { card } = row
   const [, setCardId] = useQueryState(QUERY_PARAMS.CARD_ID)
   const [saveCard, { isLoading }] = useSaveCardMutation()
-  const form = useForm<CardProperties>({
-    resolver: zodResolver(cardPropertiesSchema),
-    defaultValues: card.cardProperties,
+  const form = useForm<CardFields>({
+    resolver: zodResolver(cardFieldsSchema),
+    defaultValues: { rarity: card.rarity, number: card.number },
   })
 
-  const onSubmit: SubmitHandler<CardProperties> = async (cardProperties) => {
+  const onSubmit: SubmitHandler<CardFields> = async (cardFields) => {
     const { error } = await saveCard({
       card,
       gameId: card.gameId,
-      cardProperties,
+      cardFields,
     })
 
     if (error) {
@@ -61,7 +61,7 @@ const CardForm = ({ row }: { row: AdminCardRow }) => {
     const { error } = await saveCard({
       card,
       gameId: card.gameId,
-      cardProperties: undefined,
+      cardFields: undefined,
     })
 
     if (error) {
@@ -79,8 +79,7 @@ const CardForm = ({ row }: { row: AdminCardRow }) => {
     >
       <SheetHeader>
         <SheetTitle>
-          {formatCardNumber(card.cardProperties.number)} -{" "}
-          {row.name || `Missing ${card.type}`}
+          {formatCardNumber(card.number)} - {row.name || `Missing ${card.type}`}
         </SheetTitle>
         <SheetDescription>
           {card.type} card of {row.gameTitle || card.gameId}
@@ -88,7 +87,7 @@ const CardForm = ({ row }: { row: AdminCardRow }) => {
       </SheetHeader>
 
       <div className="flex-1 overflow-y-auto px-4 py-2">
-        <CardPropertiesFields form={form} />
+        <CardFieldsInputs form={form} />
       </div>
 
       <SheetFooter>

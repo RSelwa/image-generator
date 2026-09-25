@@ -8,7 +8,7 @@ export const getCardRarityByMapId = (cards: CardDoc[]) =>
     cards.flatMap((card) => {
       if (card.type !== CARD_TYPE.MAP) return []
 
-      return [[card.mapId, card.cardProperties.rarity] as const]
+      return [[card.mapId, card.rarity] as const]
     }),
   )
 

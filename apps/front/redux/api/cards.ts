@@ -3,7 +3,7 @@ import { CARD_TYPE, TABLES } from "@repo/common"
 import {
   type CardDocWithId,
   cardDocWithIdSchema,
-  type CardProperties,
+  type CardFields,
 } from "@repo/schemas"
 import {
   addDoc,
@@ -19,7 +19,7 @@ type SaveCardInput = {
   card: CardDocWithId | undefined
   gameId: string
   mapId?: string
-  cardProperties: CardProperties | undefined
+  cardFields: CardFields | undefined
 }
 
 export const cardApi = createApi({
@@ -56,12 +56,12 @@ export const cardApi = createApi({
       providesTags: ["CardList"],
     }),
     saveCard: builder.mutation<null, SaveCardInput>({
-      queryFn: async ({ card, gameId, mapId, cardProperties }) => {
+      queryFn: async ({ card, gameId, mapId, cardFields }) => {
         try {
           const now = Timestamp.now()
 
           if (!card) {
-            if (cardProperties) {
+            if (cardFields) {
               const cardSubject = mapId
                 ? { type: CARD_TYPE.MAP, mapId }
                 : { type: CARD_TYPE.GAME }
@@ -69,7 +69,7 @@ export const cardApi = createApi({
               await addDoc(TABLE_REFS[TABLES.CARDS], {
                 ...cardSubject,
                 gameId,
-                cardProperties,
+                ...cardFields,
                 createdAt: now,
                 updatedAt: now,
               })
@@ -77,18 +77,18 @@ export const cardApi = createApi({
             return { data: null }
           }
 
-          if (!cardProperties) {
+          if (!cardFields) {
             await deleteDoc(getCardRef(card.id))
             return { data: null }
           }
 
           const isUnchanged =
-            card.cardProperties.rarity === cardProperties.rarity &&
-            card.cardProperties.number === cardProperties.number
+            card.rarity === cardFields.rarity &&
+            card.number === cardFields.number
 
           if (!isUnchanged) {
             await updateDoc(getCardRef(card.id), {
-              cardProperties,
+              ...cardFields,
               updatedAt: now,
             })
           }

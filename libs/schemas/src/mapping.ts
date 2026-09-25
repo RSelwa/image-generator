@@ -1,7 +1,6 @@
 import { type TABLES } from "@repo/common"
 import {
   type AchievementDoc,
-  type CardPoolDoc,
   type ConversationDoc,
   type ConversationMessageDoc,
   type CouponDoc,
@@ -60,7 +59,6 @@ export type DocumentMapping = {
   [TABLES.ACHIEVEMENTS]: AchievementDoc
   [TABLES.UNLOCKED_ACHIEVEMENTS]: UnlockedAchievementDoc
   [TABLES.CARDS]: UserCardDoc
-  [TABLES.CARD_POOLS]: CardPoolDoc
 }
 
 export type Table = keyof DocumentMapping

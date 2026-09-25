@@ -5,13 +5,13 @@ import { getCardSubject } from "@/utils/card-subject"
 
 vi.mock("@repo/providers/db-refs", () => ({ refs: {}, subRefs: {} }))
 
-const CARD_PROPERTIES = { rarity: CARD_RARITY.RARE, number: 1 }
+const CARD_FIELDS = { rarity: CARD_RARITY.RARE, number: 1 }
 
 const MAP_CARD = {
   type: CARD_TYPE.MAP,
   gameId: "pokemon-red",
   mapId: "kanto",
-  cardProperties: CARD_PROPERTIES,
+  ...CARD_FIELDS,
   createdAt: null,
   updatedAt: null,
 } satisfies CardDoc
@@ -19,7 +19,7 @@ const MAP_CARD = {
 const GAME_CARD = {
   type: CARD_TYPE.GAME,
   gameId: "pokemon-red",
-  cardProperties: CARD_PROPERTIES,
+  ...CARD_FIELDS,
   createdAt: null,
   updatedAt: null,
 } satisfies CardDoc

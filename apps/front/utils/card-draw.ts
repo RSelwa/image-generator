@@ -4,7 +4,7 @@ import {
   GUARANTEED_CARD_RARITIES,
   PACK_SIZE,
 } from "@repo/common"
-import { type CardPoolEntry, type CardRarity } from "@repo/schemas"
+import { type CardDocWithId, type CardRarity } from "@repo/schemas"
 
 type Random = () => number
 
@@ -38,7 +38,7 @@ export const drawRarities = (random: Random) =>
   })
 
 export const pickCard = (
-  pools: Record<CardRarity, CardPoolEntry[]>,
+  pools: Record<CardRarity, CardDocWithId[]>,
   rarity: CardRarity,
   random: Random,
 ) => {
@@ -54,7 +54,7 @@ export const pickCard = (
   if (!drawnRarity) return null
 
   const pool = pools[drawnRarity]
-  const entry = pool[Math.floor(random() * pool.length)]
+  const card = pool[Math.floor(random() * pool.length)]
 
-  return { rarity: drawnRarity, entry }
+  return { rarity: drawnRarity, card }
 }

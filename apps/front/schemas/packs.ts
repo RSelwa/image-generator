@@ -1,11 +1,11 @@
-import { cardPoolEntrySchema, cardPropertiesSchema } from "@repo/schemas"
+import { cardFieldsSchema, userCardDocSchema } from "@repo/schemas"
 import { z } from "zod"
 
 export const openedCardSchema = z.object({
-  ...cardPoolEntrySchema.shape,
+  ...cardFieldsSchema.shape,
+  ...userCardDocSchema.pick({ cardId: true, gameId: true }).shape,
   name: z.string(),
   imageUrl: z.string().nullable(),
-  cardProperties: cardPropertiesSchema,
   isNew: z.boolean(),
 })
 
