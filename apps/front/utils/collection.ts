@@ -1,8 +1,9 @@
-import { type CardRarity } from "@repo/schemas"
+import { CARD_TYPE } from "@repo/common"
+import { type CardDoc, type CardRarity } from "@repo/schemas"
 
 export type CollectionCard = {
   cardId: string
-  mapId: string
+  type: CardDoc["type"]
   gameId: string
   name: string
   imageUrl: string | null
@@ -30,7 +31,11 @@ export const buildCollectionBinder = (
         gameId,
         gameTitle: gameTitles[gameId] || gameId,
         ownedCount: gameCards.filter(({ count }) => count > 0).length,
-        cards: gameCards,
+        cards: gameCards.toSorted(
+          (first, second) =>
+            Number(second.type === CARD_TYPE.GAME) -
+            Number(first.type === CARD_TYPE.GAME),
+        ),
       }
     }),
   }

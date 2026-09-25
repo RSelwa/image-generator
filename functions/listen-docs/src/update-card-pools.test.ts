@@ -60,6 +60,21 @@ beforeEach(async () => {
   )
 })
 
+describe("when a game card is created", () => {
+  it("should add it to the pool of its rarity", async () => {
+    await writeCard(
+      {},
+      {
+        type: CARD_TYPE.GAME,
+        gameId: GAME_ID,
+        cardProperties: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
+      },
+    )
+
+    expect(await getPoolCards(CARD_RARITY.RARE)).toEqual([ENTRY])
+  })
+})
+
 describe("when a card is created", () => {
   it("should add it to the pool of its rarity", async () => {
     await getPoolRef(CARD_RARITY.RARE).set({ cards: [OTHER_ENTRY] })

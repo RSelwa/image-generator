@@ -13,6 +13,7 @@ export const ACHIEVEMENT_DIFFICULTY = {
 
 export const CARD_TYPE = {
   MAP: "map",
+  GAME: "game",
 } as const
 
 export const CARD_RARITY = {

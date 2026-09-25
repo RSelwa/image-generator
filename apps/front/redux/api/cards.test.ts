@@ -65,7 +65,7 @@ const saveMapCard = (
   cardProperties: CardProperties | undefined,
 ) =>
   buildStore().dispatch(
-    cardApi.endpoints.saveMapCard.initiate({
+    cardApi.endpoints.saveCard.initiate({
       card,
       gameId: GAME_ID,
       mapId: MAP_ID,
@@ -91,6 +91,26 @@ describe("when a map without a card becomes one", () => {
       type: CARD_TYPE.MAP,
       gameId: GAME_ID,
       mapId: MAP_ID,
+      cardProperties: RARE_PROPERTIES,
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
+  })
+})
+
+describe("when a game without a card becomes one", () => {
+  it("should create a game card", async () => {
+    await buildStore().dispatch(
+      cardApi.endpoints.saveCard.initiate({
+        card: undefined,
+        gameId: GAME_ID,
+        cardProperties: RARE_PROPERTIES,
+      }),
+    )
+
+    expect(firestore.addDoc).toHaveBeenCalledWith(CARDS_REF, {
+      type: CARD_TYPE.GAME,
+      gameId: GAME_ID,
       cardProperties: RARE_PROPERTIES,
       createdAt: NOW,
       updatedAt: NOW,

@@ -10,7 +10,7 @@ import { SELECTORS } from "@/constants/testing"
 import { formatCardNumber } from "@/utils/card-number"
 
 type MapTradingCardProps = {
-  mapId: string
+  cardId: string
   name: string
   imageUrl: string | null
   rarity: CardRarity
@@ -20,7 +20,7 @@ type MapTradingCardProps = {
 }
 
 export const MapTradingCard = ({
-  mapId,
+  cardId,
   name,
   imageUrl,
   rarity,
@@ -34,7 +34,7 @@ export const MapTradingCard = ({
   return (
     <article
       data-rarity={rarity}
-      data-testid={SELECTORS.TRADING_CARD(mapId)}
+      data-testid={SELECTORS.TRADING_CARD(cardId)}
       className="relative flex aspect-5/7 w-full flex-col overflow-hidden rounded-xl border-4 bg-card shadow-lg data-[rarity=common]:border-neutral-500 data-[rarity=uncommon]:border-marathon-green data-[rarity=rare]:border-blue-accent data-[rarity=ultraRare]:border-purple-500 data-[rarity=ultraRare]:shadow-purple-500/40 data-[rarity=legendary]:border-yellow-400 data-[rarity=legendary]:shadow-yellow-400/50"
     >
       <div className="relative flex-1">

@@ -6,12 +6,12 @@ import {
   type CardRarity,
   cardDocSchema,
   cardPoolDocSchema,
-  mapDocSchema,
   userDocSchema,
 } from "@repo/schemas"
 import { FieldValue, Timestamp } from "firebase-admin/firestore"
 import { type OpenPackResponse } from "@/schemas/packs"
 import { drawRarities, pickCard } from "@/utils/card-draw"
+import { getCardSubject, getCardSubjectRef } from "@/utils/card-subject"
 
 const BEARER_PREFIX = "Bearer "
 
@@ -99,20 +99,18 @@ const openPack = (uid: string) =>
 
       return card ? [{ cardId: snapshot.id, card }] : []
     })
-    const mapSnapshots =
+    const subjectSnapshots =
       cardDocs.length > 0
         ? await transaction.getAll(
-            ...cardDocs.map(({ card }) =>
-              subRefs[TABLES.MAPS](card.gameId).doc(card.mapId),
-            ),
+            ...cardDocs.map(({ card }) => getCardSubjectRef(card)),
           )
         : []
 
     const drawnCardDetails = new Map(
       cardDocs.flatMap(({ cardId, card }, index) => {
-        const map = mapDocSchema.safeParse(mapSnapshots[index]?.data()).data
+        const subject = getCardSubject(card, subjectSnapshots[index]?.data())
 
-        return map ? [[cardId, { card, map }]] : []
+        return subject ? [[cardId, { card, subject }]] : []
       }),
     )
 
@@ -124,7 +122,7 @@ const openPack = (uid: string) =>
 
     if (pulledCards.length < pulledEntries.length) {
       console.error(
-        "Card pool drift, drawn cards or their maps gone:",
+        "Card pool drift, drawn cards or their maps / games gone:",
         pulledEntries.flatMap(({ entry }) =>
           drawnCardDetails.has(entry.cardId) ? [] : [entry.cardId],
         ),
@@ -174,9 +172,7 @@ const openPack = (uid: string) =>
       return [
         {
           ...entry,
-          mapId: details.card.mapId,
-          name: details.map.name,
-          imageUrl: details.map.imageUrl || null,
+          ...details.subject,
           cardProperties: details.card.cardProperties,
           isNew,
         },

@@ -1,12 +1,13 @@
 import { APP_BASE_URL, METADATA_DOCS, TABLES } from "@repo/common"
-import { refs, subRefs } from "@repo/providers/db-refs"
+import { refs } from "@repo/providers/db-refs"
 import { db } from "@repo/providers/firebase"
-import { cardDocSchema, gamesListDocSchema, mapDocSchema } from "@repo/schemas"
+import { cardDocSchema, gamesListDocSchema } from "@repo/schemas"
 import { type Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { connection } from "next/server"
 import { PAGES } from "@/constants/pages"
 import { routing } from "@/i18n/routing"
+import { getCardSubject, getCardSubjectRef } from "@/utils/card-subject"
 import { CollectionContent } from "@/app/[locale]/(app)/collection/collection-content"
 
 export const generateMetadata = async ({
@@ -74,28 +75,23 @@ const CollectionPage = async () => {
     getGameTitles(),
   ])
 
-  const mapSnapshots =
+  const subjectSnapshots =
     cardDocs.length > 0
-      ? await db.getAll(
-          ...cardDocs.map(({ card }) =>
-            subRefs[TABLES.MAPS](card.gameId).doc(card.mapId),
-          ),
-        )
+      ? await db.getAll(...cardDocs.map(({ card }) => getCardSubjectRef(card)))
       : []
 
   const cards = cardDocs.flatMap(({ cardId, card }, index) => {
-    const map = mapDocSchema.safeParse(mapSnapshots[index]?.data()).data
+    const subject = getCardSubject(card, subjectSnapshots[index]?.data())
 
-    if (!map) return []
+    if (!subject) return []
 
     return [
       {
         cardId,
+        type: card.type,
         gameId: card.gameId,
-        mapId: card.mapId,
         ...card.cardProperties,
-        name: map.name,
-        imageUrl: map.imageUrl || null,
+        ...subject,
       },
     ]
   })

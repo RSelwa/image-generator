@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   CARD_RARITY,
+  CARD_TYPE,
   DEFAULT_MAX_DISTANCE_POINTS,
   STORAGE_PATHS,
 } from "@repo/common"
@@ -50,7 +51,7 @@ import {
 } from "@/constants/mapping"
 import { SELECTORS } from "@/constants/testing"
 import { useModal } from "@/hooks/use-modal"
-import { useGetCardsQuery, useSaveMapCardMutation } from "@/redux/api/cards"
+import { useGetCardsQuery, useSaveCardMutation } from "@/redux/api/cards"
 import {
   useCreateMapMutation,
   useGetMapByIdQuery,
@@ -107,10 +108,12 @@ const MapForm = ({
   )
   const { data: cards, isLoading: isLoadingCards } = useGetCardsQuery()
   const isAdmin = useAppSelector(selectIsAdmin)
-  const mapCard = cards?.find((card) => card.mapId === mapId)
+  const mapCard = cards?.find(
+    (card) => card.type === CARD_TYPE.MAP && card.mapId === mapId,
+  )
   const [createMap, { isLoading: isCreating }] = useCreateMapMutation()
   const [updateMap, { isLoading: isUpdating }] = useUpdateMapByIdMutation()
-  const [saveMapCard, { isLoading: isSavingCard }] = useSaveMapCardMutation()
+  const [saveCard, { isLoading: isSavingCard }] = useSaveCardMutation()
   const isSaving = isCreating || isUpdating || isSavingCard
   const [isUploading, setIsUploading] = useState(false)
   const [clickPosition, setClickPosition] = useState<{
@@ -218,7 +221,7 @@ const MapForm = ({
 
       if (error || !createdMap) return
 
-      const { error: cardError } = await saveMapCard({
+      const { error: cardError } = await saveCard({
         card: undefined,
         gameId,
         mapId: createdMap.id,
@@ -241,7 +244,7 @@ const MapForm = ({
 
       if (error) return
 
-      const { error: cardError } = await saveMapCard({
+      const { error: cardError } = await saveCard({
         card: mapCard,
         gameId,
         mapId,

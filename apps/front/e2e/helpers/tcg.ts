@@ -23,21 +23,48 @@ export const seedMapCard = async (
   return { map, cardId: card.id }
 }
 
+export const seedGameCard = async (
+  gameId: string,
+  cardProperties: CardProperties,
+) => {
+  const card = await refs[TABLES.CARDS].add({
+    type: CARD_TYPE.GAME,
+    gameId,
+    cardProperties,
+    createdAt: null,
+    updatedAt: null,
+  })
+
+  return card.id
+}
+
+const seedEveryPoolWith = (cardId: string, gameId: string) =>
+  Promise.all(
+    Object.values(CARD_RARITY).map((rarity) =>
+      refs[TABLES.CARD_POOLS].doc(rarity).set({ cards: [{ cardId, gameId }] }),
+    ),
+  )
+
 export const seedEveryPoolWithOneCard = async (
   cardProperties: CardProperties,
 ) => {
   const game = gameFactory()
   await refs[TABLES.GAMES].doc(game.id).set(game)
   const mapCard = await seedMapCard(game.id, cardProperties)
-  await Promise.all(
-    Object.values(CARD_RARITY).map((rarity) =>
-      refs[TABLES.CARD_POOLS]
-        .doc(rarity)
-        .set({ cards: [{ cardId: mapCard.cardId, gameId: game.id }] }),
-    ),
-  )
+  await seedEveryPoolWith(mapCard.cardId, game.id)
 
   return mapCard
+}
+
+export const seedEveryPoolWithOneGameCard = async (
+  cardProperties: CardProperties,
+) => {
+  const game = gameFactory()
+  await refs[TABLES.GAMES].doc(game.id).set(game)
+  const cardId = await seedGameCard(game.id, cardProperties)
+  await seedEveryPoolWith(cardId, game.id)
+
+  return { game, cardId }
 }
 
 export const enableTcgFlag = (page: Page) =>

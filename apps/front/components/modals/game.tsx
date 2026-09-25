@@ -1,8 +1,12 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { STORAGE_PATHS } from "@repo/common"
-import { createGameInputSchema } from "@repo/schemas"
+import { CARD_RARITY, CARD_TYPE, STORAGE_PATHS } from "@repo/common"
+import {
+  cardPropertiesSchema,
+  cardRaritySchema,
+  createGameInputSchema,
+} from "@repo/schemas"
 import { X } from "lucide-react"
 import { useQueryState } from "nuqs"
 import { type KeyboardEvent, useEffect, useRef, useState } from "react"
@@ -23,18 +27,38 @@ import {
 } from "@/components/ui/field"
 import { ImageDropzone } from "@/components/ui/image-dropzone"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import YoutubeEmbed from "@/components/youtube-embed"
 import { BASE_FIREBASE_URL } from "@/constants/db"
-import { MODAL_KEYS, NEW_SEARCH_PARAM } from "@/constants/mapping"
+import {
+  MODAL_KEYS,
+  NEW_SEARCH_PARAM,
+  NO_CARD_RARITY,
+} from "@/constants/mapping"
+import { SELECTORS } from "@/constants/testing"
 import { Link } from "@/i18n/routing"
+import { useGetCardsQuery, useSaveCardMutation } from "@/redux/api/cards"
 import {
   useCreateGameMutation,
   useGetGameByIdQuery,
   useUpdateGameByIdMutation,
 } from "@/redux/api/games"
+import { selectIsAdmin } from "@/redux/session/session.selectors"
+import { useAppSelector } from "@/redux/store"
+import { getNextCardNumber } from "@/utils/card-number"
 import { uploadFileToBucket } from "@/utils/file"
 
-type GameFormSchema = z.input<typeof createGameInputSchema>
+const gameFormSchema = createGameInputSchema.extend({
+  cardProperties: cardPropertiesSchema.optional(),
+})
+
+type GameFormSchema = z.input<typeof gameFormSchema>
 
 const KEY = MODAL_KEYS.GAME_ID
 
@@ -43,8 +67,15 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
     { id: gameId },
     { skip: isNew },
   )
+  const { data: cards, isLoading: isLoadingCards } = useGetCardsQuery()
+  const isAdmin = useAppSelector(selectIsAdmin)
+  const gameCard = cards?.find(
+    (card) => card.type === CARD_TYPE.GAME && card.gameId === gameId,
+  )
   const [createGame, { isLoading: isCreating }] = useCreateGameMutation()
   const [updateGame, { isLoading: isUpdating }] = useUpdateGameByIdMutation()
+  const [saveCard, { isLoading: isSavingCard }] = useSaveCardMutation()
+  const isSaving = isCreating || isUpdating || isSavingCard
   const [isUploading, setIsUploading] = useState(false)
   const [createMultiple, setCreateMultiple] = useQueryState("createMultiple")
   const [, setGameId] = useQueryState(KEY)
@@ -58,7 +89,7 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
     watch,
     formState: { errors, isDirty },
   } = useForm<GameFormSchema>({
-    resolver: zodResolver(createGameInputSchema),
+    resolver: zodResolver(gameFormSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -74,9 +105,10 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
   const image = watch("image")
   const title = watch("title")
   const youtubeLink = watch("youtubeLink")
+  const cardProperties = watch("cardProperties")
 
   useEffect(() => {
-    if (data) {
+    if (data && cards) {
       reset({
         title: data.title,
         description: data.description ?? "",
@@ -86,9 +118,10 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
         hasSphericalImagesReady: data.hasSphericalImagesReady ?? false,
         hasSpecialImagesReady: data.hasSpecialImagesReady ?? false,
         youtubeLink: data.youtubeLink ?? "",
+        cardProperties: gameCard?.cardProperties,
       })
     }
-  }, [data, reset])
+  }, [data, cards, gameCard, reset])
 
   const handleFileUpload = async (file: File) => {
     setIsUploading(true)
@@ -114,14 +147,38 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
     setValue("image", "", { shouldDirty: true })
   }
 
+  const handleCardRarityChange = (value: string) => {
+    const rarity = cardRaritySchema.safeParse(value).data
+
+    setValue(
+      "cardProperties",
+      rarity && {
+        rarity,
+        number: cardProperties?.number || getNextCardNumber(cards || []),
+      },
+      { shouldDirty: true },
+    )
+  }
+
   const onSubmit: SubmitHandler<GameFormSchema> = async (formData) => {
-    // Parse through schema to apply defaults
-    const parsedData = createGameInputSchema.parse(formData)
+    const { cardProperties: submittedCardProperties, ...parsedData } =
+      gameFormSchema.parse(formData)
 
     if (isNew) {
-      const { error } = await createGame(parsedData)
+      const { data: createdGame, error } = await createGame(parsedData)
 
-      if (error) return
+      if (error || !createdGame) return
+
+      const { error: cardError } = await saveCard({
+        card: undefined,
+        gameId: createdGame.id,
+        cardProperties: submittedCardProperties,
+      })
+
+      if (cardError) {
+        toast.error("Game created, but its card was not saved")
+        return
+      }
 
       toast.success("Game created successfully")
 
@@ -137,12 +194,37 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
 
       if (error) return
 
+      const { error: cardError } = await saveCard({
+        card: gameCard,
+        gameId,
+        cardProperties: submittedCardProperties,
+      })
+
+      if (cardError) {
+        toast.error("Game updated, but its card was not saved")
+        return
+      }
+
       toast.success("Game updated successfully")
     }
   }
 
-  if (!isNew && isLoading) {
+  const isLoadingForm = isLoadingCards || (!isNew && isLoading)
+
+  if (isLoadingForm) {
     return <LoadingModal modalKey={KEY} />
+  }
+
+  const hasMissingData = !cards || (!isNew && !data)
+  const savingLabel = isNew ? "Creating" : "Saving"
+  const submitLabel = isNew ? "Create Game" : "Save Changes"
+
+  if (hasMissingData) {
+    return (
+      <ModalBase modalKey={KEY} title="Could not load this game">
+        <p className="p-6">Close the modal and try again.</p>
+      </ModalBase>
+    )
   }
 
   return (
@@ -282,6 +364,71 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
               </Field>
             </div>
 
+            {isAdmin && (
+              <>
+                <Field>
+                  <FieldLabel>Card rarity</FieldLabel>
+                  <Select
+                    value={cardProperties?.rarity || NO_CARD_RARITY}
+                    onValueChange={handleCardRarityChange}
+                  >
+                    <SelectTrigger
+                      data-testid={SELECTORS.GAME_FORM_CARD_RARITY}
+                    >
+                      <SelectValue placeholder="Select rarity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        value={NO_CARD_RARITY}
+                        data-testid={SELECTORS.GAME_FORM_CARD_RARITY_OPTION(
+                          NO_CARD_RARITY,
+                        )}
+                      >
+                        Not a card
+                      </SelectItem>
+                      {Object.values(CARD_RARITY).map((rarity) => (
+                        <SelectItem
+                          key={rarity}
+                          value={rarity}
+                          data-testid={SELECTORS.GAME_FORM_CARD_RARITY_OPTION(
+                            rarity,
+                          )}
+                        >
+                          {rarity}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    Games without a rarity never drop from a pack
+                  </FieldDescription>
+                </Field>
+
+                {cardProperties && (
+                  <Field>
+                    <FieldLabel htmlFor="card-number">Card number *</FieldLabel>
+                    <Input
+                      id="card-number"
+                      type="number"
+                      data-testid={SELECTORS.GAME_FORM_CARD_NUMBER}
+                      {...register("cardProperties.number", {
+                        valueAsNumber: true,
+                      })}
+                      aria-invalid={!!errors.cardProperties?.number}
+                    />
+                    <FieldDescription>
+                      Unique number of the card in the collection
+                    </FieldDescription>
+                    {errors.cardProperties?.number && (
+                      <FieldError>
+                        {errors.cardProperties.number.message}
+                      </FieldError>
+                    )}
+                  </Field>
+                )}
+              </>
+            )}
+
             {data && (
               <div className="text-muted-primary-foreground mt-2 space-y-1 text-xs">
                 <p>
@@ -335,16 +482,17 @@ const GameForm = ({ gameId, isNew }: { gameId: string; isNew: boolean }) => {
               Create multiple
             </label>
           )}
-          <Button type="submit" disabled={isCreating || isUpdating || !isDirty}>
-            {isCreating || isUpdating ? (
+          <Button
+            type="submit"
+            disabled={isSaving || !isDirty}
+            data-testid={SELECTORS.GAME_FORM_SUBMIT}
+          >
+            {isSaving && (
               <>
-                {isNew ? "Creating" : "Saving"} <Loader />
+                {savingLabel} <Loader />
               </>
-            ) : isNew ? (
-              "Create Game"
-            ) : (
-              "Save Changes"
             )}
+            {!isSaving && submitLabel}
           </Button>
         </div>
       </form>

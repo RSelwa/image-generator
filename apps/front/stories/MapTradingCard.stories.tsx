@@ -12,7 +12,7 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
-    mapId: "kanto",
+    cardId: "kanto-card",
     name: "Kanto",
     imageUrl: null,
     rarity: CARD_RARITY.COMMON,

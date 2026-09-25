@@ -98,7 +98,7 @@ export const CollectionContent = ({
                   <li key={card.cardId}>
                     {card.count > 0 && (
                       <MapTradingCard
-                        mapId={card.mapId}
+                        cardId={card.cardId}
                         name={card.name}
                         imageUrl={card.imageUrl}
                         rarity={card.rarity}

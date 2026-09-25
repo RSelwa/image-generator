@@ -1,10 +1,15 @@
+import { CARD_TYPE } from "@repo/common"
 import { type CardDoc, type CardRarity, type MapDocWithId } from "@repo/schemas"
 import { CARD_RARITY_FILTER } from "@/constants/mapping"
 import { type CardRarityFilter } from "@/schemas/card-rarity-filter"
 
 export const getCardRarityByMapId = (cards: CardDoc[]) =>
   new Map(
-    cards.map(({ mapId, cardProperties }) => [mapId, cardProperties.rarity]),
+    cards.flatMap((card) => {
+      if (card.type !== CARD_TYPE.MAP) return []
+
+      return [[card.mapId, card.cardProperties.rarity] as const]
+    }),
   )
 
 export const filterMapsByCardRarity = (

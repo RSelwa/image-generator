@@ -38,13 +38,21 @@ const LEGENDARY_MAP = buildMap("legendary")
 const COMMON_MAP = buildMap("common")
 const UNRATED_MAP = buildMap("unrated")
 const MAPS = [LEGENDARY_MAP, COMMON_MAP, UNRATED_MAP]
+const GAME_CARD = {
+  type: CARD_TYPE.GAME,
+  gameId: "game",
+  cardProperties: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },
+  createdAt: null,
+  updatedAt: null,
+} satisfies CardDoc
 const RARITY_BY_MAP_ID = getCardRarityByMapId([
   buildCard(LEGENDARY_MAP.id, CARD_RARITY.LEGENDARY),
   buildCard(COMMON_MAP.id, CARD_RARITY.COMMON),
+  GAME_CARD,
 ])
 
 describe("when the cards are indexed by map", () => {
-  it("should map each card's map to its rarity", () => {
+  it("should map each map card's map to its rarity", () => {
     expect(RARITY_BY_MAP_ID).toEqual(
       new Map([
         [LEGENDARY_MAP.id, CARD_RARITY.LEGENDARY],

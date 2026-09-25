@@ -38,7 +38,7 @@ export const PackReveal = ({
           {cards.map((card, index) => (
             <li key={`${card.cardId}-${index}`} className="relative">
               <MapTradingCard
-                mapId={card.mapId}
+                cardId={card.cardId}
                 name={card.name}
                 imageUrl={card.imageUrl}
                 rarity={card.cardProperties.rarity}
@@ -100,7 +100,7 @@ export const PackReveal = ({
             className="absolute inset-0 transition-[transform,visibility] duration-500 ease-out data-[revealed=true]:invisible data-[revealed=true]:translate-x-[140%] data-[revealed=true]:rotate-12 motion-reduce:transition-none enabled:cursor-pointer"
           >
             <MapTradingCard
-              mapId={card.mapId}
+              cardId={card.cardId}
               name={card.name}
               imageUrl={card.imageUrl}
               rarity={card.cardProperties.rarity}

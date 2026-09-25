@@ -20,6 +20,10 @@ const MAP_CARD = {
   updatedAt: CREATED_AT,
 }
 
+const { mapId: _mapId, ...GAME_CARD_FIELDS } = MAP_CARD
+
+const GAME_CARD = { ...GAME_CARD_FIELDS, type: CARD_TYPE.GAME }
+
 describe("when the map card has every field", () => {
   it("should keep them", () => {
     expect(cardDocSchema.parse(MAP_CARD)).toEqual(MAP_CARD)
@@ -41,6 +45,28 @@ describe("when the map card has no timestamps", () => {
 describe("when the map card has no map id", () => {
   it("should reject it", () => {
     const { mapId: _, ...card } = MAP_CARD
+
+    expect(cardDocSchema.safeParse(card).success).toBe(false)
+  })
+})
+
+describe("when the game card has every field", () => {
+  it("should keep them", () => {
+    expect(cardDocSchema.parse(GAME_CARD)).toEqual(GAME_CARD)
+  })
+})
+
+describe("when the game card has a map id", () => {
+  it("should drop it", () => {
+    expect(cardDocSchema.parse({ ...GAME_CARD, mapId: "kanto" })).toEqual(
+      GAME_CARD,
+    )
+  })
+})
+
+describe("when the game card has no game id", () => {
+  it("should reject it", () => {
+    const { gameId: _, ...card } = GAME_CARD
 
     expect(cardDocSchema.safeParse(card).success).toBe(false)
   })
@@ -70,6 +96,15 @@ describe("when the map card has an id", () => {
   it("should keep it", () => {
     expect(cardDocWithIdSchema.parse({ ...MAP_CARD, id: "card" })).toEqual({
       ...MAP_CARD,
+      id: "card",
+    })
+  })
+})
+
+describe("when the game card has an id", () => {
+  it("should keep it", () => {
+    expect(cardDocWithIdSchema.parse({ ...GAME_CARD, id: "card" })).toEqual({
+      ...GAME_CARD,
       id: "card",
     })
   })

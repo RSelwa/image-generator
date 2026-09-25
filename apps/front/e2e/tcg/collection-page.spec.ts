@@ -8,8 +8,9 @@ import { Timestamp } from "firebase-admin/firestore"
 import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { formatCardNumber } from "@/utils/card-number"
+import { getCardSubjectRef } from "@/utils/card-subject"
 import { loginViaUI, setupUser } from "../helpers/lobby"
-import { enableTcgFlag, seedMapCard } from "../helpers/tcg"
+import { enableTcgFlag, seedGameCard, seedMapCard } from "../helpers/tcg"
 
 const LOCKED_CARD_NUMBER = 42
 const OWNED_CARD_NUMBER = 43
@@ -18,6 +19,7 @@ const OWNED_CARD_PROPERTIES = {
   number: OWNED_CARD_NUMBER,
 }
 const OWNED_COUNT = 2
+const GAME_CARD_NUMBER = 44
 
 const seedGameWithTwoCards = async () => {
   const game = gameFactory()
@@ -28,7 +30,7 @@ const seedGameWithTwoCards = async () => {
     number: LOCKED_CARD_NUMBER,
   })
 
-  return { gameId: game.id, ownedCard, lockedCard }
+  return { game, gameId: game.id, ownedCard, lockedCard }
 }
 
 const openCollectionOwning = async (
@@ -64,7 +66,7 @@ test.describe("when a user opens their collection", () => {
       page.getByTestId(SELECTORS.COLLECTION_GAME_PROGRESS(gameId)),
     ).toHaveText("1/2")
     await expect(
-      page.getByTestId(SELECTORS.TRADING_CARD(ownedCard.map.id)),
+      page.getByTestId(SELECTORS.TRADING_CARD(ownedCard.cardId)),
     ).toContainText(formatCardNumber(OWNED_CARD_NUMBER))
     await expect(
       page.getByTestId(SELECTORS.COLLECTION_LOCKED_CARD(lockedCard.cardId)),
@@ -89,7 +91,35 @@ test.describe("when a user opens their collection", () => {
       )
       .toEqual([
         SELECTORS.COLLECTION_LOCKED_CARD(lockedCard.cardId),
-        SELECTORS.TRADING_CARD(ownedCard.map.id),
+        SELECTORS.TRADING_CARD(ownedCard.cardId),
+      ])
+  })
+
+  test("should show the game card first in its game", async ({ page }) => {
+    const { game, gameId, ownedCard, lockedCard } = await seedGameWithTwoCards()
+    const gameCardId = await seedGameCard(gameId, {
+      rarity: CARD_RARITY.RARE,
+      number: GAME_CARD_NUMBER,
+    })
+
+    await openCollectionOwning(page, gameCardId, gameId)
+
+    await expect(
+      page.getByTestId(SELECTORS.TRADING_CARD(gameCardId)),
+    ).toContainText(game.title)
+    await expect
+      .poll(() =>
+        page
+          .getByTestId(SELECTORS.COLLECTION_GAME(gameId))
+          .locator("li > [data-testid]")
+          .evaluateAll((cards) =>
+            cards.map((card) => card.getAttribute("data-testid")),
+          ),
+      )
+      .toEqual([
+        SELECTORS.TRADING_CARD(gameCardId),
+        SELECTORS.COLLECTION_LOCKED_CARD(lockedCard.cardId),
+        SELECTORS.COLLECTION_LOCKED_CARD(ownedCard.cardId),
       ])
   })
 
@@ -101,11 +131,9 @@ test.describe("when a user opens their collection", () => {
 
       return card ? [card] : []
     })
-    const maps = await db.getAll(
-      ...cards.map((card) => subRefs[TABLES.MAPS](card.gameId).doc(card.mapId)),
-    )
+    const subjects = await db.getAll(...cards.map(getCardSubjectRef))
 
-    const total = maps.filter((map) => map.exists).length
+    const total = subjects.filter((subject) => subject.exists).length
 
     await openCollectionOwning(page, ownedCard.cardId, gameId)
 

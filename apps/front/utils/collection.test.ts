@@ -1,4 +1,4 @@
-import { CARD_RARITY } from "@repo/common"
+import { CARD_RARITY, CARD_TYPE } from "@repo/common"
 import { type CardRarity } from "@repo/schemas"
 import { describe, expect, it } from "vitest"
 import { buildCollectionBinder } from "@/utils/collection"
@@ -10,7 +10,7 @@ const buildCard = (
   number: number,
 ) => ({
   cardId: `${mapId}-card`,
-  mapId,
+  type: CARD_TYPE.MAP,
   gameId,
   name: mapId,
   imageUrl: null,
@@ -60,5 +60,22 @@ describe("when a game has no title", () => {
         ({ gameTitle }) => gameTitle,
       ),
     ).toEqual(["zelda"])
+  })
+})
+
+describe("when a game has a game card", () => {
+  it("should show it first in its game", () => {
+    const pokemonCard = {
+      ...buildCard("pokemon", "pokemon", CARD_RARITY.RARE, 4),
+      type: CARD_TYPE.GAME,
+    }
+
+    expect(
+      buildCollectionBinder(
+        [JOHTO, pokemonCard, KANTO],
+        GAME_TITLES,
+        {},
+      ).groups[0]?.cards.map(({ cardId }) => cardId),
+    ).toEqual([pokemonCard.cardId, KANTO.cardId, JOHTO.cardId])
   })
 })

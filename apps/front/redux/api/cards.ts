@@ -15,10 +15,10 @@ import {
 import { getCardRef, TABLE_REFS } from "@/constants/db-refs"
 import { type GlobalError, globalErrorHandler } from "@/utils/error"
 
-type SaveMapCardInput = {
+type SaveCardInput = {
   card: CardDocWithId | undefined
   gameId: string
-  mapId: string
+  mapId?: string
   cardProperties: CardProperties | undefined
 }
 
@@ -55,17 +55,20 @@ export const cardApi = createApi({
       },
       providesTags: ["CardList"],
     }),
-    saveMapCard: builder.mutation<null, SaveMapCardInput>({
+    saveCard: builder.mutation<null, SaveCardInput>({
       queryFn: async ({ card, gameId, mapId, cardProperties }) => {
         try {
           const now = Timestamp.now()
 
           if (!card) {
             if (cardProperties) {
+              const cardSubject = mapId
+                ? { type: CARD_TYPE.MAP, mapId }
+                : { type: CARD_TYPE.GAME }
+
               await addDoc(TABLE_REFS[TABLES.CARDS], {
-                type: CARD_TYPE.MAP,
+                ...cardSubject,
                 gameId,
-                mapId,
                 cardProperties,
                 createdAt: now,
                 updatedAt: now,
@@ -102,4 +105,4 @@ export const cardApi = createApi({
   }),
 })
 
-export const { useGetCardsQuery, useSaveMapCardMutation } = cardApi
+export const { useGetCardsQuery, useSaveCardMutation } = cardApi

@@ -27,7 +27,6 @@ const OPEN_PACK_RESPONSE = {
     {
       cardId: "kanto-card",
       gameId: "pokemon-red",
-      mapId: "kanto",
       name: "Kanto",
       imageUrl: null,
       cardProperties: { rarity: CARD_RARITY.RARE, number: CARD_NUMBER },

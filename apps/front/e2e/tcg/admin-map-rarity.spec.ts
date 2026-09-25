@@ -13,7 +13,7 @@ import { PAGES } from "@/constants/pages"
 import { SELECTORS } from "@/constants/testing"
 import { formatCardNumber } from "@/utils/card-number"
 import { loginViaUI, setupUser } from "../helpers/lobby"
-import { seedMapCard } from "../helpers/tcg"
+import { seedGameCard, seedMapCard } from "../helpers/tcg"
 
 const CARD_NUMBER = 42
 const DUPLICATE_CARD_NUMBER = 77
@@ -42,6 +42,19 @@ const getMapCards = async (mapId: string) => {
     const { type, gameId, cardProperties } = card.data()
 
     return { type, gameId, cardProperties }
+  })
+}
+
+const getGameCards = async (gameId: string) => {
+  const snapshot = await refs[TABLES.CARDS]
+    .where("gameId", "==", gameId)
+    .where("type", "==", CARD_TYPE.GAME)
+    .get()
+
+  return snapshot.docs.map((card) => {
+    const { type, cardProperties } = card.data()
+
+    return { type, cardProperties }
   })
 }
 
@@ -151,6 +164,73 @@ test.describe("when an admin edits a map's card rarity", () => {
     await submitMapForm(page)
 
     await expect.poll(() => getMapCards(mapId)).toEqual([])
+  })
+})
+
+test.describe("when an admin edits a game's card rarity", () => {
+  const openGameForm = async (page: Page, gameId: string) => {
+    await loginAsAdmin(page)
+    await page.goto(`/en${PAGES.ADMIN_GAMES}?${MODAL_KEYS.GAME_ID}=${gameId}`)
+  }
+
+  const pickGameRarity = async (page: Page, rarity: string) => {
+    await page.getByTestId(SELECTORS.GAME_FORM_CARD_RARITY).click()
+    await page
+      .getByTestId(SELECTORS.GAME_FORM_CARD_RARITY_OPTION(rarity))
+      .click()
+  }
+
+  const seedGame = async () => {
+    const game = gameFactory()
+    await createFirestoreDoc(refs[TABLES.GAMES], game)
+
+    return game.id
+  }
+
+  test("should make the game a card with the prefilled number", async ({
+    page,
+  }) => {
+    const gameId = await seedGame()
+
+    await openGameForm(page, gameId)
+    await pickGameRarity(page, CARD_RARITY.RARE)
+    const prefilledNumber = Number(
+      await page.getByTestId(SELECTORS.GAME_FORM_CARD_NUMBER).inputValue(),
+    )
+    await page.getByTestId(SELECTORS.GAME_FORM_SUBMIT).click()
+
+    await expect
+      .poll(() => getGameCards(gameId))
+      .toEqual([
+        {
+          type: CARD_TYPE.GAME,
+          cardProperties: { rarity: CARD_RARITY.RARE, number: prefilledNumber },
+        },
+      ])
+  })
+
+  test("should update the existing game card", async ({ page }) => {
+    const gameId = await seedGame()
+    await seedGameCard(gameId, {
+      rarity: CARD_RARITY.RARE,
+      number: CARD_NUMBER,
+    })
+
+    await openGameForm(page, gameId)
+    await pickGameRarity(page, CARD_RARITY.LEGENDARY)
+    await page.getByTestId(SELECTORS.GAME_FORM_SUBMIT).click()
+
+    await expect
+      .poll(() => getGameCards(gameId))
+      .toEqual([
+        {
+          type: CARD_TYPE.GAME,
+          cardProperties: {
+            rarity: CARD_RARITY.LEGENDARY,
+            number: CARD_NUMBER,
+          },
+        },
+      ])
   })
 })
 

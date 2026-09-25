@@ -5,7 +5,10 @@ import { refs, subRefs } from "@repo/providers/db-refs"
 import { signUpAuthUser } from "@repo/testing/emulator"
 import { Timestamp } from "firebase-admin/firestore"
 import { PASSWORD } from "../helpers/lobby"
-import { seedEveryPoolWithOneCard } from "../helpers/tcg"
+import {
+  seedEveryPoolWithOneCard,
+  seedEveryPoolWithOneGameCard,
+} from "../helpers/tcg"
 
 const CARD_NUMBER = 42
 
@@ -63,13 +66,35 @@ test.describe("when a pack is opened", () => {
     expect(cards).toHaveLength(PACK_SIZE)
     expect(cards[0]).toMatchObject({
       cardId,
-      mapId: map.id,
       name: map.name,
       cardProperties: CARD_PROPERTIES,
       isNew: true,
     })
     expect(packsStored).toBe(PACKS_MAX - 1)
     expect((await getUser(uid))?.packsStored).toBe(PACKS_MAX - 1)
+    expect(await getOwnedCard(uid, cardId)).toMatchObject({
+      count: PACK_SIZE,
+      cardPropertiesAtPull: CARD_PROPERTIES,
+    })
+  })
+
+  test("should reveal a drawn game card with its game title and image", async ({
+    request,
+  }) => {
+    const { game, cardId } = await seedEveryPoolWithOneGameCard(CARD_PROPERTIES)
+    const { uid, idToken } = await signUp()
+
+    const response = await openPack(request, idToken)
+
+    expect(response.status()).toBe(200)
+    const { cards } = await response.json()
+    expect(cards[0]).toMatchObject({
+      cardId,
+      gameId: game.id,
+      name: game.title,
+      imageUrl: game.image || null,
+      cardProperties: CARD_PROPERTIES,
+    })
     expect(await getOwnedCard(uid, cardId)).toMatchObject({
       count: PACK_SIZE,
       cardPropertiesAtPull: CARD_PROPERTIES,

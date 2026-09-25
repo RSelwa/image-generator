@@ -58,7 +58,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
   })
 
   test("should add the opened cards to the collection", async ({ page }) => {
-    const { map } = await seedEveryPoolWithOneCard({
+    const { cardId } = await seedEveryPoolWithOneCard({
       rarity: CARD_RARITY.RARE,
       number: CARD_NUMBER,
     })
@@ -67,7 +67,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
     await openAndRevealPack(page)
     await page.getByTestId(SELECTORS.PACK_SEE_COLLECTION).click()
 
-    await expect(page.getByTestId(SELECTORS.TRADING_CARD(map.id))).toBeVisible()
+    await expect(page.getByTestId(SELECTORS.TRADING_CARD(cardId))).toBeVisible()
   })
 
   test("should not open a pack without any left", async ({ page }) => {
@@ -109,7 +109,7 @@ test.describe("when a user plays the TCG from the packs page", () => {
     await expect(
       page.getByTestId(SELECTORS.COLLECTION_LOCKED_CARD(cardId)),
     ).toBeVisible()
-    await expect(page.getByTestId(SELECTORS.TRADING_CARD(map.id))).toHaveCount(
+    await expect(page.getByTestId(SELECTORS.TRADING_CARD(cardId))).toHaveCount(
       0,
     )
   })

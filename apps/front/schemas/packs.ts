@@ -3,7 +3,6 @@ import { z } from "zod"
 
 export const openedCardSchema = z.object({
   ...cardPoolEntrySchema.shape,
-  mapId: z.string().min(1),
   name: z.string(),
   imageUrl: z.string().nullable(),
   cardProperties: cardPropertiesSchema,
