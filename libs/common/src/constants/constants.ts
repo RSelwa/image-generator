@@ -11,6 +11,10 @@ export const ACHIEVEMENT_DIFFICULTY = {
   LEGENDARY: "legendary",
 } as const
 
+export const CARD_TYPE = {
+  MAP: "map",
+} as const
+
 export const CARD_RARITY = {
   COMMON: "common",
   UNCOMMON: "uncommon",

@@ -3132,6 +3132,102 @@ describe("firebase Security Rules", () => {
     })
   })
 
+  describe("when a client accesses a card", () => {
+    const uid = "user1"
+    const adminUid = "admin"
+    const cardPath = "cards/card1"
+    const card = {
+      type: "map",
+      gameId: "game1",
+      mapId: "map1",
+      cardProperties: { rarity: "rare", number: 1 },
+    }
+
+    const setupCard = async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), cardPath), card)
+      })
+    }
+
+    const setupAdmin = async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await setDoc(doc(context.firestore(), `rights/${adminUid}`), {
+          uid: adminUid,
+          right: "admin",
+        })
+      })
+    }
+
+    describe("when a signed-out visitor reads a card", () => {
+      it("should allow it", async () => {
+        await setupCard()
+        const unauthedDb = testEnv.unauthenticatedContext().firestore()
+
+        await assertSucceeds(getDoc(doc(unauthedDb, cardPath)))
+      })
+    })
+
+    describe("when a user reads a card", () => {
+      it("should allow it", async () => {
+        await setupCard()
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertSucceeds(getDoc(doc(authedDb, cardPath)))
+      })
+    })
+
+    describe("when a user writes a card", () => {
+      it("should deny creating it", async () => {
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(setDoc(doc(authedDb, cardPath), card))
+      })
+
+      it("should deny updating it", async () => {
+        await setupCard()
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(
+          updateDoc(doc(authedDb, cardPath), { "cardProperties.number": 2 }),
+        )
+      })
+
+      it("should deny deleting it", async () => {
+        await setupCard()
+        const authedDb = testEnv.authenticatedContext(uid).firestore()
+
+        await assertFails(deleteDoc(doc(authedDb, cardPath)))
+      })
+    })
+
+    describe("when an admin writes a card", () => {
+      it("should allow creating it", async () => {
+        await setupAdmin()
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(setDoc(doc(adminDb, cardPath), card))
+      })
+
+      it("should allow updating it", async () => {
+        await setupAdmin()
+        await setupCard()
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(
+          updateDoc(doc(adminDb, cardPath), { "cardProperties.number": 2 }),
+        )
+      })
+
+      it("should allow deleting it", async () => {
+        await setupAdmin()
+        await setupCard()
+        const adminDb = testEnv.authenticatedContext(adminUid).firestore()
+
+        await assertSucceeds(deleteDoc(doc(adminDb, cardPath)))
+      })
+    })
+  })
+
   describe("dailyChallengeResults subcollection", () => {
     const resultData = {
       date: "2026-03-09",

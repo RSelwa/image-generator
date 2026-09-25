@@ -194,3 +194,12 @@ Committed straight on `develop` (TCG phase: no branch / PR).
 - **Overall progress**: the expected total is computed from Firestore with the admin SDK (pools → map docs that are still cards), since the emulator DB is shared by every spec; asserts `1/<total>`.
 - The admin number field's e2e (filled per rarity, prefill stored as shown, duplicate flagged) shipped with the two admin sub-bullets.
 - Not run locally (CI-only).
+
+## TCG cards collection › `cards` data layer
+
+- **Top-level `cards` reuses `TABLES.CARDS`** (`"cards"`), like `TABLES.MAPS` names both `maps` and `games/{id}/maps`: `refs[TABLES.CARDS]` is the top-level collection, `subRefs[TABLES.CARDS](uid)` stays `users/{uid}/cards`. Different paths, one name; nothing queries a `cards` collection group.
+- **`CARD_TYPE = { MAP: "map" }`** in `libs/common` next to `CARD_RARITY`. `GAME` is added with the game variant, so no constant member sits unread.
+- **`cardDocSchema` is a single `z.object`** with `type: z.literal(CARD_TYPE.MAP)` + `mapId`, not a one-member `discriminatedUnion` nor a base schema with one user (simplicity rules). The game sub-bullet moves the shared fields (`gameId`, `cardProperties`, timestamps) into a base and wraps both variants in `z.discriminatedUnion("type", …)`: the literal is already the discriminator, so consumers don't change.
+- Timestamps like `mapDocSchema` (`timestampSchema.nullish().default(() => null)`). No `WITH_ID` variant yet: nothing reads cards.
+- **Rules**: `match /cards/{card}` → read `true`, write `signedInAdmin()` (achievements pattern). Tests: signed-out + signed-in read allowed, user denied create / update / delete, admin allowed create / update / delete. The rules don't validate the shape (same as maps' `cardProperties`).
+- Schema tests (`card.test.ts`): valid map card, timestamps default to null, missing `mapId`, unknown type, invalid `cardProperties` (unknown rarity, number 0, no number) rejected. The unknown-type test uses a made-up type, not `game`, so it stays valid once the game variant lands.

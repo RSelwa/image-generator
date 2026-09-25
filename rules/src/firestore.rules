@@ -79,6 +79,11 @@ service cloud.firestore {
       allow write: if signedInAdmin();
     }
 
+    match /cards/{card} {
+      allow read: if true;
+      allow write: if signedInAdmin();
+    }
+
     match /cardPools/{rarity} {
       allow read: if true;
     }
