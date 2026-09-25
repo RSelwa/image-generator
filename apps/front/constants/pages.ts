@@ -22,6 +22,7 @@ export const PAGES = {
   ADMIN_FULLSCREEN: "/admin/full-screen",
   ADMIN_DAILY_CHALLENGE: "/admin/daily-challenge",
   ADMIN_ACHIEVEMENTS: "/admin/achievements",
+  ADMIN_CARDS: "/admin/cards",
   ADMIN_SPHERICAL_FULLSCREEN: "/admin/spherical-full-screen",
   SEED_MAKER: "/seed-maker",
   MY_SEEDS: "/my-seeds",

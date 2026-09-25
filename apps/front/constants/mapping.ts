@@ -28,6 +28,7 @@ export const QUERY_PARAMS = {
   SPHERICAL_ID: "spherical-id",
   DAILY_CHALLENGE_DATE: "daily-challenge-date",
   ACHIEVEMENT_KEY: "achievement-key",
+  CARD_ID: "card-id",
   FEATURE_FLAG: "ff",
 } as const
 
@@ -49,6 +50,7 @@ export const MODAL_KEYS = {
   NEW_SOUND: "new-sound",
   NEW_DAILY_CHALLENGE: "new-daily-challenge",
   NEW_ACHIEVEMENT: "new-achievement",
+  NEW_CARD: "new-card",
   JOIN_LOBBY: "join-lobby",
 } as const
 

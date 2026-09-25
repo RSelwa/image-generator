@@ -36,6 +36,11 @@ const Page = () => {
       label: "Achievements",
     },
     {
+      url: PAGES.ADMIN_CARDS,
+      image: FALL_BACK_IMAGE,
+      label: "Cards",
+    },
+    {
       url: PAGES.ADMIN_MARATHON_SEEDS,
       image: FALL_BACK_IMAGE,
       label: "Marathon Seeds",

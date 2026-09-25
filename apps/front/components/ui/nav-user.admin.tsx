@@ -4,6 +4,7 @@ import {
   Gamepad2,
   Globe2,
   Image,
+  Layers,
   Lightbulb,
   Music2,
   Sprout,
@@ -81,6 +82,16 @@ const NavUserAdmin = () => {
             >
               <Trophy />
               Achievements
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link
+              href={PAGES.ADMIN_CARDS}
+              className="cursor-pointer"
+              data-testid={SELECTORS.ADMIN_MENU_CARDS}
+            >
+              <Layers />
+              Cards
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

@@ -180,3 +180,10 @@ Goal: a card is its own Firestore document instead of `cardProperties` on a map,
   - [x] Switch the read side to `cards`: the `listen-docs` pools trigger listens on `cards/{cardId}` (rarity added / changed / removed / card deleted) instead of maps; `rebuild-card-pools` script rebuilds from `cards`; pool entries `{ cardId, gameId }`; `users/{uid}/cards/{cardId}` keyed by `cardId`; the open-pack endpoint draws cards and reads their map for name / image; the collection page builds the binder from `cards` + map docs. Unit + e2e tests updated (seed cards instead of `cardProperties` on maps)
   - [x] Admin writes `cards`: the map form's card section creates / updates / deletes the map's card doc (number prefill + checks computed from `cards`); the admin maps page badges, rarity filter, per-rarity counts and number flags read `cards`. Remove `cardProperties` from `mapDocSchema`, the map rules (`adminOnlyMapFields`) and every remaining consumer. Tests updated
   - [x] Game cards: add the `game` variant to `cardDocSchema` (no `mapId`); admin can make a game a card (rarity + number, prefilled) from the game form; the endpoint and `MapTradingCard` (or a game variant) render a game card with the game title + image; the binder shows it first in its game block. Schema / unit / e2e tests
+
+---
+
+## TCG admin cards CRUD
+
+- [x] Admin cards page
+  - [x] `/admin/cards` (admin menu + admin home): every card sorted by number (number, name from its map / game, game, type, rarity badge, `duplicate` flag, "Missing map / game" for orphans), search by number / name / game. "New card" modal: type (map / game), game, map (only maps without a card), rarity + number prefilled with the next free one; a game that already has a card can't get a second. Row click opens a sheet to edit rarity + number or delete (confirm). Writes reuse `saveCard`. Unit tests for the rows, e2e for list / create map card / create game card / edit / delete
